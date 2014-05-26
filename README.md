@@ -23,6 +23,7 @@ I am currently going through all the package samples again to see if they still 
 - Central Projection On Plane
 - Has Out Of Plane XYZs
 - Intersects For Divided Surfaces
+- Move XYZs From Plane To Plane
 
 #Planned Improvements#
 
