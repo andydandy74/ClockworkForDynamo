@@ -21,6 +21,8 @@ I am currently going through all the package samples again to see if they still 
 - Buckyball (project environment sample)
 - Central Projection On Face
 - Central Projection On Plane
+- Has Out Of Plane XYZs
+- Intersects For Divided Surfaces
 
 #Planned Improvements#
 
