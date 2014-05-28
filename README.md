@@ -24,11 +24,13 @@ I am currently going through all the package samples again to see if they still 
 - Has Out Of Plane XYZs
 - Intersects For Divided Surfaces
 - Move XYZs From Plane To Plane
+- Room Stuff
 
 #Planned Improvements#
 
 These are some improvements I'd like to add to existing packages if I should find the time. Feel free to suggest other improvements [here](https://github.com/andydandy74/DynamoSamples/issues).
 
+- Evaluate Divided Surface Grid Nodes: Find a working solution for Revit 2013
 - Move XYZs From Plane To Plane: Simplify if possible & also return transform
 - Solve Triangle By XYZs: Circumcenter & orthocenter
 
