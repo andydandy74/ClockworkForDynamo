@@ -20,7 +20,6 @@ All samples should usually work best with one of the latest [daily builds](http:
 - Has Out Of Plane XYZs
 - Intersects For Divided Surfaces
 - Move XYZs From Plane To Plane
-- Room Stuff
 
 #Planned Improvements#
 
