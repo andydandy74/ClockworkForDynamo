@@ -14,7 +14,6 @@ All samples should usually work best with one of the latest [daily builds](http:
 
 #Packages or Package Samples that need fixing in 0.6.3#
 
-- Altitude And Azimuth From Vector
 - Buckyball (project environment sample)
 - Central Projection On Face
 - Central Projection On Plane
