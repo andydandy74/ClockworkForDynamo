@@ -2,7 +2,7 @@
 
 ![Image](https://raw.github.com/andydandy74/DynamoSamples/master/workflow_samples/ToAutomateOrNotToAutomate/ToAutomateOrNotToAutomate.png)
 
-Some samples for the [Dynamo](http://www.dynamobim.org) visual programming environment.
+Some samples for the [Dynamo](http://www.dynamobim.org) visual programming environment. All of these were only tested in Revit 2014 so they may not work in other environments.
 
 Directory [package_samples](https://github.com/andydandy74/DynamoSamples/tree/master/package_samples) contains simple examples for all of the Dynamo packages I have published through the [package manager](http://www.dynamopackages.com) so far.
 
@@ -25,7 +25,6 @@ All samples should usually work best with one of the latest [daily builds](http:
 
 These are some improvements I'd like to add to existing packages if I should find the time. Feel free to suggest other improvements [here](https://github.com/andydandy74/DynamoSamples/issues).
 
-- Evaluate Divided Surface Grid Nodes: Find a working solution for Revit 2013
 - Move XYZs From Plane To Plane: Simplify if possible & also return transform
 - Solve Triangle By XYZs: Circumcenter & orthocenter
 
