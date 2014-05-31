@@ -18,13 +18,13 @@ All samples should usually work best with one of the latest [daily builds](http:
 - Central Projection On Face
 - Central Projection On Plane
 - Has Out Of Plane XYZs
-- Intersects For Divided Surfaces
 - Move XYZs From Plane To Plane
 
 #Planned Improvements#
 
 These are some improvements I'd like to add to existing packages if I should find the time. Feel free to suggest other improvements [here](https://github.com/andydandy74/DynamoSamples/issues).
 
+- Intersects For Divided Surfaces: Horizontal Intersects only works in metric feet...
 - Move XYZs From Plane To Plane: Simplify if possible & also return transform
 - Solve Triangle By XYZs: Circumcenter & orthocenter
 
