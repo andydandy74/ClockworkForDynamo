@@ -15,8 +15,6 @@ All samples should usually work best with one of the latest [daily builds](http:
 #Packages or Package Samples that need fixing in 0.6.3#
 
 - Buckyball (project environment sample)
-- Central Projection On Face
-- Central Projection On Plane
 - Has Out Of Plane XYZs
 - Move XYZs From Plane To Plane
 
