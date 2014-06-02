@@ -6,9 +6,9 @@
 - Turn Into List
 
 ##Work in progress##
-- XYZ Axis From Vector 
+- XYZ Axis From Vector https://github.com/DynamoDS/Dynamo/issues/1700
 - Get Third XYZ Axis
-- Plane Properties
+- Plane Properties https://github.com/DynamoDS/Dynamo/issues/1698
 
 ##Missing built-in nodes##
 - XYZ Components
