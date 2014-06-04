@@ -4,6 +4,7 @@
 - Elements From & To IDs
 - Increment/Decrement By 1
 - Lines Through Points (Closed Loop)
+- List Not Empty
 - Return List Or single Value
 - Turn Into List
 
@@ -13,6 +14,7 @@
 - Get Third XYZ Axis - Depends on XYZ Axis From Vector
 - Mesh Stuff - Open Issue: https://github.com/DynamoDS/Dynamo/issues/1704
 - Plane Properties - Open issue: https://github.com/DynamoDS/Dynamo/issues/1698
+- Sublist Helpers - Open issue: https://github.com/DynamoDS/Dynamo/issues/1698
 - Topo Stuff - Open issue: https://github.com/DynamoDS/Dynamo/issues/1698
 - XYZ Axis From Vector - Open issue: https://github.com/DynamoDS/Dynamo/issues/1700
 
