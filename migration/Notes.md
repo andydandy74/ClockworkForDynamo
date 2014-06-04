@@ -8,6 +8,7 @@
 
 ##Work in progress##
 - Accumulate List https://github.com/DynamoDS/Dynamo/issues/1698
+- Alphabetical Sequence https://github.com/DynamoDS/Dynamo/issues/1725
 - Get Third XYZ Axis
 - Plane Properties https://github.com/DynamoDS/Dynamo/issues/1698
 - XYZ Axis From Vector https://github.com/DynamoDS/Dynamo/issues/1700
