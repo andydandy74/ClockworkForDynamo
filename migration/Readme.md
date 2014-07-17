@@ -1,15 +1,25 @@
 #Migration from Dynamo 0.6.3 to 0.7.1#
 
 ##Successfully migrated##
-- Elements From & To IDs
-- Increment/Decrement By 1
-- Lines Through Points (Closed Loop)
-- List Not Empty
+
+- Accumulate List
+- Angle Bisector
+- Binary To Decimal
+- Custom Rounding
+- Dispatch
+- Increment Or Decrement by 1
+- Pythagorean Theorem
 - Return List Or single Value
+- Similar
+- Standard Normals
 - Turn Into List
 
 ##Work in progress##
-- Accumulate List - Open issue: https://github.com/DynamoDS/Dynamo/issues/1698
+
+- Standard Colours
+- Elements From & To IDs
+- Lines Through Points (Closed Loop)
+- List Not Empty
 - Alphabetical Sequence - Open issue: https://github.com/DynamoDS/Dynamo/issues/1725
 - Get Third XYZ Axis - Depends on XYZ Axis From Vector
 - Mesh Stuff - Open Issue: https://github.com/DynamoDS/Dynamo/issues/1704
@@ -24,3 +34,4 @@
 ##Missing built-in nodes##
 - XYZ Components
 - Lines Through Points
+- Average XYZ
