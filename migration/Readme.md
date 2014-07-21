@@ -5,14 +5,22 @@
 - Accumulate List
 - Angle Bisector
 - Binary To Decimal
+- Convex Hull 2D (Sample not yet migrated!)
 - Custom Rounding
 - Dispatch
 - Increment Or Decrement by 1
+- Normalization
 - Pythagorean Theorem
 - Return List Or single Value
 - Similar
 - Standard Normals
 - Turn Into List
+
+##Deprecated##
+
+- Count True And False
+- UV Components
+
 
 ##Work in progress##
 
