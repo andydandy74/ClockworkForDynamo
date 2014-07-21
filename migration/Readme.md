@@ -5,7 +5,7 @@
 - Accumulate List
 - Angle Bisector
 - Binary To Decimal
-- Convex Hull 2D (Sample not yet migrated!)
+- Convex Hull 2D
 - Custom Rounding
 - Dispatch
 - Increment Or Decrement by 1
@@ -13,6 +13,7 @@
 - Pythagorean Theorem
 - Return List Or single Value
 - Similar
+- Standard Colours
 - Standard Normals
 - Turn Into List
 
@@ -24,7 +25,6 @@
 
 ##Work in progress##
 
-- Standard Colours
 - Elements From & To IDs
 - Lines Through Points (Closed Loop)
 - List Not Empty
