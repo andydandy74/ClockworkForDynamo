@@ -15,7 +15,7 @@ All samples should usually work best with one of the latest [daily builds](http:
 #Migration to 0.7.x#
 
 I have recently started migrating the packages to 0.7.x
-You can track the progress [here](https://github.com/CAAD-RWTH/DynamoSamples/tree/master/migration).
+You can track the progress in [this LibreOffice spreadsheet](https://github.com/CAAD-RWTH/DynamoSamples/tree/master/migration/PackageMigration.ods).
 I will probably not publish the upgraded packages to the package manager any time soon, but you can download them from this repository.
 Should you need an upgraded version of a particular package, you can suggest it [here](https://github.com/CAAD-RWTH/DynamoSamples/issues) - I will try to provide it if time permits.
 
@@ -39,5 +39,4 @@ Some ideas for packages that I didn't need yet but I think would be nice to have
 
 - Find Closest Point On Surface
 - Solve Quadrilateral By XYZs
-- Measure Curvature
 - Archimedian Solids
