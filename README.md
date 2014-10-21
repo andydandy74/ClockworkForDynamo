@@ -8,7 +8,7 @@ Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.
 
 At least for some time, I will maintain two versions this package (one for Dynamo 0.6.3 and one for Dynamo 0.7.x). As soon as 0.7.x supports all my 0.6.3 workflows, I will abandon the 0.6.3 branch. Migrating from 0.6.3, I also recategorized and renamed most of the nodes. These changes are documented in an excel sheet [here](NodeList.xls). This list also includes information as to which nodes where deprecated during migration and which ones are still buggy or haven't been migrated yet. Note that nodes known to be buggy have not been included in the package.
 
-I am currently using Dynamo 0.6.3 and 0.7.2 to test nodes, so some buggy nodes might very well be running under more recent daily builds.
+I am currently using the offical 0.6.3 and 0.7.2 Dynamo builds to test nodes, so some buggy nodes might very well be running under more recent daily builds.
 
 #Material on this repository#
 
