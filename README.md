@@ -2,8 +2,7 @@
 
 #Clockwork for Dynamo#
 
-Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded from Dynamo's [package manager](http://www.dynamopackages.com). Currently it consists of some 200+ nodes that were previously published in a number of separate packages. My reasoning is that keeping all nodes in asingle package will make updates easier and reduce
-package dependencies. I had never set out to build so many custom nodes – somehow it just happened (most of them are by-products of my research and teaching activities).
+Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded from Dynamo's [package manager](http://www.dynamopackages.com). Currently it consists of some 200+ nodes that were previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes â€“ somehow it just happened (most of them are by-products of my research and teaching activities).
 
 #State of migration#
 
