@@ -1,0 +1,63 @@
+<Workspace Version="0.6.3.22045" X="0" Y="0" zoom="1" Description="Retrieves the element a given part was made from" Category="CAAD_RWTH.Revit" Name="Get Source Elements From Parts" ID="52a33330-be8f-4f58-8dd7-f556735c2176">
+  <Elements>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="49f5848d-481e-4062-a634-6c72bb461275" nickname="Return List Or Single Value" x="730" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="Return List Or Single Value" />
+      <Description value="If the list in input #1 has only one item, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="list #1" />
+        <Input value="list #2" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.PythonVarIn type="Dynamo.Nodes.PythonVarIn" guid="68c5153e-3e2c-4989-ad95-3682fe8f07a2" nickname="Python Script With Variable Number of Inputs" x="419" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputs="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+doc = IN0
+items = IN1
+elementlist = list()
+for item in items:
+    sourcelist = list()
+    for source in item.GetSourceElementIds():
+        sourcelist.append(doc.GetElement(source.HostElementId))
+    if len(sourcelist) &lt; 2:
+        elementlist.append(sourcelist[0])
+    else:
+        elementlist.append(sourcelist)
+OUT = elementlist</Script>
+    </Dynamo.Nodes.PythonVarIn>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="d5583a2c-02cc-4f1a-b082-3fc83f57452a" nickname="Turn Into List" x="250" y="94" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element into a (flat) list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="list" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.RevitDocument type="Dynamo.Nodes.RevitDocument" guid="2e421107-102d-4155-92db-7af9387a5eb9" nickname="Revit Document" x="253" y="1" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="88371c46-b8ce-4a0f-b58d-e84bf87dabe0" nickname="Input" x="130" y="95" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Part(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="cc005e94-895c-4312-84d6-de110d310096" nickname="Output" x="933" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Source Element(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="49f5848d-481e-4062-a634-6c72bb461275" start_index="0" end="cc005e94-895c-4312-84d6-de110d310096" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="68c5153e-3e2c-4989-ad95-3682fe8f07a2" start_index="0" end="49f5848d-481e-4062-a634-6c72bb461275" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d5583a2c-02cc-4f1a-b082-3fc83f57452a" start_index="0" end="68c5153e-3e2c-4989-ad95-3682fe8f07a2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d5583a2c-02cc-4f1a-b082-3fc83f57452a" start_index="0" end="49f5848d-481e-4062-a634-6c72bb461275" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2e421107-102d-4155-92db-7af9387a5eb9" start_index="0" end="68c5153e-3e2c-4989-ad95-3682fe8f07a2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88371c46-b8ce-4a0f-b58d-e84bf87dabe0" start_index="0" end="d5583a2c-02cc-4f1a-b082-3fc83f57452a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
