@@ -6,7 +6,7 @@ Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.
 
 If you use Clockwork remember to uninstall all of my previous packages (see [list below](#packages-to-uninstall)).
 
-If you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package.
+If you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package.
 
 #State of migration#
 
