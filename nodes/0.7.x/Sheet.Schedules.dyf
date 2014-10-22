@@ -1,0 +1,65 @@
+<Workspace Version="0.7.2.3911" X="30" Y="284.055331991952" zoom="1.2897384305835" Description="Returns all schedules placed on a specified sheet " Category="CAAD_RWTH.Revit.Views.Sheet.Query" Name="Sheet.Schedules" ID="97f595e2-9f25-45b2-8ed9-9ad33e80c7df">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6a0a9d9f-60a6-4105-a43f-41ac6ff5906c" nickname="Input" x="0" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Sheet(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="ed00484c-8cb7-46ed-a7d8-9c3d0c7f9898" nickname="Output" x="890" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Schedule(s)" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="8881c5c3-6db4-48bb-94c9-7deeb28f78ad" nickname="Python Script" x="389" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+sheets = UnwrapElement(IN[0])
+elementlist = list()
+
+for sheet in sheets:
+	try:
+		viewlist = list()
+		collector = FilteredElementCollector(doc, sheet.Id).OfClass(ScheduleSheetInstance)
+		for item in collector:
+			viewlist.append(doc.GetElement(item.ScheduleId))
+		elementlist.append(viewlist)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" nickname="Return List Or Single Value" x="613" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="Return List Or Single Value" />
+      <Description value="If the list in input #1 only contains one item, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="list #1" />
+        <Input value="list #2" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" nickname="Turn Into List" x="184" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6a0a9d9f-60a6-4105-a43f-41ac6ff5906c" start_index="0" end="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8881c5c3-6db4-48bb-94c9-7deeb28f78ad" start_index="0" end="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" start_index="0" end="ed00484c-8cb7-46ed-a7d8-9c3d0c7f9898" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" start_index="0" end="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" start_index="0" end="8881c5c3-6db4-48bb-94c9-7deeb28f78ad" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

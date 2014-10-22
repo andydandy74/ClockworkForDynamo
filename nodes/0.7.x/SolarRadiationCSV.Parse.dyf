@@ -1,0 +1,88 @@
+<Workspace Version="0.7.2.6209" X="-52.9136368800706" Y="125.061185493421" zoom="1.13404106344135" Description="Parses a Vasari solar radiation analysis CSV file and returns lists of absolute and normalized radiation values, their XYZ coordinates and their normals as well as the highest and lowest radiation value and a the total of all radiation samples" Category="CAAD_RWTH.Analyze" Name="SolarRadiationCSV.Parse" ID="c50b2f3a-6fdb-4cac-a647-3bed177772c1">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="2550f102-a3ca-471b-bfac-d0bec0c694bf" nickname="Input" x="0" y="11" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="path" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="571204b1-72d1-4185-83d6-467c641f0b0b" nickname="Output" x="1984" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Radiation" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="51d8d326-f9e1-42ec-9dc4-bae8f501e60b" nickname="Output" x="1984" y="415" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="XYZs" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="1897d87a-03ba-4420-9b67-d404372e683d" nickname="Output" x="1984" y="498" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Normals" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="fe3fd460-8cf7-46e0-b2d2-fb447783078b" nickname="Output" x="1984" y="249" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="RadiationNormalized" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="02c0ab9d-58d5-4fc0-8d00-243cfb584873" nickname="Output" x="1984" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="RadiationMax" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="99821ee3-8cfb-4059-9217-26df6166f354" nickname="Output" x="1984" y="166" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="RadiationMin" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="764c4932-037d-4464-aa60-7b8437ddf3c3" nickname="Output" x="1984" y="332" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="RadiationTotal" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="12060d20-abd5-47f0-b16f-ace71952cca3" nickname="String" x="0" y="95" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String value=";" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="e0d9b5ea-19ff-462e-8b14-c7205314a60f" nickname="Code Block" x="236" y="40" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="csv = File.ReadText(path);&#xA;// Define separator as line break&#xA;sep = &quot;&#xA;&quot;;&#xA;// Split into lines&#xA;seq1 = String.Split(csv,sep);&#xA;// Try separating by semicolon&#xA;items = List.Count(String.Split(List.FirstItem(seq1),sc));&#xA;// If successful, use that as a separator, else use a comma&#xA;// This is necessary because Vasari will use delimiters according to the locale set on the computer running the solar radiation analysis&#xA;items &gt; 1 ? sc : &quot;,&quot;;" ShouldFocus="false" />
+    <DSCoreNodesUI.BoolSelector type="DSCoreNodesUI.BoolSelector" guid="307e284d-30dd-474d-be8c-6b1893172d09" nickname="Boolean" x="0" y="181" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>False</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="e206a726-2572-425a-b9c4-3701d8bce529" nickname="List.FromCSV" x="901" y="138" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="4333cc78-bae5-455d-83f7-9d20ee546116" />
+      <Name value="CSV To List" />
+      <Description value="Converts the content of a given CSV file to a list" />
+      <Inputs>
+        <Input value="delimiter" />
+        <Input value="CSV string" />
+        <Input value="ignore last column" />
+        <Input value="ignore first row" />
+        <Input value="ignore last row" />
+      </Inputs>
+      <Outputs>
+        <Output value="list" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSCoreNodesUI.BoolSelector type="DSCoreNodesUI.BoolSelector" guid="100ce1a0-bb23-4fbd-b9fb-13ef82d0d964" nickname="Boolean" x="0" y="264" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Boolean>True</System.Boolean>
+    </DSCoreNodesUI.BoolSelector>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="c6a175f7-445b-47d4-aa2e-23d35e01a610" nickname="Code Block" x="1194" y="138" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="// Disregard the first four lines and transpose the list&#xA;data = List.Transpose(List.DropItems(seq2,4));&#xA;// Collect samples&#xA;samples = String.ToNumber(List.GetItemAtIndex(data,1));&#xA;List.MaximumItem(samples);&#xA;List.MinimumItem(samples);&#xA;Math.Sum(samples);&#xA;// Collect points&#xA;px = String.ToNumber(List.GetItemAtIndex(data,2));&#xA;py = String.ToNumber(List.GetItemAtIndex(data,3));&#xA;pz = String.ToNumber(List.GetItemAtIndex(data,4));&#xA;Point.ByCoordinates(px,py,pz);&#xA;// Collect normals&#xA;vx = String.ToNumber(List.GetItemAtIndex(data,5));&#xA;vy = String.ToNumber(List.GetItemAtIndex(data,6));&#xA;vz = String.ToNumber(List.GetItemAtIndex(data,7));&#xA;Vector.ByCoordinates(vx,vy,vz);" ShouldFocus="false" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="181605b7-099f-4263-818b-302a0fd82de2" nickname="Normalize Value" x="1771" y="249" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="5f07761a-50c8-4a5e-804c-89e2b4ff3b05" />
+      <Name value="Normalize Value" />
+      <Description value="Converts a value into a normalized value according to a value range" />
+      <Inputs>
+        <Input value="val" />
+        <Input value="Min" />
+        <Input value="Max" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2550f102-a3ca-471b-bfac-d0bec0c694bf" start_index="0" end="e0d9b5ea-19ff-462e-8b14-c7205314a60f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="12060d20-abd5-47f0-b16f-ace71952cca3" start_index="0" end="e0d9b5ea-19ff-462e-8b14-c7205314a60f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e0d9b5ea-19ff-462e-8b14-c7205314a60f" start_index="0" end="e206a726-2572-425a-b9c4-3701d8bce529" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e0d9b5ea-19ff-462e-8b14-c7205314a60f" start_index="4" end="e206a726-2572-425a-b9c4-3701d8bce529" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="307e284d-30dd-474d-be8c-6b1893172d09" start_index="0" end="e206a726-2572-425a-b9c4-3701d8bce529" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="307e284d-30dd-474d-be8c-6b1893172d09" start_index="0" end="e206a726-2572-425a-b9c4-3701d8bce529" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e206a726-2572-425a-b9c4-3701d8bce529" start_index="0" end="c6a175f7-445b-47d4-aa2e-23d35e01a610" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="100ce1a0-bb23-4fbd-b9fb-13ef82d0d964" start_index="0" end="e206a726-2572-425a-b9c4-3701d8bce529" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="1" end="181605b7-099f-4263-818b-302a0fd82de2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="1" end="571204b1-72d1-4185-83d6-467c641f0b0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="2" end="181605b7-099f-4263-818b-302a0fd82de2" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="2" end="02c0ab9d-58d5-4fc0-8d00-243cfb584873" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="3" end="181605b7-099f-4263-818b-302a0fd82de2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="3" end="99821ee3-8cfb-4059-9217-26df6166f354" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="4" end="764c4932-037d-4464-aa60-7b8437ddf3c3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="8" end="51d8d326-f9e1-42ec-9dc4-bae8f501e60b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c6a175f7-445b-47d4-aa2e-23d35e01a610" start_index="12" end="1897d87a-03ba-4420-9b67-d404372e683d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="181605b7-099f-4263-818b-302a0fd82de2" start_index="0" end="fe3fd460-8cf7-46e0-b2d2-fb447783078b" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

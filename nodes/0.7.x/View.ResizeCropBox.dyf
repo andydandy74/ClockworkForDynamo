@@ -1,0 +1,83 @@
+<Workspace Version="0.7.2.3911" X="82.9960101404056" Y="296.722237735553" zoom="0.863625099920064" Description="Resizes the bounding box of a given Revit element by the specified amount in X, Y and Z direction. May need to be used in conjunction with a Transaction node." Category="CAAD_RWTH.Revit.Views.View.Actions" Name="View.ResizeCropBox" ID="64a4fe31-b2f1-452a-8b9d-69dd81bc588d">
+  <Elements>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="cf916ebd-8d18-458a-bb06-d05e6ebc74bf" nickname="Turn Into List" x="179" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="edaf9b72-508f-4e35-a8cd-acefe7bc2c1e" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="amt" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="585a7471-478d-4484-973f-b2689064144b" nickname="Input" x="0" y="3.5527136788005E-15" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="73bac2d8-b319-4f94-b962-745484a0821c" nickname="Output" x="1185" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="57d53136-1890-49ce-bbf8-a3597d569f51" nickname="Return List Or Single Value" x="908" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="Return List Or Single Value" />
+      <Description value="If the list in input #1 only contains one item, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="list #1" />
+        <Input value="list #2" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="80cb0254-87a9-4a66-8f1f-e17003055bb6" nickname="Python Script" x="684" y="39" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+margin = IN[1].ToXyz()
+elementlist = list()
+failedlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in views:
+	try:
+		newmax = item.CropBox.Max.Add(margin)
+		newmin = item.CropBox.Min.Subtract(margin)
+		newbox = BoundingBoxXYZ()
+		newbox.Max = newmax
+		newbox.Min = newmin
+		item.CropBox = newbox
+		elementlist.append(item)
+	except:
+		elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="00b108e9-f18a-4129-8b9c-007650c7b4ef" nickname="Code Block" x="179" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="Point.ByCoordinates(margin,margin,margin);" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="cf916ebd-8d18-458a-bb06-d05e6ebc74bf" start_index="0" end="57d53136-1890-49ce-bbf8-a3597d569f51" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cf916ebd-8d18-458a-bb06-d05e6ebc74bf" start_index="0" end="80cb0254-87a9-4a66-8f1f-e17003055bb6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="edaf9b72-508f-4e35-a8cd-acefe7bc2c1e" start_index="0" end="00b108e9-f18a-4129-8b9c-007650c7b4ef" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="585a7471-478d-4484-973f-b2689064144b" start_index="0" end="cf916ebd-8d18-458a-bb06-d05e6ebc74bf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="57d53136-1890-49ce-bbf8-a3597d569f51" start_index="0" end="73bac2d8-b319-4f94-b962-745484a0821c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="80cb0254-87a9-4a66-8f1f-e17003055bb6" start_index="0" end="57d53136-1890-49ce-bbf8-a3597d569f51" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="00b108e9-f18a-4129-8b9c-007650c7b4ef" start_index="0" end="80cb0254-87a9-4a66-8f1f-e17003055bb6" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

@@ -1,0 +1,60 @@
+<Workspace Version="0.7.2.3911" X="30" Y="283.062564102564" zoom="1.3148717948718" Description="Checks if the Function property of a wall type is set to &quot;Interior&quot;" Category="CAAD_RWTH.Revit.Elements.WallType.Query.Function" Name="WallType.FunctionIsInterior" ID="0bfb94e3-f70e-46d9-b642-be60a8e10a8a">
+  <Elements>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="3cef3b7a-d3b2-49a3-a05f-cb6eb3191b9d" nickname="Return List Or Single Value" x="632" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="Return List Or Single Value" />
+      <Description value="If the list in input #1 only contains one item, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="list #1" />
+        <Input value="list #2" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="a81e08c0-fe59-4bfc-8937-56467b389feb" nickname="Python Script" x="408" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+walltypes = UnwrapElement(IN[0])
+booleans = list()
+
+for item in walltypes:
+	try:
+		wallfunction = item.get_Parameter(BuiltInParameter.FUNCTION_PARAM).AsInteger()
+		if wallfunction == 0:
+			booleans.append(True)
+		else:
+			booleans.append(False)
+	except:
+		booleans.append(False)
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="0da87c65-ea3b-4f33-899b-04b8707eab9a" nickname="Turn Into List" x="203" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="bb61a524-4ac1-4ba9-8f22-2b2d2a00d968" nickname="Input" x="0" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="WallType(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="7854ad60-cd4d-4871-84c5-504fb1bb6e17" nickname="Output" x="909" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="bool" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="3cef3b7a-d3b2-49a3-a05f-cb6eb3191b9d" start_index="0" end="7854ad60-cd4d-4871-84c5-504fb1bb6e17" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a81e08c0-fe59-4bfc-8937-56467b389feb" start_index="0" end="3cef3b7a-d3b2-49a3-a05f-cb6eb3191b9d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0da87c65-ea3b-4f33-899b-04b8707eab9a" start_index="0" end="a81e08c0-fe59-4bfc-8937-56467b389feb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0da87c65-ea3b-4f33-899b-04b8707eab9a" start_index="0" end="3cef3b7a-d3b2-49a3-a05f-cb6eb3191b9d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bb61a524-4ac1-4ba9-8f22-2b2d2a00d968" start_index="0" end="0da87c65-ea3b-4f33-899b-04b8707eab9a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

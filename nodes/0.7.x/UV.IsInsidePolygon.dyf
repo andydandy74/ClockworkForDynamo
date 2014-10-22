@@ -1,0 +1,67 @@
+<Workspace Version="0.7.2.6209" X="30" Y="306.80380794702" zoom="1.0612582781457" Description="Determines if a point is inside the space enclosed by a polygon" Category="CAAD_RWTH.Geometry.UV.Query" Name="UV.IsInsidePolygon" ID="f664b75c-959c-4468-8b62-af4aa4c79f2e">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="d3ea3fa7-7817-48d0-8e58-42c77d76c7f0" nickname="Python Script" x="641" y="36" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+
+# script found here:
+# http://www.ariel.com.au/a/python-point-int-poly.html
+# (with sight alterations for booleans)
+
+def point_inside_polygon(x,y,poly):
+    n = len(poly)
+    inside = 0
+    p1x,p1y = poly[0]
+    for i in range(n+1):
+        p2x,p2y = poly[i % n]
+        if y &gt; min(p1y,p2y):
+            if y &lt;= max(p1y,p2y):
+                if x &lt;= max(p1x,p2x):
+                    if p1y != p2y:
+                        xinters = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                    if p1x == p2x or x &lt;= xinters:
+                        inside = 1 - inside
+        p1x,p1y = p2x,p2y
+    if inside == 1: return True
+    else: return False
+    
+poly = IN[0]
+points = IN[1]
+elementlist = list()
+for point in points:
+	elementlist.append(point_inside_polygon(point[0],point[1],poly))
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="87f5cfc4-3494-45ad-af6e-7419b318c4af" nickname="Return List Or Single Value" x="865" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="Return List Or Single Value" />
+      <Description value="If the list in input #1 only contains one item, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="list #1" />
+        <Input value="list #2" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="48a0ed52-7502-4007-8142-ecf02f196a9d" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Point UV(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="da5d5fe9-f937-4434-9596-a0ac36489c86" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Polygon UVs" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="1acff102-0fe1-4572-a15e-f32c8481bfc0" nickname="Output" x="1142" y="10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="bool" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="f79eacd3-0ff5-438b-855a-0d94b9634782" nickname="Code Block" x="209" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="List.Transpose({poly.U,poly.V});&#xA;List.Transpose({points.U,points.V});" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d3ea3fa7-7817-48d0-8e58-42c77d76c7f0" start_index="0" end="87f5cfc4-3494-45ad-af6e-7419b318c4af" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="87f5cfc4-3494-45ad-af6e-7419b318c4af" start_index="0" end="1acff102-0fe1-4572-a15e-f32c8481bfc0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="48a0ed52-7502-4007-8142-ecf02f196a9d" start_index="0" end="f79eacd3-0ff5-438b-855a-0d94b9634782" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="da5d5fe9-f937-4434-9596-a0ac36489c86" start_index="0" end="f79eacd3-0ff5-438b-855a-0d94b9634782" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f79eacd3-0ff5-438b-855a-0d94b9634782" start_index="0" end="d3ea3fa7-7817-48d0-8e58-42c77d76c7f0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f79eacd3-0ff5-438b-855a-0d94b9634782" start_index="1" end="d3ea3fa7-7817-48d0-8e58-42c77d76c7f0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f79eacd3-0ff5-438b-855a-0d94b9634782" start_index="1" end="87f5cfc4-3494-45ad-af6e-7419b318c4af" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

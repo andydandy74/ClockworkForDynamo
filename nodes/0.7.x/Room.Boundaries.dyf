@@ -1,0 +1,82 @@
+<Workspace Version="0.7.2.26383" X="30" Y="254.741945119482" zoom="0.778857837181045" Description="Gets a list of all boundary elements of a given room" Category="CAAD_RWTH.Revit.Elements.Room.Query" Name="Room.Boundaries" ID="fb07f5d8-94b8-4985-bf2f-a54fe832aa66">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="981a0e03-9fe7-44f9-9504-2ea77ca18745" nickname="Input" x="0" y="109.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Room(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="aa6058d6-2d2c-419c-adc4-23f58c7f5767" nickname="Output" x="1580" y="19" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+    <DSCore.Map type="DSCore.Map" guid="a3951608-c733-4c8f-97bf-34efd7a42441" nickname="List.Map" x="645" y="17" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="cb1a5a01-d6b1-4942-9065-03e653020e61" nickname="Return List Or Single Value" x="1303" y="6.00000000000003" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="Return List Or Single Value" />
+      <Description value="If the list in input #1 only contains one item, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="list #1" />
+        <Input value="list #2" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="916595d5-5a51-4f59-9839-64a0b7c098ac" nickname="Python Script" x="421" y="17" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+elementlist = list()
+
+calculator = SpatialElementGeometryCalculator(doc)
+options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()
+for item in items:
+	#method #1 - get boundary segments
+	blist = list()
+	try:
+		for boundarylist in item.GetBoundarySegments(options):
+			for boundary in boundarylist:
+				blist.append(boundary.Element)
+	except:
+		donothing = 1
+	#method #2 - spatial element geometry calculator
+	try:
+		results = calculator.CalculateSpatialElementGeometry(item)
+		for face in results.GetGeometry().Faces:
+			for bface in results.GetBoundaryFaceInfo(face):
+				blist.append(doc.GetElement(bface.SpatialBoundaryElement.HostElementId))
+	except:
+		donothing = 1	
+	# write results to list
+	elementlist.append(blist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="72985f3b-bf92-47dc-99c1-5a0279dc1c8a" nickname="List.UniqueItems" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.List.UniqueItems@var[]..[]" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="47543cff-7af6-42d4-b45c-f38a444ec76b" nickname="Turn Into List" x="216" y="66.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="47543cff-7af6-42d4-b45c-f38a444ec76b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a3951608-c733-4c8f-97bf-34efd7a42441" start_index="0" end="cb1a5a01-d6b1-4942-9065-03e653020e61" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb1a5a01-d6b1-4942-9065-03e653020e61" start_index="0" end="aa6058d6-2d2c-419c-adc4-23f58c7f5767" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="916595d5-5a51-4f59-9839-64a0b7c098ac" start_index="0" end="a3951608-c733-4c8f-97bf-34efd7a42441" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="72985f3b-bf92-47dc-99c1-5a0279dc1c8a" start_index="0" end="a3951608-c733-4c8f-97bf-34efd7a42441" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="47543cff-7af6-42d4-b45c-f38a444ec76b" start_index="0" end="cb1a5a01-d6b1-4942-9065-03e653020e61" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="47543cff-7af6-42d4-b45c-f38a444ec76b" start_index="0" end="916595d5-5a51-4f59-9839-64a0b7c098ac" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

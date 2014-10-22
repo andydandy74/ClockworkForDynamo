@@ -1,0 +1,62 @@
+<Workspace Version="0.7.2.3911" X="30" Y="237.32380952381" zoom="1.35661375661376" Description="(Temporarily) isolates elements in the given view" Category="CAAD_RWTH.Revit.Views.View.Actions" Name="View.TemporarilyIsolateElement" ID="979e0abf-c87a-4ff4-9da0-82a873954d3b">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="227eed57-dc6c-4142-bcad-2e909bb9094f" nickname="Python Script" x="404" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+elements = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+ids = list()
+elementlist = list()
+for item in elements:
+	ids.append(item.Id)
+ielements = List[ElementId](ids)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+view.IsolateElementsTemporary(ielements)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = (view,elements)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="48f5a4c4-7902-4845-839a-b96a7fe0cf9e" nickname="Turn Into List" x="199" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="722b8934-d9f3-4ea9-b974-925c69097599" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ab9d4ec5-64cd-4844-bc62-0bb6d10a26ea" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="db0ddde1-ec5c-4673-b1ee-b68da34ab30b" nickname="Output" x="846" y="6.99999999999999" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="ac8fcc60-4aca-49ba-be02-eb14264cac0b" nickname="Code Block" x="628" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="c033622d-f026-4519-8ab5-5a37014474e8" nickname="Output" x="846" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="227eed57-dc6c-4142-bcad-2e909bb9094f" start_index="0" end="ac8fcc60-4aca-49ba-be02-eb14264cac0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="48f5a4c4-7902-4845-839a-b96a7fe0cf9e" start_index="0" end="227eed57-dc6c-4142-bcad-2e909bb9094f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="722b8934-d9f3-4ea9-b974-925c69097599" start_index="0" end="227eed57-dc6c-4142-bcad-2e909bb9094f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab9d4ec5-64cd-4844-bc62-0bb6d10a26ea" start_index="0" end="48f5a4c4-7902-4845-839a-b96a7fe0cf9e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac8fcc60-4aca-49ba-be02-eb14264cac0b" start_index="0" end="db0ddde1-ec5c-4673-b1ee-b68da34ab30b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac8fcc60-4aca-49ba-be02-eb14264cac0b" start_index="1" end="c033622d-f026-4519-8ab5-5a37014474e8" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
