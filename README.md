@@ -23,16 +23,16 @@ I am currently using the offical 0.6.3 and 0.7.2 Dynamo builds to test nodes, so
 
 This repository contains the following:
 
-Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. The samples are currently still sorted according to their previous package and limited to 0.6.3 files. I plan to correct that in the future and also add 0.7.x versions of the sample files.
+Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. The samples are currently still sorted according to their previous package and limited to 0.6.3 files. I plan to correct that in the future by organizing them according to their respective categoris in the node browser and also add 0.7.x versions of the sample files.
 
-Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo. All of these are currently still 0.6.3 files and will be migrated as 0.7.x stability improves.
+Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo. All of these are currently still 0.6.3 files and will be migrated as 0.7.x stability improves and time permits.
 
 Directory [nodes](nodes) is the actual repository of the custom nodes.
 
 Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
 
 #Packages to uninstall#
-If you have installed Clockwork or are planning to do so, you should uninstall all of my previous packages (that is if you had those installed, of course). As a rule of thumb, uninstall everything that is organized in the "CAAD_RWTH" category in the node browser. Here's a complete list of all deprecated packages:
+If you have installed Clockwork or are planning to do so, you should uninstall all of my previous packages (that is if you had those installed, of course). As a rule of thumb, uninstall everything that is organized in the "CAAD_RWTH" category in the node browser. Here's a complete list of all (recently) deprecated packages:
 - Accumulate List
 - Almost Zero
 - Alphabetical Sequence
