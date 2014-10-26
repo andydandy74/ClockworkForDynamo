@@ -1,7 +1,5 @@
 ﻿![Image](clockwork-logo.png)
 
-#Clockwork for Dynamo#
-
 Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded from Dynamo's [package manager](http://www.dynamopackages.com). It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, vector operations and paneling. Currently it consists of some 200+ nodes that were previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
 If you use Clockwork remember to uninstall all of my previous packages (see [list below](#packages-to-uninstall)).
