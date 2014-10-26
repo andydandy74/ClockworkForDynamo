@@ -12,8 +12,8 @@ If you find that one of the nodes in this package does not work (or could work b
 
 At least for a while, I will maintain two versions this package (one for Dynamo 0.6.3 and one for Dynamo 0.7.x). As soon as 0.7.x supports all (or most) of my 0.6.3 workflows, I will abandon the 0.6.3 branch. Migrating from 0.6.3, I also recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
 - Deprecated in 0.7.x (red)
-- Still buggy in 0.7.x (yellow)
-- Not migrated yet / needs review (purple) 
+- Still buggy in 0.7.x / needs review / not yet migrated (yellow)
+- Still buggy in 0.6.3 / needs review (purple) 
 
 Note that nodes known to be buggy in the latest offical Dynamo release have not been included in the package.
 
