@@ -1,0 +1,51 @@
+<Workspace Version="0.7.2.2921" X="-0.451093893201801" Y="298.236743548049" zoom="0.755143051356643" Description="Duplicates a given view as a dependent view" Category="Clockwork.Revit.Views.View.Actions" Name="View.DuplicateAsDependent" ID="97f306fa-6af4-4796-944b-73b1a704619c">
+  <Elements>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="9946b309-ce58-49ea-b1d5-4e617bef849b" nickname="Turn Into List" x="242" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="426563f5-9c8e-4016-8c0c-a9f1debb81fb" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="c6ad3ceb-20c6-4892-be23-446170905627" nickname="Output" x="671" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="view(s)" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="2d95b4f0-056e-446e-880c-cafdcc942c80" nickname="Python Script" x="447" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+elementlist = list()
+dupopt = Autodesk.Revit.DB.ViewDuplicateOption.AsDependent
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for view in views:
+	newview = view.Duplicate(dupopt)
+	elementlist.append(doc.GetElement(newview))
+TransactionManager.Instance.TransactionTaskDone()
+	
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9946b309-ce58-49ea-b1d5-4e617bef849b" start_index="0" end="2d95b4f0-056e-446e-880c-cafdcc942c80" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="9946b309-ce58-49ea-b1d5-4e617bef849b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2d95b4f0-056e-446e-880c-cafdcc942c80" start_index="0" end="c6ad3ceb-20c6-4892-be23-446170905627" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
