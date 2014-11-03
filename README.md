@@ -2,20 +2,20 @@
 
 Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded from Dynamo's [package manager](http://www.dynamopackages.com). It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, vector operations and paneling. Currently it consists of some 200+ nodes that were previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
-If you use Clockwork remember to uninstall all of my previous packages (see [list below](#packages-to-uninstall)).
+If you use Clockwork please remember to uninstall all of my previous packages (see [list below](#packages-to-uninstall)).
 
 Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package.
+
+Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on twitter ([twitter](https://twitter.com/a_dieckmann)) for update notifications.
 
 #State of migration#
 
 At least for a while, I will maintain two versions this package (one for Dynamo 0.6.3 and one for Dynamo 0.7.x). As soon as 0.7.x supports all (or most) of my 0.6.3 workflows, I will abandon the 0.6.3 branch. Migrating from 0.6.3, I also recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
-- GREEN: Works in 0.7.x
-- YELLOW: Still buggy in 0.7.x / needs review / not yet migrated
-- RED: Deprecated in 0.7.x
+- ```GREEN```: Works in 0.7.x
+- ```YELLOW```: Still buggy in 0.7.x / needs review / not yet migrated
+- ```RED```: Deprecated in 0.7.x
 
-Note that nodes known to be buggy in the latest offical Dynamo release have not been included in the package.
-
-I am currently using the offical 0.6.3 and 0.7.2 Dynamo builds to test nodes, so some buggy nodes might very well be running under more recent daily builds.
+I am currently using the offical 0.6.3 build as well as recent daily builds of Dynamo 0.7.x for testing. Note that nodes known to be buggy in the latest daily builds of Dynamo 0.7.x will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
 #Material on this repository#
 
@@ -25,12 +25,12 @@ Directory [package_samples](package_samples) contains simple examples for most o
 
 Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo. All of these are currently still 0.6.3 files and will be migrated as 0.7.x stability improves and time permits.
 
-Directory [nodes](nodes) is the actual repository of the custom nodes.
+Directory [nodes](nodes) is the actual repository of the custom nodes. Particularly the 0.7.x subdirectory may contain nodes that have not been published to the package manager yet.
 
 Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
 
 #Packages to uninstall#
-If you have installed Clockwork or are planning to do so, you should uninstall all of my previous packages (that is if you had those installed, of course). As a rule of thumb, uninstall everything that is organized in the "CAAD_RWTH" category in the node browser. Here's a complete list of all (recently) deprecated packages:
+If you have installed Clockwork or are planning to do so, you should uninstall all of my previous packages (that is if you had those installed at all, of course). As a rule of thumb, uninstall everything that is organized in the ```CAAD_RWTH``` category in the node browser. Here's a complete list of all (recently) deprecated packages:
 - Accumulate List
 - Almost Zero
 - Alphabetical Sequence
