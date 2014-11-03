@@ -6,7 +6,7 @@ If you use Clockwork please remember to uninstall all of my previous packages (s
 
 Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package.
 
-Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on twitter ([twitter](https://twitter.com/a_dieckmann)) for update notifications.
+Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
 
 #State of migration#
 
