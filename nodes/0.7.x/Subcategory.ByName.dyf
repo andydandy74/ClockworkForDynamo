@@ -1,0 +1,40 @@
+<Workspace Version="0.7.3.3034" X="30" Y="261.589866156788" zoom="2.45124282982792" Description="Creates a new subcategory for a given element category (unless a subcategory of that name already exists - in that case it returns the existing subcategory)" Category="Clockwork.Revit.Elements.Subcategory.Create" Name="Subcategory.ByName" ID="c228eea3-78a1-4aca-8fab-8678c97f17c0">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d6d71d1f-01c6-41d4-b96d-c508f552dfe6" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Category" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="f7e2d305-757e-4518-af0c-2158ef95c640" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Name" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="bbf8d8cc-b3aa-492f-ba7f-c4d5c2147b92" nickname="Output" x="414" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Subcategory" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="3742c319-ecdb-4cb0-8967-4dda730c28f1" nickname="Python Script" x="190" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+cat = UnwrapElement(IN[0])
+subcatname = IN[1]
+
+try:
+	OUT = cat.SubCategories.get_Item(subcatname)
+except:
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	OUT = doc.Settings.Categories.NewSubcategory(cat, subcatname)
+	TransactionManager.Instance.TransactionTaskDone()</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d6d71d1f-01c6-41d4-b96d-c508f552dfe6" start_index="0" end="3742c319-ecdb-4cb0-8967-4dda730c28f1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f7e2d305-757e-4518-af0c-2158ef95c640" start_index="0" end="3742c319-ecdb-4cb0-8967-4dda730c28f1" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3742c319-ecdb-4cb0-8967-4dda730c28f1" start_index="0" end="bbf8d8cc-b3aa-492f-ba7f-c4d5c2147b92" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

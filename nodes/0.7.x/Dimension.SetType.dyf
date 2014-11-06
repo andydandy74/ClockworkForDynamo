@@ -1,0 +1,63 @@
+<Workspace Version="0.7.2.2921" X="30" Y="247.894764276228" zoom="0.745019920318725" Description="Changes the dimension type of a given dimension instance to the specified type" Category="Clockwork.Revit.Elements.Dimension.Actions" Name="Dimension.SetType" ID="ed838b3b-440a-4d05-977a-bb30666db421">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="730b48f2-a302-427b-83e2-e72f095aa8d4" nickname="Python Script" x="469" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+diminsts = UnwrapElement(IN[0])
+dimtype = UnwrapElement(IN[1])
+successlist = list()
+faillist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in diminsts:
+	try:
+		item.DimensionType = dimtype
+		successlist.append(item)
+	except:
+		faillist.append(item)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = (successlist,faillist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8cb9f81d-8698-4f40-952a-1e6170938efa" nickname="Input" x="0" y="4.21833333333334" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Dimension Instance(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d130dcfc-63f6-413b-8042-ebb09b1966e7" nickname="Input" x="0" y="88.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Dimension Type" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="04e6f2dd-51c7-4433-abc7-de32f2511f46" nickname="Output" x="921" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="success" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="fd4ec3a6-d2b5-43d6-9f94-3af55b1c1418" nickname="Turn Into List" x="264" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="c33ea88a-5acc-480c-bd77-f187dd1a69bf" nickname="Code Block" x="693" y="37.4366666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="2e150041-6079-47e7-a18c-8cc20e43dd17" nickname="Output" x="921" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="failed" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="730b48f2-a302-427b-83e2-e72f095aa8d4" start_index="0" end="c33ea88a-5acc-480c-bd77-f187dd1a69bf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8cb9f81d-8698-4f40-952a-1e6170938efa" start_index="0" end="fd4ec3a6-d2b5-43d6-9f94-3af55b1c1418" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d130dcfc-63f6-413b-8042-ebb09b1966e7" start_index="0" end="730b48f2-a302-427b-83e2-e72f095aa8d4" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fd4ec3a6-d2b5-43d6-9f94-3af55b1c1418" start_index="0" end="730b48f2-a302-427b-83e2-e72f095aa8d4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c33ea88a-5acc-480c-bd77-f187dd1a69bf" start_index="0" end="04e6f2dd-51c7-4433-abc7-de32f2511f46" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c33ea88a-5acc-480c-bd77-f187dd1a69bf" start_index="1" end="2e150041-6079-47e7-a18c-8cc20e43dd17" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
