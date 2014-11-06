@@ -14,6 +14,7 @@ At least for a while, I will maintain two versions this package (one for Dynamo 
 - ```GREEN```: Works in 0.7.x
 - ```YELLOW```: Still buggy in 0.7.x / needs review / not yet migrated
 - ```RED```: Deprecated in 0.7.x
+- ```PURPLE```: Works in 0.7.x, but has improvements planned
 
 I am currently using the offical 0.6.3 build as well as recent daily builds of Dynamo 0.7.x for testing. Note that nodes known to be buggy in the latest daily builds of Dynamo 0.7.x will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
