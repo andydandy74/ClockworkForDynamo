@@ -10,13 +10,13 @@ Since Dynamo's package manager currently does not (yet) have an update notificat
 
 #State of migration#
 
-At least for a while, I will maintain two versions this package (one for Dynamo 0.6.3 and one for Dynamo 0.7.x). As soon as 0.7.x supports all (or most) of my 0.6.3 workflows, I will abandon the 0.6.3 branch. Migrating from 0.6.3, I also recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
+At least for a while, I will maintain two versions this package (one for Dynamo 0.6.3 and one for Dynamo 0.7.x). At some point, however, I will abandon the 0.6.3 branch. Migrating from 0.6.3, I also recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
 - ```GREEN```: Works in 0.7.x
 - ```YELLOW```: Still buggy in 0.7.x / needs review / not yet migrated
 - ```RED```: Deprecated in 0.7.x
 - ```PURPLE```: Works in 0.7.x, but has improvements planned
 
-I am currently using the offical 0.6.3 build as well as recent daily builds of Dynamo 0.7.x for testing. Note that nodes known to be buggy in the latest daily builds of Dynamo 0.7.x will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
+I am currently using the offical 0.6.3 and 0.7.3 builds as well as recent daily builds of Dynamo 0.7.x for testing. Note that nodes known to be buggy in the latest daily builds of Dynamo 0.7.x will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
 #Material on this repository#
 
