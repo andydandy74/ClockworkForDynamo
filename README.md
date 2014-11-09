@@ -16,7 +16,7 @@ At least for a while, I will maintain two versions of this package (one for Dyna
 - ```RED```: Deprecated in 0.7
 - ```PURPLE```: Works in 0.7, but has improvements planned
 
-I am currently using the offical 0.6.3 and 0.7.3 builds as well as recent daily builds of Dynamo 0.7 for testing. Note that nodes known to be buggy in the latest official build of Dynamo 0.7 will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
+I am currently using the official 0.6.3 and 0.7.3 builds as well as recent daily builds of Dynamo 0.7 for testing. Note that nodes known to be buggy in the latest official build of Dynamo 0.7 will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
 #Material on this repository#
 
@@ -31,7 +31,7 @@ Directory [nodes](nodes) is the actual repository of the custom nodes that I use
 Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
 
 #Packages to uninstall#
-If you have installed Clockwork or are planning to do so, you should uninstall all of my previous packages (that is if you had those installed at all, of course). As a rule of thumb, uninstall everything that is organized in the ```CAAD_RWTH``` category in the node browser. Here's a complete list of all (recently) deprecated packages:
+If you have installed Clockwork or are planning to do so, you should uninstall *all* of my previous packages (that is if you had those installed at all, of course). As a rule of thumb, uninstall everything that is organized in the ```CAAD_RWTH``` category in the node browser. Here's a complete list of all (recently) deprecated packages:
 - Accumulate List
 - Almost Zero
 - Alphabetical Sequence
