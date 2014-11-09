@@ -8,9 +8,18 @@ Should you find that one of the nodes in this package does not work (or could wo
 
 Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
 
+#Version history
+
+At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the current official version of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will at some point abandon it altogether. Current versions are: 
+
+- Clockwork for Dynamo 0.6.3 - v0.63.3 
+- Clockwork for Dynamo 0.7.x - v0.73.1 
+
+Previous versions did not contain all of my publicly available nodes, so these two versions represent the first *complete* edition of Clockwork. 
+
 #State of migration#
 
-At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for Dynamo 0.7). At some point, however, I will abandon the 0.6.3 branch. Migrating from 0.6.3, I also recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
+Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
 - ```GREEN```: Works in 0.7
 - ```YELLOW```: Still buggy in 0.7 / needs review / not yet migrated
 - ```RED```: Deprecated in 0.7
