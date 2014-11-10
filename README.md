@@ -19,7 +19,7 @@ Previous versions did not contain all of my publicly available nodes, so these t
 
 #State of migration#
 
-Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
+Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
 - ```GREEN```: Works in 0.7
 - ```YELLOW```: Still buggy in 0.7 / needs review / not yet migrated
 - ```RED```: Deprecated in 0.7
