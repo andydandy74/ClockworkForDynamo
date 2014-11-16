@@ -1,0 +1,47 @@
+<Workspace Version="0.7.4.3180" X="62.3962260669359" Y="404.772471931073" zoom="0.436491844788807" Description="Creates a number of equally spaced vertical intersects for a divided surface based on the path between between two points" Category="___WIP___.Revit.Elements.DividedSurface.Actions" Name="DividedSurface.VerticalIntersectsByEndpoints" ID="61bda511-27e0-4a68-8668-c3ed1c24b62e">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="de4ee521-d19f-4046-90e2-749c4add666e" nickname="Input" x="917.509014869681" y="233.884034250126" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="DivSurf" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="1b41fe9c-cefc-4707-a8e4-dcdb3d8d226c" nickname="Input" x="57.9751363008827" y="28.5123621151882" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="XYZ (Start)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="77724451-d135-4507-9ba7-c5d636637a96" nickname="Input" x="62.727196653414" y="98.2065931281004" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="XYZ (End)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="953cdc3a-a06b-4f71-a5d9-30a462134257" nickname="Input" x="45.6197793843011" y="167" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Subdivisions" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="02de61aa-b9a1-4c1d-be46-e10e9bc97000" nickname="Output" x="1296.27757007704" y="258.524876671587" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="DivSurf" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="1a5794e0-884d-48cd-ba01-d524fd46214d" nickname="Output" x="1044.0713005868" y="361.505386810906" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Intersects" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="0fb14f8c-ee47-4dff-9263-1f15aecb23bf" nickname="ReferencePlane.ByLine" x="815.114857258394" y="311.071920629438" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="RevitNodes.dll" function="Revit.Elements.ReferencePlane.ByLine@Autodesk.DesignScript.Geometry.Line" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="d3e251dd-ea33-49b1-90ae-e8539f353f72" nickname="Code Block" x="210" y="86" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="// Project the points to the XY plane and create a line between them&#xA;p1 = Point.ByCoordinates(startp.X,startp.Y);&#xA;p2 = Point.ByCoordinates(endp.X,endp.Y);&#xA;curve1 = Line.ByStartPointEndPoint(p1,p2);&#xA;// Create points for subdivisions&#xA;cpoints = curve1.PointAtParameter(0..1..#(subdiv+1));&#xA;// Find vector orthogonal to line&#xA;vec1 = Vector.ByTwoPoints(p1,p2).Normalized();&#xA;vec2 = vec1.Cross(Vector.ZAxis());&#xA;vec3 = vec2.Scale(curve1.Length/10);&#xA;// Create a set of orthogonal lines to curve 1&#xA;seq1 = Line.ByStartPointEndPoint(cpoints.Add(vec3),cpoints.Subtract(vec3));&#xA;seq2 = List.RestOfItems(seq1);&#xA;seq3 = List.TakeItems(seq2,List.Count(seq2)-1);" ShouldFocus="false" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="0108fe09-264c-46a2-aca8-f4d5d82e2366" nickname="DividedSurface.AddIntersect" x="1040.25602283342" y="257.075415352677" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="e29fe7ec-cf80-41fd-a1a1-d55b01e15697" />
+      <Name value="Add Intersect To Divided Surface" />
+      <Description value="Adds an intersect to a divided surface" />
+      <Inputs>
+        <Input value="DivSurf" />
+        <Input value="Element(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="DivSurf" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="de4ee521-d19f-4046-90e2-749c4add666e" start_index="0" end="0108fe09-264c-46a2-aca8-f4d5d82e2366" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1b41fe9c-cefc-4707-a8e4-dcdb3d8d226c" start_index="0" end="d3e251dd-ea33-49b1-90ae-e8539f353f72" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="77724451-d135-4507-9ba7-c5d636637a96" start_index="0" end="d3e251dd-ea33-49b1-90ae-e8539f353f72" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="953cdc3a-a06b-4f71-a5d9-30a462134257" start_index="0" end="d3e251dd-ea33-49b1-90ae-e8539f353f72" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0fb14f8c-ee47-4dff-9263-1f15aecb23bf" start_index="0" end="0108fe09-264c-46a2-aca8-f4d5d82e2366" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0fb14f8c-ee47-4dff-9263-1f15aecb23bf" start_index="0" end="1a5794e0-884d-48cd-ba01-d524fd46214d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d3e251dd-ea33-49b1-90ae-e8539f353f72" start_index="9" end="0fb14f8c-ee47-4dff-9263-1f15aecb23bf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0108fe09-264c-46a2-aca8-f4d5d82e2366" start_index="0" end="02de61aa-b9a1-4c1d-be46-e10e9bc97000" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
