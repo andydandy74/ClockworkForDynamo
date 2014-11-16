@@ -1,0 +1,106 @@
+<Workspace Version="0.7.4.3180" X="-930.949532082388" Y="218.21808620936" zoom="0.784737952486218" Description="Sets the orientation of a given perspective view based on a given eye and target position" Category="Clockwork.Revit.Views.PerspectiveView.Actions" Name="PerspectiveView.SetOrientationByEyeAndTargetPosition" ID="161bade3-e592-4aff-a1f7-0a49f2f92bab">
+  <Elements>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="0211070c-6bf7-4490-a398-9f05a7517dff" nickname="Normal.CorrectOrientation" x="1216.27662713366" y="535.895178684727" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="3447b3c1-421f-4076-8168-715c4c047ac2" />
+      <Name value="Normal.CorrectOrientation" />
+      <Description value="Inverts normal A if its inversion is closer to normal B" />
+      <Inputs>
+        <Input value="a" />
+        <Input value="b" />
+      </Inputs>
+      <Outputs>
+        <Output value="normal" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="d9ec8776-ff01-41cd-a52c-297fb0ebe385" nickname="Python Script" x="1456.52382173044" y="178.027350580513" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="4">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+view = UnwrapElement(IN[0])
+eyeposition = IN[1].ToXyz()
+updirection = IN[2].ToXyz()
+forwarddirection = IN[3].ToXyz()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+newVO = ViewOrientation3D(eyeposition, updirection, forwarddirection)
+view.SetOrientation(newVO)
+view.SaveOrientation()
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = view</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="48d1693b-0a5c-45e9-aa30-6da6fec4ab7f" nickname="Vector.Rotate" x="995.734207290313" y="358.148902974829" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Rotate@Autodesk.DesignScript.Geometry.Vector,double">
+      <PortInfo index="2" default="True" />
+    </Dynamo.Nodes.DSFunction>
+    <DSCoreNodesUI.Logic.If type="DSCoreNodesUI.Logic.If" guid="e3ca5cf7-6426-4a33-86a2-77aac8704eaf" nickname="If" x="1660.34135149285" y="56.2620135644518" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="1d8e87d2-f182-4a2e-b403-9492ee81b2a4" nickname="Code Block" x="1349.05924891056" y="86.9756754054292" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="&quot;The view is locked...&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="338d8dbc-2d79-4f3a-9fbf-0a6f5a4b93e8" nickname="Plane.Normal" x="774.104829304053" y="385.150624606352" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.Normal" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="fbe87165-09d3-4cf8-94b8-56a604c27cfa" nickname="Code Block" x="830.347752397967" y="499.028564075253" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="90;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="4cbbec37-310a-44dc-b144-95819ca9aea6" nickname="Vector.Normalized" x="761.420793881091" y="257.213602887246" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Normalized" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="2c1207a9-03fc-4090-b1de-c323f8368cf5" nickname="Vector.ByTwoPoints" x="582.176099481726" y="258.494124767108" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.ByTwoPoints@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="58daa6f4-06c8-40d4-aa99-058729138482" nickname="Plane.ByThreePoints" x="586.592685754583" y="385.74348537116" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.ByThreePoints@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="83a444e0-bf86-40c2-9cb5-b6642158d46f" nickname="Point.Add" x="369.634127147805" y="478.058540254034" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.Add@Autodesk.DesignScript.Geometry.Vector" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="c1c2eedd-6983-4a63-b51d-d0ef3348f609" nickname="Vector.ZAxis" x="234.886263111346" y="568.616805869812" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.ZAxis" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="06467a3d-689d-4c95-9a25-05bd2cf20268" nickname="Input" x="1160.53885748067" y="74.1031239177121" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" nickname="Input" x="396.336052057648" y="198.706627010746" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Eye Position" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="74de2f0e-1a37-462f-a236-939123e6bc9b" nickname="Input" x="186.810810872505" y="412.487610210892" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Target Position" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="91787c15-2230-4d7c-b7da-5c43f9bbd807" nickname="Output" x="1839.88100701536" y="55.4902628267218" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="4fed9621-54e6-46d2-a2db-f3f039afa888" nickname="View3D.IsLocked" x="1451.4090126841" y="1.66694950572253" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="76a987d5-ecf6-4340-a9be-3e992068314b" />
+      <Name value="View3D.IsLocked" />
+      <Description value="Checks if a given view is locked" />
+      <Inputs>
+        <Input value="View(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="0211070c-6bf7-4490-a398-9f05a7517dff" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d9ec8776-ff01-41cd-a52c-297fb0ebe385" start_index="0" end="e3ca5cf7-6426-4a33-86a2-77aac8704eaf" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="48d1693b-0a5c-45e9-aa30-6da6fec4ab7f" start_index="0" end="0211070c-6bf7-4490-a398-9f05a7517dff" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e3ca5cf7-6426-4a33-86a2-77aac8704eaf" start_index="0" end="91787c15-2230-4d7c-b7da-5c43f9bbd807" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1d8e87d2-f182-4a2e-b403-9492ee81b2a4" start_index="0" end="e3ca5cf7-6426-4a33-86a2-77aac8704eaf" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="338d8dbc-2d79-4f3a-9fbf-0a6f5a4b93e8" start_index="0" end="48d1693b-0a5c-45e9-aa30-6da6fec4ab7f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fbe87165-09d3-4cf8-94b8-56a604c27cfa" start_index="0" end="48d1693b-0a5c-45e9-aa30-6da6fec4ab7f" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4cbbec37-310a-44dc-b144-95819ca9aea6" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4cbbec37-310a-44dc-b144-95819ca9aea6" start_index="0" end="48d1693b-0a5c-45e9-aa30-6da6fec4ab7f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2c1207a9-03fc-4090-b1de-c323f8368cf5" start_index="0" end="4cbbec37-310a-44dc-b144-95819ca9aea6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="58daa6f4-06c8-40d4-aa99-058729138482" start_index="0" end="338d8dbc-2d79-4f3a-9fbf-0a6f5a4b93e8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="83a444e0-bf86-40c2-9cb5-b6642158d46f" start_index="0" end="58daa6f4-06c8-40d4-aa99-058729138482" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c1c2eedd-6983-4a63-b51d-d0ef3348f609" start_index="0" end="83a444e0-bf86-40c2-9cb5-b6642158d46f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c1c2eedd-6983-4a63-b51d-d0ef3348f609" start_index="0" end="0211070c-6bf7-4490-a398-9f05a7517dff" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="06467a3d-689d-4c95-9a25-05bd2cf20268" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="06467a3d-689d-4c95-9a25-05bd2cf20268" start_index="0" end="4fed9621-54e6-46d2-a2db-f3f039afa888" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" start_index="0" end="2c1207a9-03fc-4090-b1de-c323f8368cf5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" start_index="0" end="58daa6f4-06c8-40d4-aa99-058729138482" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="74de2f0e-1a37-462f-a236-939123e6bc9b" start_index="0" end="2c1207a9-03fc-4090-b1de-c323f8368cf5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="74de2f0e-1a37-462f-a236-939123e6bc9b" start_index="0" end="58daa6f4-06c8-40d4-aa99-058729138482" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="74de2f0e-1a37-462f-a236-939123e6bc9b" start_index="0" end="83a444e0-bf86-40c2-9cb5-b6642158d46f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4fed9621-54e6-46d2-a2db-f3f039afa888" start_index="0" end="e3ca5cf7-6426-4a33-86a2-77aac8704eaf" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
