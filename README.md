@@ -12,7 +12,7 @@ Since Dynamo's package manager currently does not (yet) have an update notificat
 
 At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the current official version of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will at some point abandon it altogether. Current versions are: 
 
-- Clockwork for Dynamo 0.7.x - v0.73.2 
+- Clockwork for Dynamo 0.7.x - v0.74.1 
 - Clockwork for Dynamo 0.6.3 - v0.63.3 
 
 Read more detailed info on version history [here](VersionHistory.md) 
