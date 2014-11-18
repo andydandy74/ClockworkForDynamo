@@ -12,7 +12,6 @@
 - FamilyInstance.AddCoping
 - FamilyInstance.RemoveCoping
 - List.ReplaceItemAtIndex
-- PerspectiveView.SetOrientationByEyeAndTargetPosition
 - Surface.IsPlanar
 - Surface.Vertices
 - UV.PruneDuplicates
