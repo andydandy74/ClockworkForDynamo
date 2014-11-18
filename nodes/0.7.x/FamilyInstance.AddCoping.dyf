@@ -1,0 +1,85 @@
+<Workspace Version="0.7.4.3192" X="213.050452475923" Y="210.363774866475" zoom="1.02988563947099" Description="Adds a coping (cut) to a steel beam" Category="Clockwork.Revit.Elements.FamilyInstance.Actions" Name="FamilyInstance.AddCoping" ID="c64064f2-6d0c-415e-95b8-a2685e79778e">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="bd5723c9-8cff-47d0-b53e-e5f6a5e2a60b" nickname="Python Script" x="450.919744724847" y="44.7780951658517" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+import System
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+fams = UnwrapElement(IN[0])
+cutters = UnwrapElement(IN[1])
+booleans = list()
+counter = 0
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for fam in fams:
+	try:
+		fam.AddCoping(cutters[counter])
+		booleans.append(True)
+	except:	booleans.append(False)
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = booleans</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="3d9696cc-8d75-4c65-9dac-61a9044a477e" nickname="ReturnListOrSingleValue" x="708.802481910137" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="02e83145-abd5-4710-835e-a41097b820be" nickname="Turn Into List" x="254.164323321203" y="113.896234459684" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="1c98f96f-9291-4379-899b-670e146716c9" nickname="Turn Into List" x="250" y="13.9524747508043" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="057d2511-409f-41aa-8541-acb85dabdb92" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s) to be cut" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="3641819e-ff0b-41e2-af8e-5bce20498cd8" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Cutting element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="b0803be2-27ff-471f-bbe6-d4ea6aee8290" nickname="Output" x="975.802481910137" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Success" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="bd5723c9-8cff-47d0-b53e-e5f6a5e2a60b" start_index="0" end="3d9696cc-8d75-4c65-9dac-61a9044a477e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3d9696cc-8d75-4c65-9dac-61a9044a477e" start_index="0" end="b0803be2-27ff-471f-bbe6-d4ea6aee8290" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="02e83145-abd5-4710-835e-a41097b820be" start_index="0" end="bd5723c9-8cff-47d0-b53e-e5f6a5e2a60b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c98f96f-9291-4379-899b-670e146716c9" start_index="0" end="bd5723c9-8cff-47d0-b53e-e5f6a5e2a60b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="057d2511-409f-41aa-8541-acb85dabdb92" start_index="0" end="3d9696cc-8d75-4c65-9dac-61a9044a477e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="057d2511-409f-41aa-8541-acb85dabdb92" start_index="0" end="1c98f96f-9291-4379-899b-670e146716c9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3641819e-ff0b-41e2-af8e-5bce20498cd8" start_index="0" end="02e83145-abd5-4710-835e-a41097b820be" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
