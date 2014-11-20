@@ -1,5 +1,11 @@
 #Clockwork for Dynamo - Version History
 
+##0.74.2
+
+###New nodes:
+- Point.Average
+- Vector.Average
+
 ##0.74.1
 
 ###New nodes:
