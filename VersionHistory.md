@@ -1,5 +1,11 @@
 #Clockwork for Dynamo - Version History
 
+##0.74.3
+
+###New nodes:
+- Element.CompoundStructureLayers
+- UV.Average
+
 ##0.74.2
 
 ###New nodes:

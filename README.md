@@ -12,7 +12,7 @@ Since Dynamo's package manager currently does not (yet) have an update notificat
 
 At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the current official version of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will at some point abandon it altogether. Current versions are: 
 
-- Clockwork for Dynamo 0.7.x - v0.74.2 
+- Clockwork for Dynamo 0.7.x - v0.74.3 
 - Clockwork for Dynamo 0.6.3 - v0.63.3 
 
 Read more detailed info on version history [here](VersionHistory.md) 
@@ -21,9 +21,8 @@ Read more detailed info on version history [here](VersionHistory.md)
 
 Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
 - ```GREEN```: Works in 0.7
-- ```YELLOW```: Still buggy in 0.7 / needs review / not yet migrated
+- ```YELLOW```: Still buggy in 0.7 / needs review / not yet migrated or published
 - ```RED```: Deprecated in 0.7
-- ```PURPLE```: Works in 0.7, but has improvements planned
 
 I am currently using the official 0.6.3 and 0.7.3 builds as well as recent daily builds of Dynamo 0.7 for testing. Note that nodes known to be buggy in the latest official build of Dynamo 0.7 will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
