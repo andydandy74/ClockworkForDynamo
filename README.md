@@ -1,30 +1,31 @@
 ﻿![Image](clockwork-logo.png)
 
-Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded from Dynamo's [package manager](http://www.dynamopackages.com). It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, vector operations and paneling. Currently it consists of some 250+ nodes that were previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
+Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded using the package search feature inside Dynamo or, alternatively, from Dynamo's [package manager](http://www.dynamopackages.com). It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, unit conversions, geometric operations (mainly meshes, points, UVs and vectors) and paneling. Currently it consists of some 270+ nodes that were previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
 If you use Clockwork, please remember to uninstall *all* of my previous packages (see [list below](#packages-to-uninstall)).
 
-Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package.
+If you like the package, please vote in support of it in Dynamo's package search tool. Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package.
 
 Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
 
 #Version history
 
-At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the current official version of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will at some point abandon it altogether. Current versions are: 
+At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the current official version of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will soon abandon it altogether. Current versions are: 
 
 - Clockwork for Dynamo 0.7.x - v0.75.1 
 - Clockwork for Dynamo 0.6.3 - v0.63.3 
 
-Read more detailed info on version history [here](VersionHistory.md) 
+You can find more detailed information on version history [here](VersionHistory.md) 
 
 #State of migration#
 
 Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
-- ```GREEN```: Works in 0.7
-- ```YELLOW```: Still buggy in 0.7 / needs review / not yet migrated or published
+- ```GREEN```: Works
+- ```YELLOW```: Buggy in 0.7 / not yet migrated or published
+- ```PURPLE```: Needs review
 - ```RED```: Deprecated in 0.7
 
-I am currently using the official 0.6.3 and 0.7.3 builds as well as recent daily builds of Dynamo 0.7 for testing. Note that nodes known to be buggy in the latest official build of Dynamo 0.7 will not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
+I am currently using the official 0.6.3 and 0.7.4 builds as well as recent daily builds of Dynamo 0.7 for testing. Note that nodes known to be buggy in the latest official build of Dynamo 0.7 may not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
 #Material on this repository#
 
@@ -32,7 +33,7 @@ This repository contains the following:
 
 Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. The samples are currently still sorted according to their previous package and limited to 0.6.3 files. I plan to correct that in the future by organizing them according to their respective categories in the node browser and also add 0.7 versions of the sample files.
 
-Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo. All of these are currently still 0.6.3 files and will be migrated as time permits.
+Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo as well as some material presented at conferences. All of these are currently still 0.6.3 files and will be migrated as time permits.
 
 Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
 
