@@ -1,0 +1,78 @@
+<Workspace Version="0.7.5.3342" X="30" Y="236.958333333333" zoom="0.577651515151515" Description="Overrides the transparency of an element in a given view" Category="Clockwork.Revit.Elements.Element.Actions" Name="Element.OverrideTransparencyInView" ID="0e70a492-4d9e-4783-be94-660c24f9a7b8">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="33608f63-df91-4c61-a7bc-c03e546e9c02" nickname="Python Script" x="441" y="62" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+trans = IN[2]
+elementlist = list()
+
+override = OverrideGraphicSettings()
+override.SetSurfaceTransparency(trans)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in items:
+	view.SetElementOverrides(item.Id, override)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f8a44af6-3051-4a51-9cc5-13a0598dd54c" nickname="ReturnListOrSingleValue" x="665" y="36" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="3e27ded4-d3d0-4b88-be04-dc132ccf782e" nickname="Turn Into List" x="236" y="62" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="b0f9c934-e1e4-4ee1-974e-4df344c09da5" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="43691e64-ec9e-43a6-a7ad-e7d88b5f9803" nickname="Output" x="957" y="36" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="085902b2-c3d4-446f-8ee9-830e3aaed37e" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="0e475176-f17b-49ca-a189-b304713dc3dd" nickname="Input" x="0" y="167" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Transparency (%)" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="33608f63-df91-4c61-a7bc-c03e546e9c02" start_index="0" end="f8a44af6-3051-4a51-9cc5-13a0598dd54c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f8a44af6-3051-4a51-9cc5-13a0598dd54c" start_index="0" end="43691e64-ec9e-43a6-a7ad-e7d88b5f9803" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3e27ded4-d3d0-4b88-be04-dc132ccf782e" start_index="0" end="33608f63-df91-4c61-a7bc-c03e546e9c02" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b0f9c934-e1e4-4ee1-974e-4df344c09da5" start_index="0" end="f8a44af6-3051-4a51-9cc5-13a0598dd54c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b0f9c934-e1e4-4ee1-974e-4df344c09da5" start_index="0" end="3e27ded4-d3d0-4b88-be04-dc132ccf782e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="085902b2-c3d4-446f-8ee9-830e3aaed37e" start_index="0" end="33608f63-df91-4c61-a7bc-c03e546e9c02" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e475176-f17b-49ca-a189-b304713dc3dd" start_index="0" end="33608f63-df91-4c61-a7bc-c03e546e9c02" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

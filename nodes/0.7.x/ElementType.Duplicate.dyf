@@ -1,0 +1,103 @@
+<Workspace Version="0.7.5.3342" X="231.114294186949" Y="261.231445925442" zoom="0.593767140625" Description="Duplicates an element type" Category="Clockwork.Revit.Elements.ElementType.Actions" Name="ElementType.Duplicate" ID="28d98cf4-c930-4009-9474-5a44be26768c">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="23bb6172-9017-4de5-bec4-01f37588c27d" nickname="Python Script" x="548.849627063595" y="123.560117979825" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+famtypes = UnwrapElement(IN[0])
+newnames = IN[1]
+elementlist = list()
+counter = 0
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in famtypes:
+	try:
+		elementlist.append(item.Duplicate(newnames[counter]))
+	except:
+		elementlist.append(list())
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="02c5f7da-bf50-4c2d-a102-5791231a315d" nickname="Turn Into List" x="-103.535109471659" y="178.379801794965" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f44f81cf-82fd-4b14-ae7f-b87d4871eb52" nickname="ReturnListOrSingleValue" x="706.065727119497" y="35.2992048854099" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="d1dd11e2-cf36-440e-989b-90cff787306a" nickname="Turn Into List" x="-103.535109471659" y="106.369423828728" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="5a870eae-04f8-4d59-8e84-72a253e98024" nickname="Input" x="-282.295745563331" y="34.0633002991607" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element Type(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="d35b3219-421f-4f6d-bf1a-92ba7ceb0d39" nickname="Output" x="937.766522234087" y="35.2992048854099" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Duplicate(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="6cc4f1c9-f012-4598-9dce-de597d0098b3" nickname="List.EqualSublistLengths" x="204" y="126.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd2bed0a-69a8-45d5-ab42-79019b5bfe73" />
+      <Name value="List.EqualSublistLengths" />
+      <Description value="Trims all given lists to the length of the shortest list" />
+      <Inputs>
+        <Input value="lists" />
+      </Inputs>
+      <Outputs>
+        <Output value="lists" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSCoreNodesUI.CreateList type="DSCoreNodesUI.CreateList" guid="fa5fab77-97bd-45ea-8bf7-fcc874bb97e1" nickname="List.Create" x="47.1127633100064" y="126.26755473583" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" nickname="Code Block" x="394" y="130" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="b3ab0d57-4f3a-4c15-af19-850c14d226bb" nickname="Input" x="-231.770326024248" y="176.963710874445" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Name(s)" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="23bb6172-9017-4de5-bec4-01f37588c27d" start_index="0" end="f44f81cf-82fd-4b14-ae7f-b87d4871eb52" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="02c5f7da-bf50-4c2d-a102-5791231a315d" start_index="0" end="fa5fab77-97bd-45ea-8bf7-fcc874bb97e1" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f44f81cf-82fd-4b14-ae7f-b87d4871eb52" start_index="0" end="d35b3219-421f-4f6d-bf1a-92ba7ceb0d39" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d1dd11e2-cf36-440e-989b-90cff787306a" start_index="0" end="fa5fab77-97bd-45ea-8bf7-fcc874bb97e1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5a870eae-04f8-4d59-8e84-72a253e98024" start_index="0" end="f44f81cf-82fd-4b14-ae7f-b87d4871eb52" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5a870eae-04f8-4d59-8e84-72a253e98024" start_index="0" end="d1dd11e2-cf36-440e-989b-90cff787306a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6cc4f1c9-f012-4598-9dce-de597d0098b3" start_index="0" end="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fa5fab77-97bd-45ea-8bf7-fcc874bb97e1" start_index="0" end="6cc4f1c9-f012-4598-9dce-de597d0098b3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" start_index="0" end="23bb6172-9017-4de5-bec4-01f37588c27d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" start_index="1" end="23bb6172-9017-4de5-bec4-01f37588c27d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b3ab0d57-4f3a-4c15-af19-850c14d226bb" start_index="0" end="02c5f7da-bf50-4c2d-a102-5791231a315d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
