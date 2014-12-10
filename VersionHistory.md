@@ -1,5 +1,18 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.1
+
+###New nodes:
+- Element.OverrideTransparencyInView
+- ElementType.Duplicate
+- Material.Duplicate
+- PerspectiveView.OrientToEyeAndTargetPosition
+
+###Improvements:
+- Migrated several node based custom nodes to CBNs in order to improve performance
+- Relabeled some of the custom nodes
+- Renamed Element.CompoundStructureLayers to FamilyType.CompoundStructureLayers
+
 ##0.74.3
 
 ###New nodes:
