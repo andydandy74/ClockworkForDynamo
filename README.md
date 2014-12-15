@@ -21,9 +21,10 @@ You can find more detailed information on version history [here](VersionHistory.
 
 Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
 - ```GREEN```: Works
-- ```YELLOW```: Buggy in 0.7 / not yet migrated or published
+- ```YELLOW```: Buggy in 0.7
 - ```PURPLE```: Needs review
 - ```RED```: Deprecated in 0.7
+- ```GREY```: Not yet migrated or published
 
 I am currently using the official 0.6.3 and 0.7.4 builds as well as recent daily builds of Dynamo 0.7 for testing. Note that nodes known to be buggy in the latest official build of Dynamo 0.7 may not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
 
