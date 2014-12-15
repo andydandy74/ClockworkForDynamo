@@ -10,7 +10,7 @@ Since Dynamo's package manager currently does not (yet) have an update notificat
 
 #Version history
 
-At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the current official version of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will soon abandon it altogether. Current versions are: 
+At least for a while, I will maintain two versions of this package (one for Dynamo 0.6.3 and one for the latest stable build of Dynamo 0.7). The 0.6.3 branch will, however, only receive bug fixes and I will soon abandon it altogether. Current versions are: 
 
 - Clockwork for Dynamo 0.7.x - v0.75.1 
 - Clockwork for Dynamo 0.6.3 - v0.63.3 
@@ -34,7 +34,7 @@ This repository contains the following:
 
 Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. The samples are currently still sorted according to their previous package and limited to 0.6.3 files. I plan to correct that in the future by organizing them according to their respective categories in the node browser and also add 0.7 versions of the sample files.
 
-Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo as well as some material presented at conferences. All of these are currently still 0.6.3 files and will be migrated as time permits.
+Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo as well as some material presented at conferences. All of these are available for Dynamo 0.6.3 as well as 0.7.x.
 
 Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
 
