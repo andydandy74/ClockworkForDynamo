@@ -8,6 +8,9 @@
 - Material.Duplicate
 - Math.NormalizeRange
 - PerspectiveView.OrientToEyeAndTargetPosition
+- SolarAnalysisType.Average
+- SolarAnalysisType.Cumulative
+- SolarAnalysisType.Peak
 
 ###Improvements/changes:
 - Migrated several node-based custom nodes to CBN-based in order to improve performance
