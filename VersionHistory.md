@@ -6,12 +6,16 @@
 - Element.OverrideTransparencyInView
 - ElementType.Duplicate
 - Material.Duplicate
+- Math.NormalizeRange
 - PerspectiveView.OrientToEyeAndTargetPosition
 
-###Improvements:
-- Migrated several node based custom nodes to CBNs in order to improve performance
+###Improvements/changes:
+- Migrated several node-based custom nodes to CBN-based in order to improve performance
 - Relabeled some of the custom nodes
 - Renamed Element.CompoundStructureLayers to FamilyType.CompoundStructureLayers
+
+###Deprecated nodes:
+- SolarRadiationCSV.Parse
 
 ##0.74.3
 
