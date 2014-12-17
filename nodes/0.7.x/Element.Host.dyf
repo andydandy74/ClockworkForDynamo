@@ -1,4 +1,4 @@
-<Workspace Version="0.7.2.2921" X="154.504254333145" Y="157.871150113066" zoom="0.752278291023545" Description="Gets an element's host" Category="Clockwork.Revit.Elements.Element.Query" Name="Element.Host" ID="73663744-6035-41f3-b386-e6f91e0b36fe">
+<Workspace Version="0.7.5.3437" X="218.504254333145" Y="215.871150113066" zoom="0.752278291023545" Description="Gets an element's host" Category="Clockwork.Revit.Elements.Element.Query" Name="Element.Host" ID="73663744-6035-41f3-b386-e6f91e0b36fe">
   <Elements>
     <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="fb5310e2-15e6-4829-a0fe-2a0d3031b367" nickname="Python Script" x="312.716583286741" y="116.71369599548" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
       <Script>import clr
@@ -9,13 +9,25 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
 faminsts = UnwrapElement(IN[0])
 elementlist = list()
 for item in faminsts:
 	try:
 		elementlist.append(item.Host.ToDSType(True))
 	except:
-		elementlist.append(list())
+		# if that doesn't work, maybe it's a WallSweep
+		try:
+			hostidlist = list()
+			for host in item.GetHostIds():
+				hostidlist.append(doc.GetElement(host).ToDSType(True))
+			elementlist.append(hostidlist)
+		except:
+			elementlist.append(list())
 OUT = elementlist</Script>
     </DSIronPythonNode.PythonNode>
     <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="b104a053-4c8f-4227-8177-ce410101b4f4" nickname="Turn Into List" x="150.975771827519" y="116.501107488049" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
