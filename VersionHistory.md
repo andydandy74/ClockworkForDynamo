@@ -1,5 +1,10 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.3
+
+###Improvements:
+- Room.Boundaries now outputs Dynamo curves instead of Revit curves
+
 ##0.75.2
 
 ###New nodes:
