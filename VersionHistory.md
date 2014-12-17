@@ -1,5 +1,15 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.2
+
+###New nodes:
+- String.FindRegularExpression
+- String.ReplaceRegularExpression
+- String.SplitByRegularExpression
+
+###Improvements:
+- Element.Host will now also find hosts of WallSweeps
+
 ##0.75.1
 
 ###New nodes:
