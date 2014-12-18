@@ -1,5 +1,17 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.4
+
+###New nodes:
+- Buckyball.ByOriginAndRadius
+- Buckyball.Coordinates
+- Buckyball.Struts
+- Buckyball.Surfaces
+- RevitColor.FromDynamoColor
+
+###Fixes:
+- DoorOrWindow.ExitsToOneRoomOnly now actually works properly...
+
 ##0.75.3
 
 ###Improvements:
