@@ -1,0 +1,79 @@
+<Workspace Version="0.7.5.3437" X="64" Y="118" zoom="1" Description="Creates a Revit color from a Dynamo color" Category="Clockwork.Revit.Elements.Color.Create" Name="RevitColor.FromDynamoColor" ID="7bb9dc5b-48c9-4a5a-a6bb-96c97a3f91e4">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" nickname="Python Script" x="665" y="166.191107644306" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from Autodesk.Revit import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+#uiapp = DocumentManager.Instance.CurrentUIApplication
+#app = uiapp.Application
+appcreation = Creation.Application
+r = IN[0]
+g = IN[1]
+b = IN[2]
+counter = 0
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for red in r:
+	newcolor = Color(red,g[counter],b[counter])
+	elementlist.append(newcolor)
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="731c4d7d-5c5c-44dc-b9f8-6b0b02f234bb" nickname="Color.Green" x="455" y="192.191107644306" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Color.Green" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="f0a2993e-8860-44b8-9966-77caccc51f6f" nickname="Color.Blue" x="455" y="300.191107644306" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Color.Blue" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="55a22270-013f-4e60-81d1-b28579fdedc6" nickname="Color.Red" x="455" y="84.1911076443058" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="DSCoreNodes.dll" function="DSCore.Color.Red" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="3c018555-b2bf-45be-88d6-3098ff4bc01b" nickname="ReturnListOrSingleValue" x="891.403276131045" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="549fed77-0e78-495c-9e2e-5276947070a2" nickname="Turn Into List" x="250" y="192.191107644306" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Dynamo Color(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" nickname="Output" x="1158.40327613105" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Revit Color(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" start_index="0" end="3c018555-b2bf-45be-88d6-3098ff4bc01b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="731c4d7d-5c5c-44dc-b9f8-6b0b02f234bb" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f0a2993e-8860-44b8-9966-77caccc51f6f" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="55a22270-013f-4e60-81d1-b28579fdedc6" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3c018555-b2bf-45be-88d6-3098ff4bc01b" start_index="0" end="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="55a22270-013f-4e60-81d1-b28579fdedc6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="731c4d7d-5c5c-44dc-b9f8-6b0b02f234bb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="f0a2993e-8860-44b8-9966-77caccc51f6f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="3c018555-b2bf-45be-88d6-3098ff4bc01b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="549fed77-0e78-495c-9e2e-5276947070a2" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

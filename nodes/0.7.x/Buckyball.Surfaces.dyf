@@ -1,0 +1,101 @@
+<Workspace Version="0.7.5.3437" X="30" Y="160.43220338983" zoom="2.38418079096045" Description="Parses the vertices and struts of an (unscaled) truncated icosahedron and returns a list of vrtices for each surface." Category="Clockwork.Geometry.Buckyball.Helpers" Name="Buckyball.Surfaces" ID="a329872b-2147-406c-ba75-0a735b43c0e8">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="dc5cf151-8a4c-4a60-925e-9e3954c431a5" nickname="Python Script" x="219" y="57" isVisible="false" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>import clr
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
+struts = IN[0]
+points = IN[1]
+almostzero = IN[2]
+
+def BuckyballFaces(struts,points,planes,almostzero,vertices):
+	firststrut = struts[0]
+	struts.pop(0)
+	# find the two adjacent struts
+	adjacent = list()
+	for strut in struts:
+		for point in strut:
+			if point.IsAlmostEqualTo(firststrut[0]):
+				adjacent.append(strut)
+				break
+		if len(adjacent) == 2:
+			break
+	# identify planes and find all vertices on planes		
+	vlist = list()		
+	for item in adjacent:
+		triangle = (firststrut[1],item[0],item[1])
+		pl = Plane.ByBestFitThroughPoints(triangle)	
+		vlist = list()
+		for point in points:
+			dist = pl.DistanceTo(point)
+			if dist &lt; almostzero and dist &gt; -almostzero:
+				vlist.append(point)
+		newplane = (Plane.ByBestFitThroughPoints(vlist))
+		append_vertices = True
+		for pl in planes:
+			if newplane.IsAlmostEqualTo(pl):
+				append_vertices = False
+		if append_vertices: 
+			vertices.append(vlist)
+			planes.append(newplane)
+	# let this function recursively call itself until it finds all planes
+	if len(planes) &lt; 32:
+		return BuckyballFaces(struts,points,planes,almostzero,vertices)
+	else:
+		return (struts,points,planes,almostzero,vertices)
+
+def OrderFaceIndices(p_ordered,p_unordered,almostzero):
+	i = 0;
+	for p in p_unordered:
+		dist = p_ordered[(len(p_ordered)-1)].DistanceTo(p)
+		if dist &gt; 2-almostzero and dist &lt; 2+almostzero:
+			p_ordered.append(p)
+			p_unordered.pop(i)
+			break
+		i += 1
+	if len(p_unordered) &gt; 0:
+		return OrderFaceIndices(p_ordered,p_unordered,almostzero)
+	else:
+		return (p_ordered,p_unordered,almostzero)
+
+vlist_unordered = BuckyballFaces(struts,points,list(),almostzero,list())[4]
+
+vset_ordered = list()
+for vset in vlist_unordered:
+	p_ordered = [vset[0]]
+	vset.pop(0)
+	vset_ordered.append(OrderFaceIndices(p_ordered,vset,almostzero))
+
+vset_out = list()
+for vset in vset_ordered:
+	vset_out.append(vset[0])
+OUT = vset_out</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="8fcb3e7d-4d1e-4dc7-93a9-8b044157149d" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Struts" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="7094bcf1-f09d-4784-bb06-72d32ab181ea" nickname="Input" x="0" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Points" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="6053d999-187a-4520-a4c5-4d8fd8412dee" nickname="Output" x="443" y="57" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surfaces" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="4db0eae4-2838-4fb3-a0fd-41c6ece46568" nickname="Math.AlmostZero" x="0" y="166" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="7203b34a-da51-4672-8993-3591ebf9537d" />
+      <Name value="Math.AlmostZero" />
+      <Description value="Returns a feasable computational tolerance to zero (1.0e-9 or a billionth of 1) for use in calculations. More background info: https://github.com/ikeough/Dynamo/issues/879" />
+      <Inputs />
+      <Outputs>
+        <Output value="1.0e-9" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="dc5cf151-8a4c-4a60-925e-9e3954c431a5" start_index="0" end="6053d999-187a-4520-a4c5-4d8fd8412dee" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8fcb3e7d-4d1e-4dc7-93a9-8b044157149d" start_index="0" end="dc5cf151-8a4c-4a60-925e-9e3954c431a5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7094bcf1-f09d-4784-bb06-72d32ab181ea" start_index="0" end="dc5cf151-8a4c-4a60-925e-9e3954c431a5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4db0eae4-2838-4fb3-a0fd-41c6ece46568" start_index="0" end="dc5cf151-8a4c-4a60-925e-9e3954c431a5" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
