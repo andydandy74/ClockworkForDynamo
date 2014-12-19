@@ -7,7 +7,12 @@
 - Buckyball.Coordinates
 - Buckyball.Struts
 - Buckyball.Surfaces
+- Geometry.ClosestTo
+- Geometry.FurthestFrom
 - RevitColor.FromDynamoColor
+
+###Improvements:
+- Element.Level now also retrieves the levels of plan views
 
 ###Fixes:
 - DoorOrWindow.ExitsToOneRoomOnly now actually works properly...
