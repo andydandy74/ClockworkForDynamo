@@ -1,5 +1,11 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.5
+
+###Improvements:
+- Document.ProjectPosition now outputs lengths instead of doubles
+- List.ReplaceItemAtIndex now takes a list of indices
+
 ##0.75.4
 
 ###New nodes:
