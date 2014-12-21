@@ -6,6 +6,9 @@
 - Document.ProjectPosition now outputs lengths instead of doubles
 - List.ReplaceItemAtIndex now takes a list of indices
 
+###Fixes:
+- Repaired StructuralFoundation.KindIsIsolated, StructuralFoundation.KindIsSlab & StructuralFoundation.KindIsWallFooting
+
 ##0.75.4
 
 ###New nodes:
