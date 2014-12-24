@@ -1,4 +1,4 @@
-<Workspace Version="0.7.5.3437" X="-900.79528275791" Y="-798.025801726756" zoom="0.803648577187627" Description="Returns all the data necessary for modeling a truncated icosahedron (vertices and struts) as well as the surface area and volume. " Category="Clockwork.Geometry.Buckyball" Name="Buckyball.ByOriginAndRadius" ID="498ac300-3e75-429d-9b12-495a387293f1">
+<Workspace Version="0.7.5.3437" X="-1659.20898061899" Y="-1469.04208372719" zoom="1.11384251528084" Description="Returns all the data necessary for modeling a truncated icosahedron (vertices and struts) as well as the surface area and volume. " Category="Clockwork.Geometry.Buckyball" Name="Buckyball.ByOriginAndRadius" ID="498ac300-3e75-429d-9b12-495a387293f1">
   <Elements>
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="4ad657e3-cb0c-4638-8108-c9bb79dc198d" nickname="Input" x="1266.56265190886" y="1545.11697503422" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="Origin" />
@@ -30,7 +30,7 @@
         <Output value="Point" />
       </Outputs>
     </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="e817ba65-df19-4673-90cf-1eeaab5c527b" nickname="Code Block" x="1461.78236003373" y="1103.53517661484" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="// Determine scale factor based on radius&#xA;factor = 1/4*Math.Sqrt(58+18*Math.Sqrt(5));&#xA;scaling = radius/2/factor;&#xA;// Add scale and origin for vertices&#xA;p2 = points.Scale(scaling);&#xA;p3 = List.Transpose(ori.Add(p2.AsVector()));&#xA;// Add scale and origin for struts&#xA;s2 = struts.Scale(scaling);&#xA;s3 = List.Transpose(ori.Add(s2.AsVector()));&#xA;// Create lines for the struts&#xA;Line.ByStartPointEndPoint(s3[0],s3[1]);&#xA;// Add scale and origin for surfaces&#xA;f2 = surfs.Scale(scaling);&#xA;f3 = ori.Add(f2.AsVector());&#xA;// Create surfaces&#xA;f4 = Surface.ByPatch(Polygon.ByPoints(f3));&#xA;// Compute surface area and volume based on strut length&#xA;strutlength = s3[0][0].DistanceTo(s3[1][0]);&#xA;buckyarea = (20*3/2*Math.Sqrt(3)+12*5/4*Math.Sqrt(1+2/Math.Sqrt(5)))*Math.Pow(strutlength,2);&#xA;Area.FromDouble(buckyarea);&#xA;buckyvol = 1/4*(125+43*Math.Sqrt(5))*Math.Pow(strutlength,3);&#xA;Volume.FromDouble(buckyvol);" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="e817ba65-df19-4673-90cf-1eeaab5c527b" nickname="Code Block" x="1461.78236003373" y="1103.53517661484" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="// Determine scale factor based on radius&#xA;factor = 1/4*Math.Sqrt(58+18*Math.Sqrt(5));&#xA;scaling = radius/2/factor;&#xA;// Add scale and origin for vertices&#xA;p2 = points.Scale(scaling);&#xA;p3 = List.Transpose(ori.Add(p2.AsVector()));&#xA;// Add scale and origin for struts&#xA;s2 = struts.Scale(scaling);&#xA;s3 = ori.Add(s2.AsVector());&#xA;s4 = List.Transpose(s3);&#xA;// Create lines for the struts&#xA;Line.ByStartPointEndPoint(s4[0],s4[1]);&#xA;// Add scale and origin for surfaces&#xA;f2 = surfs.Scale(scaling);&#xA;f3 = ori.Add(f2.AsVector());&#xA;6;&#xA;// Create surfaces&#xA;f4 = Surface.ByPatch(Polygon.ByPoints(f3));&#xA;// Compute surface area and volume based on strut length&#xA;strutlength = s4[0][0].DistanceTo(s4[1][0]);&#xA;buckyarea = (20*3/2*Math.Sqrt(3)+12*5/4*Math.Sqrt(1+2/Math.Sqrt(5)))*Math.Pow(strutlength,2);&#xA;Area.FromDouble(buckyarea);&#xA;buckyvol = 1/4*(125+43*Math.Sqrt(5))*Math.Pow(strutlength,3);&#xA;Volume.FromDouble(buckyvol);" ShouldFocus="false" />
     <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f0ba8157-5ca4-4609-aeca-26a618d74264" nickname="Buckyball.Struts" x="1080.10742137346" y="1123.1893781242" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="e0b7100c-4209-45f5-818e-a6231aa65794" />
       <Name value="Buckyball.Struts" />
@@ -63,16 +63,32 @@
         <Output value="Surfaces" />
       </Outputs>
     </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="4f1ec96a-abb2-41ff-a4f6-9d64139f1b9f" nickname="Output" x="2206.24157913058" y="1301.23102378287" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Symbol value="Surfaces (Points)" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="4f1ec96a-abb2-41ff-a4f6-9d64139f1b9f" nickname="Output" x="2631.90667754504" y="1280.09215315631" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surfaces (Hexagons)" />
     </Dynamo.Nodes.Output>
-    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="daa5513f-5df7-411e-9eec-6c3cc51ca0a4" nickname="Output" x="2351.25627763345" y="1318.13116677975" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="ae45fcad-3ecc-4d76-85fd-576c5f60d541" nickname="List.FilterSublistsByLength" x="2367.63705727012" y="1304.43280179152" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="f2959b30-b4c4-4100-beeb-4dfde79c2235" />
+      <Name value="List.FilterSublistsByLength" />
+      <Description value="Filters out all sublists that do not have the specified length" />
+      <Inputs>
+        <Input value="list" />
+        <Input value="length" />
+      </Inputs>
+      <Outputs>
+        <Output value="in" />
+        <Output value="out" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="4805eed4-50eb-4355-8967-27d8b171fcf8" nickname="Output" x="2634.20370007331" y="1366.49837606854" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Surfaces (Pentagons)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="68b7ae17-ac24-4579-92a8-75e86f3f5420" nickname="Output" x="2080.56824347739" y="1404.74897515745" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="Surfaces (Geom.)" />
     </Dynamo.Nodes.Output>
-    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="8d7bd86f-7b40-4c28-93c4-2366eedd411b" nickname="Output" x="2411.9624094836" y="1381.39942568" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="a1142ea2-b259-447b-821a-d6f17c3a4852" nickname="Output" x="2116.70358475087" y="1584.65456871087" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="Surface Area" />
     </Dynamo.Nodes.Output>
-    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="cdadd1ce-ff9d-4645-881a-5aa196c671c7" nickname="Output" x="2307.79261049545" y="1433.9482342223" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="a34a6a14-8ce8-4b7a-ab13-1dac7fd06c25" nickname="Output" x="2021.18517526873" y="1742.69871796105" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="Volume" />
     </Dynamo.Nodes.Output>
   </Elements>
@@ -85,17 +101,20 @@
     <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="3" end="4f793ad5-29c3-46db-a7e2-5e5c65d66208" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="5" end="2cb94b23-9b4a-4c2b-b03b-92dc8020d3c2" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="5" end="3fbdb607-73f4-4c06-9012-5dc239756b3f" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="6" end="95b1d61e-4667-4967-b0f3-f418262e4e7b" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="8" end="4f1ec96a-abb2-41ff-a4f6-9d64139f1b9f" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="9" end="daa5513f-5df7-411e-9eec-6c3cc51ca0a4" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="12" end="8d7bd86f-7b40-4c28-93c4-2366eedd411b" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="14" end="cdadd1ce-ff9d-4645-881a-5aa196c671c7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="7" end="95b1d61e-4667-4967-b0f3-f418262e4e7b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="9" end="ae45fcad-3ecc-4d76-85fd-576c5f60d541" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="10" end="ae45fcad-3ecc-4d76-85fd-576c5f60d541" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="11" end="68b7ae17-ac24-4579-92a8-75e86f3f5420" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="14" end="a1142ea2-b259-447b-821a-d6f17c3a4852" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e817ba65-df19-4673-90cf-1eeaab5c527b" start_index="16" end="a34a6a14-8ce8-4b7a-ab13-1dac7fd06c25" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="f0ba8157-5ca4-4609-aeca-26a618d74264" start_index="0" end="dd0998b4-570d-4624-a1c1-ab376c4c68a0" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="f0ba8157-5ca4-4609-aeca-26a618d74264" start_index="0" end="e817ba65-df19-4673-90cf-1eeaab5c527b" end_index="3" portType="0" />
     <Dynamo.Models.ConnectorModel start="6a718ea9-8591-4b0b-a090-6e484193de23" start_index="0" end="f0ba8157-5ca4-4609-aeca-26a618d74264" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="6a718ea9-8591-4b0b-a090-6e484193de23" start_index="0" end="dd0998b4-570d-4624-a1c1-ab376c4c68a0" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="6a718ea9-8591-4b0b-a090-6e484193de23" start_index="0" end="e817ba65-df19-4673-90cf-1eeaab5c527b" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="dd0998b4-570d-4624-a1c1-ab376c4c68a0" start_index="0" end="e817ba65-df19-4673-90cf-1eeaab5c527b" end_index="4" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ae45fcad-3ecc-4d76-85fd-576c5f60d541" start_index="0" end="4f1ec96a-abb2-41ff-a4f6-9d64139f1b9f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ae45fcad-3ecc-4d76-85fd-576c5f60d541" start_index="1" end="4805eed4-50eb-4355-8967-27d8b171fcf8" end_index="0" portType="0" />
   </Connectors>
   <Notes />
 </Workspace>
