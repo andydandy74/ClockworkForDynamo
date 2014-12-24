@@ -1,0 +1,90 @@
+<Workspace Version="0.7.5.3437" X="-3.29283524556365" Y="462.286839391653" zoom="0.583104163224503" Description="Creates a curtain system on top of a face" Category="Clockwork.Revit.Elements.CurtainSystem.Create" Name="CurtainSystem.ByFace" ID="085dd1a2-1add-4403-82d4-a4b363d280f8">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="6fda9557-2e2e-42ae-a847-f023aed0b78a" nickname="Python Script" x="864" y="42" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+cstype = UnwrapElement(IN[0])
+facerefs = IN[1]
+elementlist = list()
+refarr = ReferenceArray()
+for ref in facerefs:
+	refarr.Append(ref)
+TransactionManager.Instance.EnsureInTransaction(doc)
+doccreation = doc.Create
+newcs = doccreation.NewCurtainSystem2(refarr,cstype)
+try:
+	newcs = doccreation.NewCurtainSystem2(refarr,cstype)
+	for item in newcs:
+		elementlist.append(doc.GetElement(item))
+except:
+	donothing = 1
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="cb474a11-6b40-4023-a8c3-85ef0bff60e1" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="CurtainSystemType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="1c46f94b-9913-46aa-a6db-2fabe6143a29" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Face(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="97041c6d-5049-4d07-bf85-f6b70175bb1b" nickname="Output" x="1380" y="16" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="CurtainSystem(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" nickname="Turn Into List" x="248" y="68" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="317acd90-9e7e-4685-9cef-85adf645a64b" nickname="ReturnListOrSingleValue" x="1088" y="16" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" nickname="RevitFaceReference.FromDynamoSurface" x="453" y="68" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="3204925d-0493-4b8b-b42b-fb0d8041837b" />
+      <Name value="RevitFaceReference.FromDynamoSurface" />
+      <Description value="Returns the underlying Revit face reference of a given surface" />
+      <Inputs>
+        <Input value="Dynamo surface(s)" />
+      </Inputs>
+      <Outputs>
+        <Output value="Revit face reference(s)" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6fda9557-2e2e-42ae-a847-f023aed0b78a" start_index="0" end="317acd90-9e7e-4685-9cef-85adf645a64b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb474a11-6b40-4023-a8c3-85ef0bff60e1" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c46f94b-9913-46aa-a6db-2fabe6143a29" start_index="0" end="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c46f94b-9913-46aa-a6db-2fabe6143a29" start_index="0" end="317acd90-9e7e-4685-9cef-85adf645a64b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" start_index="0" end="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="317acd90-9e7e-4685-9cef-85adf645a64b" start_index="0" end="97041c6d-5049-4d07-bf85-f6b70175bb1b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
