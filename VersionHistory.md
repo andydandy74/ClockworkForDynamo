@@ -2,12 +2,27 @@
 
 ##0.75.5
 
+###New nodes:
+- AreaSeparator.FromCurve
+- CurtainSystem.ByFace
+- RevitFaceReference.FromDynamoSurface
+- Wall.ByFace
+- WallLocationLine.CoreCenterline
+- WallLocationLine.CoreExterior
+- WallLocationLine.CoreInterior
+- WallLocationLine.FinishFaceExterior
+- WallLocationLine.FinishFaceInterior
+- WallLocationLine.WallCenterline
+
 ###Improvements:
 - Document.ProjectPosition now outputs lengths instead of doubles
 - List.ReplaceItemAtIndex now takes a list of indices
+- Buckyball.ByOriginAndRadius now returns separate lists for hexagonal and pentagonal surfaces
+- Recategorized and relabeled some nodes (plus some changes in node descriptions)
 
 ###Fixes:
 - Repaired StructuralFoundation.KindIsIsolated, StructuralFoundation.KindIsSlab & StructuralFoundation.KindIsWallFooting
+- Buckyball.ByOriginAndRadius now returns correct list of up vectors
 
 ##0.75.4
 
