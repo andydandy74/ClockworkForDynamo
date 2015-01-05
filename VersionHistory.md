@@ -1,5 +1,13 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.6
+
+###New nodes:
+- Element.ElevationOfHostLevel
+
+###Improvements:
+- Element.Inserts now also returns correct list structure when no inserts are present
+
 ##0.75.5
 
 ###New nodes:

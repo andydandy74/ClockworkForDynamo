@@ -1,6 +1,6 @@
 ﻿![Image](clockwork-logo.png)
 
-Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded using the package search feature inside Dynamo or, alternatively, from Dynamo's [package manager](http://www.dynamopackages.com). It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, unit conversions, geometric operations (mainly meshes, points, UVs and vectors) and paneling. Currently it consists of some 300 nodes of which a large portion was previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
+Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment which can be downloaded using the package search feature inside Dynamo or, alternatively, from Dynamo's [package manager](http://www.dynamopackages.com). It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, unit conversions, geometric operations (mainly meshes, points, UVs and vectors) and paneling. Currently it consists of some 300+ nodes of which a large portion was previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
 If you use Clockwork, please remember to uninstall *all* of my previous packages (see [list below](#packages-to-uninstall)).
 
@@ -12,7 +12,7 @@ Since Dynamo's package manager currently does not (yet) have an update notificat
 
 At least for a while, I will maintain two versions of this package (one for the latest stable build of Dynamo 0.7.x and one for Dynamo 0.6.3). The 0.6.3 branch will, however, only receive bug fixes and I will soon abandon it altogether. Current versions are: 
 
-- Clockwork for Dynamo 0.7.x - v0.75.5 
+- Clockwork for Dynamo 0.7.x - v0.75.6 
 - Clockwork for Dynamo 0.6.3 - v0.63.3 
 
 You can find more detailed information on version history [here](VersionHistory.md) 
