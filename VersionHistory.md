@@ -1,5 +1,16 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.7
+
+###New nodes:
+- Level.Plane
+- Point.RoundDownToPrecision
+- Point.RoundToPrecision
+- Point.RoundUpToPrecision
+- UV.RoundDownToPrecision
+- UV.RoundToPrecision
+- UV.RoundUpToPrecision
+
 ##0.75.6
 
 ###New nodes:
