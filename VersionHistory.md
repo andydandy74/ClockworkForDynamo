@@ -1,5 +1,12 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.8
+
+###New nodes:
+- Element.Group
+- Element.MaterialParameterByCategory
+- Group.Members
+
 ##0.75.7
 
 ###New nodes:
