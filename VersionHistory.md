@@ -1,5 +1,17 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.9
+
+###New nodes:
+- Element.Name (Universal)
+- Element.SetWorkset
+- Element.Workset
+
+###Improvements/Changes:
+- Renamed Element.MaterialParameterByCategory to Element.SetMaterialParameterByCategory
+- All Elements Of Name now uses the Element.Name (Universal) node
+- Room.Boundaries now retrieves the boundaries based on the area computation settings of the current document
+
 ##0.75.8
 
 ###New nodes:

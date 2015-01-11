@@ -1,0 +1,60 @@
+<Workspace Version="0.7.5.3566" X="-114" Y="1" zoom="1" Description="Retrieves the workset of a given element" Category="Clockwork.Revit.Elements.Element.Query" Name="Element.Workset" ID="35d5bbd0-79d7-43a9-af54-2b366d290d4a">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="e1b676a6-3e08-4e4e-9ffe-c9d24867fe4b" nickname="Python Script" x="412.732589235007" y="54.340479483012" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminsts = UnwrapElement(IN[0])
+elementlist = list()
+for item in faminsts:
+	try:
+		elementlist.append(doc.GetWorksetTable().GetWorkset(item.WorksetId))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="2e232696-7cbf-436e-b8da-d0fcf25513f6" nickname="ReturnListOrSingleValue" x="575.992110218278" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="739b88f3-c249-4645-bff8-a43024f12f93" nickname="Turn Into List" x="250" y="54.127890975581" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="e295ad66-1e6e-47f9-aa71-ef76096c2d8f" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="cb693fa3-ded7-4ad1-a6ea-eb0a07cbc985" nickname="Output" x="842.992110218278" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Workset(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e1b676a6-3e08-4e4e-9ffe-c9d24867fe4b" start_index="0" end="2e232696-7cbf-436e-b8da-d0fcf25513f6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2e232696-7cbf-436e-b8da-d0fcf25513f6" start_index="0" end="cb693fa3-ded7-4ad1-a6ea-eb0a07cbc985" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="739b88f3-c249-4645-bff8-a43024f12f93" start_index="0" end="e1b676a6-3e08-4e4e-9ffe-c9d24867fe4b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e295ad66-1e6e-47f9-aa71-ef76096c2d8f" start_index="0" end="2e232696-7cbf-436e-b8da-d0fcf25513f6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e295ad66-1e6e-47f9-aa71-ef76096c2d8f" start_index="0" end="739b88f3-c249-4645-bff8-a43024f12f93" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
