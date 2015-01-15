@@ -1,5 +1,32 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.12
+
+###Improvements:
+- Small correction in TextElement.SetText
+
+##0.75.11
+
+###New nodes:
+- TextElement.SetText
+- TextElement.Text
+
+###Improvements:
+- Element.Location now also returns the location of TextNotes and Revit XYZs
+
+##0.75.10
+
+###New nodes:
+- Time.EvaluateLapTimes
+- Time.LapTime
+- Wall.Flip
+
+###Deprecated nodes:
+- CurtainSystem.Type - use Element.Type instead
+- Dimension.Type - use Element.Type instead
+- Floor.Type - use Element.Type instead
+- Roof.Type - use Element.Type instead
+
 ##0.75.9
 
 ###New nodes:
