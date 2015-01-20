@@ -1,0 +1,56 @@
+<Workspace Version="0.7.5.3566" X="30" Y="190.975138121547" zoom="2.3609576427256" Description="Creates revision clouds from nested lists of geometry curves. " Category="Clockwork.Revit.Elements.RevisionCloud.Create" Name="RevisionCloud.FromCurves" ID="8d97b56c-955e-424b-9263-71f4cc784cc4">
+  <Elements>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d233a39a-cfad-4a80-b0e8-859917c5f97f" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Curves" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="1cd26b14-cb68-4c9f-b1f2-75c8db318a86" nickname="Output" x="411" y="57" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="RevisionCloud(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="9663d7ec-7e83-43e8-aa70-ba9607d8a183" nickname="Input" x="0" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Revision" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="1692d858-5038-4192-880f-5db8e03012db" nickname="Input" x="0" y="166" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="786d1079-e66a-4b07-a4fd-e72dbefe5739" nickname="Python Script" x="187.847113884555" y="57" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+nestedcurves = IN[0]
+revision = UnwrapElement(IN[1])
+view = UnwrapElement(IN[2])
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for curves in nestedcurves:
+	Curvelist = list()
+	for curve in curves:
+		Curvelist.append(curve.ToRevitType())
+	icurves = List[Curve](Curvelist)
+	revcloud = RevisionCloud.Create(doc, view, revision.Id, icurves);
+	elementlist.append(revcloud)
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d233a39a-cfad-4a80-b0e8-859917c5f97f" start_index="0" end="786d1079-e66a-4b07-a4fd-e72dbefe5739" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9663d7ec-7e83-43e8-aa70-ba9607d8a183" start_index="0" end="786d1079-e66a-4b07-a4fd-e72dbefe5739" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1692d858-5038-4192-880f-5db8e03012db" start_index="0" end="786d1079-e66a-4b07-a4fd-e72dbefe5739" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="786d1079-e66a-4b07-a4fd-e72dbefe5739" start_index="0" end="1cd26b14-cb68-4c9f-b1f2-75c8db318a86" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

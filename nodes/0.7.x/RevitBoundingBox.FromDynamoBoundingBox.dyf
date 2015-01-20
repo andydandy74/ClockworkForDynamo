@@ -1,0 +1,81 @@
+<Workspace Version="0.7.5.3566" X="0" Y="0" zoom="1" Description="Turns a Dynamo bounding box into a Revit bounding box." Category="Clockwork.Revit.Elements.BoundingBox.Create" Name="RevitBoundingBox.FromDynamoBoundingBox" ID="de89b4c8-ede5-4ecb-bb7f-25a5605b2e6f">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="b18571c1-98c1-44eb-b44b-b709f2907a43" nickname="Python Script" x="688.469309646399" y="70.7296361079448" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+minp = [x.ToXyz() for x in IN[0]]
+maxp = [x.ToXyz() for x in IN[1]]
+counter = 0
+elementlist = list()
+failedlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for newmin in minp:
+	try:
+		newbox = BoundingBoxXYZ()
+		newbox.Max = maxp[counter]
+		newbox.Min = newmin
+		elementlist.append(newbox)
+	except:
+		elementlist.append(list())
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="271b0e8d-1db2-4b01-92ad-43d6cb98e60c" nickname="BoundingBox.MinPoint" x="430.750481270798" y="41.8356556880003" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.MinPoint" />
+    <Dynamo.Nodes.DSFunction type="Dynamo.Nodes.DSFunction" guid="bd2d2ec5-e1f9-4ba2-86ca-2d717693f947" nickname="BoundingBox.MaxPoint" x="435.750481270798" y="134.835655688" isVisible="true" isUpstreamVisible="true" lacing="Shortest" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.BoundingBox.MaxPoint" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="b1059a18-e4e0-45b8-add5-b1a387543706" nickname="ReturnListOrSingleValue" x="897.702015675962" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="bbf40cbf-553e-4235-8fde-47e3c4b9c7b0" nickname="Turn Into List" x="250" y="84.6531583029226" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="869b2c81-2a0c-4c2f-a636-de6b0aee396b" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Dynamo Bounding Box(es)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="fa745a47-f3a0-45dd-a5fb-5a06583a1c80" nickname="Output" x="1164.70201567596" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Revit Bounding Box(es)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b18571c1-98c1-44eb-b44b-b709f2907a43" start_index="0" end="b1059a18-e4e0-45b8-add5-b1a387543706" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="271b0e8d-1db2-4b01-92ad-43d6cb98e60c" start_index="0" end="b18571c1-98c1-44eb-b44b-b709f2907a43" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bd2d2ec5-e1f9-4ba2-86ca-2d717693f947" start_index="0" end="b18571c1-98c1-44eb-b44b-b709f2907a43" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b1059a18-e4e0-45b8-add5-b1a387543706" start_index="0" end="fa745a47-f3a0-45dd-a5fb-5a06583a1c80" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bbf40cbf-553e-4235-8fde-47e3c4b9c7b0" start_index="0" end="271b0e8d-1db2-4b01-92ad-43d6cb98e60c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bbf40cbf-553e-4235-8fde-47e3c4b9c7b0" start_index="0" end="bd2d2ec5-e1f9-4ba2-86ca-2d717693f947" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="869b2c81-2a0c-4c2f-a636-de6b0aee396b" start_index="0" end="b1059a18-e4e0-45b8-add5-b1a387543706" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="869b2c81-2a0c-4c2f-a636-de6b0aee396b" start_index="0" end="bbf40cbf-553e-4235-8fde-47e3c4b9c7b0" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

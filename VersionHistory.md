@@ -1,5 +1,22 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.13
+
+###New nodes:
+- All Intersecting Elements of Category
+- BoundingBox.PerimeterCurvesByNormal
+- BoundingBox.PerimeterCurvesOnPlane
+- BoundingBox.ByNestedListOfElements
+- RevisionCloud.FromCurves
+- RevisionCloud.FromNestedListOfElements
+- RevitBoundingBox.FromDynamoBoundingBox
+- View.Plane
+
+###Improvements:
+- Renamed Element.BoundingBox to BoundingBox.ByElement
+- BoundingBox.ByElement now also returns a Dynamo bounding box
+- BoundingBox.ByElement now takes a view as an input (previously only active view possible)
+
 ##0.75.12
 
 ###Improvements:
