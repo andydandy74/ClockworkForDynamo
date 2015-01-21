@@ -1,0 +1,1 @@
+I have just started migrating the documentation of all the nodes to 0.7.x so the contents of this folder are far from complete. The 0.6.3 documentation is more complete.
