@@ -17,6 +17,18 @@ At least for a while, I will maintain two versions of this package (one for the 
 
 You can find more detailed information on version history [here](VersionHistory.md) 
 
+#Material on this repository#
+
+This repository contains the following:
+
+Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. The samples are currently still sorted according to their previous package and limited to 0.6.3 files. I plan to correct that in the future by organizing them according to their respective categories in the node browser. I have also begun adding 0.7.x versions of the sample files.
+
+Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo as well as some material presented at conferences. All of these are available for Dynamo 0.7.x as well as 0.6.3.
+
+Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
+
+Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
+
 #State of migration#
 
 Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
@@ -27,18 +39,6 @@ Migrating from 0.6.3, I recategorized and renamed most of the nodes. These chang
 - ```GREY```: Not yet migrated or published
 
 I am currently using the official 0.6.3 and 0.7.5 builds as well as recent daily builds of Dynamo 0.7.x for testing. Note that nodes known to be buggy in the latest stable build of Dynamo 0.7.x may not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
-
-#Material on this repository#
-
-This repository contains the following:
-
-Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. The samples are currently still sorted according to their previous package and limited to 0.6.3 files. I plan to correct that in the future by organizing them according to their respective categories in the node browser and also add 0.7.x versions of the sample files.
-
-Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo as well as some material presented at conferences. All of these are available for Dynamo 0.7.x as well as 0.6.3.
-
-Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
-
-Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
 
 #Packages to uninstall#
 If you have installed Clockwork or are planning to do so, you should uninstall *all* of my previous packages (that is if you had those installed at all, of course). As a rule of thumb, uninstall everything that is organized in the ```CAAD_RWTH``` category in the node browser. Here's a complete list of all (recently) deprecated packages:
