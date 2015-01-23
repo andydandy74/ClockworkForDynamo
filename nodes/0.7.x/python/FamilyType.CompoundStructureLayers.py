@@ -1,0 +1,61 @@
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+elemlayers = list()
+elemmat = list()
+elemfunc = list()
+elemwidth = list()
+elemcore = list()
+elemwraps = list()
+elemvar = list()
+elemdeck = list()
+
+for item in items:
+	try:
+		counter = 0
+		layers = list()
+		layermat = list()
+		layerfunc = list()
+		layerwidth = list()
+		layercore = list()
+		layerwraps = list()
+		layervar = list()
+		layerdeck = list()
+		compstruc = item.GetCompoundStructure()
+		num = compstruc.LayerCount
+		vertcomp = compstruc.IsVerticallyCompound
+		varlayer = compstruc.VariableLayerIndex
+		while counter &lt; num:
+			layers.append(compstruc.GetLayers()[counter])
+			layermat.append(doc.GetElement(compstruc.GetMaterialId(counter)))
+			layerfunc.append(compstruc.GetLayerFunction(counter))
+			layerwidth.append(compstruc.GetLayerWidth(counter))
+			layercore.append(compstruc.IsCoreLayer(counter))
+			if compstruc.IsCoreLayer(counter): layerwraps.append(False)
+			else: layerwraps.append(compstruc.ParticipatesInWrapping(counter))
+			if varlayer == counter: layervar.append(True)
+			else: layervar.append(False)
+			layerdeck.append(compstruc.IsStructuralDeck(counter))
+			counter += 1
+	except:
+		donothing = 1
+	elemlayers.append(layers)
+	elemmat.append(layermat)
+	elemfunc.append(layerfunc)
+	elemwidth.append(layerwidth)
+	elemcore.append(layercore)
+	elemwraps.append(layerwraps)
+	elemvar.append(layervar)
+	elemdeck.append(layerdeck)
+OUT = (elemlayers, elemmat, elemfunc, elemwidth, elemcore, elemwraps, elemvar, elemdeck)
