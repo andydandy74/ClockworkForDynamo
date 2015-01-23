@@ -22,13 +22,13 @@ else:
 	i = 1
 	j = 3
 u = i
-while (u &lt; (ds.NumberOfUGridlines-i)):
+while (u < (ds.NumberOfUGridlines-i)):
 	gn.UIndex = u
 	v = i
 	vlist = list()
 	vnormals = list()
 	vxyzs = list()
-	while (v &lt; (ds.NumberOfVGridlines-i)):
+	while (v < (ds.NumberOfVGridlines-i)):
 		gn.VIndex = v
 		uv = ds.GetGridNodeUV(gn)
  		vlist.append(uv)

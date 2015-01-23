@@ -7,7 +7,7 @@ elementlist = list()
 for item in listlengths:
 	itemcounter = 0
 	itemlist = list()
-	while itemcounter &lt; item:
+	while itemcounter < item:
 		itemlist.append(inputlist[rowcounter])
 		rowcounter += 1
 		itemcounter += 1

@@ -18,7 +18,7 @@ for item in items:
     sourcelist = list()
     for source in item.GetSourceElementIds():
         sourcelist.append(doc.GetElement(source.HostElementId).ToDSType(True))
-    if len(sourcelist) &lt; 2:
+    if len(sourcelist) < 2:
         elementlist.append(sourcelist[0])
     else:
         elementlist.append(sourcelist)

@@ -36,7 +36,7 @@ for item in items:
 		num = compstruc.LayerCount
 		vertcomp = compstruc.IsVerticallyCompound
 		varlayer = compstruc.VariableLayerIndex
-		while counter &lt; num:
+		while counter < num:
 			layers.append(compstruc.GetLayers()[counter])
 			layermat.append(doc.GetElement(compstruc.GetMaterialId(counter)))
 			layerfunc.append(compstruc.GetLayerFunction(counter))

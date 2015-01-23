@@ -26,7 +26,7 @@ def BuckyballFaces(struts,points,planes,almostzero,vertices):
 		vlist = list()
 		for point in points:
 			dist = pl.DistanceTo(point)
-			if dist &lt; almostzero and dist &gt; -almostzero:
+			if dist < almostzero and dist > -almostzero:
 				vlist.append(point)
 		newplane = (Plane.ByBestFitThroughPoints(vlist))
 		append_vertices = True
@@ -37,7 +37,7 @@ def BuckyballFaces(struts,points,planes,almostzero,vertices):
 			vertices.append(vlist)
 			planes.append(newplane)
 	# let this function recursively call itself until it finds all planes
-	if len(planes) &lt; 32:
+	if len(planes) < 32:
 		return BuckyballFaces(struts,points,planes,almostzero,vertices)
 	else:
 		return (struts,points,planes,almostzero,vertices)
@@ -46,12 +46,12 @@ def OrderFaceIndices(p_ordered,p_unordered,almostzero):
 	i = 0;
 	for p in p_unordered:
 		dist = p_ordered[(len(p_ordered)-1)].DistanceTo(p)
-		if dist &gt; 2-almostzero and dist &lt; 2+almostzero:
+		if dist > 2-almostzero and dist < 2+almostzero:
 			p_ordered.append(p)
 			p_unordered.pop(i)
 			break
 		i += 1
-	if len(p_unordered) &gt; 0:
+	if len(p_unordered) > 0:
 		return OrderFaceIndices(p_ordered,p_unordered,almostzero)
 	else:
 		return (p_ordered,p_unordered,almostzero)

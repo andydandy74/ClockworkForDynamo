@@ -19,7 +19,7 @@ badlist = list()
 counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-while counter &lt; len(items):
+while counter < len(items):
 	try:
 		items[counter].Text = texts[counter]
 		goodlist.append(items[counter])

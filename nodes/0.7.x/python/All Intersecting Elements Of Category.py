@@ -22,7 +22,7 @@ intersectorlist = list()
 counter = 0
 filter = ElementCategoryFilter(cat)
 
-while counter &lt; len(vstart):
+while counter < len(vstart):
 	ThisReferenceArr = ReferenceIntersector(filter, FindReferenceTarget.All, theview)
 	found = ThisReferenceArr.Find(vstart[counter], vend[counter])
 	foundreferences = list()

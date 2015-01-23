@@ -18,14 +18,14 @@ def BuckyballStruts(points,struts):
 	i = 0
 	for dist in distances:
 		# use a little tolerance so we catch all struts
-		if dist &gt; 2 - almostzero and dist &lt; 2 + almostzero:
+		if dist > 2 - almostzero and dist < 2 + almostzero:
 			strutpoints.append(restofpoints[i])
 			strutpointpairs.append((firstpoint,restofpoints[i]))
 		i += 1
 	# add strutpointpairs to struts
-	if len(strutpointpairs) &gt; 0: struts.extend(strutpointpairs)
+	if len(strutpointpairs) > 0: struts.extend(strutpointpairs)
 	# Continue processing the list recursively until there's only one point left. By always removing the first point from the list, we ensure that no duplicate struts are computed.
-	if len(restofpoints) &gt; 1:
+	if len(restofpoints) > 1:
 		return BuckyballStruts(restofpoints,struts)
 	else: return (restofpoints,struts)
 	
