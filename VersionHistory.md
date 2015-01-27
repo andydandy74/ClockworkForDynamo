@@ -1,5 +1,26 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.14
+
+###New nodes:
+- Element.Type (LinkedFile)
+- String.BinaryToDecimal
+- List.CountOccurences
+- List.FromString
+
+###Improvements/Changes:
+- List.GroupListOfListsByKey now first sorts by key before grouping
+- List.CountBooleanSequences now counts sequences of true *and* false at the same time
+- Recategorized some nodes
+
+###Renamed nodes:
+- Renamed List.FilterSublistsByLength to List.FilterBySublistLength
+- Renamed List.SublistByLengths to List.ChopByLengths
+- Renamed List.FillSublist to List.RepeatItemsByLengths
+- Renamed Binary.ToDecimal to List.BinaryToDecimal
+- Renamed Line.ClosedLoopThroughPoints to Curve.ClosedLoopThroughPoints
+- Renamed List.FindInSublists to List.SublistsContain
+
 ##0.75.13
 
 ###New nodes:
@@ -12,7 +33,7 @@
 - RevitBoundingBox.FromDynamoBoundingBox
 - View.Plane
 
-###Improvements:
+###Improvements/Changes:
 - Renamed Element.BoundingBox to BoundingBox.ByElement
 - BoundingBox.ByElement now also returns a Dynamo bounding box
 - BoundingBox.ByElement now takes a view as an input (previously only active view possible)
