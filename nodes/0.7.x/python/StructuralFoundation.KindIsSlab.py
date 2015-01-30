@@ -8,7 +8,7 @@ for item in foundinstances:
 	try:
 		if item.GetType().Name == 'Floor':
 			booleans.append(True)
-		else':
+		else:
 			booleans.append(False)
 	except:
 		booleans.append(False)

@@ -14,11 +14,9 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
 view = UnwrapElement(IN[1])
-trans = IN[2]
 elementlist = list()
 
 override = OverrideGraphicSettings()
-override.SetSurfaceTransparency(trans)
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in items:

@@ -20,7 +20,7 @@ counter = 0
 TransactionManager.Instance.EnsureInTransaction(doc)
 for num in sheetnums:
 	newsheet = ViewSheet.CreatePlaceholder(doc)
-	newsheet.SheetNumber = num
+	newsheet.SheetNumber = str(num)
 	newsheet.Name = sheetnames[counter]
 	elementlist.append(newsheet.ToDSType(False))
 	counter += 1
