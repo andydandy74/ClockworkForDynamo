@@ -1,5 +1,29 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.15
+
+##New nodes:
+- Element.ResetOverridesInView
+- List.ReplaceEmptyLists
+- List.ReplaceNull
+- Plane.ByBestFitFromFace
+
+###Improvements:
+- All Elements Of Name now has a separate outport for the first result in the list
+- List.GroupListOfListsByKey now returns transposed sublists for better readability
+- PlaceholderSheet.ByNumberAndName now accepts strings *or* numbers as sheet numbers
+- Document.Path now actually does return the directory, too
+- Fixed StructuralFoundation.KindIsSlab
+- Element.OverrideTransparencyInView now returns the list of elements
+
+###Deprecated nodes:
+- Dispatch - Use List.FilterByBoolMask instead
+- StructuralFoundation.FootingType - Use Element.Type instead
+
+###Renamed nodes:
+- Renamed List.ContainsOutOfPlanePoints to PointSequence.ContainsOutOfPlanePoints
+- Renamed Point.GreatestDistanceInSequence to PointSequence.GreatestDistanceToPoint
+
 ##0.75.14
 
 ###New nodes:
