@@ -12,4 +12,4 @@ doc = DocumentManager.Instance.CurrentDBDocument
 projloc = doc.ActiveProjectLocation
 position_data = projloc.ProjectPosition[XYZ.Zero]
 location_data = projloc.SiteLocation
-OUT = (position_data.Angle,position_data.Elevation,position_data.EastWest,position_data.NorthSouth, location_data.Latitude, location_data.Longitude)
+OUT = (position_data.Angle,position_data.Elevation,position_data.EastWest,position_data.NorthSouth)

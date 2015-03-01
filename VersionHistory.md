@@ -1,18 +1,48 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.17
+
+###New nodes:
+- Color.GreyscaleByNormalizedValue
+- Elements.FilterByParameterValueAndCondition
+- Room.UnplacedByNameAndNumber
+
+###Improvements/Changes
+- Recategorized some nodes for better compatibility with 0.7.6's iconized node browser
+- Fixed UV.PruneDuplicates
+- Vector.AltitudeAndAzimuth now processes lists of vectors again
+- Removed latitude and longitude from Document.ProjectPosition (functionality now available in built-in nodes Location.Latitude & Location.Longitude)
+- Document.ProjectPosition now returns the angle (project north vs. true north) in degrees
+- BoundingBox.ByElement now returns single elements for single element inputs
+- Added integer outputs to all WallLocationLine nodes
+- Adapted Paneling.InvertAndMirrorNormalizedValues to the new nested list structure of Image.Pixels
+
+###Deprecated nodes:
+- False for All (Booleans) - Use AllFalse instead
+- True for All (Booleans) - Use AllTrue instead
+- Document.Phases - Use All Elements Of Type and Element Types set to "Phase" instead
+- StructuralFoundation.Type - use Element.Type instead
+
+###Renamed nodes:
+- Renamed All Elements Of Name to Elements.FilterByName
+- Renamed List.FalseForAny (Booleans) to List.AnyFalse
+- Renamed List.TrueforAny (Booleans) to List.AnyTrue
+- Renamed Similar to Math.Similar
+- Renamed Room.FromDoorOrWindow to DoorOrWindow.FromRoomAndToRoom
+
 ##0.75.16
 
-##New nodes:
+###New nodes:
 - FamilyInstance.SubComponents
 - FamilyInstance.SuperComponent
 
-##Improvements/Changes:
+###Improvements/Changes:
 - Recategorized and relabeled some nodes
 - Material.Properties now returns single outputs for single inputs
 
 ##0.75.15
 
-##New nodes:
+###New nodes:
 - Element.ResetOverridesInView
 - List.ReplaceEmptyLists
 - List.ReplaceNull
