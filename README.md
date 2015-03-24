@@ -10,7 +10,9 @@ Since Dynamo's package manager currently does not (yet) have an update notificat
 
 #Version history
 
-The latest release of Clockwork is version 0.75.17 - you can find more detailed information about this version and previous versions in the [version history](VersionHistory.md). There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping for historical purposes only - it is not supported any more.
+The latest release of Clockwork is version 0.75.18 - you can find more detailed information about this version and previous versions in the [version history](VersionHistory.md). There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping for historical purposes only - it is not supported any more.
+
+Some nodes may not behave as expected under Dynamo 0.8 - I have not yet looked into Dynamo 0.8 and will likely not get to that before summer. 
 
 #Material on this repository#
 

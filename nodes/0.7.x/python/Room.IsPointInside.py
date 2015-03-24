@@ -10,8 +10,8 @@ rooms = UnwrapElement(IN[0])
 points = [x.ToXyz() for x in IN[1]]
 roomlist = list()
 for room in rooms:
+	booleans = list()
 	for point in points:
-		booleans = list()
 		try:
 			if room.IsPointInRoom(point):
 				booleans.append(True)

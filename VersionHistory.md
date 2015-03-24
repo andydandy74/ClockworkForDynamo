@@ -1,5 +1,18 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.18
+
+###New nodes:
+- Clipboard.SendTo
+- Clipboard.GetFrom
+- Document.Views
+
+###Changes:
+- Reverted Point.Average to node-based workflow (CBN-based returns null)
+- Fixed Point.IsInsideRoom so it actually checks more than one point
+- Made descriptions for Wall.ByFace and CurtainSystem.ByFace more precise
+- Fixed conditional statements in XYZAxis.FromVector
+
 ##0.75.17
 
 ###New nodes:
