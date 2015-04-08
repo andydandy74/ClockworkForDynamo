@@ -1,5 +1,13 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.19
+
+###New node:
+- Element.Panels
+
+###Changes:
+- List.AnyTrue & List.AnyFalse now work well with *empty* lists, too
+
 ##0.75.18
 
 ###New nodes:
