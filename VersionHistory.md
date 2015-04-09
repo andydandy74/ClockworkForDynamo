@@ -1,5 +1,10 @@
 #Clockwork for Dynamo - Version History
 
+##0.75.20
+
+###New node:
+- Document.StartingView
+
 ##0.75.19
 
 ###New node:
