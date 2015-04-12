@@ -9,11 +9,15 @@ Installation is simple - just use Dynamo's built-in package manager and search f
 
 #Versions
 ##Clockwork for Dynamo 0.8.x
-There is currently no distinct version of Clockwork for Dynamo 0.8.x - in the meantime, most nodes of Clockwork for Dynamo 0.7.x should run smoothly under Dynamo 0.8.x as well. Some nodes may not behave as expected under Dynamo 0.8 - I know that all nodes that get or set any Revit parameters that have a unit data type (like lengths, areas & volumes) will only work correctly if you have your Revit project units set to imperial units. I *am* planning to create a separate 0.8.x package that makes use of some non-downward-compatible new functionality available in Dynamo 0.8.x (default data types and values for node inputs) but I will most likely not get to that before summer.
+There is currently no distinct version of Clockwork for Dynamo 0.8.x - in the meantime, most nodes of Clockwork for Dynamo 0.7.x should run smoothly under Dynamo 0.8.x as well. Some nodes may not behave as expected under Dynamo 0.8, e.g. all nodes that get or set any Revit parameters that have a unit data type (like lengths, areas & volumes) will only work correctly if you have your Revit project units set to imperial units. I *am* planning to create a separate 0.8.x package that makes use of some non-downward-compatible new functionality available in Dynamo 0.8.x (default data types and values for node inputs) but I will most likely not get to that before summer.
 ##Clockwork for Dynamo 0.7.x
 The latest release of Clockwork is version 0.75.20 - you can find more detailed information about this version and previous versions in the [version history](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History). 
 ##Clockwork for Dynamo 0.6.3
 There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping for historical purposes only - it is not supported any more.
+
+##Renamed, recategorized and deprecated nodes
+Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. Nodes with [pending issues](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues) are highlighted in yellow.
+If you are missing a specific node, please consult the [list of deprecated nodes](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Deprecated-Nodes).
 
 #Updates
 Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
@@ -32,14 +36,3 @@ Directory [workflow_samples](workflow_samples) contains some sample workflows th
 Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
 
 Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
-
-#State of migration#
-
-Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. This list is colour-coded in order to reflect the state of each node:
-- ```GREEN```: Works
-- ```YELLOW```: Buggy in 0.7.x
-- ```PURPLE```: Needs review
-- ```RED```: Deprecated in 0.7.x
-- ```GREY```: Not yet migrated or published
-
-I am currently using the official 0.7.5 build as well as recent daily builds of Dynamo 0.7.x for testing. Note that nodes known to be buggy in the latest stable build of Dynamo 0.7.x may not be included in the package until they (or the respective bugs in Dynamo that are causing them to fail) are fixed.
