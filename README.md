@@ -15,14 +15,14 @@ The latest release of Clockwork is version 0.75.20 - you can find more detailed 
 ##Clockwork for Dynamo 0.6.3
 There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping for historical purposes only - it is not supported any more.
 
-##Renamed, recategorized and deprecated nodes
+#Renamed, recategorized and deprecated nodes
 Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. Nodes with [pending issues](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues) are highlighted in yellow.
 If you are missing a specific node, please consult the [list of deprecated nodes](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Deprecated-Nodes).
 
 #Updates
 Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
 
-# Known Issues
+#Known Issues
 On this repository you can find a [list of all known issues and planned enhancements](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new issue in that section. Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package - I am not trying to duplicate existing functionality.
 
 #Material on this repository#
