@@ -2,7 +2,7 @@
 
 Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, unit conversions, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 330+ nodes of which a large portion was previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
-If you like the package, please vote in support of it in Dynamo's package search tool. Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new [issue](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package - I am not trying to duplicate existing functionality.
+If you like the package, please vote in support of it in Dynamo's package search tool. 
 
 #Installation
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/0.6.3-Packages-to-Uninstall)).
@@ -17,6 +17,9 @@ There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping f
 
 #Updates
 Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
+
+# Known Issues
+On this repository you can finc a [list of all known issues and planned enhancements](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues). Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new issue in that section. Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package - I am not trying to duplicate existing functionality.
 
 #Material on this repository#
 
