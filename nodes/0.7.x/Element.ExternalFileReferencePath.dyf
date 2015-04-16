@@ -1,0 +1,62 @@
+<Workspace Version="0.7.5.3566" X="-44" Y="41" zoom="1" Description="Returns the full path of an element's external file reference as as string" Category="Clockwork.Revit.Elements.Element.Query" Name="Element.ExternalFileReferencePath" ID="3d4ec35f-5368-49c0-88ae-64ca99ab7baf">
+  <Elements>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="683b3bce-7f19-4182-9148-ab3b2104ed5e" nickname="ReturnListOrSingleValue" x="676.255248729923" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="903599d9-c695-4a89-acc3-f3a950dd3b25" nickname="Python Script" x="423.462959249192" y="112.749262044549" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+
+items = UnwrapElement(IN[0])
+elementlist = []
+for item in items:
+	try:
+		exref = ModelPathUtils.ConvertModelPathToUserVisiblePath(item.GetExternalFileReference().GetAbsolutePath())
+		elementlist.append(exref)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="ce6a2062-7998-437a-a79e-70a48d185f9a" nickname="Turn Into List" x="250" y="115.697015185734" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="b8cd5f71-c48b-4583-808d-776d6ea36513" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="702953a0-4672-4e39-bde4-f75868c6be81" nickname="Output" x="943.255248729923" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Path(s)" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="683b3bce-7f19-4182-9148-ab3b2104ed5e" start_index="0" end="702953a0-4672-4e39-bde4-f75868c6be81" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="903599d9-c695-4a89-acc3-f3a950dd3b25" start_index="0" end="683b3bce-7f19-4182-9148-ab3b2104ed5e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ce6a2062-7998-437a-a79e-70a48d185f9a" start_index="0" end="903599d9-c695-4a89-acc3-f3a950dd3b25" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b8cd5f71-c48b-4583-808d-776d6ea36513" start_index="0" end="683b3bce-7f19-4182-9148-ab3b2104ed5e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b8cd5f71-c48b-4583-808d-776d6ea36513" start_index="0" end="ce6a2062-7998-437a-a79e-70a48d185f9a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
