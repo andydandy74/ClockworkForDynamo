@@ -1,0 +1,69 @@
+<Workspace Version="0.7.5.3566" X="44" Y="26" zoom="1" Description="Retrieves all placed instances of a given *system* family type" Category="Clockwork.Revit.Selection.ByCollector" Name="All Elements of System Family Type" ID="25478d38-ba0e-4dc7-826e-fe45f3f811c6">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="6e3d51fa-0f79-4b89-b35d-e08300a1597d" nickname="Python Script" x="455" y="80.3221523905518" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+famtypes = UnwrapElement(IN[0])
+
+elementlist = list()
+for ft in famtypes:
+	collector = FilteredElementCollector(doc)
+	bic = System.Enum.ToObject(BuiltInCategory, ft.Category.Id.IntegerValue)
+	collector.OfCategory(bic)
+	# This is a workaround
+	# because I was to lazy to learn
+	# how to implement LINQ in Python
+	ftlist =  list()
+	for item in collector.ToElements():
+		if item.GetTypeId().IntegerValue == ft.Id.IntegerValue:
+			ftlist.append(item)
+	elementlist.append(ftlist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="d6725429-23e2-428c-97a3-989c44cffad8" nickname="ReturnListOrSingleValue" x="619.211431366983" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f141ffb8-e132-4226-bcc7-a7d74f348334" nickname="Turn Into List" x="250" y="80.3221523905518" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c3cf4c49-1720-4a98-aaad-69f27d2efccc" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Family Type(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="44461763-4cbf-4f8c-a430-249ffb661443" nickname="Output" x="886.211431366983" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6e3d51fa-0f79-4b89-b35d-e08300a1597d" start_index="0" end="d6725429-23e2-428c-97a3-989c44cffad8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d6725429-23e2-428c-97a3-989c44cffad8" start_index="0" end="44461763-4cbf-4f8c-a430-249ffb661443" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f141ffb8-e132-4226-bcc7-a7d74f348334" start_index="0" end="6e3d51fa-0f79-4b89-b35d-e08300a1597d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c3cf4c49-1720-4a98-aaad-69f27d2efccc" start_index="0" end="d6725429-23e2-428c-97a3-989c44cffad8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c3cf4c49-1720-4a98-aaad-69f27d2efccc" start_index="0" end="f141ffb8-e132-4226-bcc7-a7d74f348334" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

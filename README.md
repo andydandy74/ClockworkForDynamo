@@ -1,6 +1,6 @@
 ﻿![Image](clockwork-logo.png)
 
-Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, unit conversions, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 340+ nodes of which a large portion was previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
+Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, unit conversions, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 350+ nodes of which a large portion was previously published in a number of separate packages. My reasoning is that keeping all nodes in a single package will make updates easier and reduce package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
 If you like the package, please vote in support of it in Dynamo's package search tool. 
 
@@ -11,7 +11,7 @@ Installation is simple - just use Dynamo's built-in package manager and search f
 ###Clockwork for Dynamo 0.8.x
 There is currently no distinct version of Clockwork for Dynamo 0.8.x - in the meantime, most nodes of Clockwork for Dynamo 0.7.x should run smoothly under Dynamo 0.8.x as well. Some nodes may not behave as expected under Dynamo 0.8, e.g. all nodes that get or set any Revit parameters that have a unit data type (like lengths, areas & volumes) will only work correctly if you have your Revit project units set to imperial units. I *am* planning to create a separate 0.8.x package that makes use of some non-downward-compatible new functionality available in Dynamo 0.8.x (default data types and values for node inputs) but I will most likely not get to that before summer.
 ###Clockwork for Dynamo 0.7.x
-The latest release of Clockwork is version **0.75.24** - you can find more detailed information about this version and previous versions in the [version history](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History). 
+The latest release of Clockwork is version **0.75.25** - you can find more detailed information about this version and previous versions in the [version history](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History). 
 ###Clockwork for Dynamo 0.6.3
 There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping for historical purposes only - it is not supported any more.
 

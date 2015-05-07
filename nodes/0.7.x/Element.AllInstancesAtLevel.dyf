@@ -1,0 +1,82 @@
+<Workspace Version="0.7.5.3566" X="131.7525" Y="168.785" zoom="0.8425" Description="Retrieves all instances of an element on a given level" Category="Clockwork.Revit.Elements.Element.Query" Name="Element.AllInstancesAtLevel" ID="84aebb8c-a11b-42c2-8634-3ba86bde1846">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="2ce2a0eb-1722-413a-9d68-ac8f2d9af33e" nickname="Python Script" x="688.051826877456" y="123.974977355083" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+elements = UnwrapElement(IN[0])
+selection = UnwrapElement(IN[1])
+
+elementlist = list()
+for e in elements:
+	elist =  list()
+	for item in selection:
+		if item.GetTypeId().IntegerValue == e.GetTypeId().IntegerValue:
+			elist.append(item)
+	elementlist.append(elist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="9dc91577-0dbe-4178-851e-f15c9f387776" nickname="Turn Into List" x="483.051826877456" y="123.974977355083" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="e856d1dc-d578-415f-b226-9a834f16b9bf" nickname="ReturnListOrSingleValue" x="924.038245134224" y="31.9078271098388" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSRevitNodesUI.ElementsAtLevel type="DSRevitNodesUI.ElementsAtLevel" guid="dc274f44-0b91-409f-ae14-e49d57bd068f" nickname="All Elements at Level" x="250" y="111.537803889735" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f590b0bb-ba25-48ac-b829-abcdfbc01177" nickname="Turn Into List" x="471.791810668463" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="53d89c6a-d99b-4d38-a604-c376434e3405" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="f12ee80f-e64d-4e67-8ce0-2e975fe26315" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Level" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="c404ae7b-afe9-4ed1-aada-90cf06dfed04" nickname="Output" x="1191.03824513422" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="2ce2a0eb-1722-413a-9d68-ac8f2d9af33e" start_index="0" end="e856d1dc-d578-415f-b226-9a834f16b9bf" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9dc91577-0dbe-4178-851e-f15c9f387776" start_index="0" end="2ce2a0eb-1722-413a-9d68-ac8f2d9af33e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e856d1dc-d578-415f-b226-9a834f16b9bf" start_index="0" end="c404ae7b-afe9-4ed1-aada-90cf06dfed04" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dc274f44-0b91-409f-ae14-e49d57bd068f" start_index="0" end="9dc91577-0dbe-4178-851e-f15c9f387776" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f590b0bb-ba25-48ac-b829-abcdfbc01177" start_index="0" end="2ce2a0eb-1722-413a-9d68-ac8f2d9af33e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="53d89c6a-d99b-4d38-a604-c376434e3405" start_index="0" end="e856d1dc-d578-415f-b226-9a834f16b9bf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="53d89c6a-d99b-4d38-a604-c376434e3405" start_index="0" end="f590b0bb-ba25-48ac-b829-abcdfbc01177" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f12ee80f-e64d-4e67-8ce0-2e975fe26315" start_index="0" end="dc274f44-0b91-409f-ae14-e49d57bd068f" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
