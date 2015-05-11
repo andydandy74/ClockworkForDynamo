@@ -1,0 +1,71 @@
+<Workspace Version="0.7.5.3566" X="0" Y="0" zoom="1" Description="Creates a detail line based on a given curve" Category="Clockwork.Revit.Elements.DetailCurve.Create" Name="DetailCurve.FromCurve" ID="24214d3e-6159-4b2c-97b4-0a35a13518d9">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="a2a77e2c-f5ae-46ce-a09a-ed72d81b63b8" nickname="Python Script" x="455" y="74.9965016484353" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+elementlist = []
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for curve in curves:
+	detcurve = doc.Create.NewDetailCurve(view, curve.ToRevitType())
+	elementlist.append(detcurve)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f9bac7fc-94ba-411f-85dd-d86dfb5a3746" nickname="ReturnListOrSingleValue" x="608.116158608817" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="69851252-e218-4eaa-8dfb-4d53b56b47f1" nickname="Turn Into List" x="250" y="74.9965016484353" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="14d63b71-22d0-4bc7-85d4-6c40e1231bd1" nickname="Input" x="25" y="5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Curve(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="47a5ea07-5417-4ccc-8064-c246d455f7d1" nickname="Output" x="875.116158608817" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="DetailCurve(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="6417996e-688c-4b6d-bc42-e09f2653d957" nickname="Input" x="72" y="241" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="View" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="a2a77e2c-f5ae-46ce-a09a-ed72d81b63b8" start_index="0" end="f9bac7fc-94ba-411f-85dd-d86dfb5a3746" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f9bac7fc-94ba-411f-85dd-d86dfb5a3746" start_index="0" end="47a5ea07-5417-4ccc-8064-c246d455f7d1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="69851252-e218-4eaa-8dfb-4d53b56b47f1" start_index="0" end="a2a77e2c-f5ae-46ce-a09a-ed72d81b63b8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="14d63b71-22d0-4bc7-85d4-6c40e1231bd1" start_index="0" end="f9bac7fc-94ba-411f-85dd-d86dfb5a3746" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="14d63b71-22d0-4bc7-85d4-6c40e1231bd1" start_index="0" end="69851252-e218-4eaa-8dfb-4d53b56b47f1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6417996e-688c-4b6d-bc42-e09f2653d957" start_index="0" end="a2a77e2c-f5ae-46ce-a09a-ed72d81b63b8" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
