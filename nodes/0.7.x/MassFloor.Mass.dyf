@@ -1,0 +1,64 @@
+<Workspace Version="0.7.5.3566" X="17.5333022885554" Y="134.397119402683" zoom="1.17131835730765" Description="Gets the mass a given mass floor belongs to" Category="Clockwork.Revit.Elements.MassFloor.Query" Name="MassFloor.Mass" ID="55ac2ba9-fe37-414a-a312-4d2a3d4b4af2">
+  <Elements>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="fb5310e2-15e6-4829-a0fe-2a0d3031b367" nickname="Python Script" x="312.716583286741" y="116.71369599548" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+massfloors = UnwrapElement(IN[0])
+elementlist = list()
+for item in massfloors:
+	try:
+		elementlist.append(doc.GetElement(item.OwningMassId).ToDSType(True))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="b104a053-4c8f-4227-8177-ce410101b4f4" nickname="Turn Into List" x="150.975771827519" y="116.501107488049" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="item" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="87f38510-c9e9-4c95-8119-d85d995c924f" nickname="Input" x="-5.64647652293274" y="61.6707046954135" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Element(s)" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="8f1bdb12-4403-406c-90d6-7cefe95d4b2d" nickname="Output" x="709.883910602365" y="62.6810655983979" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="Host(s)" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="59a141bc-f7f8-40a4-bc48-c285b578fde3" nickname="ReturnListOrSingleValue" x="476.967882045797" y="62.3732165124675" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="item #1 (unknown)" />
+        <Input value="item #2 (list)" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="fb5310e2-15e6-4829-a0fe-2a0d3031b367" start_index="0" end="59a141bc-f7f8-40a4-bc48-c285b578fde3" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b104a053-4c8f-4227-8177-ce410101b4f4" start_index="0" end="fb5310e2-15e6-4829-a0fe-2a0d3031b367" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="87f38510-c9e9-4c95-8119-d85d995c924f" start_index="0" end="b104a053-4c8f-4227-8177-ce410101b4f4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="87f38510-c9e9-4c95-8119-d85d995c924f" start_index="0" end="59a141bc-f7f8-40a4-bc48-c285b578fde3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="59a141bc-f7f8-40a4-bc48-c285b578fde3" start_index="0" end="8f1bdb12-4403-406c-90d6-7cefe95d4b2d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
