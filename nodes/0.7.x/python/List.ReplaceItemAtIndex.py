@@ -1,6 +1,6 @@
-thelist = IN[0]
-thereplacement = IN[1]
-indices = IN[2]
-for index in indices:
-	thelist[index] = thereplacement
-OUT = thelist
+_list = IN[0]
+rValues = IN[1]
+iValues = IN[2]
+for (index, value) in zip(iValues, rValues):
+	_list[index] = value
+OUT = _list
