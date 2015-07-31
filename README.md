@@ -36,3 +36,4 @@ This repository contains the following:
 ##Contributors
 - [Andreas Dieckmann](https://github.com/andydandy74) [package maintainer]
 - [Fabian Ritter](https://github.com/redinkinc) [contributor]
+- [Konrad Sobon](https://github.com/ksobon) [contributor]
