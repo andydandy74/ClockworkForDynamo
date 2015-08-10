@@ -38,4 +38,4 @@ This repository contains the following:
 - [Fabian Ritter](https://github.com/redinkinc) [contributor]
 - [Konrad Sobon](https://github.com/ksobon) [contributor]
 
-If you're interested in contributing to Dynamo, just submit a [pull request](https://github.com/CAAD-RWTH/ClockworkForDynamo/pulls).
+If you're interested in contributing to Clockwork, just submit a [pull request](https://github.com/CAAD-RWTH/ClockworkForDynamo/pulls).
