@@ -9,9 +9,9 @@ Installation is simple - just use Dynamo's built-in package manager and search f
 
 ##Versions
 ###Clockwork for Dynamo 0.8.x
-There is currently no distinct version of Clockwork for Dynamo 0.8.x - in the meantime, most nodes of [Clockwork for Dynamo 0.7.x](#clockwork-for-dynamo-07x) should run smoothly under Dynamo 0.8.x as well. Some nodes may not behave as expected under Dynamo 0.8, e.g. all nodes that get or set any Revit parameters that have a unit data type (like lengths, areas & volumes) will only work correctly if you have your Revit project units set to imperial units. I *am* planning to create a separate 0.8.x package that makes use of some non-downward-compatible new functionality available in Dynamo 0.8.x (default data types and values for node inputs) but I will most likely not get to that before late summer.
+There is currently no distinct version of Clockwork for Dynamo 0.8.x yet - in the meantime, most nodes of [Clockwork for Dynamo 0.7.x](#clockwork-for-dynamo-07x) should run smoothly under Dynamo 0.8.x as well. Some nodes may not behave as expected under Dynamo 0.8, e.g. all nodes that get or set any Revit parameters that have a unit data type (like lengths, areas & volumes) will only work correctly if you have your Revit project units set to imperial units. I *am* in the process of creating a separate 0.8.x package that makes use of some non-downward-compatible new functionality available in Dynamo 0.8.x (default data types and values for node inputs) but it will most likely not be finished before fall of 2015. You can check in on my progress [here](https://github.com/CAAD-RWTH/ClockworkForDynamo/tree/master/nodes/0.8.x).
 ###Clockwork for Dynamo 0.7.x
-The latest release of Clockwork is version **0.75.44** - you can find more detailed information about this version and previous versions in the [version history](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History). 
+The current release of Clockwork is version **0.75.44** - you can find more detailed information about this version and previous versions in the [version history](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History). 
 ###Clockwork for Dynamo 0.6.3
 There is also a version for Dynamo 0.6.3 (Clockwork 0.63.3) which I am keeping for historical purposes only - it is not supported any more.
 
