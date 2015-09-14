@@ -1,0 +1,70 @@
+<Workspace Version="0.8.3.2553" X="30" Y="347.827551020408" zoom="1.30816326530612" Name="PlanView.Underlay" Description="Returns the view template assigned to a given view (if one is assigned)" ID="a2b7f203-d18a-4cb6-8736-f3a881d3f4bc" Category="Clockwork.Revit.Views.PlanView.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="e8f2edca-cf74-4cf1-aa9c-4058f9fd139e" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="177" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="4d7090a5-55aa-4d07-aa91-3d027092bbd0" type="Dynamo.Nodes.Symbol" nickname="Input" x="3.82215288611548" y="-38.9812792511701" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="planView" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="7a99c4da-d79e-4fa4-9b6a-640fdaf8a4a1" type="Dynamo.Nodes.Output" nickname="Output" x="896.471138845554" y="-39.7503900156006" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="underlay" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="08903bfc-b80a-48fc-9983-cd0487db842e" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="382" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+elementlist = list()
+
+for view in views:
+	try:
+		if view.get_Parameter(BuiltInParameter.VIEW_UNDERLAY_ID).AsElementId().IntegerValue == -1:
+			elementlist.append(list())
+		else:
+			elementlist.append(doc.GetElement(view.get_Parameter(BuiltInParameter.VIEW_UNDERLAY_ID).AsElementId()))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="436bfe0a-8565-4b18-9def-41d090d1a5cd" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="604.471138845554" y="-39.7503900156006" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e8f2edca-cf74-4cf1-aa9c-4058f9fd139e" start_index="0" end="08903bfc-b80a-48fc-9983-cd0487db842e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4d7090a5-55aa-4d07-aa91-3d027092bbd0" start_index="0" end="e8f2edca-cf74-4cf1-aa9c-4058f9fd139e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4d7090a5-55aa-4d07-aa91-3d027092bbd0" start_index="0" end="436bfe0a-8565-4b18-9def-41d090d1a5cd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="08903bfc-b80a-48fc-9983-cd0487db842e" start_index="0" end="436bfe0a-8565-4b18-9def-41d090d1a5cd" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="436bfe0a-8565-4b18-9def-41d090d1a5cd" start_index="0" end="7a99c4da-d79e-4fa4-9b6a-640fdaf8a4a1" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
