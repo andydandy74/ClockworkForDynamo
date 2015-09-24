@@ -33,5 +33,5 @@ This repository contains the following:
 - Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
 - Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
 
-##Contributors
+##Help to improve Clockwork
 If you're interested in contributing to Clockwork, just submit a [pull request](https://github.com/CAAD-RWTH/ClockworkForDynamo/pulls). It's not that hard - [some folks](https://github.com/CAAD-RWTH/ClockworkForDynamo/graphs/contributors) have already done it. 
