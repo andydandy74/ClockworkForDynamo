@@ -1,0 +1,71 @@
+<Workspace Version="0.8.3.2580" X="103.115833438108" Y="331.994556645006" zoom="1.01581433251793" Name="View.DuplicateWithDetailing" Description="Duplicates a given view with detailing" ID="34ac4ca3-86ac-40f2-9ed1-2ea1e7e3b6c3" Category="Clockwork.Revit.Views.View.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="9946b309-ce58-49ea-b1d5-4e617bef849b" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="242" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="426563f5-9c8e-4016-8c0c-a9f1debb81fb" type="Dynamo.Nodes.Symbol" nickname="Input" x="114.870138483226" y="-41.2865557960326" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="c6ad3ceb-20c6-4892-be23-446170905627" type="Dynamo.Nodes.Output" nickname="Output" x="872.11121648652" y="-39.5913638734529" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="2d95b4f0-056e-446e-880c-cafdcc942c80" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="447" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+elementlist = list()
+dupopt = Autodesk.Revit.DB.ViewDuplicateOption.WithDetailing
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for view in views:
+	newview = view.Duplicate(dupopt)
+	elementlist.append(doc.GetElement(newview))
+TransactionManager.Instance.TransactionTaskDone()
+	
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="614.369407126316" y="-38.7357714954309" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9946b309-ce58-49ea-b1d5-4e617bef849b" start_index="0" end="2d95b4f0-056e-446e-880c-cafdcc942c80" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="9946b309-ce58-49ea-b1d5-4e617bef849b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2d95b4f0-056e-446e-880c-cafdcc942c80" start_index="0" end="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" start_index="0" end="c6ad3ceb-20c6-4892-be23-446170905627" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
