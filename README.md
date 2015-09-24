@@ -34,8 +34,4 @@ This repository contains the following:
 - Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
 
 ##Contributors
-- [Andreas Dieckmann](https://github.com/andydandy74) [package maintainer]
-- [Fabian Ritter](https://github.com/redinkinc) [contributor]
-- [Konrad Sobon](https://github.com/ksobon) [contributor]
-
-If you're interested in contributing to Clockwork, just submit a [pull request](https://github.com/CAAD-RWTH/ClockworkForDynamo/pulls).
+If you're interested in contributing to Clockwork, just submit a [pull request](https://github.com/CAAD-RWTH/ClockworkForDynamo/pulls). It's not that hard - [some folks](https://github.com/CAAD-RWTH/ClockworkForDynamo/graphs/contributors) have already done it. 
