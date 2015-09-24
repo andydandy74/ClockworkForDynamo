@@ -2,11 +2,17 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-faminsts = UnwrapElement(IN[0])
+faminsts = IN[0]
 elementlist = list()
 for item in faminsts:
 	try:
-		elementlist.append(item.Name)
+		n = UnwrapElement(item).Name
 	except:
-		elementlist.append(list())
+		n = None
+	if n == None:
+		try:
+			n = item.Name
+		except:
+			n = []
+	elementlist.append(n)
 OUT = elementlist
