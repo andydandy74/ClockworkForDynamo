@@ -1,0 +1,79 @@
+<Workspace Version="0.8.3.2580" X="192.965532168683" Y="170.126008269534" zoom="0.852017678554967" Name="SelectionSet.ByElements" Description="Creates a selection set of the given elements. Note that if a selection set of the given name already exists in the model, its contents will be replaced. Also, if the selection set is already applied as a view filter, the view filter will have to be manually updated in the visibility / graphic overrides. DO ***NOT*** USE IN AUTOMATIC MODE!" ID="abdd4174-8c8f-45ae-90a4-ffa3b369941b" Category="Clockwork.Revit.Elements.SelectionSet.Create">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="497f8c29-91da-48c6-ad82-483dce66eca1" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="380.526308663078" y="55.9947450374601" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+name = IN[1]
+
+# create itemset
+items = UnwrapElement(IN[0])
+ids = list()
+for item in items:
+	ids.append(item.Id)
+itemset = List[ElementId](ids)
+
+# collect all existing filters from the model 
+names = list()
+collector = FilteredElementCollector(doc)
+filters = collector.OfClass(FilterElement).ToElements();
+
+selset = False
+TransactionManager.Instance.EnsureInTransaction(doc)
+# if a filter of that name already exists, delete its content
+for filter in filters:
+	if str(filter.Name) == name:
+		filter.Clear()
+		selset = filter
+# create a new selection set if it doesn't already exist
+if selset == False:
+	selset = SelectionFilterElement.Create(doc,name)
+# add the items to the selection set
+selset.AddSet(itemset)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = selset.ToDSType(False)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="02efed4a-91a6-41d9-a14c-dc354836c16d" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="3848e8d6-26a7-4b23-b905-870458cef8f2" type="Dynamo.Nodes.Symbol" nickname="Input" x="160.794785657915" y="115.689483304845" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="Name : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="131449f2-4dbf-49b7-be5c-6d6332a0d383" type="Dynamo.Nodes.Symbol" nickname="Input" x="37.557906139075" y="28.1684296043063" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="2dfefa93-2b2b-4c60-8cbd-6134665af54d" type="Dynamo.Nodes.Output" nickname="Output" x="604.526308663078" y="55.9947450374601" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="selectionSet" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="497f8c29-91da-48c6-ad82-483dce66eca1" start_index="0" end="2dfefa93-2b2b-4c60-8cbd-6134665af54d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="02efed4a-91a6-41d9-a14c-dc354836c16d" start_index="0" end="497f8c29-91da-48c6-ad82-483dce66eca1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3848e8d6-26a7-4b23-b905-870458cef8f2" start_index="0" end="497f8c29-91da-48c6-ad82-483dce66eca1" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="131449f2-4dbf-49b7-be5c-6d6332a0d383" start_index="0" end="02efed4a-91a6-41d9-a14c-dc354836c16d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

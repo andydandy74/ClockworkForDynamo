@@ -1,4 +1,4 @@
-<Workspace Version="0.8.3.2553" X="35.9837537270086" Y="293.969119646772" zoom="0.890427730582524" Name="UnitType.DisplayUnitType" Description="Retrieves the display unit type for a given unit type. " ID="896ba009-854c-4290-bd05-42c87ddcdb7c" Category="Clockwork.Revit.Elements.UnitType.Query">
+<Workspace Version="0.8.3.2580" X="-300.642353931828" Y="324.242626406377" zoom="0.939154117974764" Name="UnitType.DisplayUnitType" Description="Retrieves the display unit type for a given unit type. " ID="896ba009-854c-4290-bd05-42c87ddcdb7c" Category="Clockwork.Revit.Elements.UnitType.Query">
   <NamespaceResolutionMap />
   <Elements>
     <Dynamo.Nodes.Output guid="0b8b9d6e-eb6e-48a4-82ca-100cf22959c2" type="Dynamo.Nodes.Output" nickname="Output" x="1002" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
@@ -17,7 +17,17 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-unittype = IN[0]
+dynunittype = IN[0]
+
+if str(dynunittype) == 'DynamoUnits.Area':
+	unittype = UnitType.UT_Area
+elif str(dynunittype) == 'DynamoUnits.Length':
+	unittype = UnitType.UT_Length
+elif str(dynunittype) == 'DynamoUnits.Volume':
+	unittype = UnitType.UT_Volume
+else:
+	unittype = null
+
 doc = DocumentManager.Instance.CurrentDBDocument
 formatoptions = doc.GetUnits().GetFormatOptions(unittype)
 dispunits = formatoptions.DisplayUnits
@@ -28,27 +38,15 @@ else:
 	dispsym = LabelUtils.GetLabelFor(symtype)
 OUT = (dispunits,dispsym)</Script>
     </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Symbol guid="8b667420-e63c-4ba0-8039-cdc15097c99d" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+    <Dynamo.Nodes.Symbol guid="8b667420-e63c-4ba0-8039-cdc15097c99d" type="Dynamo.Nodes.Symbol" nickname="Input" x="386.019200034436" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
       <Symbol value="unitType" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Function guid="a1b03d53-b4c6-4873-92b6-92bd7508e5d3" type="Dynamo.Nodes.Function" nickname="UnitType.FromDynamoUnitType" x="190" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <ID value="90ad7237-1863-40d0-9a87-05b3be7624b3" />
-      <Name value="UnitType.FromDynamoUnitType" />
-      <Description value="Retrieves the corresponding Revit UnitType from a Dynamo UnitType" />
-      <Inputs>
-        <Input value="DynamoUnitType" />
-      </Inputs>
-      <Outputs>
-        <Output value="RevitUnitType" />
-      </Outputs>
-    </Dynamo.Nodes.Function>
   </Elements>
   <Connectors>
     <Dynamo.Models.ConnectorModel start="9f543a24-6050-4acf-8008-cd1d6c618f42" start_index="0" end="0b8b9d6e-eb6e-48a4-82ca-100cf22959c2" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="9f543a24-6050-4acf-8008-cd1d6c618f42" start_index="1" end="82ef5a2b-909a-4de6-b9a3-032388240f02" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="4c659fc2-17fc-4335-8ed1-1becc5063311" start_index="0" end="9f543a24-6050-4acf-8008-cd1d6c618f42" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="8b667420-e63c-4ba0-8039-cdc15097c99d" start_index="0" end="a1b03d53-b4c6-4873-92b6-92bd7508e5d3" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="a1b03d53-b4c6-4873-92b6-92bd7508e5d3" start_index="0" end="4c659fc2-17fc-4335-8ed1-1becc5063311" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8b667420-e63c-4ba0-8039-cdc15097c99d" start_index="0" end="4c659fc2-17fc-4335-8ed1-1becc5063311" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />

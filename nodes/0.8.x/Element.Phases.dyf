@@ -1,0 +1,96 @@
+<Workspace Version="0.8.3.2580" X="30" Y="302.966932270916" zoom="1.02151394422311" Name="Element.Phases" Description="Gets the created and demolished phases of an element" ID="48ac7d7c-8035-45e6-8a63-8c9206be35b6" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="b1341aa0-f8b0-473d-bb91-ca670b5cba0b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="404" y="72.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+createdlist = list()
+demolist = list()
+
+for item in items:
+	try:
+		if item.CreatedPhaseId.IntegerValue == -1:
+			createdlist.append(list())
+		else:
+			createdlist.append(doc.GetElement(item.CreatedPhaseId))
+		if item.DemolishedPhaseId.IntegerValue == -1:
+			demolist.append(list())
+		else:
+			demolist.append(doc.GetElement(item.DemolishedPhaseId))
+	except:
+		createdlist.append(list())
+		demolist.append(list())
+OUT = (createdlist,demolist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="a2dc9c1f-662b-4c64-89ea-388e4d1c63c4" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199" y="72.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="2b5dff10-11be-4d46-a935-cfee1f76d8e7" type="Dynamo.Nodes.Symbol" nickname="Input" x="6.85257410296413" y="0.755774830993232" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="b76d3543-3fa2-4e98-80f2-22200acf5987" type="Dynamo.Nodes.Output" nickname="Output" x="1151.91575663027" y="-1.68408736349454" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Created" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="017e298c-114f-4f90-a67f-e6285fa68b0d" type="Dynamo.Nodes.Output" nickname="Output" x="1147.02106084243" y="109.726209048362" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Demolished" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="5884466b-48c4-4df2-9a28-686b2d5fba60" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="628" y="76.4366666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="c714f5fb-e088-4f13-9685-4c805aac3e7b" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="856" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="0f3122ae-7875-4d84-b443-6b75c208a948" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="856" y="110" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b1341aa0-f8b0-473d-bb91-ca670b5cba0b" start_index="0" end="5884466b-48c4-4df2-9a28-686b2d5fba60" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2dc9c1f-662b-4c64-89ea-388e4d1c63c4" start_index="0" end="b1341aa0-f8b0-473d-bb91-ca670b5cba0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2b5dff10-11be-4d46-a935-cfee1f76d8e7" start_index="0" end="a2dc9c1f-662b-4c64-89ea-388e4d1c63c4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2b5dff10-11be-4d46-a935-cfee1f76d8e7" start_index="0" end="c714f5fb-e088-4f13-9685-4c805aac3e7b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2b5dff10-11be-4d46-a935-cfee1f76d8e7" start_index="0" end="0f3122ae-7875-4d84-b443-6b75c208a948" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5884466b-48c4-4df2-9a28-686b2d5fba60" start_index="0" end="c714f5fb-e088-4f13-9685-4c805aac3e7b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5884466b-48c4-4df2-9a28-686b2d5fba60" start_index="1" end="0f3122ae-7875-4d84-b443-6b75c208a948" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c714f5fb-e088-4f13-9685-4c805aac3e7b" start_index="0" end="b76d3543-3fa2-4e98-80f2-22200acf5987" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f3122ae-7875-4d84-b443-6b75c208a948" start_index="0" end="017e298c-114f-4f90-a67f-e6285fa68b0d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

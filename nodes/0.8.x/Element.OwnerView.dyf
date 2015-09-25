@@ -1,0 +1,70 @@
+<Workspace Version="0.8.3.2580" X="18.079164120775" Y="194.890464573369" zoom="0.677842740966181" Name="Element.OwnerView" Description="Gets the owner view of a given Revit element (if possible)" ID="a0fc8138-f7bc-4425-abe6-2ef1b411d447" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="d8505f77-55a9-4727-8e8c-860b73e4178c" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="1da84079-f5bd-46db-92fe-331f3856ffe8" type="Dynamo.Nodes.Symbol" nickname="Input" x="44.1737704918032" y="-39.3540983606557" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="33a866fd-53e7-4d29-b752-0e046772155c" type="Dynamo.Nodes.Output" nickname="Output" x="892.186885245902" y="-37.6295081967213" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="891228fa-e27b-4b78-8e76-68c3e1b65d84" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="600.186885245902" y="-37.6295081967213" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="e66c9e5f-ed44-4ac5-a30d-89bbf1b39d98" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="404" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+elementlist = list()
+for item in items:
+	try:
+		elementlist.append(doc.GetElement(item.OwnerViewId).ToDSType(True))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d8505f77-55a9-4727-8e8c-860b73e4178c" start_index="0" end="e66c9e5f-ed44-4ac5-a30d-89bbf1b39d98" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1da84079-f5bd-46db-92fe-331f3856ffe8" start_index="0" end="d8505f77-55a9-4727-8e8c-860b73e4178c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1da84079-f5bd-46db-92fe-331f3856ffe8" start_index="0" end="891228fa-e27b-4b78-8e76-68c3e1b65d84" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="891228fa-e27b-4b78-8e76-68c3e1b65d84" start_index="0" end="33a866fd-53e7-4d29-b752-0e046772155c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e66c9e5f-ed44-4ac5-a30d-89bbf1b39d98" start_index="0" end="891228fa-e27b-4b78-8e76-68c3e1b65d84" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

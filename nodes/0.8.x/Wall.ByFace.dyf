@@ -1,0 +1,100 @@
+<Workspace Version="0.8.3.2580" X="-444" Y="198.825138504155" zoom="0.791551246537396" Name="Wall.ByFace" Description="Creates a wall on top of a face. The face typically needs to be the face of a mass surface in Revit." ID="f504c581-37f9-4b34-82c9-86b9675a0541" Category="Clockwork.Revit.Elements.Wall.Create">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Surface" resolvedName="Autodesk.DesignScript.Geometry.Surface" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="WallType" resolvedName="Revit.Elements.WallType" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="6fda9557-2e2e-42ae-a847-f023aed0b78a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="816.889763779528" y="21.9930008748906" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+walltype = UnwrapElement(IN[0])
+locline = IN[1]
+facerefs = IN[2]
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for ref in facerefs:
+	try:
+		newwall = FaceWall.Create(doc,walltype.Id,locline,ref)
+		elementlist.append(newwall)
+	except:
+		elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="cb474a11-6b40-4023-a8c3-85ef0bff60e1" type="Dynamo.Nodes.Symbol" nickname="Input" x="584.92738407699" y="-21.4768153980752" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="walltype : WallType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="8fec8182-566a-4cbc-a7ff-df8b0107cecf" type="Dynamo.Nodes.Symbol" nickname="Input" x="611.457567804025" y="47.2458442694663" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="wallLocationLine" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="1c46f94b-9913-46aa-a6db-2fabe6143a29" type="Dynamo.Nodes.Symbol" nickname="Input" x="18.9501312335958" y="-82.4978127734034" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="surface : Surface" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="97041c6d-5049-4d07-bf85-f6b70175bb1b" type="Dynamo.Nodes.Output" nickname="Output" x="1267.19597550306" y="-81.0708661417323" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="wall" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="235" y="122" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="317acd90-9e7e-4685-9cef-85adf645a64b" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1008.0428696413" y="-81.0708661417323" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" type="Dynamo.Nodes.Function" nickname="RevitFaceReference.FromDynamoSurface" x="440" y="122" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="3204925d-0493-4b8b-b42b-fb0d8041837b" />
+      <Name value="RevitFaceReference.FromDynamoSurface" />
+      <Description value="Returns the underlying Revit face reference of a given surface" />
+      <Inputs>
+        <Input value="DynamoSurface" />
+      </Inputs>
+      <Outputs>
+        <Output value="RevitFaceReference" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6fda9557-2e2e-42ae-a847-f023aed0b78a" start_index="0" end="317acd90-9e7e-4685-9cef-85adf645a64b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb474a11-6b40-4023-a8c3-85ef0bff60e1" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8fec8182-566a-4cbc-a7ff-df8b0107cecf" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c46f94b-9913-46aa-a6db-2fabe6143a29" start_index="0" end="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c46f94b-9913-46aa-a6db-2fabe6143a29" start_index="0" end="317acd90-9e7e-4685-9cef-85adf645a64b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" start_index="0" end="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="317acd90-9e7e-4685-9cef-85adf645a64b" start_index="0" end="97041c6d-5049-4d07-bf85-f6b70175bb1b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
