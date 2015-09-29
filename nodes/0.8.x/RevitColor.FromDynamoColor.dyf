@@ -1,0 +1,83 @@
+<Workspace Version="0.8.3.2580" X="142.755933586795" Y="171.748802095697" zoom="0.97676875" Name="RevitColor.FromDynamoColor" Description="Creates a Revit color from a Dynamo color" ID="7bb9dc5b-48c9-4a5a-a6bb-96c97a3f91e4" Category="Clockwork.Revit.Elements.Color.Create">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="DSCore.Color" resolvedName="DSCore.Color" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="651" y="75.191107644306" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from Autodesk.Revit import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+#uiapp = DocumentManager.Instance.CurrentUIApplication
+#app = uiapp.Application
+appcreation = Creation.Application
+r = IN[0]
+g = IN[1]
+b = IN[2]
+counter = 0
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for red in r:
+	newcolor = Color(red,g[counter],b[counter])
+	elementlist.append(newcolor)
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="3c018555-b2bf-45be-88d6-3098ff4bc01b" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="891.403276131045" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="549fed77-0e78-495c-9e2e-5276947070a2" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="249" y="81.191107644306" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" type="Dynamo.Nodes.Symbol" nickname="Input" x="-40" y="4" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="DynamoColor : DSCore.Color" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" type="Dynamo.Nodes.Output" nickname="Output" x="1158.40327613105" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="RevitColor" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="0f0990e0-836c-4202-889e-b3153d76fd55" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="424" y="86" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="col.Red;&#xA;col.Green;&#xA;col.Blue;" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" start_index="0" end="3c018555-b2bf-45be-88d6-3098ff4bc01b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3c018555-b2bf-45be-88d6-3098ff4bc01b" start_index="0" end="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="0f0990e0-836c-4202-889e-b3153d76fd55" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="3c018555-b2bf-45be-88d6-3098ff4bc01b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="549fed77-0e78-495c-9e2e-5276947070a2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f0990e0-836c-4202-889e-b3153d76fd55" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f0990e0-836c-4202-889e-b3153d76fd55" start_index="1" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f0990e0-836c-4202-889e-b3153d76fd55" start_index="2" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
