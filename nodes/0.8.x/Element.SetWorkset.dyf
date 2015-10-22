@@ -1,0 +1,69 @@
+<Workspace Version="0.8.3.2580" X="105" Y="301.221462818004" zoom="0.839530332681018" Name="Element.SetWorkset" Description="Sets the workset of a given element" ID="c3252e3e-c023-483c-97b5-439d61de237b" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="358d530c-db3a-48ad-9412-936b5afab472" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="390.897435897436" y="55.8500349650349" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminsts = UnwrapElement(IN[0])
+ws = UnwrapElement(IN[1])
+elementlist = list()
+faillist = list()
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in faminsts:
+	try:
+		param = item.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM)
+		param.Set(ws.Id.IntegerValue)
+		elementlist.append(item)
+	except:
+		faillist.append(item)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = (elementlist,faillist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="5002dd07-8f90-4a73-b923-f75ef19fa557" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="614.897435897436" y="60.0683682983683" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="a91f392d-4809-4042-8fe4-d40d5ef5369d" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="40cb5e03-1a70-402f-a97a-01c035d9040d" type="Dynamo.Nodes.Symbol" nickname="Input" x="216.787878787879" y="107.276608391608" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="workset" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="0a6ee1a7-2b6b-4cea-89ab-c2f011dd7e0a" type="Dynamo.Nodes.Symbol" nickname="Input" x="36.925407925408" y="33.9968881118881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="fe3d9c24-f8a9-461c-bf40-84714330e13d" type="Dynamo.Nodes.Output" nickname="Output" x="842.897435897436" y="22.6317016317016" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="changedElements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="f27e5de7-471c-4783-98bf-96cd6b691136" type="Dynamo.Nodes.Output" nickname="Output" x="842.897435897436" y="106.631701631702" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="unchangedElements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="358d530c-db3a-48ad-9412-936b5afab472" start_index="0" end="5002dd07-8f90-4a73-b923-f75ef19fa557" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5002dd07-8f90-4a73-b923-f75ef19fa557" start_index="0" end="fe3d9c24-f8a9-461c-bf40-84714330e13d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5002dd07-8f90-4a73-b923-f75ef19fa557" start_index="1" end="f27e5de7-471c-4783-98bf-96cd6b691136" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a91f392d-4809-4042-8fe4-d40d5ef5369d" start_index="0" end="358d530c-db3a-48ad-9412-936b5afab472" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="40cb5e03-1a70-402f-a97a-01c035d9040d" start_index="0" end="358d530c-db3a-48ad-9412-936b5afab472" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0a6ee1a7-2b6b-4cea-89ab-c2f011dd7e0a" start_index="0" end="a91f392d-4809-4042-8fe4-d40d5ef5369d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
