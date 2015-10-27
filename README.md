@@ -5,18 +5,15 @@ Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.
 If you like the package, please vote in support of it in Dynamo's package search tool. 
 
 ##Installation
-Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/0.6.3-Packages-to-Uninstall)).
+Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/0.6.3-Packages-to-Uninstall)). Also, always make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo.
 
 ##Versions
-###Clockwork for Dynamo 0.8.x
-There is currently no distinct version of Clockwork for Dynamo 0.8.x yet - in the meantime, most nodes of [Clockwork for Dynamo 0.7.x](#clockwork-for-dynamo-07x) should run smoothly under Dynamo 0.8.x as well. Some nodes may not behave as expected under Dynamo 0.8, e.g. all nodes that get or set any Revit parameters that have a unit data type (like lengths, areas & volumes) will only work correctly *if* you have your Revit project units set to imperial units. I *am* in the process of creating a separate 0.8.x package that makes use of some non-downward-compatible new functionality available in Dynamo 0.8.x (default data types and values for node inputs). You can check in on my progress [here](https://github.com/CAAD-RWTH/ClockworkForDynamo/tree/master/nodes/0.8.x). Currently, almost all Clockwork nodes have been migrated. The new version will have significantly less nodes than the 0.7.x version (currently about 50 nodes have been deprecated) but also some new additions.
-###Clockwork for Dynamo 0.7.x
-The current release of Clockwork is version [0.75.47](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#07547).
-###Clockwork for Dynamo 0.6.3
-There is also a version for Dynamo 0.6.3 ([0.63.3](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0633)) which I am keeping for historical purposes only - it is not supported any more.
+- Clockwork for Dynamo 0.8.2: [0.82.2](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0822)
+- Clockwork for Dynamo 0.7.x: [0.75.47](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#07547) - not supported any more
+- Clockwork for Dynamo 0.6.3: [0.63.3](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0633) - not supported any more
 
 ##Renamed, recategorized and deprecated nodes
-Migrating from 0.6.3, I recategorized and renamed most of the nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. Nodes with [pending issues](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues) are highlighted in yellow.
+During migration from one Dynamo versuion to the next, I regularly recategorize and rename a lot of nodes. These changes are documented in an [excel sheet](https://github.com/CAAD-RWTH/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. Nodes with [pending issues](https://github.com/CAAD-RWTH/ClockworkForDynamo/issues) are highlighted in yellow.
 If you are missing a specific node, please consult the [list of deprecated nodes](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Deprecated-Nodes).
 
 ##Updates
