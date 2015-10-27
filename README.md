@@ -8,7 +8,8 @@ If you like the package, please vote in support of it in Dynamo's package search
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/0.6.3-Packages-to-Uninstall)). Also, always make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo.
 
 ##Versions
-The different versions are available as separate packages on the package manager. I release a new Clockwork package for each
+The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward compatibility of nodes, hence the separate packages...)
+- Clockwork for Dynamo 0.9.x: Coming very, very soon...
 - Clockwork for Dynamo 0.8.3: [0.82.3](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0822)
 - Clockwork for Dynamo 0.7.x: [0.75.47](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#07547) - not supported any more
 - Clockwork for Dynamo 0.6.3: [0.63.3](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0633) - not supported any more
