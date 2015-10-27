@@ -1,0 +1,98 @@
+<Workspace Version="0.8.2.2392" X="71.3137985541636" Y="410.065979420155" zoom="0.770634255453954" Name="CurtainSystem.ByFace" Description="Creates a curtain system on top of a face. The face typically needs to be the face of a mass surface in Revit." ID="085dd1a2-1add-4403-82d4-a4b363d280f8" Category="Clockwork.Revit.Elements.CurtainSystem.Create">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Surface" resolvedName="Autodesk.DesignScript.Geometry.Surface" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="6fda9557-2e2e-42ae-a847-f023aed0b78a" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="830.146117960668" y="111.891885500557" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+cstype = UnwrapElement(IN[0])
+facerefs = IN[1]
+elementlist = list()
+refarr = ReferenceArray()
+for ref in facerefs:
+	refarr.Append(ref)
+TransactionManager.Instance.EnsureInTransaction(doc)
+doccreation = doc.Create
+newcs = doccreation.NewCurtainSystem2(refarr,cstype)
+try:
+	newcs = doccreation.NewCurtainSystem2(refarr,cstype)
+	for item in newcs:
+		elementlist.append(doc.GetElement(item))
+except:
+	donothing = 1
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="cb474a11-6b40-4023-a8c3-85ef0bff60e1" type="Dynamo.Nodes.Symbol" nickname="Input" x="567.293125986737" y="95.1261788265097" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="curtainSystemType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="1c46f94b-9913-46aa-a6db-2fabe6143a29" type="Dynamo.Nodes.Symbol" nickname="Input" x="65.5236426567719" y="18.5650320860854" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="surface : Surface" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="97041c6d-5049-4d07-bf85-f6b70175bb1b" type="Dynamo.Nodes.Output" nickname="Output" x="1380" y="16" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="curtainSystem" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="257.828546398516" y="173.929888961781" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="317acd90-9e7e-4685-9cef-85adf645a64b" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1088" y="16" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" type="Dynamo.Nodes.Function" nickname="RevitFaceReference.FromDynamoSurface" x="462.828546398516" y="173.929888961781" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="3204925d-0493-4b8b-b42b-fb0d8041837b" />
+      <Name value="RevitFaceReference.FromDynamoSurface" />
+      <Description value="Returns the underlying Revit face reference of a given surface" />
+      <Inputs>
+        <Input value="DynamoSurface" />
+      </Inputs>
+      <Outputs>
+        <Output value="RevitFaceReference" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6fda9557-2e2e-42ae-a847-f023aed0b78a" start_index="0" end="317acd90-9e7e-4685-9cef-85adf645a64b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb474a11-6b40-4023-a8c3-85ef0bff60e1" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c46f94b-9913-46aa-a6db-2fabe6143a29" start_index="0" end="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1c46f94b-9913-46aa-a6db-2fabe6143a29" start_index="0" end="317acd90-9e7e-4685-9cef-85adf645a64b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c5ece6f8-2d8f-4ee1-b844-5ec862c6305f" start_index="0" end="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="317acd90-9e7e-4685-9cef-85adf645a64b" start_index="0" end="97041c6d-5049-4d07-bf85-f6b70175bb1b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a8d6a092-bcd5-48a9-97a8-c0881ecc07dd" start_index="0" end="6fda9557-2e2e-42ae-a847-f023aed0b78a" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,93 @@
+<Workspace Version="0.8.2.2392" X="79.7149690324919" Y="422.761970442579" zoom="0.837941597864812" Name="TextElement.SetText" Description="Sets the text of a given text element (i.e. text note or model text)" ID="1558d2b8-dbbe-41bd-bf31-86e43a386e71" Category="Clockwork.Revit.Elements.TextElement.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="d8505f77-55a9-4727-8e8c-860b73e4178c" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="199" y="-92.1124685847761" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="1da84079-f5bd-46db-92fe-331f3856ffe8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="-92.1124685847761" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="33a866fd-53e7-4d29-b752-0e046772155c" type="Dynamo.Nodes.Output" nickname="Output" x="1322.29250209435" y="-112.904970679124" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="success" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="5c36560e-6771-4457-ae7b-625bcce5d9aa" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="902.244060667445" y="-95.2952823937438" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+texts = IN[1]
+goodlist = list()
+badlist = list()
+counter = 0
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+while counter &lt; len(items):
+	try:
+		items[counter].Text = texts[counter]
+		goodlist.append(items[counter])
+	except:
+		badlist.append(items[counter])
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (goodlist,badlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="13d6200c-40de-4ef1-92fc-0bdde1fa130a" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="text : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="0562508b-fc93-423c-b911-01f093259ef6" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="199" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="00647e50-4ae1-49bd-846e-671a6f65e557" type="Dynamo.Nodes.Output" nickname="Output" x="1322.29250209435" y="-28.9049706791245" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="fail" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="88c88aaf-9b15-4d12-a1d8-871297125dea" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="404" y="-12.3418702877164" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="num = List.Count(seq1);&#xA;cond = List.Count(seq2) &lt; 2 &amp;&amp; num &gt; 1;&#xA;repseq = List.OfRepeatedItem(seq2[0],num);&#xA;cond ? repseq : seq2;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="a88a168c-c067-493f-ac6f-dd9f26844719" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1104.29250209435" y="-90.9049706791245" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d8505f77-55a9-4727-8e8c-860b73e4178c" start_index="0" end="5c36560e-6771-4457-ae7b-625bcce5d9aa" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d8505f77-55a9-4727-8e8c-860b73e4178c" start_index="0" end="88c88aaf-9b15-4d12-a1d8-871297125dea" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1da84079-f5bd-46db-92fe-331f3856ffe8" start_index="0" end="d8505f77-55a9-4727-8e8c-860b73e4178c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5c36560e-6771-4457-ae7b-625bcce5d9aa" start_index="0" end="a88a168c-c067-493f-ac6f-dd9f26844719" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="13d6200c-40de-4ef1-92fc-0bdde1fa130a" start_index="0" end="0562508b-fc93-423c-b911-01f093259ef6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0562508b-fc93-423c-b911-01f093259ef6" start_index="0" end="88c88aaf-9b15-4d12-a1d8-871297125dea" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88c88aaf-9b15-4d12-a1d8-871297125dea" start_index="3" end="5c36560e-6771-4457-ae7b-625bcce5d9aa" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a88a168c-c067-493f-ac6f-dd9f26844719" start_index="0" end="33a866fd-53e7-4d29-b752-0e046772155c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a88a168c-c067-493f-ac6f-dd9f26844719" start_index="1" end="00647e50-4ae1-49bd-846e-671a6f65e557" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
+  </Cameras>
+</Workspace>

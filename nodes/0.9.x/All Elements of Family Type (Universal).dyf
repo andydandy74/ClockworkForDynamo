@@ -1,0 +1,77 @@
+<Workspace Version="0.8.2.2392" X="55" Y="135" zoom="1" Name="All Elements of Family Type (Universal)" Description="Unlike the built-in  node, this node retrieves all placed instances of a given loadable *or* system family type" ID="25478d38-ba0e-4dc7-826e-fe45f3f811c6" Category="Clockwork.Revit.Selection.ByCollector">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FamilyType" resolvedName="Revit.Elements.FamilyType" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="6e3d51fa-0f79-4b89-b35d-e08300a1597d" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="455" y="80.3221523905518" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+famtypes = UnwrapElement(IN[0])
+
+elementlist = list()
+for ft in famtypes:
+	collector = FilteredElementCollector(doc)
+	bic = System.Enum.ToObject(BuiltInCategory, ft.Category.Id.IntegerValue)
+	collector.OfCategory(bic)
+	# This is a workaround
+	# because I was to lazy to learn
+	# how to implement LINQ in Python
+	ftlist =  list()
+	for item in collector.ToElements():
+		if item.GetTypeId().IntegerValue == ft.Id.IntegerValue:
+			ftlist.append(item)
+	elementlist.append(ftlist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="d6725429-23e2-428c-97a3-989c44cffad8" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="619.211431366983" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="f141ffb8-e132-4226-bcc7-a7d74f348334" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="250" y="80.3221523905518" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="c3cf4c49-1720-4a98-aaad-69f27d2efccc" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="familyType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="44461763-4cbf-4f8c-a430-249ffb661443" type="Dynamo.Nodes.Output" nickname="Output" x="886.211431366983" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6e3d51fa-0f79-4b89-b35d-e08300a1597d" start_index="0" end="d6725429-23e2-428c-97a3-989c44cffad8" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d6725429-23e2-428c-97a3-989c44cffad8" start_index="0" end="44461763-4cbf-4f8c-a430-249ffb661443" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f141ffb8-e132-4226-bcc7-a7d74f348334" start_index="0" end="6e3d51fa-0f79-4b89-b35d-e08300a1597d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c3cf4c49-1720-4a98-aaad-69f27d2efccc" start_index="0" end="d6725429-23e2-428c-97a3-989c44cffad8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c3cf4c49-1720-4a98-aaad-69f27d2efccc" start_index="0" end="f141ffb8-e132-4226-bcc7-a7d74f348334" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
+  </Cameras>
+</Workspace>

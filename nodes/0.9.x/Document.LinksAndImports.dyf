@@ -1,0 +1,40 @@
+<Workspace Version="0.7.5.3566" X="91.797761196998" Y="214.110041821802" zoom="0.780208159291421" Description="Gets all linked and imported files in the document. NOTE: Does *not* retrieve linked Revit files." Category="Clockwork.Revit.Document.Query" Name="Document.LinksAndImports" ID="6951ad79-d085-4850-bd0b-acc7153a71b1">
+  <Elements>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="8391a372-b113-4e1a-b6ea-aa1f0875826c" nickname="Output" x="442" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="links" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode type="DSIronPythonNode.PythonNode" guid="9360058e-8acd-40b3-8a55-a4891ad83340" nickname="Python Script" x="8.97196461820829" y="18.1548723064822" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputcount="0">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+# need to learn how to implement LINQ here...
+collector = FilteredElementCollector(doc)
+impinst = collector.OfClass(ImportInstance).ToElements()
+linkedlist = list()
+importlist = list()
+for item in impinst:
+	if item.IsLinked:
+		linkedlist.append(item)
+	else:
+		importlist.append(item)
+OUT = (linkedlist,importlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="01e92cd2-046d-40da-8c97-d9584ef5d826" nickname="Output" x="442" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="imports" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel type="Dynamo.Nodes.CodeBlockNodeModel" guid="193c6470-6502-49c9-a5b8-62f72cf4cbcb" nickname="Code Block" x="224" y="22" isVisible="true" isUpstreamVisible="true" lacing="Disabled" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9360058e-8acd-40b3-8a55-a4891ad83340" start_index="0" end="193c6470-6502-49c9-a5b8-62f72cf4cbcb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="193c6470-6502-49c9-a5b8-62f72cf4cbcb" start_index="0" end="8391a372-b113-4e1a-b6ea-aa1f0875826c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="193c6470-6502-49c9-a5b8-62f72cf4cbcb" start_index="1" end="01e92cd2-046d-40da-8c97-d9584ef5d826" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>

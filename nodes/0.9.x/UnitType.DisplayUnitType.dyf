@@ -1,0 +1,57 @@
+<Workspace Version="0.8.2.2392" X="-300.642353931828" Y="324.242626406377" zoom="0.939154117974764" Name="UnitType.DisplayUnitType" Description="Retrieves the display unit type for a given unit type. " ID="896ba009-854c-4290-bd05-42c87ddcdb7c" Category="Clockwork.Revit.Elements.UnitType.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Output guid="0b8b9d6e-eb6e-48a4-82ca-100cf22959c2" type="Dynamo.Nodes.Output" nickname="Output" x="1002" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="displayUnitType" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="82ef5a2b-909a-4de6-b9a3-032388240f02" type="Dynamo.Nodes.Output" nickname="Output" x="1002" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="unitSymbol" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="9f543a24-6050-4acf-8008-cd1d6c618f42" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="774" y="37.4366666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="4c659fc2-17fc-4335-8ed1-1becc5063311" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="550" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+dynunittype = IN[0]
+
+if str(dynunittype) == 'DynamoUnits.Area':
+	unittype = UnitType.UT_Area
+elif str(dynunittype) == 'DynamoUnits.Length':
+	unittype = UnitType.UT_Length
+elif str(dynunittype) == 'DynamoUnits.Volume':
+	unittype = UnitType.UT_Volume
+else:
+	unittype = null
+
+doc = DocumentManager.Instance.CurrentDBDocument
+formatoptions = doc.GetUnits().GetFormatOptions(unittype)
+dispunits = formatoptions.DisplayUnits
+symtype = formatoptions.UnitSymbol
+if symtype == UnitSymbolType.UST_NONE:
+	dispsym = 'None'
+else:
+	dispsym = LabelUtils.GetLabelFor(symtype)
+OUT = (dispunits,dispsym)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="8b667420-e63c-4ba0-8039-cdc15097c99d" type="Dynamo.Nodes.Symbol" nickname="Input" x="386.019200034436" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="unitType" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9f543a24-6050-4acf-8008-cd1d6c618f42" start_index="0" end="0b8b9d6e-eb6e-48a4-82ca-100cf22959c2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9f543a24-6050-4acf-8008-cd1d6c618f42" start_index="1" end="82ef5a2b-909a-4de6-b9a3-032388240f02" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4c659fc2-17fc-4335-8ed1-1becc5063311" start_index="0" end="9f543a24-6050-4acf-8008-cd1d6c618f42" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8b667420-e63c-4ba0-8039-cdc15097c99d" start_index="0" end="4c659fc2-17fc-4335-8ed1-1becc5063311" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
+  </Cameras>
+</Workspace>

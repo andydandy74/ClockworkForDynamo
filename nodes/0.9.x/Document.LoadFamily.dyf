@@ -1,0 +1,93 @@
+<Workspace Version="0.8.2.2392" X="-32.8519501854601" Y="255.283330637982" zoom="0.70823125" Name="Document.LoadFamily" Description="A very crude implementation of family loading. Will *not* reload an already loaded family of the same name." ID="1fe7cd38-5704-4966-bb74-5d7d9245568c" Category="Clockwork.Revit.Document.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="39aa53e9-3514-4b9e-a5ee-612e244d137b" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1460.01072972026" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="f2be097a-b556-4b65-b9ea-68578741aa40" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1275.85756676558" y="84.1674776083262" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+fampaths = IN[0]
+famnames = IN[1]
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for fampath in fampaths:
+	try:
+		doc.LoadFamily(fampath)
+	except:
+		pass
+TransactionManager.Instance.TransactionTaskDone()
+
+collector = FilteredElementCollector(doc)
+collector.OfClass(Family)
+for item in collector.ToElements():
+	if item.Name in famnames:
+		typelist = list()
+		for famtypeid in item.GetFamilySymbolIds():
+			typelist.append(doc.GetElement(famtypeid))
+		elementlist.append(typelist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.DSFunction guid="20b1afe6-f04e-4479-ab6d-54bc041afd41" type="Dynamo.Nodes.DSFunction" nickname="String.Replace" x="1067.62611275964" y="210.962729833845" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.String.Replace@string,string,string" />
+    <Dynamo.Nodes.DSFunction guid="3b16e4e8-97e8-434f-89d8-b19a670efd75" type="Dynamo.Nodes.DSFunction" nickname="String.Replace" x="855.626112759644" y="144.462729833845" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.String.Replace@string,string,string" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="118adb0c-5105-431f-9463-bdd50fcd5e56" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="627.626112759644" y="211.962729833845" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="&quot;&quot;;&#xA;path + &quot;\\&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.CodeBlockNodeModel guid="4417351e-989b-4ef9-98af-15435aac638d" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="912.626112759644" y="288.962729833845" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" CodeText="&quot;.rfa&quot;;&#xA;&quot;&quot;;" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="66656d78-a781-4b33-a46c-9437a93e4a5e" type="Dynamo.Nodes.DSFunction" nickname="FilePath.DirectoryName" x="424.626112759644" y="209.462729833845" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.IO.FilePath.DirectoryName@string" />
+    <Dynamo.Nodes.Function guid="30870467-ec28-49d5-b049-85a7dd3125fa" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="250" y="82.9404746409671" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="ca5f1c59-425a-403a-9a69-31d3e712a562" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="path : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="7261d3f2-f992-40ff-8423-b75d279799ce" type="Dynamo.Nodes.Output" nickname="Output" x="1698.01072972026" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="familyTypes" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="39aa53e9-3514-4b9e-a5ee-612e244d137b" start_index="0" end="7261d3f2-f992-40ff-8423-b75d279799ce" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f2be097a-b556-4b65-b9ea-68578741aa40" start_index="0" end="39aa53e9-3514-4b9e-a5ee-612e244d137b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="20b1afe6-f04e-4479-ab6d-54bc041afd41" start_index="0" end="f2be097a-b556-4b65-b9ea-68578741aa40" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3b16e4e8-97e8-434f-89d8-b19a670efd75" start_index="0" end="20b1afe6-f04e-4479-ab6d-54bc041afd41" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="118adb0c-5105-431f-9463-bdd50fcd5e56" start_index="0" end="3b16e4e8-97e8-434f-89d8-b19a670efd75" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="118adb0c-5105-431f-9463-bdd50fcd5e56" start_index="1" end="3b16e4e8-97e8-434f-89d8-b19a670efd75" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4417351e-989b-4ef9-98af-15435aac638d" start_index="0" end="20b1afe6-f04e-4479-ab6d-54bc041afd41" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4417351e-989b-4ef9-98af-15435aac638d" start_index="1" end="20b1afe6-f04e-4479-ab6d-54bc041afd41" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="66656d78-a781-4b33-a46c-9437a93e4a5e" start_index="0" end="118adb0c-5105-431f-9463-bdd50fcd5e56" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="30870467-ec28-49d5-b049-85a7dd3125fa" start_index="0" end="f2be097a-b556-4b65-b9ea-68578741aa40" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="30870467-ec28-49d5-b049-85a7dd3125fa" start_index="0" end="66656d78-a781-4b33-a46c-9437a93e4a5e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="30870467-ec28-49d5-b049-85a7dd3125fa" start_index="0" end="3b16e4e8-97e8-434f-89d8-b19a670efd75" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca5f1c59-425a-403a-9a69-31d3e712a562" start_index="0" end="39aa53e9-3514-4b9e-a5ee-612e244d137b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca5f1c59-425a-403a-9a69-31d3e712a562" start_index="0" end="30870467-ec28-49d5-b049-85a7dd3125fa" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>
