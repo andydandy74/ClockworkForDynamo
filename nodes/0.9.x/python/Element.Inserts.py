@@ -19,6 +19,6 @@ for item in items:
 		for insert in item.FindInserts(incopenings,incshadows,incwalls,incshared):
 			itemlist.append(item.Document.GetElement(insert).ToDSType(True))
 	except:
-		donothing = 1
+		pass
 	elementlist.append(itemlist)
 OUT = elementlist

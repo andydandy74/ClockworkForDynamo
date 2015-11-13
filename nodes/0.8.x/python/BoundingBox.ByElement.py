@@ -18,5 +18,5 @@ for item in items:
 		maxlist.append(item.BoundingBox[view].Max.ToPoint())
 		minlist.append(item.BoundingBox[view].Min.ToPoint())
 	except:
-		donothing = 1
+		pass
 OUT = (elementlist,maxlist,minlist)

@@ -26,6 +26,6 @@ try:
 	for item in newcs:
 		elementlist.append(doc.GetElement(item))
 except:
-	donothing = 1
+	pass
 TransactionManager.Instance.TransactionTaskDone()
 OUT = elementlist

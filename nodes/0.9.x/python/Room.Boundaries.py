@@ -27,7 +27,7 @@ for item in items:
 				blist.append(boundary.Element)
 				clist.append(boundary.Curve.ToProtoType())
 	except:
-		donothing = 1
+		pass
 	#method #2 - spatial element geometry calculator
 	try:
 		results = calculator.CalculateSpatialElementGeometry(item)
@@ -35,7 +35,7 @@ for item in items:
 			for bface in results.GetBoundaryFaceInfo(face):
 				blist.append(doc.GetElement(bface.SpatialBoundaryElement.HostElementId))
 	except:
-		donothing = 1	
+		pass	
 	# write results to list
 	elementlist.append(blist)
 	curvelist.append(clist)
