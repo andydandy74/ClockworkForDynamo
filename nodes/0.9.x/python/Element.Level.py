@@ -18,5 +18,8 @@ for item in faminsts:
 			try:
 				elementlist.append(item.GenLevel.ToDSType(True))
 			except:
-				elementlist.append(list())
+				try:
+					elementlist.append(item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM).AsElementId()).ToDSType(True))
+				except:
+					elementlist.append(list())
 OUT = elementlist
