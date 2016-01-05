@@ -14,7 +14,11 @@ while i < (len(rooms)-1):
 			elementlist.append(doors[j])
 		j += 1
 	i += 1
-OUT = elementlist,import System
+OUT = elementlist
+
+##### NEXT PYTHON NODE #####
+
+import System
 import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *

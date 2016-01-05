@@ -29,7 +29,11 @@ def BuckyballStruts(points,struts):
 		return BuckyballStruts(restofpoints,struts)
 	else: return (restofpoints,struts)
 	
-OUT = BuckyballStruts(points,struts)[1],import clr
+OUT = BuckyballStruts(points,struts)[1]
+
+##### NEXT PYTHON NODE #####
+
+import clr
 clr.AddReference('ProtoGeometry')
 from Autodesk.DesignScript.Geometry import *
 
