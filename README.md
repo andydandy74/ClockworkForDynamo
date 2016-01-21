@@ -9,8 +9,8 @@ Installation is simple - just use Dynamo's built-in package manager and search f
 
 ##Versions
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
-- Clockwork for Dynamo 0.9.x: [0.90.4](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0904)
-- Clockwork for Dynamo 0.8.2: [0.82.5](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0825)
+- Clockwork for Dynamo 0.9.x: [0.90.5](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0905)
+- Clockwork for Dynamo 0.8.2: [0.82.6](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0826)
 - Clockwork for Dynamo 0.7.x: [0.75.47](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#07547) - not supported any more
 - Clockwork for Dynamo 0.6.3: [0.63.3](https://github.com/CAAD-RWTH/ClockworkForDynamo/wiki/Version-History#0633) - not supported any more
 
