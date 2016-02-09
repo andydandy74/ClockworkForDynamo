@@ -1,0 +1,136 @@
+<Workspace Version="0.8.2.2392" X="106.512140562707" Y="316.167457147274" zoom="0.674831658426864" Name="Element.AssociatedFamilyParameters" Description="Returns the associated family parameters of an element in a family (and the respective element parameters). PLEASE NOTE: This node will only work in a family document!" ID="1b464bf5-c505-4b0a-9fab-94da398f6d21" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="3cb57f51-9683-41fb-9656-36be458cef0e" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1157.78477542331" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="f3ca5b1f-0635-4882-8e4e-543a426fc0ef" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="953.743656004415" y="185.021720584649" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];&#xA;seq[3];" ShouldFocus="false" />
+    <Dynamo.Nodes.DSFunction guid="dfbf91b3-7190-42cb-921b-f032fe5856f3" type="Dynamo.Nodes.DSFunction" nickname="List.Transpose" x="777.44531995685" y="182.466651604484" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.Transpose@var[]..[]" />
+    <DSIronPythonNode.PythonNode guid="36eb11d3-e13d-4cfe-9c31-c9d1ae0b4c5c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="584.921134760408" y="182.645385798568" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+elementlist = list()
+for item in items:
+	paramlist = list()
+	assoclist = list()
+	paramnamelist = list()
+	assocnamelist = list()
+	try:
+		for param in item.Parameters:
+			assoc = doc.FamilyManager.GetAssociatedFamilyParameter(param)
+			if assoc != None:
+				paramlist.append(param)
+				assoclist.append(assoc)
+				paramnamelist.append(param.Definition.Name)
+				assocnamelist.append(assoc.Definition.Name)
+	except:
+		pass
+	elementlist.append((paramlist,assoclist,paramnamelist,assocnamelist))
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="316708c5-af3b-4113-a97b-f39743d081ab" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1155.26946746325" y="123.453590533512" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="cf073ac2-8418-4b8c-9ca4-a1e67f5e99de" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="337.517206921768" y="183.443538848808" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="c04f1af8-9672-4581-b2d8-01cc5eaa42f2" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="c7257419-720c-41c6-a6ad-be91af52d92b" type="Dynamo.Nodes.Output" nickname="Output" x="1395.78477542331" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elementParamaters" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="f381ed12-f116-4c21-890a-2453d8f1621e" type="Dynamo.Nodes.Output" nickname="Output" x="1394.56925866051" y="123.258631218349" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="associatedFamilyParameters" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="dee2484a-105b-4f6d-a4fa-88e98de38121" type="Dynamo.Nodes.Output" nickname="Output" x="1400.08983760604" y="269.333960757449" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elementParameterNames" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="b1318dde-7249-4250-b9c1-072a11093157" type="Dynamo.Nodes.Output" nickname="Output" x="1400.08983760604" y="401.24778285095" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="associatedFamilyParameterNames" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="f16a7168-9f1d-46bb-9bb7-d7981f20d18e" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1162.08983760604" y="269.333960757449" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="5c2915a1-571c-4ed7-9cb1-63d03c72221f" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1164.55385552561" y="402.746203050236" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="3cb57f51-9683-41fb-9656-36be458cef0e" start_index="0" end="c7257419-720c-41c6-a6ad-be91af52d92b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f3ca5b1f-0635-4882-8e4e-543a426fc0ef" start_index="0" end="3cb57f51-9683-41fb-9656-36be458cef0e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f3ca5b1f-0635-4882-8e4e-543a426fc0ef" start_index="1" end="316708c5-af3b-4113-a97b-f39743d081ab" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f3ca5b1f-0635-4882-8e4e-543a426fc0ef" start_index="2" end="f16a7168-9f1d-46bb-9bb7-d7981f20d18e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f3ca5b1f-0635-4882-8e4e-543a426fc0ef" start_index="3" end="5c2915a1-571c-4ed7-9cb1-63d03c72221f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dfbf91b3-7190-42cb-921b-f032fe5856f3" start_index="0" end="f3ca5b1f-0635-4882-8e4e-543a426fc0ef" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="36eb11d3-e13d-4cfe-9c31-c9d1ae0b4c5c" start_index="0" end="dfbf91b3-7190-42cb-921b-f032fe5856f3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="316708c5-af3b-4113-a97b-f39743d081ab" start_index="0" end="f381ed12-f116-4c21-890a-2453d8f1621e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cf073ac2-8418-4b8c-9ca4-a1e67f5e99de" start_index="0" end="36eb11d3-e13d-4cfe-9c31-c9d1ae0b4c5c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c04f1af8-9672-4581-b2d8-01cc5eaa42f2" start_index="0" end="3cb57f51-9683-41fb-9656-36be458cef0e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c04f1af8-9672-4581-b2d8-01cc5eaa42f2" start_index="0" end="316708c5-af3b-4113-a97b-f39743d081ab" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c04f1af8-9672-4581-b2d8-01cc5eaa42f2" start_index="0" end="cf073ac2-8418-4b8c-9ca4-a1e67f5e99de" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c04f1af8-9672-4581-b2d8-01cc5eaa42f2" start_index="0" end="f16a7168-9f1d-46bb-9bb7-d7981f20d18e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c04f1af8-9672-4581-b2d8-01cc5eaa42f2" start_index="0" end="5c2915a1-571c-4ed7-9cb1-63d03c72221f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f16a7168-9f1d-46bb-9bb7-d7981f20d18e" start_index="0" end="dee2484a-105b-4f6d-a4fa-88e98de38121" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5c2915a1-571c-4ed7-9cb1-63d03c72221f" start_index="0" end="b1318dde-7249-4250-b9c1-072a11093157" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>
