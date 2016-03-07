@@ -1,0 +1,92 @@
+<Workspace Version="0.8.2.2392" X="30" Y="349.82502078138" zoom="1.09143807148795" Name="Assembly.FromElements" Description="Creates an assembly from a list of elements" ID="23934b80-5e06-4ca1-99d2-1d388b25ab56" Category="Clockwork.Revit.Elements.Assembly.Create">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="7f91abb3-9b2a-43cd-9218-7bc0625ee27f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="576" y="42" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+from System.Collections.Generic import *
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+element_array = UnwrapElement(IN[0])
+assembly_names = IN[1]
+assembly_list = list()
+
+# create assemblies
+TransactionManager.Instance.EnsureInTransaction(doc)
+for arr in element_array:
+	# create a Revit-compatible list of IDs
+	ids = list()
+	for elem in arr:
+		ids.append(elem.Id)	
+	idlist = List[ElementId](ids)
+	assembly_list.append(AssemblyInstance.Create(doc, idlist, arr[0].Category.Id))
+TransactionManager.Instance.TransactionTaskDone()
+TransactionManager.Instance.ForceCloseTransaction()
+# rename assembly types
+i = 0
+TransactionManager.Instance.EnsureInTransaction(doc)
+for assinst in assembly_list:
+	assinst.AssemblyTypeName = assembly_names[i]
+	i += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = assembly_list</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="75889847-c92b-4f24-937a-02fdee457c79" type="Dynamo.Nodes.Symbol" nickname="Input" x="375.651180502666" y="-47.9360243716679" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="99636f24-c651-4a64-813d-ef8e9baef945" type="Dynamo.Nodes.Symbol" nickname="Input" x="2.74866717440972" y="-18.3244478293984" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="assemblyName : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="6307f21f-2364-4737-86d3-054174bcf47e" type="Dynamo.Nodes.Output" nickname="Output" x="1058.41888804265" y="-18.8164508758568" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="assemblyInstance" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="a9b34282-24da-47ec-98ec-f8ed1a1f8276" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="307" y="68" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="c3ea815d-c203-491f-9bad-afc09b057882" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="795.41888804265" y="-18.8164508758568" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7f91abb3-9b2a-43cd-9218-7bc0625ee27f" start_index="0" end="c3ea815d-c203-491f-9bad-afc09b057882" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="75889847-c92b-4f24-937a-02fdee457c79" start_index="0" end="7f91abb3-9b2a-43cd-9218-7bc0625ee27f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="99636f24-c651-4a64-813d-ef8e9baef945" start_index="0" end="a9b34282-24da-47ec-98ec-f8ed1a1f8276" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="99636f24-c651-4a64-813d-ef8e9baef945" start_index="0" end="c3ea815d-c203-491f-9bad-afc09b057882" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a9b34282-24da-47ec-98ec-f8ed1a1f8276" start_index="0" end="7f91abb3-9b2a-43cd-9218-7bc0625ee27f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c3ea815d-c203-491f-9bad-afc09b057882" start_index="0" end="6307f21f-2364-4737-86d3-054174bcf47e" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
