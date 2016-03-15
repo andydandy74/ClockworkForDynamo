@@ -1,0 +1,75 @@
+<Workspace Version="0.8.2.2392" X="30" Y="351.317863397548" zoom="1.14973730297723" Name="Room.AtPointInPhase" Description="Tries to retrieve a room element at the given location for the given phase." ID="c213be6e-2a54-4f51-acf7-60cefb6adfbd" Category="Clockwork.Revit.Selection.Miscellaneous">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="57d934c1-7679-4f7c-bc19-4269af0d16c5" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="808" y="9" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="1231a75e-db7a-4474-a31a-286d70f6bbdf" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="315" y="35" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="8b77751e-29ff-4a23-9234-61f06dedf79b" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="584" y="35" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+points = IN[0]
+phase = UnwrapElement(IN[1])
+roomlist = list()
+for pt in points:
+    roomlist.append(doc.GetRoomAtPoint(pt.ToXyz(),phase))
+OUT = roomlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="63ce34a6-5435-4102-8ef0-5f6c8e587b56" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="point : Autodesk.Point" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="d49a6b89-d6d0-4a06-9fa1-005cfa431eae" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="83" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="phase" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="e65c7878-1420-4b81-943f-d882d3890cdb" type="Dynamo.Nodes.Output" nickname="Output" x="1071" y="9" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="room" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="57d934c1-7679-4f7c-bc19-4269af0d16c5" start_index="0" end="e65c7878-1420-4b81-943f-d882d3890cdb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1231a75e-db7a-4474-a31a-286d70f6bbdf" start_index="0" end="8b77751e-29ff-4a23-9234-61f06dedf79b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8b77751e-29ff-4a23-9234-61f06dedf79b" start_index="0" end="57d934c1-7679-4f7c-bc19-4269af0d16c5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="63ce34a6-5435-4102-8ef0-5f6c8e587b56" start_index="0" end="57d934c1-7679-4f7c-bc19-4269af0d16c5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="63ce34a6-5435-4102-8ef0-5f6c8e587b56" start_index="0" end="1231a75e-db7a-4474-a31a-286d70f6bbdf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d49a6b89-d6d0-4a06-9fa1-005cfa431eae" start_index="0" end="8b77751e-29ff-4a23-9234-61f06dedf79b" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
