@@ -1,0 +1,72 @@
+<Workspace Version="0.8.2.2392" X="30" Y="244.565605095541" zoom="0.81656050955414" Name="Assembly.RemoveMembers" Description="Removes any given elements to a given assembly." ID="d1b052e9-5d34-4a15-ab75-e9c5122fcf81" Category="Clockwork.Revit.Elements.Assembly.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FamilyInstance" resolvedName="Revit.Elements.FamilyInstance" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="977ec454-8f30-4337-9bc3-c46956b75289" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="469" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+from System.Collections.Generic import *
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+assembly = UnwrapElement(IN[0])
+element_array = UnwrapElement(IN[1])
+
+# add items to assembly
+TransactionManager.Instance.EnsureInTransaction(doc)
+# create a Revit-compatible list of IDs
+ids = list()
+for elem in element_array:
+	ids.append(elem.Id)	
+idlist = List[ElementId](ids)
+try:
+	assembly.RemoveMemberIds(idlist)
+	OUT = assembly
+except:
+	OUT = None
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="97824008-330b-448d-a0b8-fe3b0273d71a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="200" y="55" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="104d4bcb-2888-49ba-86a8-bf1978aba92c" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="assembly" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="aa2a01c5-a8d5-4251-929b-7676ecb44078" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="8f7f6567-a412-46f2-aef0-60d381fc521b" type="Dynamo.Nodes.Output" nickname="Output" x="693" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="assembly" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="977ec454-8f30-4337-9bc3-c46956b75289" start_index="0" end="8f7f6567-a412-46f2-aef0-60d381fc521b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="97824008-330b-448d-a0b8-fe3b0273d71a" start_index="0" end="977ec454-8f30-4337-9bc3-c46956b75289" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="104d4bcb-2888-49ba-86a8-bf1978aba92c" start_index="0" end="977ec454-8f30-4337-9bc3-c46956b75289" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="aa2a01c5-a8d5-4251-929b-7676ecb44078" start_index="0" end="97824008-330b-448d-a0b8-fe3b0273d71a" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
