@@ -11,9 +11,11 @@ paramlist = list()
 paramnamelist = list()
 for dimension in dimensions:
 	try:
-		paramlist.append(dimension.FamilyLabel)
-		paramnamelist.append(dimension.FamilyLabel.Definition.Name)
+		famlabel = dimension.FamilyLabel
+		labelname = famlabel.Definition.Name
 	except:
-		paramlist.append(list())
-		paramnamelist.append(list())
+		famlabel = list()
+		labelname = list()
+	paramlist.append(famlabel)
+	paramnamelist.append(labelname)
 OUT = (paramlist,paramnamelist)
