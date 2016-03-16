@@ -1,0 +1,74 @@
+<Workspace Version="0.8.2.2392" X="30" Y="375.612075769534" zoom="1.03630623520126" Name="FamilyInstance.FlipFromToRoom" Description="Flips the settings of &quot;From Room&quot; and &quot;To Room&quot; for any given door or window instance. " ID="d3c0bef1-e8ab-4f72-8e0f-d04be8bb4c20" Category="Clockwork.Revit.Elements.FamilyInstance.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FamilyInstance" resolvedName="Revit.Elements.FamilyInstance" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="f495d5fa-499f-4d17-bdb6-5112d1f9ee14" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="883" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="6f7aa948-4fae-4efa-a5af-5629aa63f8a0" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="659" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminstances = UnwrapElement(IN[0])
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in faminstances:
+    try:
+        item.FlipFromToRoom()
+        elementlist.append(item)
+    except:
+        elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="3b20ef38-aa68-47ba-b839-9c31cefe1970" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="390" y="26" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="c351c5dd-96dc-4be0-b22e-8c637b01e23d" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="13" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="familyInstance : FamilyInstance" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="2840ccfc-becd-4083-aa92-e18ebc4e2daa" type="Dynamo.Nodes.Output" nickname="Output" x="1146" y="7.105427357601E-15" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="familyInstance" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="f495d5fa-499f-4d17-bdb6-5112d1f9ee14" start_index="0" end="2840ccfc-becd-4083-aa92-e18ebc4e2daa" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6f7aa948-4fae-4efa-a5af-5629aa63f8a0" start_index="0" end="f495d5fa-499f-4d17-bdb6-5112d1f9ee14" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3b20ef38-aa68-47ba-b839-9c31cefe1970" start_index="0" end="6f7aa948-4fae-4efa-a5af-5629aa63f8a0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c351c5dd-96dc-4be0-b22e-8c637b01e23d" start_index="0" end="f495d5fa-499f-4d17-bdb6-5112d1f9ee14" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c351c5dd-96dc-4be0-b22e-8c637b01e23d" start_index="0" end="3b20ef38-aa68-47ba-b839-9c31cefe1970" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
