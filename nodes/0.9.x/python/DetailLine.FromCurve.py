@@ -17,8 +17,12 @@ view = UnwrapElement(IN[1])
 elementlist = []
 
 TransactionManager.Instance.EnsureInTransaction(doc)
+if doc.IsFamilyDocument: 
+	doc_create = doc.FamilyCreate
+else: 
+	doc_create = doc.Create
 for curve in curves:
-	detcurve = doc.Create.NewDetailCurve(view, curve.ToRevitType())
+	detcurve = doc_create.NewDetailCurve(view, curve.ToRevitType())
 	elementlist.append(detcurve)
 TransactionManager.Instance.TransactionTaskDone()
 OUT = elementlist

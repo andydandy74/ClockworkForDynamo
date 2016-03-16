@@ -18,7 +18,12 @@ for item1 in items1:
 		SolidSolidCutUtils.AddCutBetweenSolids(doc,item1,items2[i])
 		booleans.append(True)
 	except:
-		booleans.append(False)
+		try:
+			InstanceVoidCutUtils.AddInstanceVoidCut(doc,item1,items2[i])
+			booleans.append(True)
+		except:
+			booleans.append(False)
+	i += 1
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = booleans

@@ -1,4 +1,5 @@
 import clr
+from System.Collections.Generic import *
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
@@ -12,17 +13,19 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-curves = UnwrapElement(IN[0])
-view = UnwrapElement(IN[1])
-elementlist = []
+assembly = UnwrapElement(IN[0])
+element_array = UnwrapElement(IN[1])
 
+# add items to assembly
 TransactionManager.Instance.EnsureInTransaction(doc)
-if doc.IsFamilyDocument: 
-	doc_create = doc.FamilyCreate
-else: 
-	doc_create = doc.Create
-for curve in curves:
-	detcurve = doc_create.NewDetailCurve(view, curve.ToRevitType())
-	elementlist.append(detcurve)
+# create a Revit-compatible list of IDs
+ids = list()
+for elem in element_array:
+	ids.append(elem.Id)	
+idlist = List[ElementId](ids)
+try:
+	assembly.AddMemberIds(idlist)
+	OUT = assembly
+except:
+	OUT = None
 TransactionManager.Instance.TransactionTaskDone()
-OUT = elementlist

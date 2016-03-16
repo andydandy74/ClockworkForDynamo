@@ -19,6 +19,7 @@ for item1 in items1:
 		booleans.append(True)
 	except:
 		booleans.append(False)
+	i += 1
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = booleans

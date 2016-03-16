@@ -1,25 +1,23 @@
 import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
-from System.Collections.Generic import *
+
 clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-items1 = UnwrapElement(IN[0])
-items2 = UnwrapElement(IN[1])
-i = 0
-booleans = list()
+faminstances = UnwrapElement(IN[0])
+elementlist = list()
+
 TransactionManager.Instance.EnsureInTransaction(doc)
-for item1 in items1:
-	try:
-		JoinGeometryUtils.JoinGeometry(doc,item1,items2[i])
-		booleans.append(True)
-	except:
-		booleans.append(False)
-	i += 1
+for item in faminstances:
+    try:
+        item.FlipFromToRoom()
+        elementlist.append(item)
+    except:
+        elementlist.append(list())
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = booleans
+OUT = elementlist

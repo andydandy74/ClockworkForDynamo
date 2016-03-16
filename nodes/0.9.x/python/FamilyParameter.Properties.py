@@ -22,6 +22,7 @@ usermodifiable = list()
 formula = list()
 determinedbyformula = list()
 associatedparams = list()
+associatedelements = list()
 canassignformula = list()
 for param in params:
 	pname.append(param.Definition.Name)
@@ -47,7 +48,12 @@ for param in params:
 	else:
 		formula.append(param.Formula)
 	determinedbyformula.append(param.IsDeterminedByFormula)
-	associatedparams.append(param.AssociatedParameters)
+	assocparams = param.AssociatedParameters
+	associatedparams.append(assocparams)
+	assocelems = list()
+	for assoc in assocparams:
+		assocelems.append(assoc.Element)
+	associatedelements.append(assocelems)
 	canassignformula.append(param.CanAssignFormula)
 	
-OUT = (pname,guid,pgroup,ptype,utype,dutype,stype,isinstance,isreporting,isshared,isreadonly,usermodifiable,formula,determinedbyformula,associatedparams,canassignformula)
+OUT = (pname,guid,pgroup,ptype,utype,dutype,stype,isinstance,isreporting,isshared,isreadonly,usermodifiable,formula,determinedbyformula,associatedparams,canassignformula,associatedelements)
