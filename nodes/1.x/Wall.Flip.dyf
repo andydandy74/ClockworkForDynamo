@@ -1,0 +1,74 @@
+<Workspace Version="0.8.2.2392" X="-41.2388617806726" Y="259.590758652033" zoom="0.827153793170385" Name="Wall.Flip" Description="Flips the  orientation of a given wall - DO ***NOT*** USE IN AUTOMATIC MODE" ID="2b08b874-ab51-4689-930b-f3e673995359" Category="Clockwork.Revit.Elements.Wall.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Wall" resolvedName="Revit.Elements.Wall" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="6bc3a7b8-db32-45f0-8a72-3385278b6324" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="404" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+walls = UnwrapElement(IN[0])
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in walls:
+	try:
+		item.Flip()
+		elementlist.append(item)
+	except:
+		elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+		
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="fad53e45-1167-4c22-9850-e07ec3f1385a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="218.578783151326" y="24.7472698907957" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="2b76bf66-3471-4ec7-a218-ca0a7f992e8c" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="577.095163806552" y="-49.3385335413418" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="41f2d38a-2ef8-40eb-9a9a-3b2c9ed7aa4e" type="Dynamo.Nodes.Symbol" nickname="Input" x="59.5195007800315" y="-48.8689547581909" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="wall : Wall" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="0bdbf151-774f-4dd9-b91d-4c8505e86874" type="Dynamo.Nodes.Output" nickname="Output" x="854.095163806552" y="-49.3385335413418" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="wall" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6bc3a7b8-db32-45f0-8a72-3385278b6324" start_index="0" end="2b76bf66-3471-4ec7-a218-ca0a7f992e8c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fad53e45-1167-4c22-9850-e07ec3f1385a" start_index="0" end="6bc3a7b8-db32-45f0-8a72-3385278b6324" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2b76bf66-3471-4ec7-a218-ca0a7f992e8c" start_index="0" end="0bdbf151-774f-4dd9-b91d-4c8505e86874" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="41f2d38a-2ef8-40eb-9a9a-3b2c9ed7aa4e" start_index="0" end="fad53e45-1167-4c22-9850-e07ec3f1385a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="41f2d38a-2ef8-40eb-9a9a-3b2c9ed7aa4e" start_index="0" end="2b76bf66-3471-4ec7-a218-ca0a7f992e8c" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
+  </Cameras>
+</Workspace>

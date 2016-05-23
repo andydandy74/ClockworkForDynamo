@@ -1,0 +1,74 @@
+<Workspace Version="0.8.2.2392" X="-131.914687263666" Y="232.931738169567" zoom="0.798825425049555" Name="View.Plane" Description="Retrieves the plane of a given view" ID="d6dbde59-f3f7-47b5-9e1e-f30991f58ac1" Category="Clockwork.Revit.Views.View.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="a3caefa5-c6aa-4728-a294-bbba672b5079" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="644.184947553188" y="71.7161976803781" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="Plane.ByOriginNormal(seq[0],seq[1]);" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="ccf13abf-a5de-46c7-a240-1a55d2253960" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1071.14641011491" y="1.12512614707981" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="444a37db-a2e5-418c-b802-78b51f2ec080" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="473.603716753017" y="67.6055904847037" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+items = UnwrapElement(IN[0])
+elementlist = list()
+olist = list()
+dlist = list()
+
+for item in items:
+	try:
+		olist.append(item.Origin.ToPoint())
+		dlist.append(item.ViewDirection.ToVector())
+	except:
+		elementlist.append(list())
+OUT = (olist,dlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="6bf48094-818c-42e2-bbeb-94365a96b93d" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="325.033757804553" y="67.5265224543787" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="cb979199-b156-42bd-9518-22cbb842016e" type="Dynamo.Nodes.Symbol" nickname="Input" x="180.680404217257" y="-0.926566175473113" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="8ec2dc08-f0fd-4ab2-86d8-5778b6252a1e" type="Dynamo.Nodes.Output" nickname="Output" x="1338.14641011491" y="1.12512614707981" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="plane" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="a3caefa5-c6aa-4728-a294-bbba672b5079" start_index="0" end="ccf13abf-a5de-46c7-a240-1a55d2253960" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ccf13abf-a5de-46c7-a240-1a55d2253960" start_index="0" end="8ec2dc08-f0fd-4ab2-86d8-5778b6252a1e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="444a37db-a2e5-418c-b802-78b51f2ec080" start_index="0" end="a3caefa5-c6aa-4728-a294-bbba672b5079" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6bf48094-818c-42e2-bbeb-94365a96b93d" start_index="0" end="444a37db-a2e5-418c-b802-78b51f2ec080" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb979199-b156-42bd-9518-22cbb842016e" start_index="0" end="ccf13abf-a5de-46c7-a240-1a55d2253960" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cb979199-b156-42bd-9518-22cbb842016e" start_index="0" end="6bf48094-818c-42e2-bbeb-94365a96b93d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
+  </Cameras>
+</Workspace>

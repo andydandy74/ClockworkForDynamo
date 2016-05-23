@@ -1,0 +1,65 @@
+<Workspace Version="0.8.2.2392" X="64" Y="170" zoom="1" Name="View.Phase" Description="Returns the phase of a given view" ID="3ec49111-4bea-4ab6-aaa6-736c8a865a57" Category="Clockwork.Revit.Views.View.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="9dcb012d-53b4-47b3-bab2-52d91e1c46f9" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="669" y="-43" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="ba753150-6bc6-4181-971b-d7fdf2d34b02" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="456" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+views = UnwrapElement(IN[0])
+elementlist = list()
+for view in views:
+	try:
+		elementlist.append(view.Document.GetElement(view.get_Parameter(BuiltInParameter.VIEW_PHASE).AsElementId()))
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="374f009c-05e9-474d-8fd7-9232cceb7722" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="248" y="25" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="18587205-51d9-4f3f-9d6e-3457ab1d5939" type="Dynamo.Nodes.Symbol" nickname="Input" x="1" y="-42" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="111be0db-044d-4bae-a43f-f74d4f5b389e" type="Dynamo.Nodes.Output" nickname="Output" x="936" y="-43" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="phase" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9dcb012d-53b4-47b3-bab2-52d91e1c46f9" start_index="0" end="111be0db-044d-4bae-a43f-f74d4f5b389e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ba753150-6bc6-4181-971b-d7fdf2d34b02" start_index="0" end="9dcb012d-53b4-47b3-bab2-52d91e1c46f9" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="374f009c-05e9-474d-8fd7-9232cceb7722" start_index="0" end="ba753150-6bc6-4181-971b-d7fdf2d34b02" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="18587205-51d9-4f3f-9d6e-3457ab1d5939" start_index="0" end="9dcb012d-53b4-47b3-bab2-52d91e1c46f9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="18587205-51d9-4f3f-9d6e-3457ab1d5939" start_index="0" end="374f009c-05e9-474d-8fd7-9232cceb7722" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
