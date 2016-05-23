@@ -1,0 +1,75 @@
+<Workspace Version="0.8.2.2392" X="30" Y="344.681561451662" zoom="1.20128087831656" Name="Group.FromElements" Description="Creates a group from a list of Revit elements" ID="55ed9563-df88-49b5-a540-63fdc3aa4b24" Category="Clockwork.Revit.Elements.Group.Create">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="9726f83b-6b53-4928-999b-4f25bd7e3471" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="477" y="33.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+ids = list()
+rejects = list()
+for item in items:
+	try:
+		ids.append(item.Id)
+	except:
+		rejects.append(item)
+items = List[ElementId](ids)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+try:
+	group = doc.Create.NewGroup(items);
+	group.GroupType.Name = IN[1]
+except:
+	group = list()
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (group,rejects)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="7a2e69ff-4f34-4830-92ef-7a9e46ed288a" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="701" y="37.4266666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="638d0816-f270-4335-a037-be64e88ca39a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="208" y="33.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="52204d2c-ee01-4b98-a064-4e5d81bb9e00" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="4.21333333333335" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="4c2fda0f-b3d5-4646-a6e4-b396275ed20c" type="Dynamo.Nodes.Output" nickname="Output" x="929" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="group" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="2ea3d472-7964-434d-b587-9d104699f5c6" type="Dynamo.Nodes.Output" nickname="Output" x="929" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="ungroupableElements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="8f0e1563-8da0-4afe-abb9-841cf1e3c01e" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="88.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="groupName" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9726f83b-6b53-4928-999b-4f25bd7e3471" start_index="0" end="7a2e69ff-4f34-4830-92ef-7a9e46ed288a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7a2e69ff-4f34-4830-92ef-7a9e46ed288a" start_index="0" end="4c2fda0f-b3d5-4646-a6e4-b396275ed20c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7a2e69ff-4f34-4830-92ef-7a9e46ed288a" start_index="1" end="2ea3d472-7964-434d-b587-9d104699f5c6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="638d0816-f270-4335-a037-be64e88ca39a" start_index="0" end="9726f83b-6b53-4928-999b-4f25bd7e3471" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="52204d2c-ee01-4b98-a064-4e5d81bb9e00" start_index="0" end="638d0816-f270-4335-a037-be64e88ca39a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8f0e1563-8da0-4afe-abb9-841cf1e3c01e" start_index="0" end="9726f83b-6b53-4928-999b-4f25bd7e3471" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
