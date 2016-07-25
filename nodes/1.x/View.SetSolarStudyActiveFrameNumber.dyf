@@ -1,0 +1,55 @@
+<Workspace Version="0.8.2.2392" X="30" Y="265.453308611454" zoom="1.60815822002472" Name="View.SetSolarStudyActiveFrameNumber" Description="Sets the active frame number of the solar study in a given view" ID="44b96822-f49c-4768-89ac-e3e4f62d5e59" Category="Clockwork.Revit.Views.View.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="5ac13f45-c04b-43c7-864d-fde072a99846" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="498" y="37.4266666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="f571b3da-911d-451f-be3c-e7769eec5fba" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="274" y="33.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+view = UnwrapElement(IN[0])
+frame = IN[1]
+TransactionManager.Instance.EnsureInTransaction(doc)
+try:
+	view.SunAndShadowSettings.ActiveFrame = frame
+	success = True
+except:
+	success = False
+TransactionManager.Instance.TransactionTaskDone()
+OUT = (view,success)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="65fe1566-2c56-48ce-a220-36b2b25c038b" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="4.21333333333335" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="293e1d05-bf31-413d-acac-00783aaa9e4a" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="88.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="frameNumber : int" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="7a7d3021-654c-41ed-8b81-c59e4085dca3" type="Dynamo.Nodes.Output" nickname="Output" x="726" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="4c5b8936-dc49-4c3b-a72b-90b14c0fc47b" type="Dynamo.Nodes.Output" nickname="Output" x="726" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="success" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="5ac13f45-c04b-43c7-864d-fde072a99846" start_index="0" end="7a7d3021-654c-41ed-8b81-c59e4085dca3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5ac13f45-c04b-43c7-864d-fde072a99846" start_index="1" end="4c5b8936-dc49-4c3b-a72b-90b14c0fc47b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f571b3da-911d-451f-be3c-e7769eec5fba" start_index="0" end="5ac13f45-c04b-43c7-864d-fde072a99846" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="65fe1566-2c56-48ce-a220-36b2b25c038b" start_index="0" end="f571b3da-911d-451f-be3c-e7769eec5fba" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="293e1d05-bf31-413d-acac-00783aaa9e4a" start_index="0" end="f571b3da-911d-451f-be3c-e7769eec5fba" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,50 @@
+<Workspace Version="0.8.2.2392" X="30" Y="340.262275449102" zoom="0.85748502994012" Name="Document.LinksAndImports" Description="Gets all linked and imported files in the document. NOTE: Does *not* retrieve linked Revit files." ID="6951ad79-d085-4850-bd0b-acc7153a71b1" Category="Clockwork.Revit.Document.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Output guid="8391a372-b113-4e1a-b6ea-aa1f0875826c" type="Dynamo.Nodes.Output" nickname="Output" x="751" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="links" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="9360058e-8acd-40b3-8a55-a4891ad83340" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="299" y="33.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+# need to learn how to implement LINQ here...
+collector = FilteredElementCollector(doc)
+impinst = collector.OfClass(ImportInstance).ToElements()
+linkedlist = list()
+importlist = list()
+for item in impinst:
+	if item.IsLinked:
+		linkedlist.append(item)
+	else:
+		importlist.append(item)
+OUT = (linkedlist,importlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Output guid="01e92cd2-046d-40da-8c97-d9584ef5d826" type="Dynamo.Nodes.Output" nickname="Output" x="751" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="imports" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="193c6470-6502-49c9-a5b8-62f72cf4cbcb" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="523" y="37.4266666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol guid="700b2323-8723-4186-a043-1924e0e957ab" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="33.2133333333334" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="toggle : bool = true" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9360058e-8acd-40b3-8a55-a4891ad83340" start_index="0" end="193c6470-6502-49c9-a5b8-62f72cf4cbcb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="193c6470-6502-49c9-a5b8-62f72cf4cbcb" start_index="0" end="8391a372-b113-4e1a-b6ea-aa1f0875826c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="193c6470-6502-49c9-a5b8-62f72cf4cbcb" start_index="1" end="01e92cd2-046d-40da-8c97-d9584ef5d826" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="700b2323-8723-4186-a043-1924e0e957ab" start_index="0" end="9360058e-8acd-40b3-8a55-a4891ad83340" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
