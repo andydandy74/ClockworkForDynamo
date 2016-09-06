@@ -1,0 +1,77 @@
+<Workspace Version="0.8.2.2392" X="-337.619020006964" Y="8.14306450298977" zoom="1.00600419002725" Name="Assembly.Disassemble" Description="Disassembles an assembly and returns its members" ID="4ede2c89-8311-4fdc-8e5c-9c3952c9a870" Category="Clockwork.Revit.Elements.Assembly.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="c924c414-f403-4d87-81a4-6b877ddbdce4" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="660.32631904866" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="af1de9be-86dd-40ac-84b7-fd0e604e4213" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="470.233173876937" y="76.4848271061791" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+assemblies = UnwrapElement(IN[0])
+elementlist = list()
+
+# disassemble assemblies
+TransactionManager.Instance.EnsureInTransaction(doc)
+for assinst in assemblies:
+	memberslist = assinst.Disassemble()
+	members = list()
+	for item in memberslist:
+		members.append(doc.GetElement(item))
+	elementlist.append(members)
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="960e021c-1cf8-43ae-ba1c-f1172d34636e" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="250" y="79.0475986606874" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="84583db1-541e-4f51-a0b1-0ca5f1a8f7b9" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="assembly" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="e5c6d555-363a-4327-9f1a-b40ecca50151" type="Dynamo.Nodes.Output" nickname="Output" x="898.32631904866" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="disassembledElements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="c924c414-f403-4d87-81a4-6b877ddbdce4" start_index="0" end="e5c6d555-363a-4327-9f1a-b40ecca50151" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="af1de9be-86dd-40ac-84b7-fd0e604e4213" start_index="0" end="c924c414-f403-4d87-81a4-6b877ddbdce4" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="960e021c-1cf8-43ae-ba1c-f1172d34636e" start_index="0" end="af1de9be-86dd-40ac-84b7-fd0e604e4213" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="84583db1-541e-4f51-a0b1-0ca5f1a8f7b9" start_index="0" end="c924c414-f403-4d87-81a4-6b877ddbdce4" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="84583db1-541e-4f51-a0b1-0ca5f1a8f7b9" start_index="0" end="960e021c-1cf8-43ae-ba1c-f1172d34636e" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
