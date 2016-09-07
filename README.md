@@ -10,7 +10,7 @@ Installation is simple - just use Dynamo's built-in package manager and search f
 ##Versions
 **Please note that Clockwork has not been tested with any Dynamo version later than 0.9.0 - problems with more recent builds are to be expected.** 
 
-**You can track the status of migration to v1.0 [here](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x). So far. none of the tested nodes had to be rewritten, but I did find a couple of bugs that will get fixed for both the 0.9.x and the 1.x release. :-)**
+**You can track the status of migration to v1.0 [here](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x). So far, none of the tested nodes had to be rewritten, but I did find a couple of bugs that will get fixed for both the 0.9.x and the 1.x release. Almost done, by the way... :-)**
 
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
 - Clockwork for Dynamo 1.x: **COMING VERY, VERY SOON**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-1x)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-1x)]
