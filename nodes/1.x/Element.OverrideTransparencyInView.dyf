@@ -1,0 +1,86 @@
+<Workspace Version="0.8.2.2392" X="42.4484051061048" Y="209.62801134483" zoom="0.62555780206934" Name="Element.OverrideTransparencyInView" Description="Overrides the transparency of an element in a given view" ID="0e70a492-4d9e-4783-be94-660c24f9a7b8" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="33608f63-df91-4c61-a7bc-c03e546e9c02" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="431.488073135038" y="104.80367089233" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+trans = IN[2]
+elementlist = list()
+
+override = OverrideGraphicSettings()
+override.SetSurfaceTransparency(trans)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in items:
+	view.SetElementOverrides(item.Id, override)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = items</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="f8a44af6-3051-4a51-9cc5-13a0598dd54c" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="630.757063286136" y="-0.145322086856197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="3e27ded4-d3d0-4b88-be04-dc132ccf782e" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="236" y="62" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="b0f9c934-e1e4-4ee1-974e-4df344c09da5" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="43691e64-ec9e-43a6-a7ad-e7d88b5f9803" type="Dynamo.Nodes.Output" nickname="Output" x="922.757063286136" y="-0.145322086856197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="085902b2-c3d4-446f-8ee9-830e3aaed37e" type="Dynamo.Nodes.Symbol" nickname="Input" x="210.213583715663" y="132.510827011307" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="0e475176-f17b-49ca-a189-b304713dc3dd" type="Dynamo.Nodes.Symbol" nickname="Input" x="120.80147118502" y="207.901285519338" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="transparencyPercentage" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="33608f63-df91-4c61-a7bc-c03e546e9c02" start_index="0" end="f8a44af6-3051-4a51-9cc5-13a0598dd54c" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f8a44af6-3051-4a51-9cc5-13a0598dd54c" start_index="0" end="43691e64-ec9e-43a6-a7ad-e7d88b5f9803" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3e27ded4-d3d0-4b88-be04-dc132ccf782e" start_index="0" end="33608f63-df91-4c61-a7bc-c03e546e9c02" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b0f9c934-e1e4-4ee1-974e-4df344c09da5" start_index="0" end="f8a44af6-3051-4a51-9cc5-13a0598dd54c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b0f9c934-e1e4-4ee1-974e-4df344c09da5" start_index="0" end="3e27ded4-d3d0-4b88-be04-dc132ccf782e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="085902b2-c3d4-446f-8ee9-830e3aaed37e" start_index="0" end="33608f63-df91-4c61-a7bc-c03e546e9c02" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e475176-f17b-49ca-a189-b304713dc3dd" start_index="0" end="33608f63-df91-4c61-a7bc-c03e546e9c02" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

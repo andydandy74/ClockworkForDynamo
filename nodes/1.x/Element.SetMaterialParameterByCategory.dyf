@@ -1,0 +1,86 @@
+<Workspace Version="0.8.2.2392" X="-72.5848207960956" Y="90.4249469822853" zoom="1.29310142095474" Name="Element.SetMaterialParameterByCategory" Description="Sets a material parameter of a given element to &lt;By Category&gt;" ID="047c9786-440d-470d-885e-0fd12c4b03d2" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="42288f14-761a-4f25-b238-34453979f0df" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="707.447737909516" y="74.4616276651066" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="4565bac3-6eaa-4ec9-8409-ba0f87b1d851" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="932.171606864275" y="-18.5647425897035" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="6e1d9fd8-0db2-4c12-a7fd-eacbbcf43e59" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="483.447737909516" y="70.2432943317733" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+elements = UnwrapElement(IN[0])
+paramname = IN[1]
+elementlist = list()
+failedlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in elements:
+	try:
+		for param in item.Parameters:
+			if param.Definition.Name == paramname:
+				param.Set(ElementId(-1))
+				elementlist.append(item)
+	except:
+		failedlist.append(item)
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (elementlist,failedlist)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="756ab711-cb10-4b82-bc0f-667aee099fda" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="285" y="46.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="2539f36e-0dcf-453e-9d75-b201eea0eaff" type="Dynamo.Nodes.Symbol" nickname="Input" x="19.6567862714509" y="-17.9157943317733" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="85b2669b-90c9-45e3-9368-ad4b1c724682" type="Dynamo.Nodes.Symbol" nickname="Input" x="103.744149765991" y="124.163731149246" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="materialParameterName : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="49be32cf-8821-48fe-ab29-89b22b86cb7e" type="Dynamo.Nodes.Output" nickname="Output" x="1224.17160686427" y="-18.5647425897035" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="changedElements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="3c6ac229-febf-40f9-b37f-1f444bbd4934" type="Dynamo.Nodes.Output" nickname="Output" x="934.156006240247" y="87.2761310452416" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="unchangedElements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="42288f14-761a-4f25-b238-34453979f0df" start_index="0" end="4565bac3-6eaa-4ec9-8409-ba0f87b1d851" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="42288f14-761a-4f25-b238-34453979f0df" start_index="1" end="3c6ac229-febf-40f9-b37f-1f444bbd4934" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4565bac3-6eaa-4ec9-8409-ba0f87b1d851" start_index="0" end="49be32cf-8821-48fe-ab29-89b22b86cb7e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6e1d9fd8-0db2-4c12-a7fd-eacbbcf43e59" start_index="0" end="42288f14-761a-4f25-b238-34453979f0df" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="756ab711-cb10-4b82-bc0f-667aee099fda" start_index="0" end="6e1d9fd8-0db2-4c12-a7fd-eacbbcf43e59" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2539f36e-0dcf-453e-9d75-b201eea0eaff" start_index="0" end="4565bac3-6eaa-4ec9-8409-ba0f87b1d851" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2539f36e-0dcf-453e-9d75-b201eea0eaff" start_index="0" end="756ab711-cb10-4b82-bc0f-667aee099fda" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="85b2669b-90c9-45e3-9368-ad4b1c724682" start_index="0" end="6e1d9fd8-0db2-4c12-a7fd-eacbbcf43e59" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

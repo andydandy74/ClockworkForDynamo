@@ -1,0 +1,84 @@
+<Workspace Version="0.8.2.2392" X="-15.537905424624" Y="31.784630466605" zoom="1.11337045701307" Name="Element.TemporarilyIsolateInView" Description="(Temporarily) isolates elements in the given view" ID="979e0abf-c87a-4ff4-9da0-82a873954d3b" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="227eed57-dc6c-4142-bcad-2e909bb9094f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="397.797824756581" y="159.245680111791" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+elements = UnwrapElement(IN[0])
+view = UnwrapElement(IN[1])
+ids = list()
+elementlist = list()
+for item in elements:
+	ids.append(item.Id)
+ielements = List[ElementId](ids)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+view.IsolateElementsTemporary(ielements)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = (view,elements)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="48f5a4c4-7902-4845-839a-b96a7fe0cf9e" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="211.827767636774" y="159.362214062061" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="722b8934-d9f3-4ea9-b974-925c69097599" type="Dynamo.Nodes.Symbol" nickname="Input" x="243.952226241132" y="269.031561428655" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="ab9d4ec5-64cd-4844-bc62-0bb6d10a26ea" type="Dynamo.Nodes.Symbol" nickname="Input" x="-2.21138845553821" y="211.556162246489" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="db0ddde1-ec5c-4673-b1ee-b68da34ab30b" type="Dynamo.Nodes.Output" nickname="Output" x="787.706759858009" y="130.136659755682" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="ac8fcc60-4aca-49ba-be02-eb14264cac0b" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="596.015438721822" y="162.626188175705" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Output guid="c033622d-f026-4519-8ab5-5a37014474e8" type="Dynamo.Nodes.Output" nickname="Output" x="1050.24722257976" y="212.873069952482" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="08aabdbf-5e2b-4bac-bcdf-0048b42dce56" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="786.519750276654" y="212.256558801571" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="227eed57-dc6c-4142-bcad-2e909bb9094f" start_index="0" end="ac8fcc60-4aca-49ba-be02-eb14264cac0b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="48f5a4c4-7902-4845-839a-b96a7fe0cf9e" start_index="0" end="227eed57-dc6c-4142-bcad-2e909bb9094f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="722b8934-d9f3-4ea9-b974-925c69097599" start_index="0" end="227eed57-dc6c-4142-bcad-2e909bb9094f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab9d4ec5-64cd-4844-bc62-0bb6d10a26ea" start_index="0" end="48f5a4c4-7902-4845-839a-b96a7fe0cf9e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ab9d4ec5-64cd-4844-bc62-0bb6d10a26ea" start_index="0" end="08aabdbf-5e2b-4bac-bcdf-0048b42dce56" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac8fcc60-4aca-49ba-be02-eb14264cac0b" start_index="0" end="db0ddde1-ec5c-4673-b1ee-b68da34ab30b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac8fcc60-4aca-49ba-be02-eb14264cac0b" start_index="1" end="08aabdbf-5e2b-4bac-bcdf-0048b42dce56" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="08aabdbf-5e2b-4bac-bcdf-0048b42dce56" start_index="0" end="c033622d-f026-4519-8ab5-5a37014474e8" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
