@@ -1,0 +1,115 @@
+<Workspace Version="0.8.2.2392" X="81" Y="367.688125241967" zoom="0.744483159117305" Name="Room.UnplacedByNameAndNumber" Description="Creates an unplaced room" ID="38c9ff3a-849f-4bd4-b12a-e9d69939f3e3" Category="Clockwork.Revit.Elements.Room.Create">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="83bf634f-8d69-41da-a870-922b592b21f0" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="1120" y="68.7816666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+doccreation = doc.Create
+names = IN[0]
+numbers = IN[1]
+phase = UnwrapElement(IN[2])
+counter = 0
+elementlist = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for name in names:
+	newroom = doccreation.NewRoom(phase)
+	newroom.Name = name
+	newroom.Number = numbers[counter]
+	elementlist.append(newroom)
+	counter += 1
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="fb3a3223-f047-4d3a-98cc-2df022668b88" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="892" y="77.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="213e627e-21ea-4923-ab5e-3eb4275f2a14" type="Dynamo.Nodes.Function" nickname="List.EqualSublistLengths" x="666.266770670827" y="73" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd2bed0a-69a8-45d5-ab42-79019b5bfe73" />
+      <Name value="List.EqualSublistLengths" />
+      <Description value="Trims all given lists to the length of the shortest list" />
+      <Inputs>
+        <Input value="lists" />
+      </Inputs>
+      <Outputs>
+        <Output value="lists" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="0e316848-b9db-4b7e-b291-7d23f4b94e99" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1313.10608424337" y="-31.0950884035362" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="48811f50-acc5-4275-8a49-4f38ca65a4c2" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199" y="44" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="a167cf70-2d1f-479d-8628-32fe696c27b5" type="Dynamo.Nodes.Function" nickname="Turn Into List" x="199" y="128" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="c7cec23c-c29f-4c74-a6a5-fe05ed87ad97" type="Dynamo.Nodes.Symbol" nickname="Input" x="8.05928237129487" y="-32.2371294851796" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="name : string" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="4f293407-ad5b-4ced-959b-b3d46f875f92" type="Dynamo.Nodes.Output" nickname="Output" x="1578.24180967238" y="-32.4383021320853" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="room" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="c52612cc-90f8-493e-a4aa-32b9fa844626" type="Dynamo.Nodes.Symbol" nickname="Input" x="-121.491419656786" y="130.403313832553" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="number" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="4bc7a51c-50b5-4771-b4b6-d0c23545eb14" type="Dynamo.Nodes.Symbol" nickname="Input" x="946.363494539782" y="160.065598023921" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="phase" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="0f79d929-53a7-4c7d-9bbe-2e6b083efe04" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="362.745709828393" y="77.2886115444617" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="{names,numbers};" ShouldFocus="false" />
+    <DSCoreNodesUI.StringNodes.FromObject guid="d7fdbb05-4729-44f7-baae-0af0a53f28ed" type="DSCoreNodesUI.StringNodes.FromObject" nickname="String from Object" x="16.1879875195007" y="129.436855174207" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="83bf634f-8d69-41da-a870-922b592b21f0" start_index="0" end="0e316848-b9db-4b7e-b291-7d23f4b94e99" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fb3a3223-f047-4d3a-98cc-2df022668b88" start_index="0" end="83bf634f-8d69-41da-a870-922b592b21f0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fb3a3223-f047-4d3a-98cc-2df022668b88" start_index="1" end="83bf634f-8d69-41da-a870-922b592b21f0" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="213e627e-21ea-4923-ab5e-3eb4275f2a14" start_index="0" end="fb3a3223-f047-4d3a-98cc-2df022668b88" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e316848-b9db-4b7e-b291-7d23f4b94e99" start_index="0" end="4f293407-ad5b-4ced-959b-b3d46f875f92" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="48811f50-acc5-4275-8a49-4f38ca65a4c2" start_index="0" end="0f79d929-53a7-4c7d-9bbe-2e6b083efe04" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a167cf70-2d1f-479d-8628-32fe696c27b5" start_index="0" end="0f79d929-53a7-4c7d-9bbe-2e6b083efe04" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c7cec23c-c29f-4c74-a6a5-fe05ed87ad97" start_index="0" end="48811f50-acc5-4275-8a49-4f38ca65a4c2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c7cec23c-c29f-4c74-a6a5-fe05ed87ad97" start_index="0" end="0e316848-b9db-4b7e-b291-7d23f4b94e99" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c52612cc-90f8-493e-a4aa-32b9fa844626" start_index="0" end="d7fdbb05-4729-44f7-baae-0af0a53f28ed" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4bc7a51c-50b5-4771-b4b6-d0c23545eb14" start_index="0" end="83bf634f-8d69-41da-a870-922b592b21f0" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0f79d929-53a7-4c7d-9bbe-2e6b083efe04" start_index="0" end="213e627e-21ea-4923-ab5e-3eb4275f2a14" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d7fdbb05-4729-44f7-baae-0af0a53f28ed" start_index="0" end="a167cf70-2d1f-479d-8628-32fe696c27b5" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

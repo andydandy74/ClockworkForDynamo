@@ -1,0 +1,96 @@
+<Workspace Version="0.8.2.2392" X="107.977453746441" Y="315.762200709788" zoom="0.759064689877715" Name="All View-Dependent Family Instances Of Category" Description="Gets all view-dependent family instances in a given view for a given list of categories - useful for finding annotation elements" ID="8b684072-0219-47ca-ba72-e058108b3d00" Category="Clockwork.Revit.Selection.ByCollector">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Category" resolvedName="Revit.Elements.Category" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="753cd253-79a4-4c4b-ab10-aee58856bc74" type="Dynamo.Nodes.Symbol" nickname="Input" x="-62.6200030476966" y="-104.178214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="category : Category" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="f6da18fc-3327-4d53-9baf-51ebf53e264a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="199" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="8391a372-b113-4e1a-b6ea-aa1f0875826c" type="Dynamo.Nodes.Output" nickname="Output" x="900.372834865647" y="-101.678214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="89cbe01b-ccc3-4ab5-a510-eb7e838c5ecb" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="85" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="314c64ae-8696-4e20-92f6-85f0d3bfd4d1" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="199" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="32d30324-9a28-42fe-b3fe-281f60a39d11" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="404" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+cats = IN[0]
+views = UnwrapElement(IN[1])
+
+elementlist = list()
+# This could be more elegant if only I knew how to implement a Multicategory filter in Python....
+for cat in cats:
+	catlist = list()
+	for view in views:
+		collector = FilteredElementCollector(doc)
+		filter = ElementOwnerViewFilter(view.Id)
+		bic = System.Enum.ToObject(BuiltInCategory, cat.Id)
+		catlist.append(collector.WherePasses(filter).OfCategory(bic).ToElements())
+	elementlist.append(catlist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="da4442ea-8505-44da-8e8b-8729f46ea10b" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="608.372834865647" y="-101.678214049881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="7ff50b1b-ac0b-412d-a8f7-dd574fbd9f35" type="Dynamo.Nodes.Symbol" nickname="Input" x="172.071227780833" y="176.307036769882" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="toggle : bool = true" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="753cd253-79a4-4c4b-ab10-aee58856bc74" start_index="0" end="f6da18fc-3327-4d53-9baf-51ebf53e264a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="753cd253-79a4-4c4b-ab10-aee58856bc74" start_index="0" end="da4442ea-8505-44da-8e8b-8729f46ea10b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f6da18fc-3327-4d53-9baf-51ebf53e264a" start_index="0" end="32d30324-9a28-42fe-b3fe-281f60a39d11" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="89cbe01b-ccc3-4ab5-a510-eb7e838c5ecb" start_index="0" end="314c64ae-8696-4e20-92f6-85f0d3bfd4d1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="314c64ae-8696-4e20-92f6-85f0d3bfd4d1" start_index="0" end="32d30324-9a28-42fe-b3fe-281f60a39d11" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="32d30324-9a28-42fe-b3fe-281f60a39d11" start_index="0" end="da4442ea-8505-44da-8e8b-8729f46ea10b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="da4442ea-8505-44da-8e8b-8729f46ea10b" start_index="0" end="8391a372-b113-4e1a-b6ea-aa1f0875826c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7ff50b1b-ac0b-412d-a8f7-dd574fbd9f35" start_index="0" end="32d30324-9a28-42fe-b3fe-281f60a39d11" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

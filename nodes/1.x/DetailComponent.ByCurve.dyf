@@ -1,0 +1,102 @@
+<Workspace Version="0.8.2.2392" X="81.1831454075664" Y="262.684147543177" zoom="0.889566142787524" Name="DetailComponent.ByCurve" Description="Places a line-based detail component in a given view" ID="75daf972-c7ff-4c29-96d7-505b73596232" Category="Clockwork.Revit.Elements.DetailComponent.Create">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Autodesk.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="f7944190-9b41-4d2a-9572-1280339b1365" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="404.255138981348" y="136.19347120517" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="4">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+famtype = UnwrapElement(IN[1])
+view = UnwrapElement(IN[2])
+version = IN[3]
+elementlist = list()
+counter = 0
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for curve in curves:
+	if version &gt; 2015:
+		if not(famtype.IsActive): famtype.Activate()
+	newobj = doc.Create.NewFamilyInstance(curve.ToRevitType(),famtype,view)
+	elementlist.append(newobj.ToDSType(False))
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="4d5d693b-c492-421a-bb3c-f7393bcf672a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="230.73115706839" y="62" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="6b9c801c-7469-4f9a-9327-e3dae29ec36a" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="635" y="-2.22087910569343" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="5bc83994-2ee5-497d-bc05-e5f8e656e82d" type="Dynamo.Nodes.Symbol" nickname="Input" x="-59.5796056647574" y="-2.24828700621725" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="curve : Autodesk.Curve" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="4d8c6367-49f5-42fa-bffb-1d27c2b74778" type="Dynamo.Nodes.Output" nickname="Output" x="927" y="-2.22087910569343" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="590c7ed2-f051-4bb9-a069-5b8a7d2e5d0b" type="Dynamo.Nodes.Symbol" nickname="Input" x="214.711409093749" y="135.710601142997" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="familyType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="677ac5a7-8f93-4615-aafb-de2b88909ac8" type="Dynamo.Nodes.Symbol" nickname="Input" x="206.842404571988" y="211.965740124346" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="ca3a68b0-cc45-4ca9-89c2-6b675cb7ca51" type="Dynamo.Nodes.Function" nickname="Application.Version" x="201.626648864627" y="292.681146072191" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True">
+      <ID value="3df0961d-9d46-464f-9175-0a74eeb61bc1" />
+      <Name value="Application.Version" />
+      <Description value="Retrieves the name, version and build of the current Revit application." />
+      <Inputs />
+      <Outputs>
+        <Output value="Name" />
+        <Output value="Version (int)" />
+        <Output value="Build" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="f7944190-9b41-4d2a-9572-1280339b1365" start_index="0" end="6b9c801c-7469-4f9a-9327-e3dae29ec36a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4d5d693b-c492-421a-bb3c-f7393bcf672a" start_index="0" end="f7944190-9b41-4d2a-9572-1280339b1365" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6b9c801c-7469-4f9a-9327-e3dae29ec36a" start_index="0" end="4d8c6367-49f5-42fa-bffb-1d27c2b74778" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5bc83994-2ee5-497d-bc05-e5f8e656e82d" start_index="0" end="4d5d693b-c492-421a-bb3c-f7393bcf672a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5bc83994-2ee5-497d-bc05-e5f8e656e82d" start_index="0" end="6b9c801c-7469-4f9a-9327-e3dae29ec36a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="590c7ed2-f051-4bb9-a069-5b8a7d2e5d0b" start_index="0" end="f7944190-9b41-4d2a-9572-1280339b1365" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="677ac5a7-8f93-4615-aafb-de2b88909ac8" start_index="0" end="f7944190-9b41-4d2a-9572-1280339b1365" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ca3a68b0-cc45-4ca9-89c2-6b675cb7ca51" start_index="1" end="f7944190-9b41-4d2a-9572-1280339b1365" end_index="3" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,91 @@
+<Workspace Version="0.8.2.2392" X="113.369120444426" Y="245.799874800668" zoom="1.3011655276204" Name="RoomSeparator.FromCurve" Description="Creates room separation lines from geometry curves. " ID="c68c0799-65c3-42f4-b8ba-93a248013d35" Category="Clockwork.Revit.Elements.ModelCurve.Create">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Curve" resolvedName="Autodesk.DesignScript.Geometry.Curve" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="SketchPlane" resolvedName="Revit.Elements.SketchPlane" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="d233a39a-cfad-4a80-b0e8-859917c5f97f" type="Dynamo.Nodes.Symbol" nickname="Input" x="-53.7979207979922" y="-16.1393762393977" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="curve : Autodesk.Curve" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="1cd26b14-cb68-4c9f-b1f2-75c8db318a86" type="Dynamo.Nodes.Output" nickname="Output" x="818.30168035906" y="-17.5485473915036" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="roomSeparator" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="9663d7ec-7e83-43e8-aa70-ba9607d8a183" type="Dynamo.Nodes.Symbol" nickname="Input" x="69.1687553117041" y="126.80687836408" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="sketchPlane : SketchPlane" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="1692d858-5038-4192-880f-5db8e03012db" type="Dynamo.Nodes.Symbol" nickname="Input" x="189.829806244344" y="202.121461107223" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <DSIronPythonNode.PythonNode guid="786d1079-e66a-4b07-a4fd-e72dbefe5739" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="408.314582743144" y="99.2697949127082" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+curves = UnwrapElement(IN[0])
+sketchplane = UnwrapElement(IN[1])
+view = UnwrapElement(IN[2])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+curvearray = CurveArray()
+for curve in curves:
+	curvearray.Append(curve.ToRevitType())
+doccreation = doc.Create
+separatorarray = doccreation.NewRoomBoundaryLines(sketchplane, curvearray, view)
+TransactionManager.Instance.TransactionTaskDone()
+
+elementlist = list()
+for item in separatorarray:
+	elementlist.append(item)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="aa9e7741-cd0a-4da7-a524-dace66a1ba2d" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="211" y="57" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="7557beff-41c3-4f58-815f-c0aa773d115a" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="569.116158608817" y="-17.9965016484353" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d233a39a-cfad-4a80-b0e8-859917c5f97f" start_index="0" end="aa9e7741-cd0a-4da7-a524-dace66a1ba2d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d233a39a-cfad-4a80-b0e8-859917c5f97f" start_index="0" end="7557beff-41c3-4f58-815f-c0aa773d115a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9663d7ec-7e83-43e8-aa70-ba9607d8a183" start_index="0" end="786d1079-e66a-4b07-a4fd-e72dbefe5739" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1692d858-5038-4192-880f-5db8e03012db" start_index="0" end="786d1079-e66a-4b07-a4fd-e72dbefe5739" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="786d1079-e66a-4b07-a4fd-e72dbefe5739" start_index="0" end="7557beff-41c3-4f58-815f-c0aa773d115a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="aa9e7741-cd0a-4da7-a524-dace66a1ba2d" start_index="0" end="786d1079-e66a-4b07-a4fd-e72dbefe5739" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7557beff-41c3-4f58-815f-c0aa773d115a" start_index="0" end="1cd26b14-cb68-4c9f-b1f2-75c8db318a86" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

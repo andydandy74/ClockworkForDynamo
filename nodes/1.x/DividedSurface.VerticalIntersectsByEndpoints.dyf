@@ -1,0 +1,59 @@
+<Workspace Version="0.8.2.2392" X="73.7516146230007" Y="225.214610896356" zoom="0.734237034574468" Name="DividedSurface.VerticalIntersectsByEndpoints" Description="Creates a number of equally spaced vertical intersects for a divided surface based on the path between between two points. You may need to switch start point and end point." ID="61bda511-27e0-4a68-8668-c3ed1c24b62e" Category="Clockwork.Revit.Elements.DividedSurface.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Line" resolvedName="Autodesk.DesignScript.Geometry.Line" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="ReferencePlane" resolvedName="Revit.Elements.ReferencePlane" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Autodesk.DesignScript.Geometry.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="DividedSurface" resolvedName="Revit.Elements.DividedSurface" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="de4ee521-d19f-4046-90e2-749c4add666e" type="Dynamo.Nodes.Symbol" nickname="Input" x="672.389946686976" y="-12.1584056867225" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="dividedSurface : DividedSurface" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="1b41fe9c-cefc-4707-a8e4-dcdb3d8d226c" type="Dynamo.Nodes.Symbol" nickname="Input" x="-150.056359482102" y="1.14546839299317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="startPoint : Autodesk.Point" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="77724451-d135-4507-9ba7-c5d636637a96" type="Dynamo.Nodes.Symbol" nickname="Input" x="-128.292460015232" y="82.4278649403402" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="endPoint : Autodesk.Point" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="953cdc3a-a06b-4f71-a5d9-30a462134257" type="Dynamo.Nodes.Symbol" nickname="Input" x="-74.4554455445544" y="168.29213505966" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="subdivisions : int" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="02de61aa-b9a1-4c1d-be46-e10e9bc97000" type="Dynamo.Nodes.Output" nickname="Output" x="1409" y="257.026666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="dividedSurface" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="1a5794e0-884d-48cd-ba01-d524fd46214d" type="Dynamo.Nodes.Output" nickname="Output" x="1069.94135567403" y="353.626818989591" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="intersects" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="d3e251dd-ea33-49b1-90ae-e8539f353f72" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="233" y="70.2133333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="// Project the points to the XY plane and create a line between them&#xA;p1 = Autodesk.Point.ByCoordinates(startp.X,startp.Y);&#xA;p2 = Autodesk.Point.ByCoordinates(endp.X,endp.Y);&#xA;curve1 = Line.ByStartPointEndPoint(p1,p2);&#xA;// Create points for subdivisions&#xA;seq = 0..1..#(subdiv+1);&#xA;seq2 = List.RestOfItems(seq);&#xA;seq3 = List.TakeItems(seq2,List.Count(seq2)-1);&#xA;cpoints = curve1.PointAtParameter(seq3);&#xA;// Find vector orthogonal to line&#xA;vec1 = Vector.ByTwoPoints(p1,p2).Normalized();&#xA;vec2 = vec1.Cross(Vector.ZAxis());&#xA;vec3 = vec2.Scale(curve1.Length/10);&#xA;// Create a set of orthogonal planes to curve 1&#xA;ReferencePlane.ByStartPointEndPoint(cpoints.Add(vec3),cpoints.Subtract(vec3));" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="0108fe09-264c-46a2-aca8-f4d5d82e2366" type="Dynamo.Nodes.Function" nickname="DividedSurface.AddIntersect" x="1065" y="257.026666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="e29fe7ec-cf80-41fd-a1a1-d55b01e15697" />
+      <Name value="Add Intersect To Divided Surface" />
+      <Description value="Adds an intersect to a divided surface" />
+      <Inputs>
+        <Input value="dividedSurface" />
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="dividedSurface" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="de4ee521-d19f-4046-90e2-749c4add666e" start_index="0" end="0108fe09-264c-46a2-aca8-f4d5d82e2366" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1b41fe9c-cefc-4707-a8e4-dcdb3d8d226c" start_index="0" end="d3e251dd-ea33-49b1-90ae-e8539f353f72" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="77724451-d135-4507-9ba7-c5d636637a96" start_index="0" end="d3e251dd-ea33-49b1-90ae-e8539f353f72" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="953cdc3a-a06b-4f71-a5d9-30a462134257" start_index="0" end="d3e251dd-ea33-49b1-90ae-e8539f353f72" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d3e251dd-ea33-49b1-90ae-e8539f353f72" start_index="10" end="0108fe09-264c-46a2-aca8-f4d5d82e2366" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d3e251dd-ea33-49b1-90ae-e8539f353f72" start_index="10" end="1a5794e0-884d-48cd-ba01-d524fd46214d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0108fe09-264c-46a2-aca8-f4d5d82e2366" start_index="0" end="02de61aa-b9a1-4c1d-be46-e10e9bc97000" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

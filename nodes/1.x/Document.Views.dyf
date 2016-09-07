@@ -1,0 +1,43 @@
+<Workspace Version="0.8.2.2392" X="30" Y="367.110924369748" zoom="1.20336134453782" Name="Document.Views" Description="Gets all views in the document - except for 3D view templates (as long as this bug is not fixed: https://github.com/DynamoDS/Dynamo/issues/2970)" ID="de43b934-e84a-4c0a-b298-06207ba545cd" Category="Clockwork.Revit.Document.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Output guid="8391a372-b113-4e1a-b6ea-aa1f0875826c" type="Dynamo.Nodes.Output" nickname="Output" x="523" y="7.105427357601E-15" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="Views" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="9360058e-8acd-40b3-8a55-a4891ad83340" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="299" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+collector = FilteredElementCollector(doc)
+views = collector.OfClass(View).ToElements()
+viewlist = list()
+for view in views:
+	if view.ViewType == ViewType.ThreeD:
+		if not(view.IsTemplate):
+			viewlist.append(view)
+	else:
+		viewlist.append(view)
+OUT = viewlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Symbol guid="0e3b7542-a433-4f48-a64b-486178434b0b" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="toggle : bool = true" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="9360058e-8acd-40b3-8a55-a4891ad83340" start_index="0" end="8391a372-b113-4e1a-b6ea-aa1f0875826c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="0e3b7542-a433-4f48-a64b-486178434b0b" start_index="0" end="9360058e-8acd-40b3-8a55-a4891ad83340" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

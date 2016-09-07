@@ -1,0 +1,76 @@
+<Workspace Version="0.8.2.2392" X="-47.968258603429" Y="291.918886039947" zoom="0.832865595068324" Name="All Family Types Of Category" Description="Gets all family types/symbols of a given category in the model  (does *not *work for system families)" ID="65f93a80-674c-4a98-9d0c-db3a138287e5" Category="Clockwork.Revit.Selection.ByCollector">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Category" resolvedName="Revit.Elements.Category" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="84e462d7-c7a7-49cf-a2c6-87c8dc290653" type="Dynamo.Nodes.Symbol" nickname="Input" x="11.3704809273489" y="-80.0460412938922" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="category : Category" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Function guid="15aaa15b-b989-4b77-8235-e1fdc663da9f" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="236" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Output guid="e72cc930-7abf-411f-b378-d51ad9ffce1e" type="Dynamo.Nodes.Output" nickname="Output" x="833.78544513612" y="-78.8196182475274" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="familyTypes" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="1402905f-1a88-40d8-a4d3-627f9c44bca0" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="445.802695685457" y="24.0134784272838" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+cats = IN[0]
+
+elementlist = list()
+# This could be more elegant if only I knew how to implement a Multicategory filter in Python....
+for item in cats:
+	collector = FilteredElementCollector(doc)
+	collector.OfClass(FamilySymbol)
+	bic = System.Enum.ToObject(BuiltInCategory, item.Id)
+	collector.OfCategory(bic)
+	elementlist.append(collector.ToElements())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="b745d3cb-6f30-42d6-8320-fdd3ba0805be" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="605.211431366983" y="-80.3221523905516" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="cd1510d6-5a85-4b7b-aac1-e5b12f93cdda" type="Dynamo.Nodes.Symbol" nickname="Input" x="203.270390272543" y="77.3351310128887" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="toggle : bool = true" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="84e462d7-c7a7-49cf-a2c6-87c8dc290653" start_index="0" end="15aaa15b-b989-4b77-8235-e1fdc663da9f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="84e462d7-c7a7-49cf-a2c6-87c8dc290653" start_index="0" end="b745d3cb-6f30-42d6-8320-fdd3ba0805be" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="15aaa15b-b989-4b77-8235-e1fdc663da9f" start_index="0" end="1402905f-1a88-40d8-a4d3-627f9c44bca0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1402905f-1a88-40d8-a4d3-627f9c44bca0" start_index="0" end="b745d3cb-6f30-42d6-8320-fdd3ba0805be" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b745d3cb-6f30-42d6-8320-fdd3ba0805be" start_index="0" end="e72cc930-7abf-411f-b378-d51ad9ffce1e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cd1510d6-5a85-4b7b-aac1-e5b12f93cdda" start_index="0" end="1402905f-1a88-40d8-a4d3-627f9c44bca0" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

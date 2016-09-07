@@ -1,0 +1,68 @@
+<Workspace Version="0.8.2.2392" X="-37.9344912321267" Y="151.631454314941" zoom="0.765829392851552" Name="Part.SourceElement" Description="Retrieves the element a given part was made from" ID="52a33330-be8f-4f58-8dd7-f556735c2176" Category="Clockwork.Revit.Elements.Part.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="49f5848d-481e-4062-a634-6c72bb461275" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="730" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="68c5153e-3e2c-4989-ad95-3682fe8f07a2" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="461" y="152" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+items = UnwrapElement(IN[0])
+elementlist = list()
+for item in items:
+    sourcelist = list()
+    for source in item.GetSourceElementIds():
+        sourcelist.append(item.Document.GetElement(source.HostElementId).ToDSType(True))
+    if len(sourcelist) &lt; 2:
+        elementlist.append(sourcelist[0])
+    else:
+        elementlist.append(sourcelist)
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="d5583a2c-02cc-4f1a-b082-3fc83f57452a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="292" y="152" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="88371c46-b8ce-4a0f-b58d-e84bf87dabe0" type="Dynamo.Nodes.Symbol" nickname="Input" x="106" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="part" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="cc005e94-895c-4312-84d6-de110d310096" type="Dynamo.Nodes.Output" nickname="Output" x="1000" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="sourceElement" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="49f5848d-481e-4062-a634-6c72bb461275" start_index="0" end="cc005e94-895c-4312-84d6-de110d310096" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="68c5153e-3e2c-4989-ad95-3682fe8f07a2" start_index="0" end="49f5848d-481e-4062-a634-6c72bb461275" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d5583a2c-02cc-4f1a-b082-3fc83f57452a" start_index="0" end="68c5153e-3e2c-4989-ad95-3682fe8f07a2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88371c46-b8ce-4a0f-b58d-e84bf87dabe0" start_index="0" end="d5583a2c-02cc-4f1a-b082-3fc83f57452a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88371c46-b8ce-4a0f-b58d-e84bf87dabe0" start_index="0" end="49f5848d-481e-4062-a634-6c72bb461275" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
