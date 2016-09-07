@@ -1,0 +1,119 @@
+<Workspace Version="0.9.0.3067" X="518.708128959257" Y="326.244867009738" zoom="0.643176972789838" Name="ElementType.Duplicate" Description="Duplicates an element type" ID="28d98cf4-c930-4009-9474-5a44be26768c" Category="Clockwork.Revit.Elements.ElementType.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="23bb6172-9017-4de5-bec4-01f37588c27d" type="PythonNodeModels.PythonNode" nickname="Python Script" x="681.568478654933" y="148.24352112153" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference('RevitNodes')
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference('RevitServices')
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+famtypes = IN[0]
+newnames = IN[1]
+elementlist, fail = [],[] #better to generate a fail list only once
+func_enum = {'Revit.Elements.WallType' : Revit.Elements.WallType.ByName,
+			 'Revit.Elements.FloorType' : Revit.Elements.FloorType.ByName,
+			 'Revit.Elements.FamilyType' : Revit.Elements.FamilyType.ByName}
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for i in xrange(len(famtypes) ):
+	try:
+		elementlist.append(UnwrapElement(famtypes[i]).Duplicate(newnames[i]) )
+	except:
+		try:
+			t1 = famtypes[i].GetType().ToString()
+			if t1 in func_enum:
+				elementlist.append(func_enum[t1](newnames[i]) )
+			else:
+				elementlist.append(fail)
+		except:
+			elementlist.append(fail)
+
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.Symbol guid="5a870eae-04f8-4d59-8e84-72a253e98024" type="Dynamo.Nodes.Symbol" nickname="Input" x="-623.431521345067" y="114.350187788197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="elementType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="d35b3219-421f-4f6d-bf1a-92ba7ceb0d39" type="Dynamo.Nodes.Output" nickname="Output" x="1168.56847865493" y="122.24352112153" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="duplicate" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="453.568478654933" y="156.670187788197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Nodes.Symbol guid="b3ab0d57-4f3a-4c15-af19-850c14d226bb" type="Dynamo.Nodes.Symbol" nickname="Input" x="-623.431521345067" y="216.030187788197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="name" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="6719b353-b220-46b7-aa64-5d5b03d22cb7" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-113.431521345067" y="156.670187788197" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="{types,names};" ShouldFocus="false" />
+    <Dynamo.Nodes.Function guid="6af083dc-dec1-4d72-9b98-8f7fce0de78c" type="Dynamo.Nodes.Function" nickname="List.EqualSublistLengths" x="191.568478654933" y="152.456854454863" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd2bed0a-69a8-45d5-ab42-79019b5bfe73" />
+      <Name value="List.EqualSublistLengths" />
+      <Description value="Trims all given lists to the length of the shortest list" />
+      <Inputs>
+        <Input value="lists" />
+      </Inputs>
+      <Outputs>
+        <Output value="lists" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="3a1f0b11-c871-47b1-8a66-20b13b7256b9" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="905.568478654933" y="122.24352112153" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="09e70e2e-6dbf-4ca3-b0d1-27aa3f11131c" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="-382.431521345067" y="106.456854454863" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="4f028655-2b4b-4a33-a1f0-90593b7b45d0" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="-382.431521345067" y="216.030187788197" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="23bb6172-9017-4de5-bec4-01f37588c27d" start_index="0" end="3a1f0b11-c871-47b1-8a66-20b13b7256b9" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5a870eae-04f8-4d59-8e84-72a253e98024" start_index="0" end="3a1f0b11-c871-47b1-8a66-20b13b7256b9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5a870eae-04f8-4d59-8e84-72a253e98024" start_index="0" end="09e70e2e-6dbf-4ca3-b0d1-27aa3f11131c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" start_index="0" end="23bb6172-9017-4de5-bec4-01f37588c27d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" start_index="1" end="23bb6172-9017-4de5-bec4-01f37588c27d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b3ab0d57-4f3a-4c15-af19-850c14d226bb" start_index="0" end="4f028655-2b4b-4a33-a1f0-90593b7b45d0" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6719b353-b220-46b7-aa64-5d5b03d22cb7" start_index="0" end="6af083dc-dec1-4d72-9b98-8f7fce0de78c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6af083dc-dec1-4d72-9b98-8f7fce0de78c" start_index="0" end="a2f2db4d-6d4b-4c72-978e-d6149d949fe6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3a1f0b11-c871-47b1-8a66-20b13b7256b9" start_index="0" end="d35b3219-421f-4f6d-bf1a-92ba7ceb0d39" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="09e70e2e-6dbf-4ca3-b0d1-27aa3f11131c" start_index="0" end="6719b353-b220-46b7-aa64-5d5b03d22cb7" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4f028655-2b4b-4a33-a1f0-90593b7b45d0" start_index="0" end="6719b353-b220-46b7-aa64-5d5b03d22cb7" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
