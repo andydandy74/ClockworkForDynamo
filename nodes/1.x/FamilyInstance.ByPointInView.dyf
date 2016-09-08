@@ -1,0 +1,91 @@
+<Workspace Version="0.9.0.3067" X="27" Y="55" zoom="1" Name="FamilyInstance.ByPointInView" Description="Places a family instance at a given point in a given view (e.g. a detail component)." ID="6dbe76ab-213d-43d4-aa87-20967daf4dac" Category="Clockwork.Revit.Elements.FamilyInstance.Create">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="76e9963e-e429-4985-b736-fde85665ccc6" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="683.949148327486" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <PythonNodeModels.PythonNode guid="935f7db0-4a68-4f9e-ae86-d1f9c56a5915" type="PythonNodeModels.PythonNode" nickname="Python Script" x="455" y="113.288076584804" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+points = UnwrapElement(IN[0])
+famtype = UnwrapElement(IN[1])
+lvl = UnwrapElement(IN[2])
+elementlist = list()
+counter = 0
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+# make sure familysymbol is active
+if famtype.IsActive == False:
+	famtype.Activate()
+	doc.Regenerate()
+for point in points:
+	newobj = doc.Create.NewFamilyInstance(point.ToXyz(),famtype,lvl)
+	elementlist.append(newobj.ToDSType(False))
+TransactionManager.Instance.TransactionTaskDone()
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.Function guid="a6ef6e91-02e6-42e4-b185-8531131ed64e" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="249" y="68.2880765848037" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="f67797bf-474d-49a8-8abd-0d1a76d7c0ff" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="point : Autodesk.Point" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="2ca5d213-cb93-4dad-8eab-67bf0c4d673b" type="Dynamo.Nodes.Symbol" nickname="Input" x="248" y="140" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="familyType" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="e7adcfef-3c7f-4f14-91a2-b51825947da2" type="Dynamo.Nodes.Symbol" nickname="Input" x="241" y="218" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="fcb4faad-bebe-4877-8d84-45e272bb0e9e" type="Dynamo.Nodes.Output" nickname="Output" x="950.949148327486" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="familyInstance" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="76e9963e-e429-4985-b736-fde85665ccc6" start_index="0" end="fcb4faad-bebe-4877-8d84-45e272bb0e9e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="935f7db0-4a68-4f9e-ae86-d1f9c56a5915" start_index="0" end="76e9963e-e429-4985-b736-fde85665ccc6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a6ef6e91-02e6-42e4-b185-8531131ed64e" start_index="0" end="935f7db0-4a68-4f9e-ae86-d1f9c56a5915" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f67797bf-474d-49a8-8abd-0d1a76d7c0ff" start_index="0" end="76e9963e-e429-4985-b736-fde85665ccc6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f67797bf-474d-49a8-8abd-0d1a76d7c0ff" start_index="0" end="a6ef6e91-02e6-42e4-b185-8531131ed64e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2ca5d213-cb93-4dad-8eab-67bf0c4d673b" start_index="0" end="935f7db0-4a68-4f9e-ae86-d1f9c56a5915" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e7adcfef-3c7f-4f14-91a2-b51825947da2" start_index="0" end="935f7db0-4a68-4f9e-ae86-d1f9c56a5915" end_index="2" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
