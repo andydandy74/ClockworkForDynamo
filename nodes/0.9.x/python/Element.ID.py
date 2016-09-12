@@ -8,10 +8,12 @@ clr.ImportExtensions(Revit.Elements)
 
 items = UnwrapElement(IN[0])
 elementlist = list()
-unmatched = list()
+booleans = list()
 for item in items:
 	try:
 		elementlist.append(item.Id)
+		booleans.append(True)
 	except:
-		unmatched.append(item)
-OUT = (elementlist, unmatched)
+		elementlist.append(None)
+		booleans.append(False)
+OUT = (elementlist, booleans)

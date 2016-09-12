@@ -1,4 +1,5 @@
 import clr
+import math
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
@@ -13,6 +14,7 @@ ispoint = list()
 iscurve = list()
 curves = list()
 haslocation = list()
+angles, hasrotation = [], []
 
 for item in items:
 	try:
@@ -21,6 +23,7 @@ for item in items:
 		ispoint.append(True)
 		iscurve.append(False)
 		haslocation.append(True)
+		hasrotation.append(False)
 	except:
 		try:
 			loc = item.Location
@@ -32,12 +35,16 @@ for item in items:
 				ispoint.append(False)
 				iscurve.append(True)
 				haslocation.append(True)
+				hasrotation.append(False)
 			elif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':
 				# point-based elements
 				pointlist.append(loc.Point.ToPoint())
+				angles.append(math.degrees(loc.Rotation) )
 				ispoint.append(True)
 				iscurve.append(False)
+				angles.append
 				haslocation.append(True)
+				hasrotation.append(True)
 			else:
 				ispoint.append(False)
 				iscurve.append(False)
@@ -55,4 +62,4 @@ for item in items:
 				ispoint.append(False)
 				iscurve.append(False)
 				haslocation.append(False)
-OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation)
+OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles, hasrotation)

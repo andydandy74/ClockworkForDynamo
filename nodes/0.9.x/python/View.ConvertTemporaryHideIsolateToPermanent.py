@@ -13,4 +13,4 @@ view = UnwrapElement(IN[0])
 TransactionManager.Instance.EnsureInTransaction(doc)
 view.ConvertTemporaryHideIsolateToPermanent()
 TransactionManager.Instance.TransactionTaskDone()
-OUT = (view,elements)
+OUT = view

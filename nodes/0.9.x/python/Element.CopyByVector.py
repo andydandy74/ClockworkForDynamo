@@ -1,6 +1,8 @@
 import clr
+from System.Collections.Generic import *
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
+import Autodesk
 
 clr.AddReference("RevitNodes")
 import Revit
@@ -13,19 +15,24 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-points = UnwrapElement(IN[0])
-famtype = UnwrapElement(IN[1])
-lvl = UnwrapElement(IN[2])
-elementlist = list()
-counter = 0
+items = UnwrapElement(IN[0])
+xyz = UnwrapElement(IN[1]).ToXyz()
+rehost = IN[2]
+
+ids = list()
+for item in items:
+	ids.append(item.Id)	
+itemlist = List[ElementId](ids)
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-# make sure familysymbol is active
-if famtype.IsActive == False:
-	famtype.Activate()
-	doc.Regenerate()
-for point in points:
-	newobj = doc.Create.NewFamilyInstance(point.ToXyz(),famtype,lvl)
-	elementlist.append(newobj.ToDSType(False))
+if rehost:
+	newitems = ElementTransformUtils.CopyElements(doc,itemlist,doc,Transform.CreateTranslation(xyz),None)
+else:
+	newitems = ElementTransformUtils.CopyElements(doc,itemlist,xyz)
 TransactionManager.Instance.TransactionTaskDone()
+
+elementlist = list()
+for item in newitems:
+	elementlist.append(doc.GetElement(item).ToDSType(False))
+
 OUT = elementlist

@@ -24,7 +24,7 @@ for item in items:
 	try:
 		for boundarylist in item.GetBoundarySegments(options):
 			for boundary in boundarylist:
-				blist.append(boundary.Element)
+				blist.append(doc.GetElement(boundary.ElementId))
 				clist.append(boundary.Curve.ToProtoType())
 	except:
 		pass

@@ -6,17 +6,14 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-dimensions = UnwrapElement(IN[0])
+basearrays = UnwrapElement(IN[0])
 paramlist = list()
 paramnamelist = list()
-for dimension in dimensions:
+for basearray in basearrays:
 	try:
-		if dimension.FamilyLabel != None:
-			paramlist.append(dimension.FamilyLabel)
-			paramnamelist.append(dimension.FamilyLabel.Definition.Name)
-		else:	
-			paramlist.append(list())
-			paramnamelist.append(list())
+		if basearray.Label != None:
+			paramlist.append(basearray.Label)
+			paramnamelist.append(basearray.Label.Definition.Name)
 	except:
 		paramlist.append(list())
 		paramnamelist.append(list())

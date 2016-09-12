@@ -5,7 +5,6 @@ from Autodesk.Revit.DB import *
 clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
-clr.ImportExtensions(Revit.GeometryConversion)
 
 clr.AddReference("RevitServices")
 import RevitServices
@@ -13,19 +12,19 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-points = UnwrapElement(IN[0])
-famtype = UnwrapElement(IN[1])
-lvl = UnwrapElement(IN[2])
-elementlist = list()
-counter = 0
+items = UnwrapElement(IN[0])
+lvls = UnwrapElement(IN[1])
+booleans = list()
+i = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-# make sure familysymbol is active
-if famtype.IsActive == False:
-	famtype.Activate()
-	doc.Regenerate()
-for point in points:
-	newobj = doc.Create.NewFamilyInstance(point.ToXyz(),famtype,lvl)
-	elementlist.append(newobj.ToDSType(False))
+for item in items:
+	try:
+		item.get_Parameter(BuiltInParameter.FAMILY_LEVEL_PARAM).Set(lvls[i].Id)
+		booleans.append(True)
+	except:
+		booleans.append(False)
+	i += 1
 TransactionManager.Instance.TransactionTaskDone()
-OUT = elementlist
+
+OUT = (items,booleans)

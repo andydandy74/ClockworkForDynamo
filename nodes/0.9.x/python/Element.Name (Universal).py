@@ -8,16 +8,14 @@ for item in faminsts:
 	try:
 		n = UnwrapElement(item).Name
 	except:
-		try:
-			# for parameters...
-			n = UnwrapElement(item).Definition.Name
-		except:
-			n = None
-	# Use a built-in property of (wrapped) Dynamo elements for family symbols instead
-	if n == None:
+		# Use a built-in property of (wrapped) Dynamo elements for family symbols instead
 		try:
 			n = item.Name
 		except:
-			n = []
+			# maybe it's a parameter name
+			try:
+				n = item.Definition.Name
+			except:
+				n = []
 	elementlist.append(n)
 OUT = elementlist
