@@ -8,7 +8,7 @@ If you like the package, please vote in support of it in Dynamo's package search
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages)). Also, always make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo.
 
 ##Versions
-**Please note that Clockwork for Dynamo 1.x is the only Clockwork version fully compatible with Revit 2017.**
+**Please note that Clockwork for Dynamo 1.x is the only Clockwork version fully compatible with Revit 2017. It has been tested with Dynamo 1.0.0 against Revit 2016 and 2017. It has, however, *not* been tested with more recent versions of Dynamo 1.x (e.g. 1.1.0).**
 
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
 - Clockwork for Dynamo 1.x: **1.0.1**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-1x)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-1x)]
