@@ -1,0 +1,130 @@
+<Workspace Version="1.0.0.1180" X="313.516849939533" Y="117.477485285469" zoom="0.954042924882813" Name="Element.Geometry+" Description="Returns Dynamo AND native Revit geometry of a given element" ID="e099f46f-fcca-475d-9733-410ca033a00d" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Element" resolvedName="Revit.Elements.Element" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d22827f0-27d6-4ffe-a012-6b0b48a82f63" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="875.5" y="210.393333333333" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="7f53ae10-a883-4106-808c-f044c50e5f97" type="PythonNodeModels.PythonNode" nickname="Python Script" x="426.5" y="294.606666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+# this function takes care of exploding 
+# GeometryInstance objects. GI objects typically
+# represent family instance geometry.
+# in order to also catch possible nested families
+# the fucntion calls itself recursively.
+def convert_geometry_instance(geo, elementlist):
+	for g in geo:
+		if str(g.GetType()) == 'Autodesk.Revit.DB.GeometryInstance':
+			elementlist = convert_geometry_instance(g.GetInstanceGeometry(), elementlist)
+		else:
+			elementlist.append(g)
+	return elementlist
+
+items = UnwrapElement(IN[0])
+detail_lvl = IN[1]
+inc_invis = IN[2]
+view = UnwrapElement(IN[3])
+revitlist = list()
+dynlist = list()
+for item in items:
+	geo_options = Options()
+	if view == None: geo_options.DetailLevel = detail_lvl
+	geo_options.IncludeNonVisibleObjects = inc_invis
+	if view != None: geo_options.View = view
+	revitGeo = item.Geometry[geo_options]
+	try:
+		
+		revit_geos = convert_geometry_instance(revitGeo, list())
+		revitlist.append(revit_geos)
+		dyn_geos = list()
+		for geo in revit_geos:
+			dyn_geos.append(geo.ToProtoType())
+		dynlist.append(dyn_geos)	
+	except:
+		revitlist.append(list())
+		dynlist.append(list())
+OUT = (dynlist,revitlist)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="393572ca-b307-4246-bbcc-731d14a9cec6" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="-23.5" y="220.606666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="86662da9-16f0-4bbe-9a77-28f3301f7d59" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-300.5" y="220.606666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element : Element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="49a7366e-58d0-49e1-9ff7-59a8b0646ce0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-23.5" y="328.606666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="detailLevel" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d08fb76c-c05f-4b32-936e-577d71300b23" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-23.5" y="412.606666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="includeInvisibleObjects : bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="50dc80c0-afa6-42fc-9d5f-2bdd63ca5294" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1132.5" y="235.393333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="dynamoGeometry" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c981b07d-0b6f-4c18-9120-24577e9be7cc" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="648.5" y="298.82" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="6fbccaf6-0099-45fd-a973-3b33466bfe44" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1132.5" y="319.393333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="revitGeometry" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="875.5" y="344.393333333333" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9ac95244-7651-46c4-b2ce-4ef7f41b51c6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-17.2152909473363" y="516.460336049338" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="view : View = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="d22827f0-27d6-4ffe-a012-6b0b48a82f63" start_index="0" end="50dc80c0-afa6-42fc-9d5f-2bdd63ca5294" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7f53ae10-a883-4106-808c-f044c50e5f97" start_index="0" end="c981b07d-0b6f-4c18-9120-24577e9be7cc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="393572ca-b307-4246-bbcc-731d14a9cec6" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="d22827f0-27d6-4ffe-a012-6b0b48a82f63" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="393572ca-b307-4246-bbcc-731d14a9cec6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="49a7366e-58d0-49e1-9ff7-59a8b0646ce0" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d08fb76c-c05f-4b32-936e-577d71300b23" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c981b07d-0b6f-4c18-9120-24577e9be7cc" start_index="0" end="d22827f0-27d6-4ffe-a012-6b0b48a82f63" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c981b07d-0b6f-4c18-9120-24577e9be7cc" start_index="1" end="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" start_index="0" end="6fbccaf6-0099-45fd-a973-3b33466bfe44" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9ac95244-7651-46c4-b2ce-4ef7f41b51c6" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="3" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-10.4997706856158" eyeY="12.3594487669562" eyeZ="25.3993287092609" lookX="13.8944382228594" lookY="-14.0373647103443" lookZ="-30.2234454192426" upX="0.0761195055310126" upY="0.98325490756396" upZ="-0.1655765914286" />
+  </Cameras>
+</Workspace>
