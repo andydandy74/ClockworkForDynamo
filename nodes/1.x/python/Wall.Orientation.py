@@ -11,7 +11,12 @@ wallinstances = UnwrapElement(IN[0])
 vectorlist = list()
 for item in wallinstances:
 	try:
-		vectorlist.append(item.Orientation.ToVector())
+		lcurve = item.Location.Curve
+		if str(type(lcurve)) == "Autodesk.Revit.DB.Line":
+			vectorlist.append(item.Orientation.ToVector())
+		else:
+			direction = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()
+			vectorlist.append(XYZ.BasisZ.CrossProduct(direction))
 	except:
 		vectorlist.append(list())
 OUT = vectorlist

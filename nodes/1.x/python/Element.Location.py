@@ -49,6 +49,7 @@ for item in items:
 				ispoint.append(False)
 				iscurve.append(False)
 				haslocation.append(False)
+				hasrotation.append(False)
 		except:
 			try:
 				# curves
@@ -58,8 +59,10 @@ for item in items:
 				ispoint.append(False)
 				iscurve.append(True)
 				haslocation.append(True)
+				hasrotation.append(False)
 			except:
 				ispoint.append(False)
 				iscurve.append(False)
 				haslocation.append(False)
+				hasrotation.append(False)
 OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles, hasrotation)
