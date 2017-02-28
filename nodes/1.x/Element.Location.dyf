@@ -1,4 +1,4 @@
-<Workspace Version="1.0.0.1180" X="-1.99179214876301" Y="144.697985212513" zoom="1.39028218019753" Name="Element.Location" Description="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " ID="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" Category="Clockwork.Revit.Elements.Element.Query">
+<Workspace Version="1.0.0.1180" X="419.261378943467" Y="191.208611169102" zoom="0.991871263722181" Name="Element.Location" Description="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " ID="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" Category="Clockwork.Revit.Elements.Element.Query">
   <NamespaceResolutionMap />
   <Elements>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="0172cd21-9f9a-4382-82cb-a6341dcc77da" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="199" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
@@ -76,10 +76,33 @@ for item in items:
 				except:
 					hasrotation.append(False)
 			else:
-				ispoint.append(False)
-				iscurve.append(False)
-				haslocation.append(False)
-				hasrotation.append(False)
+				# check for host objects outlines (floor slabs etc.)
+				try:
+					refs = HostObjectUtils.GetTopFaces(item)
+					for ref in refs:
+						boundaries = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
+						blines = []
+						bpoints = []
+						for loop in boundaries:
+							cloop = []
+							clooppoints = []
+							for line in loop:
+								cloop.append(line.ToProtoType())
+								curvepoint = (line.GetEndPoint(0).ToPoint(),line.GetEndPoint(1).ToPoint())
+								clooppoints.append(curvepoint)
+							blines.append(cloop)
+							bpoints.append(clooppoints)
+					curves.append(blines)
+					curvepointlist.append(bpoints)
+					ispoint.append(False)
+					iscurve.append(True)
+					haslocation.append(True)
+					hasrotation.append(False)
+				except:
+					ispoint.append(False)
+					iscurve.append(False)
+					haslocation.append(False)
+					hasrotation.append(False)
 		except:
 			try:
 				# curves
@@ -124,6 +147,6 @@ OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrot
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-184.637435913086" eyeY="219.472961425781" eyeZ="508.156799316406" lookX="179.637435913086" lookY="-208.472961425781" lookZ="-516.156799316406" upX="0.0485836863517761" upY="0.989015877246857" upZ="-0.139596730470657" />
+    <Camera Name="Hintergrundvorschau" eyeX="14.4075361232934" eyeY="4.22615380244957" eyeZ="-17.8244814598333" lookX="-22.3672698216081" lookY="-1.14612214627352" lookZ="16.1380929628044" upX="0.14082091424468" upY="0.984807757522502" upZ="-0.101602962897112" />
   </Cameras>
 </Workspace>
