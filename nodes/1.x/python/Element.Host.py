@@ -19,5 +19,14 @@ for item in faminsts:
 				hostidlist.append(item.Document.GetElement(host).ToDSType(True))
 			elementlist.append(hostidlist)
 		except:
-			elementlist.append(list())
+			# if that doesn't work, maybe it's a wall foundation
+			try:
+				elementlist.append(item.Document.GetElement(item.WallId).ToDSType(True))
+			except:
+				# if that doesn't work, maybe it's a railing, a building pad or a topo subregion
+				try: 
+					elementlist.append(item.Document.GetElement(item.HostId).ToDSType(True))
+				except:
+					elementlist.append(list())
+			
 OUT = elementlist

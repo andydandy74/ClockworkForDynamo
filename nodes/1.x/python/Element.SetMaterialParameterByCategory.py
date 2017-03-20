@@ -16,10 +16,14 @@ failedlist = list()
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in elements:
 	try:
+		paramset = False
 		for param in item.Parameters:
 			if param.Definition.Name == paramname:
-				param.Set(ElementId(-1))
+				param.Set(ElementId.InvalidElementId)
 				elementlist.append(item)
+				paramset = True
+		if paramset == False:
+			failedlist.append(item)
 	except:
 		failedlist.append(item)
 TransactionManager.Instance.TransactionTaskDone()

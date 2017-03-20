@@ -7,4 +7,4 @@ doc = DocumentManager.Instance.CurrentDBDocument
 uiapp = DocumentManager.Instance.CurrentUIApplication
 app = uiapp.Application
 
-OUT = app.VersionName, app.VersionNumber, app.VersionBuild, app.Language
+OUT = app.VersionName, app.VersionNumber, app.VersionBuild, app.Language.ToString()

@@ -19,5 +19,8 @@ for item in items:
 	try: 
 		elementlist.append(doc.GetElement(item).ToDSType(True))
 	except:
-		unmatched.append(item)
+		try:
+			elementlist.append(doc.GetElement(ElementId(item)).ToDSType(True))
+		except:
+			unmatched.append(item)
 OUT = (elementlist, unmatched)
