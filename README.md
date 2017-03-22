@@ -1,34 +1,34 @@
 ﻿![Image](clockwork-logo.png)
 
-Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 360+ nodes of which a large portion was previously published in a number of separate packages. Keeping all those nodes in a single package has made updates and maintenance much easier and has greatly reduced package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
+Clockwork is a collection of custom nodes for the [Dynamo](http://www.dynamobim.org) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 380+ nodes of which a large portion was previously published in a number of separate packages. Keeping all those nodes in a single package has made updates and maintenance much easier and has greatly reduced package dependencies. I had never set out to build so many custom nodes – somehow it just happened.
 
 If you like the package, please vote in support of it in Dynamo's package search tool. 
 
-##Installation
+## Installation
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages)). Also, always make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo.
 
-##Versions
+## Versions
 **Please note that Clockwork for Dynamo 1.x is the only Clockwork version fully compatible with Revit 2017. It has been tested with Dynamo 1.0.0 against Revit 2016 and 2017. It has, however, *not* been tested with more recent versions of Dynamo 1.x (e.g. 1.1.0).**
 
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
 
-Note that Clockwork version numbers follow the Dynamo version the package is currently maintained in, e.g. Clockwork for Dynamo 1.x v**1.0**.something is maintained in Dynamo **1.0**.0 while Clockwork for Dynamo 1.x v**1.1**.something would be mainted in Dynamo **1.1**.0...
-- Clockwork for Dynamo 1.x: **1.0.2**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-1x)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-1x)]
+Note that Clockwork version numbers follow the Dynamo version the package is currently maintained in, e.g. Clockwork for Dynamo 1.x v**1.0**.something is maintained in Dynamo **1.0**.0 while Clockwork for Dynamo 1.x v**1.1**.something would be maintained in Dynamo **1.1**.0...
+- Clockwork for Dynamo 1.x: **1.0.3**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-1x)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-1x)] [[samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/1.x)]
 - Clockwork for Dynamo 0.9.x: **0.90.8**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-09x)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.9.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.9.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-09x)] - **not supported any more**
 - Clockwork for Dynamo 0.8.2: **0.82.8**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-082)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.8.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.8.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-082)] - **not supported any more**
 - Clockwork for Dynamo 0.7.x: **0.75.47**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-07x)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.7.x-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.7.x)] [[deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-07x)] [[samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/0.7.x)] - **not supported any more**
 - Clockwork for Dynamo 0.6.3: **0.63.3**<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-063)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.6.3-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.6.3)] [[deprecated packages](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages)] [[samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/0.6.3)] - **not supported any more**
 
-##Renamed, recategorized and deprecated nodes
+## Renamed, recategorized and deprecated nodes
 During migration from one Dynamo version to the next, I regularly recategorize, relabel and rename a lot of nodes. These changes are documented in an [excel sheet](https://github.com/andydandy74/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package. Nodes with [pending issues](https://github.com/andydandy74/ClockworkForDynamo/issues) are highlighted in yellow.
 
-##Updates
+## Updates
 Since Dynamo's package manager currently does not (yet) have an update notification infrastructure in place, you may want to follow me on [twitter](https://twitter.com/a_dieckmann) for update notifications.
 
-##Known Issues
+## Known Issues
 On this repository you can find a [list of known issues and planned enhancements](https://github.com/andydandy74/ClockworkForDynamo/issues). Should you find that one of the nodes in this package does not work (or could work better with improved functionality), please let me know by creating a new issue in that section. Also, if you happen to come across a built-in node that does exactly the same as one of the Clockwork nodes, please let me know so I can remove that particular node from the package - I am not trying to duplicate existing functionality.
 
-##Material on this repository
+## Material on this repository
 
 This repository contains the following:
 - Directory [issues](issues) contains sample files for issues raised on the [Dynamo GitHub site](https://github.com/DynamoDS/Dynamo).
@@ -37,5 +37,5 @@ This repository contains the following:
 - Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. All samples are available for the 1.x version - sample support for older versions is patchy at best.
 - Directory [workflow_samples](workflow_samples) contains some sample workflows that I have published online somewhere before. I have also started to include some of the examples that I use for teaching Dynamo as well as some material presented at conferences. Almost all of these are available for Dynamo 0.7.x (as well as 0.6.3). I do not know when/if I'll find the time to update them to a current version.
 
-##Help to improve Clockwork
+## Help to improve Clockwork
 If you're interested in contributing to Clockwork, just submit a [pull request](https://github.com/andydandy74/ClockworkForDynamo/pulls). It's not that hard - [some folks](https://github.com/andydandy74/ClockworkForDynamo/graphs/contributors) have already done it. 
