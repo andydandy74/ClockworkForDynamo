@@ -2,6 +2,10 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
 clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
@@ -12,8 +16,9 @@ cat = UnwrapElement(IN[0])
 subcatname = IN[1]
 
 try:
-	OUT = cat.SubCategories.get_Item(subcatname)
+	subcat = cat.SubCategories.get_Item(subcatname)
 except:
 	TransactionManager.Instance.EnsureInTransaction(doc)
-	OUT = doc.Settings.Categories.NewSubcategory(cat, subcatname)
+	subcat = doc.Settings.Categories.NewSubcategory(cat, subcatname)
 	TransactionManager.Instance.TransactionTaskDone()
+OUT = Revit.Elements.Category.ById(subcat.Id.IntegerValue)
