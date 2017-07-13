@@ -37,6 +37,7 @@ from Autodesk.Revit.DB import *
 clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 path = IN[0]
@@ -44,6 +45,7 @@ compact = IN[1]
 newcentral = IN[2]
 isworkshared = IN[3]
 
+TransactionManager.Instance.ForceCloseTransaction()
 if doc.IsFamilyDocument:
 	path += '.rfa'
 else:
@@ -56,18 +58,11 @@ if isworkshared and newcentral:
 	wsopt.ClearTransmitted = True
 	wsopt.SaveAsCentral = True
 	opt.SetWorksharingOptions(wsopt)
-OUT = (doc.SaveAs(path, opt),'#')
 try:
 	doc.SaveAs(path, opt)
 	OUT = True
 except:
-	try:
-		wsopt.ClearTransmitted = False
-		opt.SetWorksharingOptions(wsopt)
-		doc.SaveAs(path, opt)
-		OUT = True
-	except: 
-		OUT = False</Script>
+	OUT = False</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4dc38623-7c1f-44e6-96c0-f5314a3e9da1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="573.479050861828" y="193.117689015774" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="compactFile : bool = false" />
