@@ -57,6 +57,7 @@ inserts = UnwrapElement(IN[4])
 remove_inserts = IN[5]
 revitlist = list()
 dynlist = list()
+catlist = list()
 # we might need a transaction in order to 
 # temporarily delete all inserts and retrieve gross wall areas
 TransactionManager.Instance.EnsureInTransaction(doc)
@@ -77,19 +78,30 @@ for item in items:
 		revit_geos = convert_geometry_instance(revitGeo, list())
 		revitlist.append(revit_geos)
 		dyn_geos = list()
+		cats = list()
 		for geo in revit_geos:
 			try:
 				dyn_geos.append(geo.ToProtoType())
 			except:
-				pass
-		dynlist.append(dyn_geos)	
+				dyn_geos.append(None)
+			try:
+				graphstyle = doc.GetElement(geo.GraphicsStyleId)
+				if graphstyle != None:
+					cats.append(Revit.Elements.Category.ById(graphstyle.GraphicsStyleCategory.Id.IntegerValue))
+				else:
+					cats.append(None)
+			except:
+				cats.append(None)
+		dynlist.append(dyn_geos)
+		catlist.append(cats)		
 	except:
 		revitlist.append(list())
 		dynlist.append(list())
+		catlist.append(list())
 	i += 1
 trans.RollBack()
 TransactionManager.Instance.TransactionTaskDone()
-OUT = (dynlist,revitlist)</Script>
+OUT = (dynlist,revitlist,catlist)</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="393572ca-b307-4246-bbcc-731d14a9cec6" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="-23.5" y="220.606666666667" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
@@ -114,7 +126,7 @@ OUT = (dynlist,revitlist)</Script>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="50dc80c0-afa6-42fc-9d5f-2bdd63ca5294" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1128.30731653087" y="212.333574253098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <Symbol value="dynamoGeometry" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c981b07d-0b6f-4c18-9120-24577e9be7cc" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="648.5" y="298.82" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c981b07d-0b6f-4c18-9120-24577e9be7cc" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="648.5" y="297.33814895239" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];" ShouldFocus="false" />
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="6fbccaf6-0099-45fd-a973-3b33466bfe44" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1131.45182913272" y="345.597605015418" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <Symbol value="revitGeometry" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
@@ -158,6 +170,21 @@ OUT = (dynlist,revitlist)</Script>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="ccecc768-b515-4d83-9185-1f80eec284c1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-6.7335822745024" y="841.393304907189" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="returnGeometryWithoutInserts : bool = false" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="114b771d-5683-47a6-beed-50d4efee283b" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1136.48536493474" y="492.759215744322" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="subCategory" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="40a48499-d99c-4b26-b516-4813aaf0af98" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="880.533535802021" y="491.554944062237" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="d22827f0-27d6-4ffe-a012-6b0b48a82f63" start_index="0" end="50dc80c0-afa6-42fc-9d5f-2bdd63ca5294" end_index="0" portType="0" />
@@ -167,10 +194,12 @@ OUT = (dynlist,revitlist)</Script>
     <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="d22827f0-27d6-4ffe-a012-6b0b48a82f63" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="393572ca-b307-4246-bbcc-731d14a9cec6" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="86662da9-16f0-4bbe-9a77-28f3301f7d59" start_index="0" end="40a48499-d99c-4b26-b516-4813aaf0af98" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="49a7366e-58d0-49e1-9ff7-59a8b0646ce0" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="d08fb76c-c05f-4b32-936e-577d71300b23" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="2" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="c981b07d-0b6f-4c18-9120-24577e9be7cc" start_index="0" end="d22827f0-27d6-4ffe-a012-6b0b48a82f63" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="c981b07d-0b6f-4c18-9120-24577e9be7cc" start_index="1" end="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c981b07d-0b6f-4c18-9120-24577e9be7cc" start_index="2" end="40a48499-d99c-4b26-b516-4813aaf0af98" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="41ad8b0a-3433-4c34-ba1f-ea1053aa03de" start_index="0" end="6fbccaf6-0099-45fd-a973-3b33466bfe44" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="9ac95244-7651-46c4-b2ce-4ef7f41b51c6" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="3" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="31407c18-4371-431f-b151-3f3cd0c87274" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="4" portType="0" />
@@ -179,6 +208,7 @@ OUT = (dynlist,revitlist)</Script>
     <Dynamo.Graph.Connectors.ConnectorModel start="1c9f3ee7-22c1-45d5-8692-756c76bbf790" start_index="0" end="31407c18-4371-431f-b151-3f3cd0c87274" end_index="3" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="1c9f3ee7-22c1-45d5-8692-756c76bbf790" start_index="0" end="31407c18-4371-431f-b151-3f3cd0c87274" end_index="4" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="ccecc768-b515-4d83-9185-1f80eec284c1" start_index="0" end="7f53ae10-a883-4106-808c-f044c50e5f97" end_index="5" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="40a48499-d99c-4b26-b516-4813aaf0af98" start_index="0" end="114b771d-5683-47a6-beed-50d4efee283b" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
