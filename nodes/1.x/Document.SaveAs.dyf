@@ -1,4 +1,4 @@
-<Workspace Version="1.3.0.875" X="163.103070714835" Y="222.727916951819" zoom="0.902090871710523" ScaleFactor="1" Name="Document.SaveAs" Description="Saves the active Revit document under the given name." ID="19ce6b9f-f4cf-4a3f-9788-1482e94528d6" Category="Clockwork.Revit.Document.Actions">
+<Workspace Version="1.0.0.1180" X="-584.896929285165" Y="37.727916951819" zoom="0.902090871710523" Name="Document.SaveAs" Description="Saves the active Revit document under the given name." ID="19ce6b9f-f4cf-4a3f-9788-1482e94528d6" Category="Clockwork.Revit.Document.Actions">
   <NamespaceResolutionMap>
     <ClassMap partialName="String" resolvedName="DSCore.String" assemblyName="DSCoreNodes.dll" />
   </NamespaceResolutionMap>
@@ -7,12 +7,9 @@
       <Symbol value="filePath : string" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="d78651c9-ca0b-467d-b3af-8a408d1cb7a6" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1143.5" y="194.900617473738" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
       <Symbol value="result" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="91060595-c859-4749-9e8b-33bdb7a5fa93" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="277.5" y="63.3939508070717" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="// Delete filetype (if present in string)&#xA;// Filetype will automatically be added by Python script&#xA;path2 = String.Replace(path1,&quot;.rvt&quot;,&quot;&quot;);&#xA;String.Replace(path2,&quot;.rfa&quot;,&quot;&quot;);" ShouldFocus="false">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="91060595-c859-4749-9e8b-33bdb7a5fa93" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="277.5" y="63.3939508070717" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="// Delete filetype (if present in string)&#xA;// Filetype will automatically be added by Python script&#xA;path2 = String.Replace(path1,&quot;.rvt&quot;,&quot;&quot;);&#xA;String.Replace(path2,&quot;.rfa&quot;,&quot;&quot;);" ShouldFocus="false" />
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="0c9b683e-f90c-4e4d-b6cf-3302be082290" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Document.IsWorkshared" x="636.665589809859" y="355.575010160684" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="True" />
       <ID value="070f6953-0854-4645-8eb5-9b4663673b79" />
@@ -26,10 +23,6 @@
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <PythonNodeModels.PythonNode guid="d67d0a3a-6284-425a-9deb-b2758ca1546e" type="PythonNodeModels.PythonNode" nickname="Python Script" x="921.5" y="194.900617473738" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <PortInfo index="2" default="False" />
-      <PortInfo index="3" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -52,8 +45,8 @@ else:
 	path += '.rvt'
 opt = SaveAsOptions()
 opt.OverwriteExistingFile = True
+opt.Compact = compact
 if isworkshared and newcentral:
-	opt.Compact = compact
 	wsopt = WorksharingSaveAsOptions()
 	wsopt.ClearTransmitted = True
 	wsopt.SaveAsCentral = True
@@ -62,7 +55,13 @@ try:
 	doc.SaveAs(path, opt)
 	OUT = True
 except:
-	OUT = False</Script>
+	try:
+		wsopt.ClearTransmitted = False
+		opt.SetWorksharingOptions(wsopt)
+		doc.SaveAs(path, opt)
+		OUT = True
+	except:
+		OUT = False</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4dc38623-7c1f-44e6-96c0-f5314a3e9da1" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="573.479050861828" y="193.117689015774" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="compactFile : bool = false" />
