@@ -1,0 +1,63 @@
+<Workspace Version="1.0.0.1180" X="299" Y="99" zoom="1" Name="Family.HasRoomCalculationPoint" Description="Determines whether the given family has the room calculation point activated." ID="03095f8d-8fa3-49db-96c7-84cea4cc54dd" Category="Clockwork.Revit.Elements.Family.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Family" resolvedName="Revit.Elements.Family" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c8d2bacd-0622-4853-ae5d-797ca4af1ba1" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="761" y="39.6673166926675" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="93726057-a483-46d8-8de7-738b4878070d" type="PythonNodeModels.PythonNode" nickname="Python Script" x="539" y="65.6673166926675" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+fams = UnwrapElement(IN[0])
+booleans = list()
+for fam in fams:
+	if fam.GetType().ToString() == "Autodesk.Revit.DB.Family":
+		booleans.append(fam.get_Parameter(BuiltInParameter.ROOM_CALCULATION_POINT).AsInteger() == 1)
+		#booleans.append(fam.get_Parameter(BuiltInParameter.ROOM_CALCULATION_POINT).AsInteger())
+	else: booleans.append(False)
+OUT = booleans</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="0eec695e-20d6-436a-ae09-8d1115cc3f31" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="276" y="65.6673166926675" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="bac41613-344e-49d3-a505-2a529487f2bf" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-34" y="52.6673166926675" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="family : Family[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="9919a20c-99a4-490c-993a-2300c0a969f2" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1018" y="39.6673166926675" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <Symbol value="bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="c8d2bacd-0622-4853-ae5d-797ca4af1ba1" start_index="0" end="9919a20c-99a4-490c-993a-2300c0a969f2" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="93726057-a483-46d8-8de7-738b4878070d" start_index="0" end="c8d2bacd-0622-4853-ae5d-797ca4af1ba1" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0eec695e-20d6-436a-ae09-8d1115cc3f31" start_index="0" end="93726057-a483-46d8-8de7-738b4878070d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bac41613-344e-49d3-a505-2a529487f2bf" start_index="0" end="c8d2bacd-0622-4853-ae5d-797ca4af1ba1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bac41613-344e-49d3-a505-2a529487f2bf" start_index="0" end="0eec695e-20d6-436a-ae09-8d1115cc3f31" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
