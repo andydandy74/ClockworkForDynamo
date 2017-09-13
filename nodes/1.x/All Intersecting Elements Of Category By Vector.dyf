@@ -1,0 +1,117 @@
+<Workspace Version="0.8.2.2392" X="-85.5876190532763" Y="49.0691711374372" zoom="0.610943288598368" Name="All Intersecting Elements Of Category By Vector" Description="Finds all elements of a specified category that intersect with a list of vectors" ID="335463a8-f774-4d16-bb66-55ff7eaea076" Category="Clockwork.Revit.Selection.ByCollector">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Elements.View3D" resolvedName="Revit.Elements.Views.View3D" assemblyName="RevitNodes.dll" />
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="ea2a65bc-dd9f-4940-b509-063c9df271f8" type="Dynamo.Nodes.Symbol" nickname="Input" x="392.972467894709" y="558.621334164743" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="threeDView : Elements.View3D" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="1f5d7880-bc85-4f4d-9808-db6b1d95e975" type="Dynamo.Nodes.Symbol" nickname="Input" x="557.972467894709" y="628.63250366581" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="category" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="bd0315e0-f0e8-4c49-9fa5-0da7783001e4" type="Dynamo.Nodes.Symbol" nickname="Input" x="169.938745905899" y="477.253615805099" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="startPoint : Autodesk.Point" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="17cb003f-b0f2-4eac-a195-4add52786df8" type="Dynamo.Nodes.Output" nickname="Output" x="1317.99755155358" y="475.573315742953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="elements" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Function guid="f20db999-bdcd-4092-b480-c4c53791a2ec" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="1077.66104537579" y="477.509948735946" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="88c83704-9882-4878-b8ac-2cdc9846af92" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="741.478655083725" y="668.166065099801" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="5">
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+theview = UnwrapElement(IN[0])
+cat = System.Enum.ToObject(BuiltInCategory, IN[1].Id)
+vstart = [x.ToXyz() for x in IN[2]]
+vend = [x.ToXyz() for x in IN[3]]
+
+intersectorlist = list()
+counter = 0
+filter = ElementCategoryFilter(cat)
+
+while counter &lt; len(vstart):
+	ThisReferenceArr = ReferenceIntersector(filter, FindReferenceTarget.All, theview)
+	found = ThisReferenceArr.Find(vstart[counter], vend[counter])
+	foundreferences = list()
+	for item in found:
+		foundreferences.append(doc.GetElement(item.GetReference()))
+	intersectorlist.append(foundreferences)
+	counter += 1
+OUT = intersectorlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <DSCore.Map guid="1b0a8327-b715-48a9-bd04-eb035eeacc1b" type="DSCore.Map" nickname="List.Map" x="915.946673804474" y="758.314271028041" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" />
+    <Dynamo.Nodes.DSFunction guid="3ea71792-53ad-4f6d-b72f-f30aac897388" type="Dynamo.Nodes.DSFunction" nickname="List.UniqueItems" x="751.29503953371" y="842.317900913901" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.UniqueItems@var[]..[]" />
+    <Dynamo.Nodes.Function guid="f3295606-889a-4d3c-bf3f-ae7f72d39229" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="488.972467894709" y="721.921836252808" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="7100493e-8ecf-4ff7-8e16-eded027d2086" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="488.972467894709" y="813.504447917174" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="7457a5f4-517a-482d-bb9e-26429ea586d2" type="Dynamo.Nodes.Symbol" nickname="Input" x="198.208918032473" y="814.912401299076" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="endPoint : Autodesk.Point" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="9d63bf96-ed65-4638-8173-438e9bc18cc3" type="Dynamo.Nodes.Symbol" nickname="Input" x="458.972467894709" y="893.574830540119" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="toggle : bool = true" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="ea2a65bc-dd9f-4940-b509-063c9df271f8" start_index="0" end="88c83704-9882-4878-b8ac-2cdc9846af92" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1f5d7880-bc85-4f4d-9808-db6b1d95e975" start_index="0" end="88c83704-9882-4878-b8ac-2cdc9846af92" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bd0315e0-f0e8-4c49-9fa5-0da7783001e4" start_index="0" end="f20db999-bdcd-4092-b480-c4c53791a2ec" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bd0315e0-f0e8-4c49-9fa5-0da7783001e4" start_index="0" end="f3295606-889a-4d3c-bf3f-ae7f72d39229" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f20db999-bdcd-4092-b480-c4c53791a2ec" start_index="0" end="17cb003f-b0f2-4eac-a195-4add52786df8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="88c83704-9882-4878-b8ac-2cdc9846af92" start_index="0" end="1b0a8327-b715-48a9-bd04-eb035eeacc1b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1b0a8327-b715-48a9-bd04-eb035eeacc1b" start_index="0" end="f20db999-bdcd-4092-b480-c4c53791a2ec" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3ea71792-53ad-4f6d-b72f-f30aac897388" start_index="0" end="1b0a8327-b715-48a9-bd04-eb035eeacc1b" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f3295606-889a-4d3c-bf3f-ae7f72d39229" start_index="0" end="88c83704-9882-4878-b8ac-2cdc9846af92" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7100493e-8ecf-4ff7-8e16-eded027d2086" start_index="0" end="88c83704-9882-4878-b8ac-2cdc9846af92" end_index="3" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7457a5f4-517a-482d-bb9e-26429ea586d2" start_index="0" end="7100493e-8ecf-4ff7-8e16-eded027d2086" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9d63bf96-ed65-4638-8173-438e9bc18cc3" start_index="0" end="88c83704-9882-4878-b8ac-2cdc9846af92" end_index="4" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>
