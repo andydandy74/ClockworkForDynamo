@@ -1,9 +1,11 @@
-<Workspace Version="1.0.0.1180" X="499" Y="322" zoom="1" Name="Document.ProjectParametersByCategory" Description="Retrieves all project parameters for a given category" ID="c0126b9e-139e-4f1e-9069-e4514e6dbc82" Category="Clockwork.Revit.Document.Query">
+<Workspace Version="1.3.1.1736" X="128" Y="122" zoom="1" ScaleFactor="1" Name="Document.ProjectParametersByCategory" Description="Retrieves all project parameters for a given category" ID="c0126b9e-139e-4f1e-9069-e4514e6dbc82" Category="Clockwork.Revit.Document.Query">
   <NamespaceResolutionMap>
     <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="77c5b617-46bd-4c97-be98-83e771f0ea74" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="659.818422414468" y="36" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
       <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
       <Name value="ReturnListOrSingleValue" />
       <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
@@ -15,7 +17,10 @@
         <Output value="" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="1668f7c6-d937-4c59-bd7d-635fb9213ec8" type="PythonNodeModels.PythonNode" nickname="Python Script" x="437.818422414468" y="157" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+    <PythonNodeModels.PythonNode guid="1668f7c6-d937-4c59-bd7d-635fb9213ec8" type="PythonNodeModels.PythonNode" nickname="Python Script" x="437.818422414468" y="157" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -31,7 +36,16 @@ cats = []
 for search_cat in search_cats:
 	search_ids.append(search_cat.Id.IntegerValue)
 	cats.append(list())
-doc = DocumentManager.Instance.CurrentDBDocument
+
+inputdoc = UnwrapElement(IN[2])
+if inputdoc == None:
+	doc = DocumentManager.Instance.CurrentDBDocument
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
+	doc = inputdoc.GetLinkDocument()
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
+	doc = inputdoc
+else: doc = None
+
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
 	for cat in iterator.Current.Categories:
@@ -43,6 +57,7 @@ while iterator.MoveNext():
 OUT = cats</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="89c967f9-13bd-4696-a9f0-ef893dbf021f" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="174.818422414468" y="116" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
       <Name value="TurnIntoList" />
       <Description value="Turns an element (or a nested list) into a flat list" />
@@ -60,8 +75,12 @@ OUT = cats</Script>
       <Symbol value="toggle : bool = true" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="97580ac6-e56a-4cdf-9352-e74058546080" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="916.818422414468" y="36" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <Symbol value="paramName" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2bddda17-5839-449c-858a-19d497a2cde4" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-37.1143253363869" y="323.671846218977" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// Use only if you want to query a linked model&#xD;&#xA;docOrRevitLinkInstance : var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="77c5b617-46bd-4c97-be98-83e771f0ea74" start_index="0" end="97580ac6-e56a-4cdf-9352-e74058546080" end_index="0" portType="0" />
@@ -70,6 +89,7 @@ OUT = cats</Script>
     <Dynamo.Graph.Connectors.ConnectorModel start="3a547dad-9cc5-4865-bbca-2ff99bec08cb" start_index="0" end="77c5b617-46bd-4c97-be98-83e771f0ea74" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="3a547dad-9cc5-4865-bbca-2ff99bec08cb" start_index="0" end="89c967f9-13bd-4696-a9f0-ef893dbf021f" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="4cbea3db-c91a-4fc6-9967-5e396b6f85ab" start_index="0" end="1668f7c6-d937-4c59-bd7d-635fb9213ec8" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="2bddda17-5839-449c-858a-19d497a2cde4" start_index="0" end="1668f7c6-d937-4c59-bd7d-635fb9213ec8" end_index="2" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
