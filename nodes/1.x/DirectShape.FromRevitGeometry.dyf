@@ -1,9 +1,12 @@
-<Workspace Version="1.0.0.1180" X="285.3204375" Y="351.49804375" zoom="0.70823125" Name="DirectShape.FromRevitGeometry" Description="Creates a DirectShape from native Revit geometry objects" ID="6a060a4d-58fe-4070-a0ce-44cc24c9802b" Category="Clockwork.Revit.Elements.DirectShape.Create">
+<Workspace Version="1.3.1.1736" X="285.3204375" Y="351.49804375" zoom="0.70823125" ScaleFactor="1" Name="DirectShape.FromRevitGeometry" Description="Creates a DirectShape from native Revit geometry objects" ID="6a060a4d-58fe-4070-a0ce-44cc24c9802b" Category="Clockwork.Revit.Elements.DirectShape.Create">
   <NamespaceResolutionMap>
     <ClassMap partialName="Element" resolvedName="Revit.Elements.Element" assemblyName="RevitNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
     <PythonNodeModels.PythonNode guid="58a0f303-7847-45ad-8c36-2a1e6b6c9507" type="PythonNodeModels.PythonNode" nickname="Python Script" x="637.559840977082" y="-52.7383314065851" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
       <Script># This script is based on code from the node
 # DirectShape.ByGeometry from package SpringNodes.
 # Thanks Dimitar for doing all the hard work for me... ;-)
@@ -37,14 +40,16 @@ for geom in geometry:
 		old_type = dsLib.FindDefinitionType(names[counter])
 		try: doc.Delete(old_type)
 		except: pass
-	# create new DS type
-	newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
-	newDStype.SetShape(geom)
-	dsLib.AddDefinitionType(names[counter], newDStype.Id)
-	# create new DS instance
-	newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity, "Dynamo","Clockwork")
-	newDS.SetTypeId(newDStype.Id)
-	elementlist.append(newDS)
+	try:
+		# create new DS type
+		newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
+		newDStype.SetShape(geom)
+		dsLib.AddDefinitionType(names[counter], newDStype.Id)
+		# create new DS instance
+		newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity, "Dynamo","Clockwork")
+		newDS.SetTypeId(newDStype.Id)
+		elementlist.append(newDS)
+	except: elementlist.append(None)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 
@@ -60,6 +65,7 @@ OUT = elementlist</Script>
       <Symbol value="name" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="5341e7e6-7465-4d09-9e2b-082da1593e2d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="859.559840977082" y="-52.7383314065851" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <Symbol value="directShape" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
@@ -73,6 +79,6 @@ OUT = elementlist</Script>
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Background Preview" eyeX="-10.4997711181641" eyeY="12.3594484329224" eyeZ="25.3993282318115" lookX="13.894437789917" lookY="-14.0373649597168" lookZ="-30.223445892334" upX="0.0761195048689842" upY="0.983254909515381" upZ="-0.165576592087746" />
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
   </Cameras>
 </Workspace>
