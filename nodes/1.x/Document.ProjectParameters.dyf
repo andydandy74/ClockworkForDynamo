@@ -3,7 +3,7 @@
     <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c6ef3c8a-5c15-4db5-906b-b4301ba57c73" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="419.220732548101" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false">
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="c6ef3c8a-5c15-4db5-906b-b4301ba57c73" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="419.220732548101" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];" ShouldFocus="false">
       <PortInfo index="0" default="False" />
     </Dynamo.Graph.Nodes.CodeBlockNodeModel>
     <PythonNodeModels.PythonNode guid="146117d8-40fa-492a-9a4c-4c722866e3a0" type="PythonNodeModels.PythonNode" nickname="Python Script" x="250" y="4.21045456802312" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
@@ -31,20 +31,23 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 	doc = inputdoc
 else: doc = None
 
-params = []
+names = []
 cats = []
+vag = []
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
-	params.append(iterator.Key.Name)
+	vag.append(iterator.Key.VariesAcrossGroups)
+	names.append(iterator.Key.Name)
 	thesecats = []
 	for cat in iterator.Current.Categories:
 		try:
 			thesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))
 		except:
-			# in case the category is not supported by Dynamo
-			pass
+			# Return null if category is not supported by Dynamo
+			# This way the user knows there are unsupported categories assigned
+			thesecats.append(None)
 	cats.append(thesecats)
-OUT = (params,cats)</Script>
+OUT = (names,cats,vag)</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="5a6849e5-c776-4825-a27c-81935cdf8437" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-3" y="-15" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="toggle : bool = true" />
@@ -60,10 +63,15 @@ OUT = (params,cats)</Script>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8f423176-9166-437a-9c94-0dfa21720740" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-226.114325336387" y="62.6718462189774" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="// Use only if you want to query a linked model&#xD;&#xA;docOrRevitLinkInstance : var = null" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="bb9912c3-395b-4641-8671-bfe8574a6ede" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="632.220732548101" y="186" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="variesAcrossGroups" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="c6ef3c8a-5c15-4db5-906b-b4301ba57c73" start_index="0" end="a6b6f2b2-c872-450d-9d1c-0b661169ec50" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="c6ef3c8a-5c15-4db5-906b-b4301ba57c73" start_index="1" end="8e069d6a-a1cb-43e2-b968-95a12accec85" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c6ef3c8a-5c15-4db5-906b-b4301ba57c73" start_index="2" end="bb9912c3-395b-4641-8671-bfe8574a6ede" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="146117d8-40fa-492a-9a4c-4c722866e3a0" start_index="0" end="c6ef3c8a-5c15-4db5-906b-b4301ba57c73" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="5a6849e5-c776-4825-a27c-81935cdf8437" start_index="0" end="146117d8-40fa-492a-9a4c-4c722866e3a0" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="8f423176-9166-437a-9c94-0dfa21720740" start_index="0" end="146117d8-40fa-492a-9a4c-4c722866e3a0" end_index="1" portType="0" />
