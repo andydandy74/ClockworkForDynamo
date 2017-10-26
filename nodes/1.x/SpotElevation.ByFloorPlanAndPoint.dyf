@@ -1,4 +1,4 @@
-<Workspace Version="1.0.0.1180" X="-195.806379750084" Y="22.983582191364" zoom="1.1113575327695" Name="SpotElevation.ByFloorPlanAndPoint" Description="Places a spot elevation at a given point in a given floor plan." ID="89e68d5c-018d-4aba-9d03-a5079b957162" Category="Clockwork.Revit.Elements.SpotElevation.Create">
+<Workspace Version="1.3.1.1736" X="332.22431791241" Y="323.364891419091" zoom="0.586672500263674" ScaleFactor="1" Name="SpotElevation.ByFloorPlanAndPoint" Description="Places a spot elevation at a given point in a given floor plan." ID="89e68d5c-018d-4aba-9d03-a5079b957162" Category="Clockwork.Revit.Elements.SpotElevation.Create">
   <NamespaceResolutionMap>
     <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
     <ClassMap partialName="FloorPlanView" resolvedName="Revit.Elements.Views.FloorPlanView" assemblyName="RevitNodes.dll" />
@@ -7,6 +7,13 @@
   </NamespaceResolutionMap>
   <Elements>
     <PythonNodeModels.PythonNode guid="ce1b75de-eff5-4540-a0aa-571ace531dbd" type="PythonNodeModels.PythonNode" nickname="Python Script" x="850.882073635981" y="280.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="7">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <PortInfo index="4" default="False" />
+      <PortInfo index="5" default="False" />
+      <PortInfo index="6" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -37,27 +44,35 @@ for pt in pts:
 	pt = pt.ToXyz()
 	refintsec = ReferenceIntersector(isoview)
 	refintsec.TargetType = FindReferenceTarget.Face
-	ref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()
-	elementlist.append(doc.Create.NewSpotElevation(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))
+	try:
+		ref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()
+		elementlist.append(doc.Create.NewSpotElevation(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))
+	except:
+		elementlist.append(None)
 	i += 1
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = elementlist</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="9e38c952-8211-4f15-a1f0-4550b026b137" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Document.Default3DView" x="515.882073635981" y="496.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="9e38c952-8211-4f15-a1f0-4550b026b137" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Document.Default3DView" x="448.722143293792" y="486.200823928214" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
       <ID value="ef9e6b6f-d604-43d4-85f8-825a7c7c6303" />
       <Name value="Document.Default3DView" />
       <Description value="Returns the default view of the current model (if there is such a view)" />
       <Inputs>
         <Input value="toggle" />
+        <Input value="docOrRevitLinkInstance" />
       </Inputs>
       <Outputs>
         <Output value="view" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a9607fcb-7b4a-4cca-a492-191ebc91d0bf" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.Reverse" x="515.882073635981" y="604.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Reverse" />
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a9607fcb-7b4a-4cca-a492-191ebc91d0bf" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.Reverse" x="515.882073635981" y="604.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Reverse">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="d53eb7a5-6426-4442-a899-f7769e24d014" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="View.Direction" x="271.882073635981" y="604.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <ID value="07195267-53da-4fa3-8410-62807cdbab46" />
       <Name value="View.Direction" />
       <Description value="Returns the direction of a view" />
@@ -69,6 +84,7 @@ OUT = elementlist</Script>
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="b40d16cf-b51d-4674-aae0-5012250e3087" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="515.882073635981" y="138.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
       <Name value="TurnIntoList" />
       <Description value="Turns an element (or a nested list) into a flat list" />
@@ -80,6 +96,7 @@ OUT = elementlist</Script>
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="e77db831-6342-4d9c-a00e-7f016442d440" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="8.88207363598053" y="442.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
       <Name value="TurnIntoList" />
       <Description value="Turns an element (or a nested list) into a flat list" />
@@ -97,6 +114,7 @@ OUT = elementlist</Script>
       <Symbol value="floorPlan : FloorPlanView" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="7b41a903-1b47-4ad9-9c72-3090451188bb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1072.88207363598" y="280.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
       <Symbol value="spotElevation" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="529eb314-fdb1-4f99-840c-6db176c4f10a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="515.882073635981" y="246.338171904393" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
@@ -127,6 +145,6 @@ OUT = elementlist</Script>
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
   </Cameras>
 </Workspace>
