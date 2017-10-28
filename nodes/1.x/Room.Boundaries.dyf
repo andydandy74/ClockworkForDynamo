@@ -1,4 +1,4 @@
-<Workspace Version="1.0.0.1180" X="27.3973087357402" Y="-27.3899371294001" zoom="0.756162982262883" Name="Room.Boundaries" Description="Gets a list of all boundary elements of a given room or area" ID="fb07f5d8-94b8-4985-bf2f-a54fe832aa66" Category="Clockwork.Revit.Elements.Room.Query">
+<Workspace Version="1.0.0.1180" X="34.3973087357402" Y="-28.3899371294001" zoom="0.756162982262883" Name="Room.Boundaries" Description="Gets a list of all boundary elements of a given room or area" ID="fb07f5d8-94b8-4985-bf2f-a54fe832aa66" Category="Clockwork.Revit.Elements.Room.Query">
   <NamespaceResolutionMap />
   <Elements>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="981a0e03-9fe7-44f9-9504-2ea77ca18745" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="87.2951862812469" y="251.626296513685" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
@@ -35,7 +35,7 @@
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <CoreNodeModels.HigherOrder.Combine guid="297d3c1a-3c8f-4b47-ada4-97552b76c8de" type="CoreNodeModels.HigherOrder.Combine" nickname="List.Combine" x="967.54341009604" y="378.550399993176" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3" />
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="53d33e3a-cece-4638-b60a-d477a6b4abee" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="600.988342758828" y="410.887838650037" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="53d33e3a-cece-4638-b60a-d477a6b4abee" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="600.988342758828" y="410.887838650037" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
     <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="21033384-ac0b-43b1-bf93-6d7604288f39" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Object.IsNull" x="611.543905520284" y="514.436359812071" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Object.IsNull@var" />
     <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3ecac23b-16c4-44da-b9ee-17a0d3132c92" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="777.150814136356" y="306.317346833069" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]" />
     <PythonNodeModels.PythonNode guid="9e250749-068e-4ff1-bbcd-57eeb0ee62d4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="414.903632690643" y="405.771487040763" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
@@ -50,9 +50,8 @@ clr.ImportExtensions(Revit.GeometryConversion)
 
 items = UnwrapElement(IN[0])
 version = IN[1]
-elementlist = []
-curvelist = []
-facelist = []
+elementlist = list()
+curvelist = list()
 
 for item in items:
 	doc = item.Document
@@ -62,8 +61,8 @@ for item in items:
 	boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)
 	options.SpatialElementBoundaryLocation = boundloc
 	#method #1 - get boundary segments
-	blist = []
-	clist = []
+	blist = list()
+	clist = list()
 	try:
 		for boundarylist in item.GetBoundarySegments(options):
 			for boundary in boundarylist:
@@ -75,20 +74,17 @@ for item in items:
 	except:
 		pass
 	#method #2 - spatial element geometry calculator
-	flist = []
 	try:
 		results = calculator.CalculateSpatialElementGeometry(item)
 		for face in results.GetGeometry().Faces:
 			for bface in results.GetBoundaryFaceInfo(face):
 				blist.append(doc.GetElement(bface.SpatialBoundaryElement.HostElementId))
-				flist.append(bface.GetBoundingElementFace())
 	except:
 		pass	
 	# write results to list
 	elementlist.append(blist)
 	curvelist.append(clist)
-	facelist.append(flist)
-OUT = (elementlist,curvelist,facelist)</Script>
+OUT = (elementlist,curvelist)</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="ff96cfb0-38bf-456a-b0b9-ed358727796d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="225.310808977694" y="406.4820954651" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
@@ -116,27 +112,11 @@ OUT = (elementlist,curvelist,facelist)</Script>
         <Output value="Language" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="436aa581-ea2b-4e44-b25a-60bff8df7fbd" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="788.868564600555" y="721.313569974175" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="029cba2d-9e88-424f-a6c5-6922516d8440" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1037.62079806994" y="720.592368294987" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <Symbol value="revitFaces" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="ff96cfb0-38bf-456a-b0b9-ed358727796d" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="a8eb6ee0-7fe9-44ef-8cdb-9fb618413d2f" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="b5ecaffa-7fdb-49da-be7e-e30501d742ac" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="436aa581-ea2b-4e44-b25a-60bff8df7fbd" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="0ca8ecaa-801d-4b59-8429-dbd8e5d70827" start_index="0" end="1f488471-96ef-4c2a-8850-90fe5b7926f1" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="1f488471-96ef-4c2a-8850-90fe5b7926f1" start_index="0" end="b5ecaffa-7fdb-49da-be7e-e30501d742ac" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="aaa782bb-fb64-4a39-ae1c-dc93639ca69d" start_index="0" end="297d3c1a-3c8f-4b47-ada4-97552b76c8de" end_index="2" portType="0" />
@@ -146,13 +126,11 @@ OUT = (elementlist,curvelist,facelist)</Script>
     <Dynamo.Graph.Connectors.ConnectorModel start="53d33e3a-cece-4638-b60a-d477a6b4abee" start_index="0" end="aaa782bb-fb64-4a39-ae1c-dc93639ca69d" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="53d33e3a-cece-4638-b60a-d477a6b4abee" start_index="0" end="297d3c1a-3c8f-4b47-ada4-97552b76c8de" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="53d33e3a-cece-4638-b60a-d477a6b4abee" start_index="1" end="a8eb6ee0-7fe9-44ef-8cdb-9fb618413d2f" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="53d33e3a-cece-4638-b60a-d477a6b4abee" start_index="2" end="436aa581-ea2b-4e44-b25a-60bff8df7fbd" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="21033384-ac0b-43b1-bf93-6d7604288f39" start_index="0" end="aaa782bb-fb64-4a39-ae1c-dc93639ca69d" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="3ecac23b-16c4-44da-b9ee-17a0d3132c92" start_index="1" end="297d3c1a-3c8f-4b47-ada4-97552b76c8de" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="9e250749-068e-4ff1-bbcd-57eeb0ee62d4" start_index="0" end="53d33e3a-cece-4638-b60a-d477a6b4abee" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="ff96cfb0-38bf-456a-b0b9-ed358727796d" start_index="0" end="9e250749-068e-4ff1-bbcd-57eeb0ee62d4" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="3a8e8c07-23e8-4c4f-a986-ae45a639d204" start_index="1" end="9e250749-068e-4ff1-bbcd-57eeb0ee62d4" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="436aa581-ea2b-4e44-b25a-60bff8df7fbd" start_index="0" end="029cba2d-9e88-424f-a6c5-6922516d8440" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
