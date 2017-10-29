@@ -11,5 +11,5 @@ for item in items:
 		else:
 			elementlist.append('Basic')
 	except:
-		elementlist.append('Other / No Roof')
+		elementlist.append(None)
 OUT = elementlist

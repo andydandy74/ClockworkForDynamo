@@ -5,13 +5,15 @@ from Autodesk.Revit.DB import *
 clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 path = IN[0]
 compact = IN[1]
-newcentral = IN[1]
-isworkshared = IN[1]
+newcentral = IN[2]
+isworkshared = IN[3]
 
+TransactionManager.Instance.ForceCloseTransaction()
 if doc.IsFamilyDocument:
 	path += '.rfa'
 else:
@@ -19,14 +21,19 @@ else:
 opt = SaveAsOptions()
 opt.OverwriteExistingFile = True
 opt.Compact = compact
-if isworkshared &amp; newcentral:
+if isworkshared and newcentral:
 	wsopt = WorksharingSaveAsOptions()
 	wsopt.ClearTransmitted = True
 	wsopt.SaveAsCentral = True
 	opt.SetWorksharingOptions(wsopt)
 try:
-	OUT = doc.SaveAs(path, opt)
+	doc.SaveAs(path, opt)
+	OUT = True
 except:
-	wsopt.ClearTransmitted = False
-	opt.SetWorksharingOptions(wsopt)
-	OUT = doc.SaveAs(path, opt)
+	try:
+		wsopt.ClearTransmitted = False
+		opt.SetWorksharingOptions(wsopt)
+		doc.SaveAs(path, opt)
+		OUT = True
+	except:
+		OUT = False

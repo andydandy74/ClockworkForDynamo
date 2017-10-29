@@ -7,11 +7,17 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-doc = DocumentManager.Instance.CurrentDBDocument
 cats = IN[0]
+inputdoc = UnwrapElement(IN[2])
+if inputdoc == None:
+	doc = DocumentManager.Instance.CurrentDBDocument
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
+	doc = inputdoc.GetLinkDocument()
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
+	doc = inputdoc
+else: doc = None
 
 elementlist = list()
-# This could be more elegant if only I knew how to implement a Multicategory filter in Python....
 for item in cats:
 	collector = FilteredElementCollector(doc)
 	collector.OfClass(FamilySymbol)

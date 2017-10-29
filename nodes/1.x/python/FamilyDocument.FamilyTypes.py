@@ -8,6 +8,7 @@ from RevitServices.Persistence import DocumentManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 elementlist = list()
-for ftype in doc.FamilyManager.Types:
-	elementlist.append(ftype)
+if doc.IsFamilyDocument:
+	for ftype in doc.FamilyManager.Types:
+		elementlist.append(ftype)
 OUT = elementlist

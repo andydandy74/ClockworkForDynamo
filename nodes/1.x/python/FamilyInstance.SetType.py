@@ -14,17 +14,17 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 faminsts = UnwrapElement(IN[0])
 famsymb = UnwrapElement(IN[1])
-elementlist = list()
+booleans = []
 counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in faminsts:
 	try:
 		item.Symbol = famsymb[counter]
-		elementlist.append(item.ToDSType(True))
+		booleans.append(True)
 	except:
-		emptylist = list()
+		booleans.append(False)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = elementlist
+OUT = (faminsts,booleans)

@@ -8,5 +8,5 @@ for item in items:
 	try: 
 		typelist.append(item.CurveElementType)
 	except:
-		typelist.append(list())
+		typelist.append(None)
 OUT = typelist

@@ -5,6 +5,7 @@ from Autodesk.Revit.DB import *
 clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
 
 relStandardWS = IN[0]
 relViewWS = IN[1]
@@ -30,4 +31,9 @@ sOptions.Compact = compact
 sOptions.SaveLocalBefore = saveLocalBefore
 sOptions.SaveLocalAfter = saveLocalAfter
 sOptions.Comment = comment
-out = doc.SynchronizeWithCentral(tOptions, sOptions)
+TransactionManager.Instance.ForceCloseTransaction()
+try:
+	doc.SynchronizeWithCentral(tOptions, sOptions)
+	OUT = True
+except:
+	OUT = false

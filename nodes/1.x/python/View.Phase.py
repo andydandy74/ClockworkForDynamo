@@ -12,5 +12,5 @@ for view in views:
 	try:
 		elementlist.append(view.Document.GetElement(view.get_Parameter(BuiltInParameter.VIEW_PHASE).AsElementId()))
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

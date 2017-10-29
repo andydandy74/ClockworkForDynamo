@@ -14,11 +14,11 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 cat = UnwrapElement(IN[0])
 subcatname = IN[1]
-
-try:
-	subcat = cat.SubCategories.get_Item(subcatname)
-except:
+subcat = [x for x in cat.SubCategories if x.Name == subcatname]
+if len(subcat) == 1: subcat = subcat[0]
+else:
 	TransactionManager.Instance.EnsureInTransaction(doc)
-	subcat = doc.Settings.Categories.NewSubcategory(cat, subcatname)
+	try: subcat = doc.Settings.Categories.NewSubcategory(cat, subcatname)
+	except: subcat = None
 	TransactionManager.Instance.TransactionTaskDone()
-OUT = Revit.Elements.Category.ById(subcat.Id.IntegerValue)
+OUT = subcat

@@ -11,7 +11,10 @@ def SetText(text):
     t.Start()
     
 try:
-	SetText(IN[0])
-	OUT = IN[0]
+	if IN[0] != "":
+		SetText(IN[0])
+		OUT = IN[0]
+	else:
+		OUT = "String was empty"
 except:
 	OUT = 'Data could not be copied to clipboard'

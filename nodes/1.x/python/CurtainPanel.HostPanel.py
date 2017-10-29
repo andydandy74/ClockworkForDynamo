@@ -12,5 +12,5 @@ for item in faminsts:
 	try:
 		elementlist.append(item.Document.GetElement(item.FindHostPanel()).ToDSType(True))
 	except:
-		elementlist.append(list())
+		elementlist.append(item)
 OUT = elementlist

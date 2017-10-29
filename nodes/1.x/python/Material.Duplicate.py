@@ -18,9 +18,7 @@ elementlist, fail = [],[] #better to generate a fail list only once
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for i in xrange(len(mats)):
-	try:
-		elementlist.append(mats[i].Duplicate(newnames[i]))
-	except:
-		elementlist.append(None)
+	try: elementlist.append(mats[i].Duplicate(newnames[i]))
+	except: elementlist.append(None)
 TransactionManager.Instance.TransactionTaskDone()
 OUT = elementlist

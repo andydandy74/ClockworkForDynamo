@@ -11,14 +11,29 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-doc = DocumentManager.Instance.CurrentDBDocument
-params = []
+inputdoc = UnwrapElement(IN[1])
+if inputdoc == None:
+	doc = DocumentManager.Instance.CurrentDBDocument
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
+	doc = inputdoc.GetLinkDocument()
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
+	doc = inputdoc
+else: doc = None
+
+names = []
 cats = []
+vag = []
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
-	params.append(iterator.Key.Name)
+	vag.append(iterator.Key.VariesAcrossGroups)
+	names.append(iterator.Key.Name)
 	thesecats = []
 	for cat in iterator.Current.Categories:
-		thesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))
+		try:
+			thesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))
+		except:
+			# Return null if category is not supported by Dynamo
+			# This way the user knows there are unsupported categories assigned
+			thesecats.append(None)
 	cats.append(thesecats)
-OUT = (params,cats)
+OUT = (names,cats,vag)

@@ -15,14 +15,14 @@ for item in items:
 			fromlist.append(item.FromRoom[phase])
 			exits += 1
 		else:
-			fromlist.append(list())
+			fromlist.append(None)
 		if item.ToRoom[phase]:
 			tolist.append(item.ToRoom[phase])
 			exits += 1
 		else:
-			tolist.append(list())
+			tolist.append(None)
 	except:
-		fromlist.append(list())
-		tolist.append(list())
+		fromlist.append(None)
+		tolist.append(None)
 	numexits.append(exits)
 OUT = (fromlist,tolist,numexits)

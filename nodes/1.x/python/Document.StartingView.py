@@ -10,5 +10,17 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-doc = DocumentManager.Instance.CurrentDBDocument
-OUT = doc.GetElement(StartingViewSettings.GetStartingViewSettings(doc).ViewId)
+inputdoc = UnwrapElement(IN[1])
+if inputdoc == None:
+	doc = DocumentManager.Instance.CurrentDBDocument
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
+	doc = inputdoc.GetLinkDocument()
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
+	doc = inputdoc
+else: doc = None
+
+startingview = doc.GetElement(StartingViewSettings.GetStartingViewSettings(doc).ViewId)
+if startingview == None:
+	OUT = None
+else:
+	OUT = startingview.ToDSType(True)

@@ -14,13 +14,14 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 xyzs = IN[0]
 slabshape = UnwrapElement(IN[1])
-successlist = list()
-faillist = list()
+booleans = []
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-slabshape.SlabShapeEditor.ResetSlabShape()
 for item in xyzs:
-	slabshape.SlabShapeEditor.DrawPoint(item.ToXyz())
+	try:
+		slabshape.SlabShapeEditor.DrawPoint(item.ToXyz())
+		booleans.append(True)
+	except: booleans.append(False)
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = slabshape
+OUT = (slabshape,booleans)

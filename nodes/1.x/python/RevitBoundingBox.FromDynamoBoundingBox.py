@@ -26,7 +26,7 @@ for newmin in minp:
 		newbox.Min = newmin
 		elementlist.append(newbox)
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 

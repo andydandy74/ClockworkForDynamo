@@ -10,15 +10,14 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 faminsts = UnwrapElement(IN[0])
 ws = UnwrapElement(IN[1])
-elementlist = list()
-faillist = list()
+booleans = list()
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in faminsts:
 	try:
 		param = item.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM)
 		param.Set(ws.Id.IntegerValue)
-		elementlist.append(item)
+		booleans.append(True)
 	except:
-		faillist.append(item)
+		booleans.append(False)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = (elementlist,faillist)
+OUT = (faminsts,booleans)

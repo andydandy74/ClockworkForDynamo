@@ -14,7 +14,7 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 famtypes = IN[0]
 newnames = IN[1]
-elementlist, fail = [],[] #better to generate a fail list only once
+elementlist = [] 
 func_enum = {'Revit.Elements.WallType' : Revit.Elements.WallType.ByName,
 			 'Revit.Elements.FloorType' : Revit.Elements.FloorType.ByName,
 			 'Revit.Elements.FamilyType' : Revit.Elements.FamilyType.ByName}
@@ -29,9 +29,9 @@ for i in xrange(len(famtypes) ):
 			if t1 in func_enum:
 				elementlist.append(func_enum[t1](newnames[i]) )
 			else:
-				elementlist.append(fail)
+				elementlist.append(None)
 		except:
-			elementlist.append(fail)
+			elementlist.append(None)
 
 TransactionManager.Instance.TransactionTaskDone()
 OUT = elementlist

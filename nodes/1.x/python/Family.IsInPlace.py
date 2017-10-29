@@ -7,8 +7,7 @@ fams = UnwrapElement(IN[0])
 elementlist = list()
 
 for fam in fams:
-	try:
+	if fam.GetType().ToString() == "Autodesk.Revit.DB.Family":
 		elementlist.append(fam.IsInPlace)
-	except:
-		elementlist.append(False)
+	else: elementlist.append(False)
 OUT = elementlist

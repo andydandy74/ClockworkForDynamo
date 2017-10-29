@@ -28,8 +28,11 @@ for pt in pts:
 	pt = pt.ToXyz()
 	refintsec = ReferenceIntersector(isoview)
 	refintsec.TargetType = FindReferenceTarget.Face
-	ref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()
-	elementlist.append(doc.Create.NewSpotElevation(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))
+	try:
+		ref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()
+		elementlist.append(doc.Create.NewSpotElevation(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))
+	except:
+		elementlist.append(None)
 	i += 1
 TransactionManager.Instance.TransactionTaskDone()
 

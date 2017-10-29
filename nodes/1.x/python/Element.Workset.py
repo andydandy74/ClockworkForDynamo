@@ -13,5 +13,5 @@ for item in faminsts:
 	try:
 		elementlist.append(doc.GetWorksetTable().GetWorkset(item.WorksetId))
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

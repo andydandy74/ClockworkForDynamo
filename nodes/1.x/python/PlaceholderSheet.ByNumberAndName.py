@@ -19,10 +19,13 @@ counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for num in sheetnums:
-	newsheet = ViewSheet.CreatePlaceholder(doc)
-	newsheet.SheetNumber = str(num)
-	newsheet.Name = sheetnames[counter]
-	elementlist.append(newsheet.ToDSType(False))
+	try:
+		newsheet = ViewSheet.CreatePlaceholder(doc)
+		newsheet.SheetNumber = num
+		newsheet.Name = sheetnames[counter]
+		elementlist.append(newsheet.ToDSType(False))
+	except:
+		elementlist.append(None)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 OUT = elementlist

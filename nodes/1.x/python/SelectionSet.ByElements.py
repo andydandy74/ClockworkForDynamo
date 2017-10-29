@@ -38,6 +38,8 @@ for filter in filters:
 if selset == False:
 	selset = SelectionFilterElement.Create(doc,name)
 # add the items to the selection set
-selset.AddSet(itemset)
+try: 
+	selset.AddSet(itemset)
+	OUT = selset.ToDSType(False)
+except: OUT = None
 TransactionManager.Instance.TransactionTaskDone()
-OUT = selset.ToDSType(False)

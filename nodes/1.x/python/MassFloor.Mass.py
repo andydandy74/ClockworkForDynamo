@@ -12,5 +12,5 @@ for item in massfloors:
 	try:
 		elementlist.append(item.Document.GetElement(item.OwningMassId).ToDSType(True))
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

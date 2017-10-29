@@ -11,9 +11,9 @@ elementlist = list()
 for item in items:
 	try:
 		if item.Document.GetElement(item.GroupId) == None:
-			elementlist.append(list())
+			elementlist.append(None)
 		else:
 			elementlist.append(item.Document.GetElement(item.GroupId))
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

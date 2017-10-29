@@ -10,7 +10,10 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 view = UnwrapElement(IN[0])
 TransactionManager.Instance.EnsureInTransaction(doc)
-if view.IsTemporaryHideIsolateActive() == True:
-	view.DisableTemporaryViewMode(TemporaryViewMode.TemporaryHideIsolate)
+try:
+	if view.IsTemporaryHideIsolateActive() == True:
+		view.DisableTemporaryViewMode(TemporaryViewMode.TemporaryHideIsolate)
+		OUT = (view,True)
+	else: OUT = (view, False)
+except: OUT = (view, False)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = view

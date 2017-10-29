@@ -20,6 +20,10 @@ elementlist = list()
 counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
+# make sure familysymbol is active
+if famtype.IsActive == False:
+	famtype.Activate()
+	doc.Regenerate()
 for curve in curves:
 	newobj = doc.Create.NewFamilyInstance(curve.ToRevitType(),famtype,lvl,Structure.StructuralType.NonStructural)
 	elementlist.append(newobj.ToDSType(False))

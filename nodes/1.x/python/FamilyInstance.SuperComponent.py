@@ -13,5 +13,5 @@ for item in items:
 	try:
 		elementlist.append(item.SuperComponent.ToDSType(True))
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

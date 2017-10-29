@@ -9,14 +9,14 @@ demolist = list()
 for item in items:
 	try:
 		if item.CreatedPhaseId.IntegerValue == -1:
-			createdlist.append(list())
+			createdlist.append(None)
 		else:
 			createdlist.append(item.Document.GetElement(item.CreatedPhaseId))
 		if item.DemolishedPhaseId.IntegerValue == -1:
-			demolist.append(list())
+			demolist.append(None)
 		else:
 			demolist.append(item.Document.GetElement(item.DemolishedPhaseId))
 	except:
-		createdlist.append(list())
-		demolist.append(list())
+		createdlist.append(None)
+		demolist.append(None)
 OUT = (createdlist,demolist)

@@ -16,5 +16,5 @@ for item in items:
 		olist.append(item.Origin.ToPoint())
 		dlist.append(item.ViewDirection.ToVector())
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = (olist,dlist)

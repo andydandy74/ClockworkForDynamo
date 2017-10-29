@@ -31,14 +31,16 @@ for geom in geometry:
 		old_type = dsLib.FindDefinitionType(names[counter])
 		try: doc.Delete(old_type)
 		except: pass
-	# create new DS type
-	newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
-	newDStype.SetShape(geom)
-	dsLib.AddDefinitionType(names[counter], newDStype.Id)
-	# create new DS instance
-	newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity, "Dynamo","Clockwork")
-	newDS.SetTypeId(newDStype.Id)
-	elementlist.append(newDS)
+	try:
+		# create new DS type
+		newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
+		newDStype.SetShape(geom)
+		dsLib.AddDefinitionType(names[counter], newDStype.Id)
+		# create new DS instance
+		newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity, "Dynamo","Clockwork")
+		newDS.SetTypeId(newDStype.Id)
+		elementlist.append(newDS)
+	except: elementlist.append(None)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 

@@ -14,9 +14,9 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 views = UnwrapElement(IN[0])
 detailLevel = UnwrapElement(IN[1])
-if str(detailLevel) == "Fine": dl = 3
-elif str(detailLevel) == "Medium": dl = 2
-elif str(detailLevel) == "Coarse": dl = 1
+if IN[1] == "Coarse": dl = 1
+elif IN[1] == "Medium": dl = 2
+elif IN[1] == "Fine": dl = 3
 else: dl = 0
 booleans = list()
 

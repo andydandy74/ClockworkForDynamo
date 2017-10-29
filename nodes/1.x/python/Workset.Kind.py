@@ -10,8 +10,7 @@ doc = DocumentManager.Instance.CurrentDBDocument
 worksets = UnwrapElement(IN[0])
 elementlist = list()
 for workset in worksets:
-	try:
+	if workset.GetType().ToString() == "Autodesk.Revit.DB.Workset":
 		elementlist.append(str(workset.Kind))
-	except:
-		elementlist.append(list())
+	else: elementlist.append(None)
 OUT = elementlist

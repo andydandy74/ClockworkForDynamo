@@ -14,11 +14,9 @@ for item in wallinstances:
 		lcurve = item.Location.Curve
 		if str(type(lcurve)) == "Autodesk.Revit.DB.Line":
 			vectorlist.append(item.Orientation.ToVector())
-			vectorlist.append('#')
 		else:
 			direction = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()
-			vectorlist.append(XYZ.BasisZ.CrossProduct(direction))
-			vectorlist.append('*')
+			vectorlist.append(XYZ.BasisZ.CrossProduct(direction).ToVector())
 	except:
-		vectorlist.append(list())
+		vectorlist.append(None)
 OUT = vectorlist

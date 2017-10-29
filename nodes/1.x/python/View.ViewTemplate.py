@@ -12,7 +12,7 @@ elementlist = list()
 
 for view in views:
 	if view.ViewTemplateId.IntegerValue == -1:
-		elementlist.append(list())
+		elementlist.append(None)
 	else:
 		elementlist.append(view.Document.GetElement(view.ViewTemplateId))
 OUT = elementlist

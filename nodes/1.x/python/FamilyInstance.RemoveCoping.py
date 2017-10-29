@@ -11,7 +11,7 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 fams = UnwrapElement(IN[0])
 cutters = UnwrapElement(IN[1])
-booleans = list()
+booleans = []
 counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
@@ -23,4 +23,4 @@ for fam in fams:
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = booleans
+OUT = (fams,booleans)

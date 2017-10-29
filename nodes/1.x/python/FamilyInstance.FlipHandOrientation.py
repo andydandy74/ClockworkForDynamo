@@ -9,15 +9,15 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 faminstances = UnwrapElement(IN[0])
-elementlist = list()
+booleans = []
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in faminstances:
 	try:
 		item.flipHand()
-		elementlist.append(item)
+		booleans.append(True)
 	except:
-		elementlist.append(list())
+		booleans.append(False)
 TransactionManager.Instance.TransactionTaskDone()
 		
-OUT = elementlist
+OUT = (faminstances,booleans)

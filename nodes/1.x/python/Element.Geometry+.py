@@ -31,13 +31,16 @@ def convert_geometry_instance(geo, elementlist):
 
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
-detail_lvl = IN[1]
+if IN[1] == "Coarse": detail_lvl = ViewDetailLevel.Coarse
+elif IN[1] == "Fine": detail_lvl = ViewDetailLevel.Fine
+else: detail_lvl = ViewDetailLevel.Medium
 inc_invis = IN[2]
 view = UnwrapElement(IN[3])
 inserts = UnwrapElement(IN[4])
 remove_inserts = IN[5]
 revitlist = list()
 dynlist = list()
+catlist = list()
 # we might need a transaction in order to 
 # temporarily delete all inserts and retrieve gross wall areas
 TransactionManager.Instance.EnsureInTransaction(doc)
@@ -58,16 +61,27 @@ for item in items:
 		revit_geos = convert_geometry_instance(revitGeo, list())
 		revitlist.append(revit_geos)
 		dyn_geos = list()
+		cats = list()
 		for geo in revit_geos:
 			try:
 				dyn_geos.append(geo.ToProtoType())
 			except:
-				pass
-		dynlist.append(dyn_geos)	
+				dyn_geos.append(None)
+			try:
+				graphstyle = doc.GetElement(geo.GraphicsStyleId)
+				if graphstyle != None:
+					cats.append(Revit.Elements.Category.ById(graphstyle.GraphicsStyleCategory.Id.IntegerValue))
+				else:
+					cats.append(None)
+			except:
+				cats.append(None)
+		dynlist.append(dyn_geos)
+		catlist.append(cats)		
 	except:
 		revitlist.append(list())
 		dynlist.append(list())
+		catlist.append(list())
 	i += 1
 trans.RollBack()
 TransactionManager.Instance.TransactionTaskDone()
-OUT = (dynlist,revitlist)
+OUT = (dynlist,revitlist,catlist)

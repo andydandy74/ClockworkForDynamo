@@ -14,18 +14,17 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
 names = IN[1]
-goodlist = list()
-badlist = list()
+booleans = []
 counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 while counter < len(items):
 	try:
 		items[counter].Name = names[counter]
-		goodlist.append(items[counter].ToDSType(True))
+		booleans.append(True)
 	except:
-		badlist.append(items[counter].ToDSType(True))
+		booleans.append(False)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = (goodlist,badlist)
+OUT = (items, booleans)

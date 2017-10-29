@@ -26,27 +26,20 @@ associatedelements = list()
 canassignformula = list()
 for param in params:
 	pname.append(param.Definition.Name)
-	try:
-		guid.append(param.GUID)
-	except:
-		guid.append('')
+	try:guid.append(param.GUID)
+	except: guid.append(None)
 	pgroup.append(param.Definition.ParameterGroup)
 	ptype.append(param.Definition.ParameterType)
 	utype.append(param.Definition.UnitType)
-	try:
-		dutype.append(param.DisplayUnitType)
-	except:
-		dutype.append('')
+	try: dutype.append(param.DisplayUnitType)
+	except: dutype.append(None)
 	stype.append(param.StorageType)
 	isinstance.append(param.IsInstance)
 	isreporting.append(param.IsReporting)
 	isshared.append(param.IsShared)
 	isreadonly.append(param.IsReadOnly)
 	usermodifiable.append(param.UserModifiable)
-	if param.Formula == None:
-		formula.append('')
-	else:
-		formula.append(param.Formula)
+	formula.append(param.Formula)
 	determinedbyformula.append(param.IsDeterminedByFormula)
 	assocparams = param.AssociatedParameters
 	associatedparams.append(assocparams)

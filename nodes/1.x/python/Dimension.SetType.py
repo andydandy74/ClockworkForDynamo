@@ -10,15 +10,14 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 diminsts = UnwrapElement(IN[0])
 dimtype = UnwrapElement(IN[1])
-successlist = list()
-faillist = list()
+booleans = list()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in diminsts:
 	try:
 		item.DimensionType = dimtype
-		successlist.append(item)
+		booleans.append(True)
 	except:
-		faillist.append(item)
+		booleans.append(False)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = (successlist,faillist)
+OUT = (diminsts,booleans)

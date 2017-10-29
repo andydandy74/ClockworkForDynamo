@@ -7,11 +7,6 @@ import Autodesk
 clr.AddReference("RevitNodes")
 import Revit
 
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-doc = DocumentManager.Instance.CurrentDBDocument
-
 bics = System.Enum.GetValues(BuiltInCategory)
 cdata = list()
 for bic in bics:

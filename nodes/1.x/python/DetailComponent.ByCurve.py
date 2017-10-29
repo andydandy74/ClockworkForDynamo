@@ -24,7 +24,10 @@ TransactionManager.Instance.EnsureInTransaction(doc)
 for curve in curves:
 	if version > 2015:
 		if not(famtype.IsActive): famtype.Activate()
-	newobj = doc.Create.NewFamilyInstance(curve.ToRevitType(),famtype,view)
-	elementlist.append(newobj.ToDSType(False))
+	try:
+		newobj = doc.Create.NewFamilyInstance(curve.ToRevitType(),famtype,view)
+		elementlist.append(newobj.ToDSType(False))
+	except:
+		elementlist.append(None)
 TransactionManager.Instance.TransactionTaskDone()
 OUT = elementlist

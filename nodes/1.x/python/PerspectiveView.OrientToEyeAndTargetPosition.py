@@ -19,9 +19,11 @@ updirection = IN[2].ToXyz()
 forwarddirection = IN[3].ToXyz()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-newVO = ViewOrientation3D(eyeposition, updirection, forwarddirection)
-view.SetOrientation(newVO)
-view.SaveOrientation()
+try:
+	newVO = ViewOrientation3D(eyeposition, updirection, forwarddirection)
+	view.SetOrientation(newVO)
+	view.SaveOrientation()
+	OUT = True
+except:
+	OUT = False
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = view

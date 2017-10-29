@@ -15,14 +15,14 @@ elif str(dynunittype) == 'DynamoUnits.Length':
 elif str(dynunittype) == 'DynamoUnits.Volume':
 	unittype = UnitType.UT_Volume
 else:
-	unittype = null
+	unittype = None
 
 doc = DocumentManager.Instance.CurrentDBDocument
 formatoptions = doc.GetUnits().GetFormatOptions(unittype)
 dispunits = formatoptions.DisplayUnits
 symtype = formatoptions.UnitSymbol
 if symtype == UnitSymbolType.UST_NONE:
-	dispsym = 'None'
+	dispsym = None
 else:
 	dispsym = LabelUtils.GetLabelFor(symtype)
 OUT = (dispunits,dispsym)

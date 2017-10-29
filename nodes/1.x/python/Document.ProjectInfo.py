@@ -3,7 +3,15 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-doc = DocumentManager.Instance.CurrentDBDocument
+inputdoc = UnwrapElement(IN[1])
+if inputdoc == None:
+	doc = DocumentManager.Instance.CurrentDBDocument
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
+	doc = inputdoc.GetLinkDocument()
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
+	doc = inputdoc
+else: doc = None
+
 elementlist = list()
 projinfo = doc.ProjectInformation
 elementlist.append(projinfo.OrganizationName)
@@ -13,7 +21,7 @@ elementlist.append(projinfo.BuildingName)
 try:
 	elementlist.append(projinfo.Author)
 except:
-	elementlist.append(list())
+	elementlist.append(None)
 elementlist.append(projinfo.IssueDate)
 elementlist.append(projinfo.Status)
 elementlist.append(projinfo.ClientName)

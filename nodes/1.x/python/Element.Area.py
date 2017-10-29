@@ -8,5 +8,5 @@ for item in faminsts:
 	try:
 		elementlist.append(item.Area)
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

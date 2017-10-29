@@ -11,6 +11,8 @@ doc = DocumentManager.Instance.CurrentDBDocument
 view = UnwrapElement(IN[0])
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-view.ConvertTemporaryHideIsolateToPermanent()
+try:
+	view.ConvertTemporaryHideIsolateToPermanent()
+	OUT = (view,True)
+except: OUT = (view,False)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = view

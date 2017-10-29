@@ -22,6 +22,6 @@ for cat in cats:
 				else:
 					catlist.append(False)	
 		except:
-			catlist.append(False)
+			catlist.append(None)
 	elementlist.append(catlist)
 OUT = elementlist

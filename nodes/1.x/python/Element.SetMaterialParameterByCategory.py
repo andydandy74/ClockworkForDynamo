@@ -10,8 +10,7 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 elements = UnwrapElement(IN[0])
 paramname = IN[1]
-elementlist = list()
-failedlist = list()
+booleans = list()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in elements:
@@ -20,12 +19,13 @@ for item in elements:
 		for param in item.Parameters:
 			if param.Definition.Name == paramname:
 				param.Set(ElementId.InvalidElementId)
-				elementlist.append(item)
+				booleans.append(True)
 				paramset = True
+				break
 		if paramset == False:
-			failedlist.append(item)
+			booleans.append(False)
 	except:
-		failedlist.append(item)
+		booleans.append(False)
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = (elementlist,failedlist)
+OUT = (elements,booleans)

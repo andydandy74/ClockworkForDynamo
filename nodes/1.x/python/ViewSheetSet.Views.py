@@ -11,6 +11,6 @@ elementlist = list()
 for set in viewsheetsets:
 	views = list()
 	for view in set.Views:
-		views.append(view)
+		views.append(view.ToDSType(True))
 	elementlist.append(views)
 OUT = elementlist

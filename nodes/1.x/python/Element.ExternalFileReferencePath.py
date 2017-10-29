@@ -15,5 +15,5 @@ for item in items:
 		exref = ModelPathUtils.ConvertModelPathToUserVisiblePath(item.GetExternalFileReference().GetAbsolutePath())
 		elementlist.append(exref)
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

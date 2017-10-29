@@ -15,8 +15,11 @@ dupopt = Autodesk.Revit.DB.ViewDuplicateOption.Duplicate
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for view in views:
-	newview = view.Duplicate(dupopt)
-	elementlist.append(doc.GetElement(newview))
+	try:
+		newview = view.Duplicate(dupopt)
+		elementlist.append(doc.GetElement(newview))
+	except:
+		elementlist.append(None)
 TransactionManager.Instance.TransactionTaskDone()
 	
 OUT = elementlist

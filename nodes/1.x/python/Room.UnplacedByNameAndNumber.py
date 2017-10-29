@@ -17,10 +17,12 @@ elementlist = list()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for name in names:
-	newroom = doccreation.NewRoom(phase)
-	newroom.Name = name
-	newroom.Number = numbers[counter]
-	elementlist.append(newroom)
+	try:
+		newroom = doccreation.NewRoom(phase)
+		newroom.Name = name
+		newroom.Number = numbers[counter]
+		elementlist.append(newroom)
+	except: elementlist.append(None)
 	counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 

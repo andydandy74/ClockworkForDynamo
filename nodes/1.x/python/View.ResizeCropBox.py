@@ -14,8 +14,7 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 views = UnwrapElement(IN[0])
 margin = IN[1].ToXyz()
-elementlist = list()
-failedlist = list()
+booleans = []
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for item in views:
@@ -26,9 +25,9 @@ for item in views:
 		newbox.Max = newmax
 		newbox.Min = newmin
 		item.CropBox = newbox
-		elementlist.append(item)
+		booleans.append(True)
 	except:
-		elementlist.append(list())
+		booleans.append(False)
 TransactionManager.Instance.TransactionTaskDone()
 
-OUT = elementlist
+OUT = (views,booleans)

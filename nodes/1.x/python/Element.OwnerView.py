@@ -12,5 +12,5 @@ for item in items:
 	try:
 		elementlist.append(item.Document.GetElement(item.OwnerViewId).ToDSType(True))
 	except:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist

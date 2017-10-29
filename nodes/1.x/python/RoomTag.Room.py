@@ -27,12 +27,12 @@ for tag in roomtags:
 				linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()
 				elementlist.append(linkdoc.GetElement(trID.LinkedElementId))
 			else:
-				elementlist.append(list())
+				elementlist.append(None)
 		except:
-			elementlist.append(list())
+			elementlist.append(None)
 	else:
 		try:
 			elementlist.append(tag.Room)
 		except:
-			elementlist.append(list())
+			elementlist.append(None)
 OUT = elementlist

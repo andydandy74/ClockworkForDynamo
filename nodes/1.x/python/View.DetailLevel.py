@@ -8,5 +8,5 @@ for view in views:
 	try:
 		elementlist.append(str(view.DetailLevel))
 	except:
-		elementlist.append('Undefined')
+		elementlist.append(None)
 OUT = elementlist
