@@ -7,8 +7,9 @@ Some simple rules for posting issues and pull requests for Clockwork for Dynamo
 - **Make sure you are running one the *supported* Clockwork package and it's the *latest available version** (see https://github.com/andydandy74/ClockworkForDynamo#versions)
 - **Make sure your installed version of Clockwork matches the Dynamo version it's installed for** (e.g. Clockwork for Dynamo 1.x is *not* installed for Dynamo 0.9.x)
 - **Make sure you do *not* have multiple versions of Clockwork installed for one Dynamo version** (e.g. Clockwork for Dynamo 1.x and Clockwork for Dynamo 0.9.x installed for the same Dynamo version). Please check your packages folder!
+- **Make sure you do *not* have any of my pre-Clockwork packages installed** (see https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages)
 
 ### Pull Requests
 - **Describe the purpose of your PR and what you have changed in the original code.**
-- **Do *not* submit anything authored in a post-1.0.0 build** (build numbers larger than 1.0.0.1180).
+- **Do *not* submit anything authored in a 2.x build.**
 - **Make sure you are running the *supported* Clockwork version and it's the *latest available version** (see https://github.com/andydandy74/ClockworkForDynamo#versions)
