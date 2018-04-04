@@ -1,21 +1,14 @@
 <Workspace Version="1.3.1.1736" X="244" Y="218" zoom="1" ScaleFactor="1" Name="ViewSheetSet.Views" Description="Retrieves all the views/sheets in a given view/sheet set." ID="1b030aad-be1b-4fd5-86db-ea4e08e77121" Category="Clockwork.Revit.Views.ViewSheetSet.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d71d10d8-7615-4520-ba99-fe431ab0a23e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="646.315984468228" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c510ea2a-4c01-4d8f-85f2-c8e6f4b96855" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="208.657992234114" y="-54.9018734109673" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="viewsSheetSet" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="05c23bcc-d4c7-4898-b497-e56e7c169799" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="669.657992234114" y="-54.9018734109673" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="ff0351a1-7ed7-43fd-b27e-2c6042fd93fe" type="PythonNodeModels.PythonNode" nickname="Python Script" x="496.831030702806" y="71.7967236386246" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Symbol value="views" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="fde81ebe-77aa-4c50-b644-4589b1473f03" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.662589442549" y="-56.0240482955153" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -25,43 +18,25 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetSheetSetViews(set):
+	if hasattr(set, 'Views'):
+		return [x.ToDSType(True) for x in set.Views]
+	else: return []
+
 viewsheetsets = UnwrapElement(IN[0])
-elementlist = list()
-for set in viewsheetsets:
-	views = list()
-	for view in set.Views:
-		views.append(view.ToDSType(True))
-	elementlist.append(views)
-OUT = elementlist</Script>
+
+if isinstance(IN[0], list): OUT = [GetSheetSetViews(x) for x in viewsheetsets]
+else: OUT = GetSheetSetViews(viewsheetsets)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d98c4157-bc1d-4bd5-8134-ba212e961a3b" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="250" y="70.7235452442647" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c510ea2a-4c01-4d8f-85f2-c8e6f4b96855" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="viewsSheetSet" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="05c23bcc-d4c7-4898-b497-e56e7c169799" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="878.315984468228" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="views" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="d71d10d8-7615-4520-ba99-fe431ab0a23e" start_index="0" end="05c23bcc-d4c7-4898-b497-e56e7c169799" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="ff0351a1-7ed7-43fd-b27e-2c6042fd93fe" start_index="0" end="d71d10d8-7615-4520-ba99-fe431ab0a23e" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="d98c4157-bc1d-4bd5-8134-ba212e961a3b" start_index="0" end="ff0351a1-7ed7-43fd-b27e-2c6042fd93fe" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c510ea2a-4c01-4d8f-85f2-c8e6f4b96855" start_index="0" end="d71d10d8-7615-4520-ba99-fe431ab0a23e" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c510ea2a-4c01-4d8f-85f2-c8e6f4b96855" start_index="0" end="d98c4157-bc1d-4bd5-8134-ba212e961a3b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c510ea2a-4c01-4d8f-85f2-c8e6f4b96855" start_index="0" end="fde81ebe-77aa-4c50-b644-4589b1473f03" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fde81ebe-77aa-4c50-b644-4589b1473f03" start_index="0" end="05c23bcc-d4c7-4898-b497-e56e7c169799" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
   <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
 </Workspace>
