@@ -1,7 +1,14 @@
-<Workspace Version="1.3.1.1736" X="61" Y="209" zoom="1" ScaleFactor="1" Name="Element.Panels" Description="Retrieves the panels nested in a curtain wall, curtain system or glazed roof. Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. PLEASE NOTE: Will not work for glazed roofs created by RoofByFace method." ID="413a2361-4460-4bd6-90b7-3c137a5595ee" Category="Clockwork.Revit.Elements.Element.Query">
+<Workspace Version="1.3.1.1736" X="61" Y="209" zoom="1" ScaleFactor="1" Name="Element.Panels" Description="Retrieves the panels nested in a curtain wall, curtain system or glazed roof. &#xD;&#xA;Differences to OOTB node CurtainPanel.ByElement:&#xD;&#xA;- Returns embedded walls&#xD;&#xA;- Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. &#xD;&#xA;PLEASE NOTE: Will not work for glazed roofs created by RoofByFace method." ID="413a2361-4460-4bd6-90b7-3c137a5595ee" Category="Clockwork.Revit.Elements.Element.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <PythonNodeModels.PythonNode guid="27f32caa-392a-4b3a-afc2-8a1da0eca448" type="PythonNodeModels.PythonNode" nickname="Python Script" x="410.497694762333" y="72.0999683917375" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11485846-15e6-4e2a-a561-a0210c07c137" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="213.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="hostElement" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e2525691-1397-4f18-878b-ed73f3490523" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="658.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="panels" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="628c73c0-897a-40a6-9914-5fafa11df794" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -11,75 +18,36 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetCurtainPanels(host):
+	if hasattr(host, "CurtainGrid"):
+		return GetCurtainPanelsByGrid(host.CurtainGrid, host)
+	elif hasattr(host, "CurtainGrids"):
+		return [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]
+	else: return []
+
+def GetCurtainPanelsByGrid(grid, host):
+	panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
+	for panel in panellist:
+		if hasattr(panel, "FindHostPanel"):
+			hostpanelid = panel.FindHostPanel()
+			if hostpanelid.IntegerValue != -1:
+				panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
+	return [x.ToDSType(True) for x in panellist]
+
 items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
-	try:
-		# Curtain systems
-		systemlist = list()
-		for grid in item.CurtainGrids:
-			panellist = list()
-			for panel in grid.GetPanelIds():
-				panellist.append(item.Document.GetElement(panel).ToDSType(True))
-			systemlist.append(panellist)
-		elementlist.append(systemlist)
-	except:
-		try:
-			# Curtain walls
-			panellist = list()
-			for panel in item.CurtainGrid.GetPanelIds():
-				panellist.append(item.Document.GetElement(panel).ToDSType(True))
-			elementlist.append(panellist)
-		except:
-			# Anything else
-			elementlist.append(list())
-OUT = elementlist</Script>
+
+if isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]
+else: OUT = GetCurtainPanels(items)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="bf47a1c9-175a-428c-bcc7-9d57f06c8e0b" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="605.826694150496" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="98844327-ebf3-478f-93d1-1badd294c31e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="201" y="70.8399492628674" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11485846-15e6-4e2a-a561-a0210c07c137" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="hostElement" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e2525691-1397-4f18-878b-ed73f3490523" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="872.826694150496" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="panels" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="27f32caa-392a-4b3a-afc2-8a1da0eca448" start_index="0" end="bf47a1c9-175a-428c-bcc7-9d57f06c8e0b" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bf47a1c9-175a-428c-bcc7-9d57f06c8e0b" start_index="0" end="e2525691-1397-4f18-878b-ed73f3490523" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="98844327-ebf3-478f-93d1-1badd294c31e" start_index="0" end="27f32caa-392a-4b3a-afc2-8a1da0eca448" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="11485846-15e6-4e2a-a561-a0210c07c137" start_index="0" end="bf47a1c9-175a-428c-bcc7-9d57f06c8e0b" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="11485846-15e6-4e2a-a561-a0210c07c137" start_index="0" end="98844327-ebf3-478f-93d1-1badd294c31e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="11485846-15e6-4e2a-a561-a0210c07c137" start_index="0" end="628c73c0-897a-40a6-9914-5fafa11df794" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="628c73c0-897a-40a6-9914-5fafa11df794" start_index="0" end="e2525691-1397-4f18-878b-ed73f3490523" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="31.4965763092041" eyeY="48.624942779541" eyeZ="-52.1154556274414" lookX="-22.2868824005127" lookY="-19.8213443756104" lookZ="48.4788475036621" upX="-0.0581323951482773" upY="0.990268051624298" upZ="0.126450687646866" />
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
   </Cameras>
 </Workspace>
