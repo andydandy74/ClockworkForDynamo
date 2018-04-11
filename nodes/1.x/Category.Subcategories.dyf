@@ -1,7 +1,15 @@
-<Workspace Version="1.0.0.1180" X="46" Y="156" zoom="1" Name="Category.Subcategories" Description="Retrieves all the subcategories for a given category" ID="00b50cf6-517b-4916-bba8-f8dec3114859" Category="Clockwork.Revit.Elements.Category.Query">
+<Workspace Version="1.3.1.1736" X="46" Y="156" zoom="1" ScaleFactor="1" Name="Category.Subcategories" Description="Retrieves all the subcategories for a given category" ID="00b50cf6-517b-4916-bba8-f8dec3114859" Category="Clockwork.Revit.Elements.Category.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <PythonNodeModels.PythonNode guid="e6ba7458-159e-4470-8ff1-51851c03c9e5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="401" y="98.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="214" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="category" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8f6befc6-562b-4edb-9e6d-42206d863c97" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="634" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="subcategories" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="0e13e5fa-cd0e-43cc-b655-d84377db849c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="410" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -10,55 +18,20 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-cats = UnwrapElement(IN[0])
-elementlist = list()
+def GetSubcategories(cat):
+	if hasattr(cat, "SubCategories"):
+		return [Revit.Elements.Category.ById(x.Id.IntegerValue) for x in cat.SubCategories]
+	else: return []
 
-for cat in cats:
-	try:
-		sublist = []
-		for subcat in cat.SubCategories:
-			sublist.append(Revit.Elements.Category.ById(subcat.Id.IntegerValue))
-		elementlist.append(sublist)
-	except:
-		elementlist.append(list())
-OUT = elementlist</Script>
+cats = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetSubcategories(x) for x in cats]
+else: OUT = GetSubcategories(cats)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="40bc744b-31a8-4cba-835c-027bc2f087a6" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="581" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="068c8a53-5942-4099-a05f-dfdc2e3b36ce" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="177" y="89" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="category" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8f6befc6-562b-4edb-9e6d-42206d863c97" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="848" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <Symbol value="subcategories" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="e6ba7458-159e-4470-8ff1-51851c03c9e5" start_index="0" end="40bc744b-31a8-4cba-835c-027bc2f087a6" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="40bc744b-31a8-4cba-835c-027bc2f087a6" start_index="0" end="8f6befc6-562b-4edb-9e6d-42206d863c97" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="068c8a53-5942-4099-a05f-dfdc2e3b36ce" start_index="0" end="e6ba7458-159e-4470-8ff1-51851c03c9e5" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" start_index="0" end="40bc744b-31a8-4cba-835c-027bc2f087a6" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" start_index="0" end="068c8a53-5942-4099-a05f-dfdc2e3b36ce" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" start_index="0" end="0e13e5fa-cd0e-43cc-b655-d84377db849c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0e13e5fa-cd0e-43cc-b655-d84377db849c" start_index="0" end="8f6befc6-562b-4edb-9e6d-42206d863c97" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
