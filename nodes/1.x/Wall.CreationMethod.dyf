@@ -3,19 +3,14 @@
     <ClassMap partialName="Wall" resolvedName="Revit.Elements.Wall" assemblyName="RevitNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="e8f2edca-cf74-4cf1-aa9c-4058f9fd139e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="232.059282371295" y="27.3346333853354" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4d7090a5-55aa-4d07-aa91-3d027092bbd0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="284.804992199688" y="54.7433697347893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="wall" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2724754f-5a11-4d34-922f-0d3f831e9f6d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="671.804992199688" y="54.7433697347893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="33c18a20-cc98-4a66-a5f0-cfacba84305c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="432" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Symbol value="creationMethod" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="52457bc3-37dc-4e77-84dc-2dd7e6a33a44" type="PythonNodeModels.PythonNode" nickname="Python Script" x="447.804992199688" y="54.7433697347893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -25,47 +20,22 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-wallinstances = UnwrapElement(IN[0])
-methodlist = list()
-for item in wallinstances:
-	typename = item.GetType().Name
-	if typename == 'Wall':
-		methodlist.append('Standard')
-	elif typename == 'FaceWall':
-		methodlist.append('By Face')
-	elif typename == 'FamilyInstance':
-		methodlist.append('In-Place')
-	else: methodlist.append(None)
-OUT = methodlist</Script>
+def WallCreationMethod(wall):
+	typename = wall.GetType().Name
+	if typename == 'Wall': return 'Standard'
+	elif typename == 'FaceWall': return 'By Face'
+	elif typename == 'FamilyInstance': return 'In-Place'
+	else: return None
+
+walls = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [WallCreationMethod(x) for x in walls]
+else: OUT = WallCreationMethod(walls)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4d7090a5-55aa-4d07-aa91-3d027092bbd0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="49.7496099843992" y="-49.3978159126367" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="wall" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2724754f-5a11-4d34-922f-0d3f831e9f6d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="906.860374414977" y="-50.5928237129484" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="creationMethod" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c5b397d7-b11d-4a87-9096-f58a593b3016" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="629.860374414977" y="-50.5928237129484" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="e8f2edca-cf74-4cf1-aa9c-4058f9fd139e" start_index="0" end="33c18a20-cc98-4a66-a5f0-cfacba84305c" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="33c18a20-cc98-4a66-a5f0-cfacba84305c" start_index="0" end="c5b397d7-b11d-4a87-9096-f58a593b3016" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="4d7090a5-55aa-4d07-aa91-3d027092bbd0" start_index="0" end="e8f2edca-cf74-4cf1-aa9c-4058f9fd139e" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="4d7090a5-55aa-4d07-aa91-3d027092bbd0" start_index="0" end="c5b397d7-b11d-4a87-9096-f58a593b3016" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c5b397d7-b11d-4a87-9096-f58a593b3016" start_index="0" end="2724754f-5a11-4d34-922f-0d3f831e9f6d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4d7090a5-55aa-4d07-aa91-3d027092bbd0" start_index="0" end="52457bc3-37dc-4e77-84dc-2dd7e6a33a44" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="52457bc3-37dc-4e77-84dc-2dd7e6a33a44" start_index="0" end="2724754f-5a11-4d34-922f-0d3f831e9f6d" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
