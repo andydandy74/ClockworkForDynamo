@@ -1,7 +1,7 @@
-<Workspace Version="1.3.1.1736" X="218.504254333145" Y="215.871150113066" zoom="0.752278291023545" ScaleFactor="1" Name="Element.Host+" Description="Gets an element's host" ID="73663744-6035-41f3-b386-e6f91e0b36fe" Category="Clockwork.Revit.Elements.Element.Query">
+<Workspace Version="1.3.2.2480" X="218.504254333145" Y="215.871150113066" zoom="0.752278291023545" ScaleFactor="1" Name="Element.Host+" Description="Gets an element's host" ID="73663744-6035-41f3-b386-e6f91e0b36fe" Category="Clockwork.Revit.Elements.Element.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <PythonNodeModels.PythonNode guid="fb5310e2-15e6-4829-a0fe-2a0d3031b367" type="PythonNodeModels.PythonNode" nickname="Python Script" x="337.973194073886" y="175.202689397289" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <PythonNodeModels.PythonNode guid="fb5310e2-15e6-4829-a0fe-2a0d3031b367" type="PythonNodeModels.PythonNode" nickname="Python Script" x="334.118717039716" y="118.436697046351" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -11,71 +11,33 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-faminsts = UnwrapElement(IN[0])
-elementlist = list()
-for item in faminsts:
-	try:
-		elementlist.append(item.Host.ToDSType(True))
-	except:
-		# if that doesn't work, maybe it's a WallSweep
-		try:
-			hostidlist = list()
-			for host in item.GetHostIds():
-				hostidlist.append(item.Document.GetElement(host).ToDSType(True))
-			elementlist.append(hostidlist)
-		except:
-			# if that doesn't work, maybe it's a wall foundation
-			try:
-				elementlist.append(item.Document.GetElement(item.WallId).ToDSType(True))
-			except:
-				# if that doesn't work, maybe it's a railing, a building pad or a topo subregion
-				try: 
-					elementlist.append(item.Document.GetElement(item.HostId).ToDSType(True))
-				except:
-					elementlist.append(None)
-			
-OUT = elementlist</Script>
+def GetHost(item):
+	# standard
+	if hasattr(item, "Host"): return item.Host
+	# Wall sweeps
+	elif hasattr(item, "GetHostIds"): return [item.Document.GetElement(x) for x in item.GetHostIds()]
+	# Wall foundations
+	elif hasattr(item, "WallId"): return item.Document.GetElement(item.WallId)
+	# railingd, building pads, topo subregions
+	elif hasattr(item, "HostId"): return item.Document.GetElement(item.HostId)
+	else: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHost(x) for x in items]
+else: OUT = GetHost(items)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="b104a053-4c8f-4227-8177-ce410101b4f4" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="150.975771827519" y="116.501107488049" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="87f38510-c9e9-4c95-8119-d85d995c924f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-5.64647652293274" y="61.6707046954135" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="87f38510-c9e9-4c95-8119-d85d995c924f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="146.118717039716" y="118.436697046351" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="element" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8f1bdb12-4403-406c-90d6-7cefe95d4b2d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="709.883910602365" y="62.6810655983979" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8f1bdb12-4403-406c-90d6-7cefe95d4b2d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="558.118717039716" y="118.436697046351" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
       <Symbol value="host" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="59a141bc-f7f8-40a4-bc48-c285b578fde3" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="476.967882045797" y="62.3732165124675" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="fb5310e2-15e6-4829-a0fe-2a0d3031b367" start_index="0" end="59a141bc-f7f8-40a4-bc48-c285b578fde3" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="b104a053-4c8f-4227-8177-ce410101b4f4" start_index="0" end="fb5310e2-15e6-4829-a0fe-2a0d3031b367" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="87f38510-c9e9-4c95-8119-d85d995c924f" start_index="0" end="b104a053-4c8f-4227-8177-ce410101b4f4" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="87f38510-c9e9-4c95-8119-d85d995c924f" start_index="0" end="59a141bc-f7f8-40a4-bc48-c285b578fde3" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="59a141bc-f7f8-40a4-bc48-c285b578fde3" start_index="0" end="8f1bdb12-4403-406c-90d6-7cefe95d4b2d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fb5310e2-15e6-4829-a0fe-2a0d3031b367" start_index="0" end="8f1bdb12-4403-406c-90d6-7cefe95d4b2d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="87f38510-c9e9-4c95-8119-d85d995c924f" start_index="0" end="fb5310e2-15e6-4829-a0fe-2a0d3031b367" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
