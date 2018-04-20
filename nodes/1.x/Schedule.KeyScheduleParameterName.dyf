@@ -1,69 +1,39 @@
-<Workspace Version="1.3.0.875" X="201" Y="136" zoom="1" ScaleFactor="1" Name="Schedule.KeyScheduleParameterName" Description="If the schedule is a key schedule, the node returns the name of the key schedule parameter. " ID="56a8808b-beda-46f2-a3e9-f5bd08c0f743" Category="Clockwork.Revit.Views.Schedule.Query">
+<Workspace Version="1.3.1.1736" X="201" Y="136" zoom="1" ScaleFactor="1" Name="Schedule.KeyScheduleParameterName" Description="If the schedule is a key schedule, the node returns the name of the key schedule parameter. " ID="56a8808b-beda-46f2-a3e9-f5bd08c0f743" Category="Clockwork.Revit.Views.Schedule.Query">
   <NamespaceResolutionMap>
     <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="93ee64ae-2795-4bae-a3fa-83e174d73e87" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="652.279950865287" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f1ffae2a-39e6-43a3-a719-fbc8d9c9d69f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="525.454575717679" y="130.475831443944" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="schedule" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="75348f45-ba44-4eec-aacf-50a98b70e15e" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="945.454575717679" y="130.475831443944" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="c7d82709-1e5f-451a-854d-7a65c44992aa" type="PythonNodeModels.PythonNode" nickname="Python Script" x="476.23116886483" y="53.9788529571292" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Symbol value="parameterName" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="16c81ed2-589e-4434-8ead-0cdb3183ef98" type="PythonNodeModels.PythonNode" nickname="Python Script" x="721.454575717679" y="130.475831443944" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetKeyScheduleParamName(schedule):
+	if hasattr(schedule, "KeyScheduleParameterName"): return schedule.KeyScheduleParameterName
+	else: return None
 
 scheds = UnwrapElement(IN[0])
-elementlist = list()
-for item in scheds:
-	try:
-		elementlist.append(item.KeyScheduleParameterName)
-	except:
-		elementlist.append(None)	
-OUT = elementlist</Script>
+
+if isinstance(IN[0], list): OUT = [GetKeyScheduleParamName(x) for x in scheds]
+else: OUT = GetKeyScheduleParamName(scheds)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="448d5e49-5c26-4866-98c5-0e2a1c3bcf7f" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="250" y="56.3075435654962" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f1ffae2a-39e6-43a3-a719-fbc8d9c9d69f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="schedule" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="75348f45-ba44-4eec-aacf-50a98b70e15e" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="884.279950865287" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="parameterName" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="93ee64ae-2795-4bae-a3fa-83e174d73e87" start_index="0" end="75348f45-ba44-4eec-aacf-50a98b70e15e" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c7d82709-1e5f-451a-854d-7a65c44992aa" start_index="0" end="93ee64ae-2795-4bae-a3fa-83e174d73e87" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="448d5e49-5c26-4866-98c5-0e2a1c3bcf7f" start_index="0" end="c7d82709-1e5f-451a-854d-7a65c44992aa" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f1ffae2a-39e6-43a3-a719-fbc8d9c9d69f" start_index="0" end="93ee64ae-2795-4bae-a3fa-83e174d73e87" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f1ffae2a-39e6-43a3-a719-fbc8d9c9d69f" start_index="0" end="448d5e49-5c26-4866-98c5-0e2a1c3bcf7f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f1ffae2a-39e6-43a3-a719-fbc8d9c9d69f" start_index="0" end="16c81ed2-589e-4434-8ead-0cdb3183ef98" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="16c81ed2-589e-4434-8ead-0cdb3183ef98" start_index="0" end="75348f45-ba44-4eec-aacf-50a98b70e15e" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
   <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
 </Workspace>

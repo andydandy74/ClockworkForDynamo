@@ -1,9 +1,25 @@
-<Workspace Version="1.3.1.1736" X="142.755933586795" Y="171.748802095697" zoom="0.97676875" ScaleFactor="1" Name="RevitColor.FromDynamoColor" Description="Creates a Revit color from a Dynamo color" ID="7bb9dc5b-48c9-4a5a-a6bb-96c97a3f91e4" Category="Clockwork.Revit.Elements.Color.Create">
+<Workspace Version="1.3.1.1736" X="209.755933586795" Y="65.748802095697" zoom="0.97676875" ScaleFactor="1" Name="RevitColor.FromDynamoColor" Description="Creates a Revit color from a Dynamo color" ID="7bb9dc5b-48c9-4a5a-a6bb-96c97a3f91e4" Category="Clockwork.Revit.Elements.Color.Create">
   <NamespaceResolutionMap>
     <ClassMap partialName="DSCore.Color" resolvedName="DSCore.Color" assemblyName="DSCoreNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <PythonNodeModels.PythonNode guid="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="764.201638065525" y="220.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="133.201638065528" y="179.594500032098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="DynamoColor : DSCore.Color" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="985.201638065528" y="153.594500032098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="RevitColor" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="81aeaaac-3816-4c45-ba65-ba3c10be6d8c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.Red" x="477.201638065528" y="71.5945000320981" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Color.Red">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5171b9d2-a255-4e58-a185-cdc1d01f1080" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.Green" x="477.201638065528" y="179.594500032098" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Color.Green">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3cedf26e-115a-4295-97d9-7694bb1dffb5" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.Blue" x="477.201638065528" y="287.594500032098" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Color.Blue">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="5ba39004-5c24-47db-b05d-df3ceb50029f" type="PythonNodeModels.PythonNode" nickname="Python Script" x="761.201638065528" y="153.594500032098" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
       <PortInfo index="0" default="False" />
       <PortInfo index="1" default="False" />
       <PortInfo index="2" default="False" />
@@ -18,79 +34,24 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-appcreation = Creation.Application
-r = IN[0]
-g = IN[1]
-b = IN[2]
-counter = 0
-elementlist = list()
+red = IN[0]
+green = IN[1]
+blue = IN[2]
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for red in r:
-	try:
-		newcolor = Color(red,g[counter],b[counter])
-		elementlist.append(newcolor)
-	except:
-		elementlist.append(None)
-	counter += 1
-TransactionManager.Instance.TransactionTaskDone()
-
-OUT = elementlist</Script>
+if isinstance(IN[0], list): OUT = [Color(r, g, b) for r, g, b in zip(red, green, blue)]
+else: OUT = Color(red, green, blue)
+TransactionManager.Instance.TransactionTaskDone()</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="3c018555-b2bf-45be-88d6-3098ff4bc01b" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="988.201638065525" y="194.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="549fed77-0e78-495c-9e2e-5276947070a2" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="211.201638065525" y="246.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-132.798361934475" y="220.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="DynamoColor : DSCore.Color" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1251.20163806553" y="194.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="RevitColor" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="81aeaaac-3816-4c45-ba65-ba3c10be6d8c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.Red" x="480.201638065525" y="137.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Color.Red">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5171b9d2-a255-4e58-a185-cdc1d01f1080" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.Green" x="480.201638065525" y="246.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Color.Green">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3cedf26e-115a-4295-97d9-7694bb1dffb5" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Color.Blue" x="480.201638065525" y="355.860476394389" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Color.Blue">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" start_index="0" end="3c018555-b2bf-45be-88d6-3098ff4bc01b" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3c018555-b2bf-45be-88d6-3098ff4bc01b" start_index="0" end="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="81aeaaac-3816-4c45-ba65-ba3c10be6d8c" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="5171b9d2-a255-4e58-a185-cdc1d01f1080" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="549fed77-0e78-495c-9e2e-5276947070a2" start_index="0" end="3cedf26e-115a-4295-97d9-7694bb1dffb5" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="3c018555-b2bf-45be-88d6-3098ff4bc01b" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="549fed77-0e78-495c-9e2e-5276947070a2" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="81aeaaac-3816-4c45-ba65-ba3c10be6d8c" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5171b9d2-a255-4e58-a185-cdc1d01f1080" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3cedf26e-115a-4295-97d9-7694bb1dffb5" start_index="0" end="e679e5ee-864c-4d8a-bf8f-5fc09ff6cbc4" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="81aeaaac-3816-4c45-ba65-ba3c10be6d8c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="5171b9d2-a255-4e58-a185-cdc1d01f1080" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="76acdd8b-181e-42d2-977f-2ee3fbeeab3e" start_index="0" end="3cedf26e-115a-4295-97d9-7694bb1dffb5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="81aeaaac-3816-4c45-ba65-ba3c10be6d8c" start_index="0" end="5ba39004-5c24-47db-b05d-df3ceb50029f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5171b9d2-a255-4e58-a185-cdc1d01f1080" start_index="0" end="5ba39004-5c24-47db-b05d-df3ceb50029f" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3cedf26e-115a-4295-97d9-7694bb1dffb5" start_index="0" end="5ba39004-5c24-47db-b05d-df3ceb50029f" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5ba39004-5c24-47db-b05d-df3ceb50029f" start_index="0" end="a4be3bb9-a2d1-4ec2-89d3-3d6259b55824" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />

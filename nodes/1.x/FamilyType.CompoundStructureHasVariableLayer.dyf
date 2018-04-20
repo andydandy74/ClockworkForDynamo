@@ -1,64 +1,37 @@
 <Workspace Version="1.3.1.1736" X="21" Y="156" zoom="1" ScaleFactor="1" Name="FamilyType.CompoundStructureHasVariableLayer" Description="Checks if the compound structure of a given floor or roof type contains a variable layer." ID="c00779d4-0d13-4d72-a959-3eb4e5ff7d37" Category="Clockwork.Revit.Elements.FamilyType.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <PythonNodeModels.PythonNode guid="028180c4-1a40-4479-8822-31b70946bc9f" type="PythonNodeModels.PythonNode" nickname="Python Script" x="368" y="107" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0a785cbf-46c7-4590-ae02-6029c2fd512c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="199" y="-22.6129568417766" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="familyType" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c5b79b93-55a5-4af7-806b-28e4c56e6abf" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="635" y="-22.6129568417766" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="df7141c3-96c0-48cf-9535-f078fcd97046" type="PythonNodeModels.PythonNode" nickname="Python Script" x="411" y="-22.6129568417766" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-elemtypes = UnwrapElement(IN[0])
-elementlist = list()
-for item in elemtypes:
-	try:
-		if item.GetCompoundStructure().VariableLayerIndex == -1:
-			elementlist.append(False)
-		else:
-			elementlist.append(True)
-	except:
-		elementlist.append(False)
-OUT = elementlist</Script>
+def HasVariableLayer(item):
+	if hasattr(item, "GetCompoundStructure"):
+		compstruc = item.GetCompoundStructure()
+		if hasattr(compstruc, "VariableLayerIndex"):
+			if compstruc.VariableLayerIndex == -1: return False
+			else: return True
+		else: return False
+	else: return False
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [HasVariableLayer(x) for x in items]
+else: OUT = HasVariableLayer(items)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0a785cbf-46c7-4590-ae02-6029c2fd512c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="32" y="6" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="familyType" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c5b79b93-55a5-4af7-806b-28e4c56e6abf" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="802" y="4" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="bool" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="244daf02-1523-490f-9551-1de1fc5fa8f9" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="549" y="4" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c717180a-9aa2-4ccd-9656-2c5999b224a4" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="113" y="104" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="028180c4-1a40-4479-8822-31b70946bc9f" start_index="0" end="244daf02-1523-490f-9551-1de1fc5fa8f9" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="0a785cbf-46c7-4590-ae02-6029c2fd512c" start_index="0" end="244daf02-1523-490f-9551-1de1fc5fa8f9" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="0a785cbf-46c7-4590-ae02-6029c2fd512c" start_index="0" end="c717180a-9aa2-4ccd-9656-2c5999b224a4" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="244daf02-1523-490f-9551-1de1fc5fa8f9" start_index="0" end="c5b79b93-55a5-4af7-806b-28e4c56e6abf" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c717180a-9aa2-4ccd-9656-2c5999b224a4" start_index="0" end="028180c4-1a40-4479-8822-31b70946bc9f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0a785cbf-46c7-4590-ae02-6029c2fd512c" start_index="0" end="df7141c3-96c0-48cf-9535-f078fcd97046" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="df7141c3-96c0-48cf-9535-f078fcd97046" start_index="0" end="c5b79b93-55a5-4af7-806b-28e4c56e6abf" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />

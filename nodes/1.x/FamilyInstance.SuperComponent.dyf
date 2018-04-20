@@ -1,66 +1,32 @@
 <Workspace Version="1.3.1.1736" X="21" Y="266" zoom="1" ScaleFactor="1" Name="FamilyInstance.SuperComponent" Description="Retrieves the supercomponent of a given family instance" ID="27a35be1-7b94-48e9-8972-022c3767bbb9" Category="Clockwork.Revit.Elements.FamilyInstance.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <PythonNodeModels.PythonNode guid="6a07af2c-6102-400e-995b-74e6aa8c1d91" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.550286567093" y="70.638962737964" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="89c41088-f779-4ead-b1a2-26ecfb16eda2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="236.445228300119" y="-15.640799377513" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="familyInstance" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="74748e7a-8c4b-4d0f-8595-9a63a6c890c9" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="705.445228300119" y="-15.640799377513" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="superComponent" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="e3c35b21-0500-4cd2-bc7b-62c5c797f69e" type="PythonNodeModels.PythonNode" nickname="Python Script" x="481.445228300119" y="-15.640799377513" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetSuperComponent(item):
+	if hasattr(item, "SuperComponent"): return item.SuperComponent
+	else: return None
 
 items = UnwrapElement(IN[0])
-elementlist = list()
 
-for item in items:
-	try:
-		elementlist.append(item.SuperComponent.ToDSType(True))
-	except:
-		elementlist.append(None)
-OUT = elementlist</Script>
+if isinstance(IN[0], list): OUT = [GetSuperComponent(x) for x in items]
+else: OUT = GetSuperComponent(items)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="d93bd3fb-aa42-49ae-9809-88704307120e" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="674.890456600237" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="90577143-c316-4e71-a3b9-aca4340867ea" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="253" y="72.1736891747487" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="89c41088-f779-4ead-b1a2-26ecfb16eda2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="familyInstance" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="74748e7a-8c4b-4d0f-8595-9a63a6c890c9" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="941.890456600237" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="superComponent" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="6a07af2c-6102-400e-995b-74e6aa8c1d91" start_index="0" end="d93bd3fb-aa42-49ae-9809-88704307120e" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="d93bd3fb-aa42-49ae-9809-88704307120e" start_index="0" end="74748e7a-8c4b-4d0f-8595-9a63a6c890c9" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="90577143-c316-4e71-a3b9-aca4340867ea" start_index="0" end="6a07af2c-6102-400e-995b-74e6aa8c1d91" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="89c41088-f779-4ead-b1a2-26ecfb16eda2" start_index="0" end="d93bd3fb-aa42-49ae-9809-88704307120e" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="89c41088-f779-4ead-b1a2-26ecfb16eda2" start_index="0" end="90577143-c316-4e71-a3b9-aca4340867ea" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="89c41088-f779-4ead-b1a2-26ecfb16eda2" start_index="0" end="e3c35b21-0500-4cd2-bc7b-62c5c797f69e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="e3c35b21-0500-4cd2-bc7b-62c5c797f69e" start_index="0" end="74748e7a-8c4b-4d0f-8595-9a63a6c890c9" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
