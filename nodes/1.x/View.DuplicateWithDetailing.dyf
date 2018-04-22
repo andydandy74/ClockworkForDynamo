@@ -3,27 +3,16 @@
     <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="9946b309-ce58-49ea-b1d5-4e617bef849b" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="242" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="426563f5-9c8e-4016-8c0c-a9f1debb81fb" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="50.8820671209304" y="-41.2865557960326" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="426563f5-9c8e-4016-8c0c-a9f1debb81fb" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="205.996641803725" y="44.9201807864058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="view" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c6ad3ceb-20c6-4892-be23-446170905627" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="872.11121648652" y="-39.5913638734529" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c6ad3ceb-20c6-4892-be23-446170905627" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="716.996641803725" y="73.9201807864058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
       <Symbol value="view" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <PythonNodeModels.PythonNode guid="2d95b4f0-056e-446e-880c-cafdcc942c80" type="PythonNodeModels.PythonNode" nickname="Python Script" x="447" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <PythonNodeModels.PythonNode guid="fe92e52c-d7a7-488e-8e9b-c298619a92c4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="492.996641803725" y="73.9201807864058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
       <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -34,43 +23,37 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def DuplicateView(view, name, doc):
+	try:
+		newViewId = view.Duplicate(Autodesk.Revit.DB.ViewDuplicateOption.WithDetailing)
+		newView = doc.GetElement(newViewId)
+		try: newView.Name = name
+		except: pass
+		return newView
+	except: return None
+
 doc = DocumentManager.Instance.CurrentDBDocument
 views = UnwrapElement(IN[0])
-elementlist = list()
-dupopt = Autodesk.Revit.DB.ViewDuplicateOption.WithDetailing
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for view in views:
-	try:
-		newview = view.Duplicate(dupopt)
-		elementlist.append(doc.GetElement(newview))
-	except:
-		elementlist.append(None)
-TransactionManager.Instance.TransactionTaskDone()
-	
-OUT = elementlist</Script>
+if isinstance(IN[0], list):
+	OUT = []
+	for view, name in zip(views, IN[1]):
+		if isinstance(name, list): OUT.append([DuplicateView(view, x, doc) for x in name])
+		else: OUT.append(DuplicateView(view, name, doc))
+else: 
+	if isinstance(IN[1], list): OUT = [DuplicateView(views, x, doc) for x in IN[1]]
+	else: OUT = DuplicateView(views, IN[1], doc)
+TransactionManager.Instance.TransactionTaskDone()</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="614.369407126316" y="-38.7357714954309" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="82c4743f-2de3-46ae-b642-143e34781a32" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="205.996641803725" y="128.920180786406" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="name : string[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="9946b309-ce58-49ea-b1d5-4e617bef849b" start_index="0" end="2d95b4f0-056e-446e-880c-cafdcc942c80" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="9946b309-ce58-49ea-b1d5-4e617bef849b" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="2d95b4f0-056e-446e-880c-cafdcc942c80" start_index="0" end="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="4fe1c8cf-8a48-4a55-a761-8f70e8930ce8" start_index="0" end="c6ad3ceb-20c6-4892-be23-446170905627" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="fe92e52c-d7a7-488e-8e9b-c298619a92c4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fe92e52c-d7a7-488e-8e9b-c298619a92c4" start_index="0" end="c6ad3ceb-20c6-4892-be23-446170905627" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="82c4743f-2de3-46ae-b642-143e34781a32" start_index="0" end="fe92e52c-d7a7-488e-8e9b-c298619a92c4" end_index="1" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
