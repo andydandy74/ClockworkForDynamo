@@ -1,9 +1,20 @@
-<Workspace Version="1.3.1.1736" X="73.3589546523757" Y="436.331394628425" zoom="1.53934758073422" ScaleFactor="1" Name="View.ConvertTemporaryHideIsolateToPermanent" Description="Convert all temporary hidden elements or categories to permanently hidden in the given view." ID="63a5a5c1-2100-448d-b742-ac3199d5bb32" Category="Clockwork.Revit.Views.View.Actions">
+<Workspace Version="1.3.1.1736" X="515.358954652376" Y="402.331394628425" zoom="1.53934758073422" ScaleFactor="1" Name="View.ConvertTemporaryHideIsolateToPermanent" Description="Convert all temporary hidden elements or categories to permanently hidden in the given view." ID="63a5a5c1-2100-448d-b742-ac3199d5bb32" Category="Clockwork.Revit.Views.View.Actions">
   <NamespaceResolutionMap>
     <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <PythonNodeModels.PythonNode guid="73b00739-2e5a-4702-80f6-ea645efd03a8" type="PythonNodeModels.PythonNode" nickname="Python Script" x="104" y="116.566679477325" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="de36aed2-3fbe-431b-992d-3347f37d5570" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="72.5" y="65.7891674238156" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="view" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3c4a3b2f-907e-4868-a06d-72623db07c60" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="459.5" y="23.7891674238156" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="view" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="eaf78ea2-fbd3-44b5-9b14-bcaf5f5aed0a" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="459.5" y="107.789167423816" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="success" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="c70fe125-73c5-4797-a3ff-23934222aba7" type="PythonNodeModels.PythonNode" nickname="Python Script" x="235.5" y="107.789167423816" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -14,40 +25,25 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def TempHideIsolateToPerm(view):
+	try:
+		view.ConvertTemporaryHideIsolateToPermanent()
+		return True
+	except: return False
+
 doc = DocumentManager.Instance.CurrentDBDocument
-view = UnwrapElement(IN[0])
+views = UnwrapElement(IN[0])
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-try:
-	view.ConvertTemporaryHideIsolateToPermanent()
-	OUT = (view,True)
-except: OUT = (view,False)
+if isinstance(IN[0], list): OUT = [TempHideIsolateToPerm(x) for x in views]
+else: OUT = TempHideIsolateToPerm(views)
 TransactionManager.Instance.TransactionTaskDone()</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="de36aed2-3fbe-431b-992d-3347f37d5570" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-59" y="116.566679477325" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="view" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3c4a3b2f-907e-4868-a06d-72623db07c60" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="591" y="74.5666794773252" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="view" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5fc0d7f7-a0b6-4914-961a-76e92c593ca9" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="328" y="62.5666794773252" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="e1ea5c13-90b6-49b7-91cd-ce38332aa720" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="328" y="170.566679477325" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="eaf78ea2-fbd3-44b5-9b14-bcaf5f5aed0a" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="591" y="158.566679477325" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="success" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="73b00739-2e5a-4702-80f6-ea645efd03a8" start_index="0" end="5fc0d7f7-a0b6-4914-961a-76e92c593ca9" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="73b00739-2e5a-4702-80f6-ea645efd03a8" start_index="0" end="e1ea5c13-90b6-49b7-91cd-ce38332aa720" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="de36aed2-3fbe-431b-992d-3347f37d5570" start_index="0" end="73b00739-2e5a-4702-80f6-ea645efd03a8" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5fc0d7f7-a0b6-4914-961a-76e92c593ca9" start_index="0" end="3c4a3b2f-907e-4868-a06d-72623db07c60" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="e1ea5c13-90b6-49b7-91cd-ce38332aa720" start_index="0" end="eaf78ea2-fbd3-44b5-9b14-bcaf5f5aed0a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="de36aed2-3fbe-431b-992d-3347f37d5570" start_index="0" end="c70fe125-73c5-4797-a3ff-23934222aba7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="de36aed2-3fbe-431b-992d-3347f37d5570" start_index="0" end="3c4a3b2f-907e-4868-a06d-72623db07c60" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c70fe125-73c5-4797-a3ff-23934222aba7" start_index="0" end="eaf78ea2-fbd3-44b5-9b14-bcaf5f5aed0a" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
