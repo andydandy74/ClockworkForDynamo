@@ -3,21 +3,14 @@
     <ClassMap partialName="CurtainPanel" resolvedName="Revit.Elements.CurtainPanel" assemblyName="RevitNodes.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4b498ce3-7503-4ecc-917b-e60cc356d458" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="597.382604956071" y="18.4391904588056" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="43b82910-2637-4de6-a425-e535efc29a37" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="200.691302478035" y="-59" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="curtainPanel" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="bb04f9ec-a5fc-49e3-8429-de049bda8ce3" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="653.691302478035" y="-59" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="f4ab450b-24f2-41f1-9e57-8f8f6dfb107c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="451.388838346512" y="90.810514929658" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <Symbol value="hostPanel" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="0ef11c39-59d8-4b17-80ce-6817d210a323" type="PythonNodeModels.PythonNode" nickname="Python Script" x="429.691302478035" y="-59" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -27,41 +20,22 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-faminsts = UnwrapElement(IN[0])
-elementlist = list()
-for item in faminsts:
-	try:
-		elementlist.append(item.Document.GetElement(item.FindHostPanel()).ToDSType(True))
-	except:
-		elementlist.append(item)
-OUT = elementlist</Script>
+def GetHostPanel(item):
+	if hasattr(item, "FindHostPanel"):
+		hpId = item.FindHostPanel()
+		if hpId.IntegerValue &gt; 0: return item.Document.GetElement(hpId).ToDSType(True)
+		else: return item
+	else: return item
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHostPanel(x) for x in items]
+else: OUT = GetHostPanel(items)</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="288ab002-41f1-4f4b-abcb-cc0909b44cf6" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="235" y="91" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="43b82910-2637-4de6-a425-e535efc29a37" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-4" y="18" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="curtainPanel" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="bb04f9ec-a5fc-49e3-8429-de049bda8ce3" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="858.382604956071" y="19" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="hostPanel" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="4b498ce3-7503-4ecc-917b-e60cc356d458" start_index="0" end="bb04f9ec-a5fc-49e3-8429-de049bda8ce3" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f4ab450b-24f2-41f1-9e57-8f8f6dfb107c" start_index="0" end="4b498ce3-7503-4ecc-917b-e60cc356d458" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="288ab002-41f1-4f4b-abcb-cc0909b44cf6" start_index="0" end="f4ab450b-24f2-41f1-9e57-8f8f6dfb107c" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="43b82910-2637-4de6-a425-e535efc29a37" start_index="0" end="4b498ce3-7503-4ecc-917b-e60cc356d458" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="43b82910-2637-4de6-a425-e535efc29a37" start_index="0" end="288ab002-41f1-4f4b-abcb-cc0909b44cf6" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="43b82910-2637-4de6-a425-e535efc29a37" start_index="0" end="0ef11c39-59d8-4b17-80ce-6817d210a323" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0ef11c39-59d8-4b17-80ce-6817d210a323" start_index="0" end="bb04f9ec-a5fc-49e3-8429-de049bda8ce3" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
