@@ -1,0 +1,68 @@
+<Workspace Version="0.8.2.2392" X="-200.349023326535" Y="71.7784813214771" zoom="1.16438980805626" Name="Group.Members" Description="Retrieves the members of a group" ID="cc8fc720-915f-408d-9b91-b5589c0755d3" Category="Clockwork.Revit.Elements.Group.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Nodes.Function guid="7b85228a-8e40-4dcf-acf1-c57d8dddad17" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="575.992110218278" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <DSIronPythonNode.PythonNode guid="6dea5dfc-8dfd-45b5-b6aa-03d8ae508af5" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="411.740811459222" y="54.3404794830125" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+groups = UnwrapElement(IN[0])
+elementlist = list()
+for item in groups:
+	try:
+		memberlist = list()
+		for member in item.GetMemberIds():
+			memberlist.append(item.Document.GetElement(member))
+		elementlist.append(memberlist)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="e32b94b8-6c7f-453f-817e-643c492fe3fe" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="250" y="54.1278909755815" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="bf4f5baf-f491-4961-8056-d30a089f1db8" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="group" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="a52e4894-e2ef-470d-af33-865b78da656c" type="Dynamo.Nodes.Output" nickname="Output" x="842.992110218278" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="memberElements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="7b85228a-8e40-4dcf-acf1-c57d8dddad17" start_index="0" end="a52e4894-e2ef-470d-af33-865b78da656c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6dea5dfc-8dfd-45b5-b6aa-03d8ae508af5" start_index="0" end="7b85228a-8e40-4dcf-acf1-c57d8dddad17" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e32b94b8-6c7f-453f-817e-643c492fe3fe" start_index="0" end="6dea5dfc-8dfd-45b5-b6aa-03d8ae508af5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4f5baf-f491-4961-8056-d30a089f1db8" start_index="0" end="7b85228a-8e40-4dcf-acf1-c57d8dddad17" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf4f5baf-f491-4961-8056-d30a089f1db8" start_index="0" end="e32b94b8-6c7f-453f-817e-643c492fe3fe" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

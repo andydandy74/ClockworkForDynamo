@@ -1,0 +1,52 @@
+<Workspace Version="1.3.1.1736" X="10.3089547581903" Y="443.717134321528" zoom="1.07855079681275" ScaleFactor="1" Name="FamilyInstance.FlipHandOrientation" Description="Flips the hand orientation of a given family instance" ID="3d3e6281-6b03-4bb3-b3db-b63ddd07f575" Category="Clockwork.Revit.Elements.FamilyInstance.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="41f2d38a-2ef8-40eb-9a9a-3b2c9ed7aa4e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="264.022640094699" y="-49.1116808049639" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="familyInstance" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="0bdbf151-774f-4dd9-b91d-4c8505e86874" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="733.022640094699" y="-91.1116808049639" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="familyInstance" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="819409dd-c1c0-4058-acdf-0f98c2a6d795" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="733.022640094699" y="-7.11168080496388" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="success" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="f727e0ef-a182-4211-9f18-2fa179399ba5" type="PythonNodeModels.PythonNode" nickname="Python Script" x="509.022640094699" y="-7.11168080496388" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+def FlipHand(item):
+	try:
+		item.flipHand()
+		return True
+	except: return False
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list): OUT = [FlipHand(x) for x in items]
+else: OUT = FlipHand(items)
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="41f2d38a-2ef8-40eb-9a9a-3b2c9ed7aa4e" start_index="0" end="f727e0ef-a182-4211-9f18-2fa179399ba5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="41f2d38a-2ef8-40eb-9a9a-3b2c9ed7aa4e" start_index="0" end="0bdbf151-774f-4dd9-b91d-4c8505e86874" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f727e0ef-a182-4211-9f18-2fa179399ba5" start_index="0" end="819409dd-c1c0-4058-acdf-0f98c2a6d795" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

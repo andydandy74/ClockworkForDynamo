@@ -1,0 +1,171 @@
+<Workspace Version="1.3.1.1736" X="326.261378943467" Y="186.208611169102" zoom="0.991871263722181" ScaleFactor="1" Name="Element.Location+" Description="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " ID="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="467e3f8f-3faf-49fc-94c3-76b1b0c59c5e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3ebf8af8-90b7-44f8-afdf-742ff53b9f65" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="-13.753237059281" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="points" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="fe6d5941-e752-40bb-b243-e86bdd061ab9" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="42.1780581895263" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="curveEndpoints" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="fef50bd5-ee46-46bb-bc91-c1d356b52c80" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="98.1093534383336" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="curves" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="9c5fe234-6333-42d1-8497-fa4ae9ff0a2d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="154.040648687141" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="isPoint" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="21d34519-3cea-4d3f-b917-cbe99953d0f1" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="209.971943935948" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="isCurve" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bd3f39ee-762e-4a88-a57d-373694197124" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="551.355185870988" y="139.870950208536" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];&#xA;seq[3];&#xA;seq[4];&#xA;seq[5];&#xA;seq[6];&#xA;seq[7];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" type="PythonNodeModels.PythonNode" nickname="Python Script" x="404" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+import math
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+items = UnwrapElement(IN[0])
+pointlist, curvepointlist, ispoint, iscurve, curves, haslocation, angles, hasrotation = [], [], [], [], [], [], [], []
+
+for item in items:
+	try:
+		# points and text notes
+		pointlist.append(item.Coord.ToPoint())
+		ispoint.append(True)
+		iscurve.append(False)
+		haslocation.append(True)
+		hasrotation.append(False)
+	except:
+		try:
+			loc = item.Location
+			if loc.ToString() == 'Autodesk.Revit.DB.LocationCurve':
+				# line-based elements (e.g. walls)
+				curvepoints = (loc.Curve.GetEndPoint(0).ToPoint(),loc.Curve.GetEndPoint(1).ToPoint())
+				curvepointlist.append(curvepoints)
+				curves.append(loc.Curve.ToProtoType())
+				ispoint.append(False)
+				iscurve.append(True)
+				haslocation.append(True)
+				hasrotation.append(False)
+			elif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':
+				# point-based elements
+				pointlist.append(loc.Point.ToPoint())
+				ispoint.append(True)
+				iscurve.append(False)
+				haslocation.append(True)
+				try:
+					angles.append(math.degrees(loc.Rotation))
+					hasrotation.append(True)
+				except:
+					hasrotation.append(False)
+			else:
+				# check for host objects outlines (floor slabs etc.)
+				try:
+					refs = HostObjectUtils.GetTopFaces(item)
+					blines = []
+					bpoints = []
+					for ref in refs:
+						try:
+							boundaries = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
+							for loop in boundaries:
+								cloop = []
+								clooppoints = []
+								for line in loop:
+									cloop.append(line.ToProtoType())
+									curvepoint = (line.GetEndPoint(0).ToPoint(),line.GetEndPoint(1).ToPoint())
+									clooppoints.append(curvepoint)
+								blines.append(cloop)
+								bpoints.append(clooppoints)
+						except:
+							pass
+					if (len(blines) &gt; 0):
+						curves.append(blines)
+						curvepointlist.append(bpoints)
+						iscurve.append(True)
+						haslocation.append(True)
+					else:
+						iscurve.append(False)
+						haslocation.append(False)
+					ispoint.append(False)
+					hasrotation.append(False)
+				except:
+					ispoint.append(False)
+					iscurve.append(False)
+					haslocation.append(False)
+					hasrotation.append(False)
+		except:
+			try:
+				# curves
+				curvepoints = (item.GetEndPoint(0).ToPoint(),item.GetEndPoint(1).ToPoint())
+				curvepointlist.append(curvepoints)
+				curves.append(item.ToProtoType())
+				ispoint.append(False)
+				iscurve.append(True)
+				haslocation.append(True)
+				hasrotation.append(False)
+			except:
+				ispoint.append(False)
+				iscurve.append(False)
+				haslocation.append(False)
+				hasrotation.append(False)
+OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrotation)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f049edbf-dc90-4d9d-8d55-aec33858083d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="265.903239184756" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="hasLocation" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="14d49b05-5d40-4fbf-b0e4-71bfaaee0839" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="321.834534433563" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="angle" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="83ee1aef-f798-4e80-8bef-4ac8b8479804" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="377.76582968237" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="hasRotation" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="157124ef-0735-43df-b3be-fc62d61d9f09" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="141.892023898732" y="137.912442707094" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="467e3f8f-3faf-49fc-94c3-76b1b0c59c5e" start_index="0" end="157124ef-0735-43df-b3be-fc62d61d9f09" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="0" end="3ebf8af8-90b7-44f8-afdf-742ff53b9f65" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="1" end="fe6d5941-e752-40bb-b243-e86bdd061ab9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="2" end="fef50bd5-ee46-46bb-bc91-c1d356b52c80" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="3" end="9c5fe234-6333-42d1-8497-fa4ae9ff0a2d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="4" end="21d34519-3cea-4d3f-b917-cbe99953d0f1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="5" end="f049edbf-dc90-4d9d-8d55-aec33858083d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="6" end="14d49b05-5d40-4fbf-b0e4-71bfaaee0839" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="7" end="83ee1aef-f798-4e80-8bef-4ac8b8479804" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" start_index="0" end="bd3f39ee-762e-4a88-a57d-373694197124" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="157124ef-0735-43df-b3be-fc62d61d9f09" start_index="0" end="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

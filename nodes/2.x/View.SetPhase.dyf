@@ -1,0 +1,103 @@
+<Workspace Version="0.8.2.2392" X="24" Y="282" zoom="1" Name="View.SetPhase" Description="Sets the phase of a given view" ID="d162c180-c7a9-4959-abf5-596735da54c6" Category="Clockwork.Revit.Views.View.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Function guid="975f2c93-8dd0-4612-89b8-fe84765305ad" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="831.804105731406" y="149.989275225591" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.CodeBlockNodeModel guid="aa34c52f-79d2-4cf3-9c12-e501aa640ead" type="Dynamo.Nodes.CodeBlockNodeModel" nickname="Code Block" x="639.738916312072" y="98.752870480599" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false" />
+    <DSIronPythonNode.PythonNode guid="74add9d4-eb3e-4497-b2be-8beef054384f" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="430" y="95.556853052725" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+phase = UnwrapElement(IN[1])
+booleans = list()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+for view in views:
+	try:
+		view.get_Parameter(BuiltInParameter.VIEW_PHASE).Set(phase.Id)
+		booleans.append(True)
+	except:
+		booleans.append(False)
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = (views,booleans)</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="f466630f-30b7-4838-8bb1-3541878b4f06" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="839.4532424715" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="a345d7d4-5eaa-4f4b-802a-58e272074162" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="224" y="71.556853052725" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="6e5eafe7-b06f-4970-bc7b-50ad7da4a8e5" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol guid="c43206d1-8aa1-4947-ae96-4ca8c7138a78" type="Dynamo.Nodes.Symbol" nickname="Input" x="253" y="145" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="phase" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="d0081d05-9d0e-4a61-a0eb-1aa6917fa8d9" type="Dynamo.Nodes.Output" nickname="Output" x="1135.80410573141" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="view" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Output guid="f461687c-9eba-43de-9e63-852ddebf66a3" type="Dynamo.Nodes.Output" nickname="Output" x="1120.80410573141" y="149" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="success" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="975f2c93-8dd0-4612-89b8-fe84765305ad" start_index="0" end="f461687c-9eba-43de-9e63-852ddebf66a3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="aa34c52f-79d2-4cf3-9c12-e501aa640ead" start_index="0" end="f466630f-30b7-4838-8bb1-3541878b4f06" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="aa34c52f-79d2-4cf3-9c12-e501aa640ead" start_index="1" end="975f2c93-8dd0-4612-89b8-fe84765305ad" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="74add9d4-eb3e-4497-b2be-8beef054384f" start_index="0" end="aa34c52f-79d2-4cf3-9c12-e501aa640ead" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f466630f-30b7-4838-8bb1-3541878b4f06" start_index="0" end="d0081d05-9d0e-4a61-a0eb-1aa6917fa8d9" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a345d7d4-5eaa-4f4b-802a-58e272074162" start_index="0" end="74add9d4-eb3e-4497-b2be-8beef054384f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6e5eafe7-b06f-4970-bc7b-50ad7da4a8e5" start_index="0" end="975f2c93-8dd0-4612-89b8-fe84765305ad" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6e5eafe7-b06f-4970-bc7b-50ad7da4a8e5" start_index="0" end="f466630f-30b7-4838-8bb1-3541878b4f06" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6e5eafe7-b06f-4970-bc7b-50ad7da4a8e5" start_index="0" end="a345d7d4-5eaa-4f4b-802a-58e272074162" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="c43206d1-8aa1-4947-ae96-4ca8c7138a78" start_index="0" end="74add9d4-eb3e-4497-b2be-8beef054384f" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

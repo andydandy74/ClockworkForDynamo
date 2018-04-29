@@ -1,0 +1,68 @@
+<Workspace Version="0.8.2.2392" X="30" Y="349.312685827552" zoom="1.27056491575818" Name="Sheet.Schedules" Description="Returns all schedules placed on a specified sheet " ID="97f595e2-9f25-45b2-8ed9-9ad33e80c7df" Category="Clockwork.Revit.Views.Sheet.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Sheet" resolvedName="Revit.Elements.Views.Sheet" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Nodes.Symbol guid="6a0a9d9f-60a6-4105-a43f-41ac6ff5906c" type="Dynamo.Nodes.Symbol" nickname="Input" x="0.787051482059269" y="-35.7971918876755" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="sheet : Sheet" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="ed00484c-8cb7-46ed-a7d8-9c3d0c7f9898" type="Dynamo.Nodes.Output" nickname="Output" x="902.638845553822" y="-33.0561622464899" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="schedules" />
+    </Dynamo.Nodes.Output>
+    <DSIronPythonNode.PythonNode guid="8881c5c3-6db4-48bb-94c9-7deeb28f78ad" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="389" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+sheets = UnwrapElement(IN[0])
+elementlist = list()
+
+for sheet in sheets:
+	try:
+		viewlist = list()
+		collector = FilteredElementCollector(sheet.Document, sheet.Id).OfClass(ScheduleSheetInstance)
+		for item in collector:
+			viewlist.append(sheet.Document.GetElement(item.ScheduleId))
+		elementlist.append(viewlist)
+	except:
+		elementlist.append(list())
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="610.638845553822" y="-33.0561622464899" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="184" y="26" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="6a0a9d9f-60a6-4105-a43f-41ac6ff5906c" start_index="0" end="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="6a0a9d9f-60a6-4105-a43f-41ac6ff5906c" start_index="0" end="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8881c5c3-6db4-48bb-94c9-7deeb28f78ad" start_index="0" end="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cdccd86c-0664-4b84-ad5f-b9094ffbc0f5" start_index="0" end="ed00484c-8cb7-46ed-a7d8-9c3d0c7f9898" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="3cc376fb-e85a-43c1-8d11-01e3c1d0982b" start_index="0" end="8881c5c3-6db4-48bb-94c9-7deeb28f78ad" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

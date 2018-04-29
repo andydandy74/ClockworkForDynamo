@@ -1,0 +1,42 @@
+<Workspace Version="1.3.1.1736" X="46" Y="156" zoom="1" ScaleFactor="1" Name="Category.Subcategories" Description="Retrieves all the subcategories for a given category" ID="00b50cf6-517b-4916-bba8-f8dec3114859" Category="Clockwork.Revit.Elements.Category.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="214" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="category" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8f6befc6-562b-4edb-9e6d-42206d863c97" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="634" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="subcategories" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="0e13e5fa-cd0e-43cc-b655-d84377db849c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="410" y="142" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+def GetSubcategories(cat):
+	if hasattr(cat, "SubCategories"):
+		return [Revit.Elements.Category.ById(x.Id.IntegerValue) for x in cat.SubCategories]
+	else: return []
+
+cats = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetSubcategories(x) for x in cats]
+else: OUT = GetSubcategories(cats)</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="765ce97f-1186-4c1b-8d4e-08f54bc16ce0" start_index="0" end="0e13e5fa-cd0e-43cc-b655-d84377db849c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0e13e5fa-cd0e-43cc-b655-d84377db849c" start_index="0" end="8f6befc6-562b-4edb-9e6d-42206d863c97" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

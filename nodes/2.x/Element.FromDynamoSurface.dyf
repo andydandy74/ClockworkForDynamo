@@ -1,0 +1,45 @@
+<Workspace Version="1.3.1.1736" X="128" Y="374.41875" zoom="1.0015625" ScaleFactor="1" Name="Element.FromDynamoSurface" Description="Returns the underlying Revit element of a given face" ID="0b4bb7ab-9433-4f3c-8abe-d26de134cc8c" Category="Clockwork.Revit.Selection.ByFace">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Surface" resolvedName="Autodesk.DesignScript.Geometry.Surface" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="eda74bfc-0b6e-4bc1-92cc-e97715efcc88" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="282.55616224649" y="-92.0655226209048" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="DynamoSurface : Surface" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="d5e9bf9e-2e10-42a3-b3e6-45d8495ab233" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="826.55616224649" y="-92.0655226209048" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="8bab27a7-1bfd-4158-a5ca-7101205e29a9" type="PythonNodeModels.PythonNode" nickname="Python Script" x="602.55616224649" y="-92.0655226209048" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+def ElementByFace(face, doc):
+	try: return doc.GetElement(face.Tags.LookupTag("RevitFaceReference"))
+	except: return None
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faces = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [ElementByFace(x, doc) for x in faces]
+else: OUT = ElementByFace(faces, doc)</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="eda74bfc-0b6e-4bc1-92cc-e97715efcc88" start_index="0" end="8bab27a7-1bfd-4158-a5ca-7101205e29a9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8bab27a7-1bfd-4158-a5ca-7101205e29a9" start_index="0" end="d5e9bf9e-2e10-42a3-b3e6-45d8495ab233" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

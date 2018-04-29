@@ -1,0 +1,94 @@
+<Workspace Version="1.3.1.1736" X="187" Y="347" zoom="1" ScaleFactor="1" Name="Group.IsMirrored" Description="Checks if a list of group instances have been mirrored. The reference group should usually be the first placed instance of the group (since that one has likely not been mirrored).  The node will return null for group instances of other group types than the reference group as well as for group instances with excluded members. Furthermore, it will return null for *all* groups if the reference group itself has excluded members or if it doesn't contain any loadable families (since they are the only way of determining if the group instance has been mirrored)." ID="e4c1f6b1-1a30-446d-bccb-e23a973c1a08" Category="Clockwork.Revit.Elements.Group.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="8ea9b94c-8157-4310-a87f-f9d3e02a3649" type="PythonNodeModels.PythonNode" nickname="Python Script" x="465.584683379587" y="49.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+refgroup = UnwrapElement(IN[0])
+groups = UnwrapElement(IN[1])
+
+# Get Mirrored state of first family instance in reference group instance
+refGroupMembers = refgroup.GetMemberIds()
+numMembers = len(refGroupMembers)
+counter = 0
+membernum = None
+refGroupType = refgroup.GroupType.Id.IntegerValue
+for member in refGroupMembers:
+	elem = refgroup.Document.GetElement(member)
+	if elem.GetType().ToString() == "Autodesk.Revit.DB.FamilyInstance":
+		state = elem.Mirrored
+		membernum = counter
+		break
+	counter += 1
+	
+# Default values for flags
+refGroupIntact = True
+noFamInsts = False
+# Set a flag if the reference group contains no family instances
+if membernum == None: noFamInsts = True
+else:
+	bools = []
+	# Compare Mirrored state with corresponding members of other group instances
+	for group in groups:
+		# Get number of group members
+		theseMembers = group.GetMemberIds()
+		theseMembersNum = len(theseMembers)
+		# Set a flag if any group instance has more members than the reference group instance
+		# (only if both are of the same group type)
+		if theseMembersNum &gt; numMembers and refGroupType == group.GroupType.Id.IntegerValue:
+			refGroupIntact = False
+			break
+		# Return null if group is of another group type
+		elif refGroupType != group.GroupType.Id.IntegerValue: bools.append(None)
+		# Return null for group instances with excluded members
+		elif theseMembersNum &lt; numMembers: bools.append(None)
+		# Otherwise compare Mirrored state
+		else: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)
+			
+# Return null for all groups if the first group has excluded members
+# or if it does not contain any fanily instances
+if not refGroupIntact or noFamInsts: bools = [None] * len(groups)
+	
+OUT = bools</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="725de6fe-6fe1-4370-8d35-4d24bb9d22d0" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="202.584683379587" y="104.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="3f0ac3ec-d63f-4f40-971b-cfcaf7ebba5e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="202.584683379587" y="20.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="referenceGroup" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="eb6d1c77-9dac-4bd2-8a9e-9f35500bf40c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-41.4153166204133" y="104.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="groupsToCheck" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="a8c846c2-b30c-46cb-a188-7d3198bfd6fb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="687.584683379587" y="49.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8ea9b94c-8157-4310-a87f-f9d3e02a3649" start_index="0" end="a8c846c2-b30c-46cb-a188-7d3198bfd6fb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="725de6fe-6fe1-4370-8d35-4d24bb9d22d0" start_index="0" end="8ea9b94c-8157-4310-a87f-f9d3e02a3649" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f0ac3ec-d63f-4f40-971b-cfcaf7ebba5e" start_index="0" end="8ea9b94c-8157-4310-a87f-f9d3e02a3649" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="eb6d1c77-9dac-4bd2-8a9e-9f35500bf40c" start_index="0" end="725de6fe-6fe1-4370-8d35-4d24bb9d22d0" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>

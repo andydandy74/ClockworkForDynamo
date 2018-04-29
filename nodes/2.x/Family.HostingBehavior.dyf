@@ -1,0 +1,43 @@
+<Workspace Version="1.3.1.1736" X="191" Y="222" zoom="1" ScaleFactor="1" Name="Family.HostingBehavior" Description="Returns the expected host class of a family (if any)" ID="56a8a300-3968-4b57-a070-9677be4188c3" Category="Clockwork.Revit.Elements.Family.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Family" resolvedName="Revit.Elements.Family" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="842959c6-5473-4118-b7b7-01d21209ecc7" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="196.811457602108" y="240.652524199771" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="family : Family" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="9a77316f-5cf9-41b0-83fc-376eb35c855d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="674.811457602108" y="240.652524199771" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="hostingBehavior" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="9258de64-537b-44ce-bccc-3f0c63c5619e" type="PythonNodeModels.PythonNode" nickname="Python Script" x="450.811457602108" y="240.652524199771" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+def GetHostingBehavior(item):
+	if item.GetType().ToString() == "Autodesk.Revit.DB.Family":
+		hb = item.get_Parameter(BuiltInParameter.FAMILY_HOSTING_BEHAVIOR).AsValueString()
+		if hb == "": return None
+		else: return hb
+	else: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHostingBehavior(x) for x in items]
+else: OUT = GetHostingBehavior(items)</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="842959c6-5473-4118-b7b7-01d21209ecc7" start_index="0" end="9258de64-537b-44ce-bccc-3f0c63c5619e" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="9258de64-537b-44ce-bccc-3f0c63c5619e" start_index="0" end="9a77316f-5cf9-41b0-83fc-376eb35c855d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

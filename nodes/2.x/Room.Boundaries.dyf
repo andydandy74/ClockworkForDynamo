@@ -1,0 +1,85 @@
+<Workspace Version="1.3.1.1736" X="288.885064351549" Y="-108.657948444286" zoom="1.01715733291329" ScaleFactor="1" Name="Room.Boundaries" Description="Gets a list of all boundaries of a given room or area and a corresponding list of the elements that are generating those boundaries." ID="fb07f5d8-94b8-4985-bf2f-a54fe832aa66" Category="Clockwork.Revit.Elements.Room.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="981a0e03-9fe7-44f9-9504-2ea77ca18745" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="202.864994270082" y="500.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="room" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="aa6058d6-2d2c-419c-adc4-23f58c7f5767" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="921.864994270082" y="500.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="d71efcb4-3df8-472f-b598-63d7a11c097e" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="921.864994270082" y="584.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="curves" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="3a8e8c07-23e8-4c4f-a986-ae45a639d204" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Application.Version" x="202.864994270082" y="584.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <ID value="3df0961d-9d46-464f-9175-0a74eeb61bc1" />
+      <Name value="Application.Version" />
+      <Description value="Retrieves the name, version and build of the current Revit application." />
+      <Inputs />
+      <Outputs>
+        <Output value="Name" />
+        <Output value="Version" />
+        <Output value="Build" />
+        <Output value="Language" />
+        <Output value="fullVersion" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="4d32882c-fa42-4ef8-b257-3b4d70502139" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.864994270082" y="542.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+def GetRoomBoundaries(item, version):
+	doc = item.Document
+	calculator = SpatialElementGeometryCalculator(doc)
+	options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()
+	# get boundary location from area computation settings
+	boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)
+	options.SpatialElementBoundaryLocation = boundloc
+	# get boundary segments
+	elements = []
+	curves = []
+	try:
+		for boundarylist in item.GetBoundarySegments(options):
+			for boundary in boundarylist:
+				elements.append(doc.GetElement(boundary.ElementId))
+				if version &gt; 2016: curves.append(boundary.GetCurve().ToProtoType())
+				else: curves.append(boundary.Curve.ToProtoType())
+	except: pass
+	return elements, curves
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))
+else: OUT = GetRoomBoundaries(items, IN[1])</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="46e00936-fd26-4b51-9e18-786ea60d3c26" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="658.864994270082" y="488.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="da75b170-e491-49d8-9baf-ccbaca37459a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="658.864994270082" y="596.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="4d32882c-fa42-4ef8-b257-3b4d70502139" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3a8e8c07-23e8-4c4f-a986-ae45a639d204" start_index="1" end="4d32882c-fa42-4ef8-b257-3b4d70502139" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4d32882c-fa42-4ef8-b257-3b4d70502139" start_index="0" end="46e00936-fd26-4b51-9e18-786ea60d3c26" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4d32882c-fa42-4ef8-b257-3b4d70502139" start_index="0" end="da75b170-e491-49d8-9baf-ccbaca37459a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="46e00936-fd26-4b51-9e18-786ea60d3c26" start_index="0" end="aa6058d6-2d2c-419c-adc4-23f58c7f5767" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="da75b170-e491-49d8-9baf-ccbaca37459a" start_index="0" end="d71efcb4-3df8-472f-b598-63d7a11c097e" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

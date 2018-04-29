@@ -1,0 +1,122 @@
+<Workspace Version="1.3.1.1736" X="479.033920411272" Y="106.426496444353" zoom="0.970151050788089" ScaleFactor="1" Name="Room.AtPointInPhase" Description="Tries to retrieve a room element at the given location for the given phase." ID="c213be6e-2a54-4f51-acf7-60cefb6adfbd" Category="Clockwork.Revit.Selection.Miscellaneous">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="57d934c1-7679-4f7c-bc19-4269af0d16c5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="808" y="9" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1231a75e-db7a-4474-a31a-286d70f6bbdf" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="315" y="35" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <PythonNodeModels.PythonNode guid="8b77751e-29ff-4a23-9234-61f06dedf79b" type="PythonNodeModels.PythonNode" nickname="Python Script" x="584" y="35" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+points = IN[0]
+phase = UnwrapElement(IN[1])
+roomlist = list()
+for pt in points:
+    roomlist.append(doc.GetRoomAtPoint(pt.ToXyz(),phase))
+OUT = roomlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="63ce34a6-5435-4102-8ef0-5f6c8e587b56" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="point : Autodesk.Point" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d49a6b89-d6d0-4a06-9fa1-005cfa431eae" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-564.081381598298" y="347.087945698433" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="// If no phase is specified, the node will use the last phase in the project&#xD;&#xA;phase : var = null" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e65c7878-1420-4b81-943f-d882d3890cdb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1071" y="9" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="room" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="f6ef3b8a-2f76-4d80-960f-ed0b9e9d5d38" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Object.IsNull" x="146.990099009901" y="277.178217821783" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.Object.IsNull@var">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="906b8d45-d78f-4d59-8dc5-ad1bffa59b46" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ScopeIf+" x="359.212490479818" y="172.806549885758" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <ID value="7debf647-afa8-476e-81ad-a74417bda812" />
+      <Name value="ScopeIf+" />
+      <Description value="A (hopefully) more robust implementation of ScopeIf. Tests a single boolean and returns a value accordingly." />
+      <Inputs>
+        <Input value="test" />
+        <Input value="true" />
+        <Input value="false" />
+      </Inputs>
+      <Outputs>
+        <Output value="result" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="128aebd9-a0de-44a5-a388-8126bf5bba8a" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Document.Phases" x="-205.264280274182" y="164.10891089109" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <ID value="4131ba2c-da9b-40bd-9ce1-b74a9ad5b5da" />
+      <Name value="Document.Phases" />
+      <Description value="Retrieves all phases in the active document in *chronological* order" />
+      <Inputs>
+        <Input value="toggle" />
+        <Input value="docOrRevitLinkInstance" />
+      </Inputs>
+      <Outputs>
+        <Output value="Phases" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="ef668459-76a3-4625-bdf4-5e8b102b6d01" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="147.859862909368" y="163.239146991623" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="57d934c1-7679-4f7c-bc19-4269af0d16c5" start_index="0" end="e65c7878-1420-4b81-943f-d882d3890cdb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1231a75e-db7a-4474-a31a-286d70f6bbdf" start_index="0" end="8b77751e-29ff-4a23-9234-61f06dedf79b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8b77751e-29ff-4a23-9234-61f06dedf79b" start_index="0" end="57d934c1-7679-4f7c-bc19-4269af0d16c5" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="63ce34a6-5435-4102-8ef0-5f6c8e587b56" start_index="0" end="57d934c1-7679-4f7c-bc19-4269af0d16c5" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="63ce34a6-5435-4102-8ef0-5f6c8e587b56" start_index="0" end="1231a75e-db7a-4474-a31a-286d70f6bbdf" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d49a6b89-d6d0-4a06-9fa1-005cfa431eae" start_index="0" end="f6ef3b8a-2f76-4d80-960f-ed0b9e9d5d38" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d49a6b89-d6d0-4a06-9fa1-005cfa431eae" start_index="0" end="906b8d45-d78f-4d59-8dc5-ad1bffa59b46" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f6ef3b8a-2f76-4d80-960f-ed0b9e9d5d38" start_index="0" end="906b8d45-d78f-4d59-8dc5-ad1bffa59b46" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="906b8d45-d78f-4d59-8dc5-ad1bffa59b46" start_index="0" end="8b77751e-29ff-4a23-9234-61f06dedf79b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="128aebd9-a0de-44a5-a388-8126bf5bba8a" start_index="0" end="ef668459-76a3-4625-bdf4-5e8b102b6d01" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ef668459-76a3-4625-bdf4-5e8b102b6d01" start_index="0" end="906b8d45-d78f-4d59-8dc5-ad1bffa59b46" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

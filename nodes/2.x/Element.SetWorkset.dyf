@@ -1,0 +1,110 @@
+<Workspace Version="1.3.1.1736" X="0.798425839632614" Y="435.862073096133" zoom="0.763109848617544" ScaleFactor="1" Name="Element.SetWorkset" Description="Sets the workset of a given element" ID="c3252e3e-c023-483c-97b5-439d61de237b" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="358d530c-db3a-48ad-9412-936b5afab472" type="PythonNodeModels.PythonNode" nickname="Python Script" x="390.897435897436" y="55.8500349650349" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+faminsts = UnwrapElement(IN[0])
+ws = UnwrapElement(IN[1])
+# Is this an archi-lab workset?
+if isinstance(ws.Id, int): wsID = ws.Id
+else: wsID = ws.Id.IntegerValue
+booleans = list()
+TransactionManager.Instance.EnsureInTransaction(doc)
+for item in faminsts:
+	try:
+		param = item.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM)
+		param.Set(wsID)
+		booleans.append(True)
+	except:
+		booleans.append(False)
+TransactionManager.Instance.TransactionTaskDone()
+OUT = (faminsts,booleans)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5002dd07-8f90-4a73-b923-f75ef19fa557" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="614.897435897436" y="60.0683682983683" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="a91f392d-4809-4042-8fe4-d40d5ef5369d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="199" y="33.2183333333333" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="40cb5e03-1a70-402f-a97a-01c035d9040d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="216.787878787879" y="107.276608391608" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="workset" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0a6ee1a7-2b6b-4cea-89ab-c2f011dd7e0a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="36.925407925408" y="33.9968881118881" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="fe3d9c24-f8a9-461c-bf40-84714330e13d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="979.076625767976" y="-117.533220625294" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f27e5de7-471c-4783-98bf-96cd6b691136" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1012.95535105284" y="226.203673225347" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="success" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="ea7f986d-493c-4dc6-96e7-16de76473ada" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="733.675145926039" y="-121.805196233287" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="a00df42f-7bf7-4986-8ad0-62935582a932" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="756.417061830387" y="215.724817220948" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
+      <Name value="ReturnListOrSingleValue" />
+      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
+      <Inputs>
+        <Input value="unknownItem" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="358d530c-db3a-48ad-9412-936b5afab472" start_index="0" end="5002dd07-8f90-4a73-b923-f75ef19fa557" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5002dd07-8f90-4a73-b923-f75ef19fa557" start_index="0" end="ea7f986d-493c-4dc6-96e7-16de76473ada" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5002dd07-8f90-4a73-b923-f75ef19fa557" start_index="1" end="a00df42f-7bf7-4986-8ad0-62935582a932" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a91f392d-4809-4042-8fe4-d40d5ef5369d" start_index="0" end="358d530c-db3a-48ad-9412-936b5afab472" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="40cb5e03-1a70-402f-a97a-01c035d9040d" start_index="0" end="358d530c-db3a-48ad-9412-936b5afab472" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0a6ee1a7-2b6b-4cea-89ab-c2f011dd7e0a" start_index="0" end="a91f392d-4809-4042-8fe4-d40d5ef5369d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0a6ee1a7-2b6b-4cea-89ab-c2f011dd7e0a" start_index="0" end="ea7f986d-493c-4dc6-96e7-16de76473ada" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0a6ee1a7-2b6b-4cea-89ab-c2f011dd7e0a" start_index="0" end="a00df42f-7bf7-4986-8ad0-62935582a932" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="ea7f986d-493c-4dc6-96e7-16de76473ada" start_index="0" end="fe3d9c24-f8a9-461c-bf40-84714330e13d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a00df42f-7bf7-4986-8ad0-62935582a932" start_index="0" end="f27e5de7-471c-4783-98bf-96cd6b691136" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

@@ -1,0 +1,47 @@
+<Workspace Version="1.3.1.1736" X="30" Y="302.966932270916" zoom="1.02151394422311" ScaleFactor="1" Name="Element.Phases" Description="Gets the created and demolished phases of an element" ID="48ac7d7c-8035-45e6-8a63-8c9206be35b6" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="2b5dff10-11be-4d46-a935-cfee1f76d8e7" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="260.436817472697" y="15.8547608162038" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b76d3543-3fa2-4e98-80f2-22200acf5987" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="893.436817472697" y="-17.3585725171295" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="Created" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="017e298c-114f-4f90-a67f-e6285fa68b0d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="893.436817472697" y="66.6414274828705" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="Demolished" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="5884466b-48c4-4df2-9a28-686b2d5fba60" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="672.436817472697" y="20.0680941495371" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];" ShouldFocus="false">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
+    <PythonNodeModels.PythonNode guid="32bb649a-0838-45cc-b2d3-24a3ba8cca87" type="PythonNodeModels.PythonNode" nickname="Python Script" x="448.436817472697" y="15.8547608162038" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+def GetPhases(item):
+	if hasattr(item, "CreatedPhaseId"):
+		return item.Document.GetElement(item.CreatedPhaseId), item.Document.GetElement(item.DemolishedPhaseId)
+	else: return None, None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetPhases(x) for x in items]))
+else: OUT = GetPhases(items)</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="2b5dff10-11be-4d46-a935-cfee1f76d8e7" start_index="0" end="32bb649a-0838-45cc-b2d3-24a3ba8cca87" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5884466b-48c4-4df2-9a28-686b2d5fba60" start_index="0" end="b76d3543-3fa2-4e98-80f2-22200acf5987" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5884466b-48c4-4df2-9a28-686b2d5fba60" start_index="1" end="017e298c-114f-4f90-a67f-e6285fa68b0d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="32bb649a-0838-45cc-b2d3-24a3ba8cca87" start_index="0" end="5884466b-48c4-4df2-9a28-686b2d5fba60" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

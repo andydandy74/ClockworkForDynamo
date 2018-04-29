@@ -1,0 +1,89 @@
+<Workspace Version="1.3.1.1736" X="192.965532168683" Y="170.126008269534" zoom="0.852017678554967" ScaleFactor="1" Name="SelectionSet.ByElements" Description="Creates a selection set of the given elements. Note that if a selection set of the given name already exists in the model, its contents will be replaced. Also, if the selection set is already applied as a view filter, the view filter will have to be manually updated in the visibility / graphic overrides. DO ***NOT*** USE IN AUTOMATIC MODE!" ID="abdd4174-8c8f-45ae-90a4-ffa3b369941b" Category="Clockwork.Revit.Elements.SelectionSet.Create">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="497f8c29-91da-48c6-ad82-483dce66eca1" type="PythonNodeModels.PythonNode" nickname="Python Script" x="751.415161780418" y="185.910321982136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+name = IN[1]
+
+# create itemset
+items = UnwrapElement(IN[0])
+ids = list()
+for item in items:
+	ids.append(item.Id)
+itemset = List[ElementId](ids)
+
+# collect all existing filters from the model 
+names = list()
+collector = FilteredElementCollector(doc)
+filters = collector.OfClass(FilterElement).ToElements();
+
+selset = False
+TransactionManager.Instance.EnsureInTransaction(doc)
+# if a filter of that name already exists, delete its content
+for filter in filters:
+	if str(filter.Name) == name:
+		filter.Clear()
+		selset = filter
+# create a new selection set if it doesn't already exist
+if selset == False:
+	selset = SelectionFilterElement.Create(doc,name)
+# add the items to the selection set
+try: 
+	selset.AddSet(itemset)
+	OUT = selset.ToDSType(False)
+except: OUT = None
+TransactionManager.Instance.TransactionTaskDone()
+</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="02efed4a-91a6-41d9-a14c-dc354836c16d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="482.415161780418" y="156.910321982136" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="Turn Into List" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="3848e8d6-26a7-4b23-b905-870458cef8f2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="482.415161780418" y="240.910321982136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="Name : string" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="131449f2-4dbf-49b7-be5c-6d6332a0d383" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="286.415161780418" y="156.910321982136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="elements" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2dfefa93-2b2b-4c60-8cbd-6134665af54d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="975.415161780418" y="185.910321982136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="selectionSet" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="497f8c29-91da-48c6-ad82-483dce66eca1" start_index="0" end="2dfefa93-2b2b-4c60-8cbd-6134665af54d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="02efed4a-91a6-41d9-a14c-dc354836c16d" start_index="0" end="497f8c29-91da-48c6-ad82-483dce66eca1" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="3848e8d6-26a7-4b23-b905-870458cef8f2" start_index="0" end="497f8c29-91da-48c6-ad82-483dce66eca1" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="131449f2-4dbf-49b7-be5c-6d6332a0d383" start_index="0" end="02efed4a-91a6-41d9-a14c-dc354836c16d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

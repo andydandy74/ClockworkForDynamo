@@ -1,0 +1,61 @@
+<Workspace Version="0.8.2.2392" X="30" Y="327.313868613139" zoom="0.86374695863747" Name="Group.Ungroup" Description="Ungroups a group and returns the ungrouped elements." ID="cfe0d03d-c8ba-4cf7-9c4b-e5851d620ffb" Category="Clockwork.Revit.Elements.Group.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <DSIronPythonNode.PythonNode guid="f72347c7-e09c-40b9-9f3c-64cb84e0f34c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="444" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+groups = UnwrapElement(IN[0])
+elementlist = list()
+TransactionManager.Instance.EnsureInTransaction(doc)
+for group in groups:
+	try:
+		ids = group.UngroupMembers()
+		ungrouped = list()
+		for id in ids:
+			ungrouped.append(group.Document.GetElement(id))
+		elementlist.append(ungrouped)
+	except:
+		elementlist.append(list())
+TransactionManager.Instance.TransactionTaskDone()
+
+OUT = elementlist</Script>
+    </DSIronPythonNode.PythonNode>
+    <Dynamo.Nodes.Function guid="d07ba3ce-ed97-4a0b-b186-f4031c60fcf4" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="175" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="818537c2-09c7-4bb4-868c-2e7a3743b744" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="group" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="7c740030-632e-4e2d-84aa-d7028e9b086d" type="Dynamo.Nodes.Output" nickname="Output" x="668" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="ungroupedElements" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="f72347c7-e09c-40b9-9f3c-64cb84e0f34c" start_index="0" end="7c740030-632e-4e2d-84aa-d7028e9b086d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d07ba3ce-ed97-4a0b-b186-f4031c60fcf4" start_index="0" end="f72347c7-e09c-40b9-9f3c-64cb84e0f34c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="818537c2-09c7-4bb4-868c-2e7a3743b744" start_index="0" end="d07ba3ce-ed97-4a0b-b186-f4031c60fcf4" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
+  </Cameras>
+</Workspace>

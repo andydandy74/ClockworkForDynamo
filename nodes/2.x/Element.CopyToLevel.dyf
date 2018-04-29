@@ -1,0 +1,121 @@
+<Workspace Version="0.9.0.3067" X="123.329130563798" Y="168.7726625" zoom="0.70823125" Name="Element.CopyToLevel" Description="Copies an element or a list of elements to a given level. Preserves the element's transform. PLEASE NOTE: This node only works for levels that have at least one view (e.g. floor plan) associated with them." ID="427c6688-85ad-4720-b2c7-eb8d7f03f53c" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+    <ClassMap partialName="Level" resolvedName="Revit.Elements.Level" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="b8acd8b8-b819-49ec-adf7-18cb5e189f3f" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1116.41881205331" y="4.25581541028916" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
+      <Script>import clr
+from System.Collections.Generic import *
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+source_view = UnwrapElement(IN[1])
+target_view = UnwrapElement(IN[2])
+
+ids = list()
+for item in items:
+	ids.append(item.Id)	
+itemlist = List[ElementId](ids)
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+newitems = ElementTransformUtils.CopyElements(source_view,itemlist,target_view, None, None)
+TransactionManager.Instance.TransactionTaskDone()
+
+elementlist = list()
+for item in newitems:
+	elementlist.append(doc.GetElement(item).ToDSType(False))
+
+OUT = elementlist</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Nodes.Function guid="218fc7f4-7f73-49b0-92cb-a08fcf8cf029" type="Dynamo.Nodes.Function" nickname="Level.Views" x="819.341020604421" y="70.3301736149716" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <PortInfo index="1" default="True" />
+      <ID value="b7449035-5047-4705-8515-127119e081e0" />
+      <Name value="Level.Views" />
+      <Description value="Returns all views associated with a given level" />
+      <Inputs>
+        <Input value="level" />
+        <Input value="toggleToRefresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="firstView" />
+        <Output value="allViews" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="584c3f62-85d2-4f86-a51b-6536933beda8" type="Dynamo.Nodes.Function" nickname="Element.Level" x="608.384243033633" y="67.9478358667462" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="23a94b80-4bd0-436f-a1b1-f77654b4428c" />
+      <Name value="Element.Level" />
+      <Description value="Gets an element's level" />
+      <Inputs>
+        <Input value="element" />
+      </Inputs>
+      <Outputs>
+        <Output value="level" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Function guid="d2be8baf-6f9e-43b5-9ae5-cc352657d1f8" type="Dynamo.Nodes.Function" nickname="Level.Views" x="832.520640436932" y="205.601512711295" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <PortInfo index="1" default="True" />
+      <ID value="b7449035-5047-4705-8515-127119e081e0" />
+      <Name value="Level.Views" />
+      <Description value="Returns all views associated with a given level" />
+      <Inputs>
+        <Input value="level" />
+        <Input value="toggleToRefresh" />
+      </Inputs>
+      <Outputs>
+        <Output value="firstView" />
+        <Output value="allViews" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.DSFunction guid="eef70203-1ebf-47cf-b3ae-0bb64e6ff802" type="Dynamo.Nodes.DSFunction" nickname="List.FirstItem" x="452.386743481707" y="67.7833698698646" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]" />
+    <Dynamo.Nodes.Function guid="faf076b2-b251-4f6a-b8bc-3ad007004f4b" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
+      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
+      <Name value="TurnIntoList" />
+      <Description value="Turns an element (or a nested list) into a flat list" />
+      <Inputs>
+        <Input value="unknownItem" />
+      </Inputs>
+      <Outputs>
+        <Output value="seq" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Symbol guid="fae2a323-73c2-46c7-b918-aabf7f77d7c4" type="Dynamo.Nodes.Symbol" nickname="Input" x="99" y="1" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="element" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output guid="48772a16-16ab-4e22-8550-8268948eaaeb" type="Dynamo.Nodes.Output" nickname="Output" x="1315.41881205331" y="4" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
+      <Symbol value="newElement" />
+    </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Symbol guid="9364cd9b-03d9-4bb9-b8ed-7cfd74c831a2" type="Dynamo.Nodes.Symbol" nickname="Input" x="623" y="207" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
+      <Symbol value="level : Level" />
+    </Dynamo.Nodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b8acd8b8-b819-49ec-adf7-18cb5e189f3f" start_index="0" end="48772a16-16ab-4e22-8550-8268948eaaeb" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="218fc7f4-7f73-49b0-92cb-a08fcf8cf029" start_index="0" end="b8acd8b8-b819-49ec-adf7-18cb5e189f3f" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="584c3f62-85d2-4f86-a51b-6536933beda8" start_index="0" end="218fc7f4-7f73-49b0-92cb-a08fcf8cf029" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d2be8baf-6f9e-43b5-9ae5-cc352657d1f8" start_index="0" end="b8acd8b8-b819-49ec-adf7-18cb5e189f3f" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="eef70203-1ebf-47cf-b3ae-0bb64e6ff802" start_index="0" end="584c3f62-85d2-4f86-a51b-6536933beda8" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="faf076b2-b251-4f6a-b8bc-3ad007004f4b" start_index="0" end="b8acd8b8-b819-49ec-adf7-18cb5e189f3f" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="faf076b2-b251-4f6a-b8bc-3ad007004f4b" start_index="0" end="eef70203-1ebf-47cf-b3ae-0bb64e6ff802" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fae2a323-73c2-46c7-b918-aabf7f77d7c4" start_index="0" end="faf076b2-b251-4f6a-b8bc-3ad007004f4b" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9364cd9b-03d9-4bb9-b8ed-7cfd74c831a2" start_index="0" end="d2be8baf-6f9e-43b5-9ae5-cc352657d1f8" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

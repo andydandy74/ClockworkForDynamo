@@ -1,0 +1,64 @@
+<Workspace Version="1.3.1.1736" X="103.115833438108" Y="331.994556645006" zoom="1.01581433251793" ScaleFactor="1" Name="View.DuplicateWithDetailing" Description="Duplicates a given view with detailing" ID="34ac4ca3-86ac-40f2-9ed1-2ea1e7e3b6c3" Category="Clockwork.Revit.Views.View.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="View" resolvedName="Revit.Elements.Views.View" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="426563f5-9c8e-4016-8c0c-a9f1debb81fb" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="205.996641803725" y="44.9201807864058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="view" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c6ad3ceb-20c6-4892-be23-446170905627" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="716.996641803725" y="73.9201807864058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="view" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="fe92e52c-d7a7-488e-8e9b-c298619a92c4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="492.996641803725" y="73.9201807864058" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+import Autodesk
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+def DuplicateView(view, name, doc):
+	try:
+		newViewId = view.Duplicate(Autodesk.Revit.DB.ViewDuplicateOption.WithDetailing)
+		newView = doc.GetElement(newViewId)
+		try: newView.Name = name
+		except: pass
+		return newView
+	except: return None
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list):
+	OUT = []
+	for view, name in zip(views, IN[1]):
+		if isinstance(name, list): OUT.append([DuplicateView(view, x, doc) for x in name])
+		else: OUT.append(DuplicateView(view, name, doc))
+else: 
+	if isinstance(IN[1], list): OUT = [DuplicateView(views, x, doc) for x in IN[1]]
+	else: OUT = DuplicateView(views, IN[1], doc)
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="82c4743f-2de3-46ae-b642-143e34781a32" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="205.996641803725" y="128.920180786406" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="name : string[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="426563f5-9c8e-4016-8c0c-a9f1debb81fb" start_index="0" end="fe92e52c-d7a7-488e-8e9b-c298619a92c4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="fe92e52c-d7a7-488e-8e9b-c298619a92c4" start_index="0" end="c6ad3ceb-20c6-4892-be23-446170905627" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="82c4743f-2de3-46ae-b642-143e34781a32" start_index="0" end="fe92e52c-d7a7-488e-8e9b-c298619a92c4" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

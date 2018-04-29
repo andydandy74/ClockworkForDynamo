@@ -1,0 +1,46 @@
+<Workspace Version="1.3.1.1736" X="41" Y="286.155411655874" zoom="1.18593894542091" ScaleFactor="1" Name="Wall.CreationMethod" Description="Retrieves the creation method of a given wall" ID="78585c2b-d4fd-4acd-96ac-7114dd286e20" Category="Clockwork.Revit.Elements.Wall.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Wall" resolvedName="Revit.Elements.Wall" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4d7090a5-55aa-4d07-aa91-3d027092bbd0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="284.804992199688" y="54.7433697347893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="wall" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2724754f-5a11-4d34-922f-0d3f831e9f6d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="671.804992199688" y="54.7433697347893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="creationMethod" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="52457bc3-37dc-4e77-84dc-2dd7e6a33a44" type="PythonNodeModels.PythonNode" nickname="Python Script" x="447.804992199688" y="54.7433697347893" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+def WallCreationMethod(wall):
+	typename = wall.GetType().Name
+	if typename == 'Wall': return 'Standard'
+	elif typename == 'FaceWall': return 'By Face'
+	elif typename == 'FamilyInstance': return 'In-Place'
+	else: return None
+
+walls = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [WallCreationMethod(x) for x in walls]
+else: OUT = WallCreationMethod(walls)</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="4d7090a5-55aa-4d07-aa91-3d027092bbd0" start_index="0" end="52457bc3-37dc-4e77-84dc-2dd7e6a33a44" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="52457bc3-37dc-4e77-84dc-2dd7e6a33a44" start_index="0" end="2724754f-5a11-4d34-922f-0d3f831e9f6d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>

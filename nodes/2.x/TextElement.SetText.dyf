@@ -1,0 +1,67 @@
+<Workspace Version="1.3.1.1736" X="263.297033441792" Y="538.998732377265" zoom="1.0051457061352" ScaleFactor="1" Name="TextElement.SetText" Description="Sets the text of a given text element. Unlike the OOTB node TextNote.SetText, this one works on ModelText as well." ID="1558d2b8-dbbe-41bd-bf31-86e43a386e71" Category="Clockwork.Revit.Elements.TextElement.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="1da84079-f5bd-46db-92fe-331f3856ffe8" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="430.646251047175" y="-157.063413721499" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="33a866fd-53e7-4d29-b752-0e046772155c" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="891.646251047175" y="-191.063413721499" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="13d6200c-40de-4ef1-92fc-0bdde1fa130a" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="430.646251047175" y="-73.0634137214987" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="text : string[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="00647e50-4ae1-49bd-846e-671a6f65e557" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="891.646251047175" y="-107.063413721499" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="success" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <PythonNodeModels.PythonNode guid="eec66f2b-34bd-4169-b2c3-4facdca53cc7" type="PythonNodeModels.PythonNode" nickname="Python Script" x="667.646251047175" y="-107.063413721499" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+def SetText(item, str):
+	if hasattr(item, "Text"):
+		item.Text = str
+		return True
+	else: return False
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): OUT = [SetText(x, y) for x, y in zip(items, IN[1])]
+	else: OUT = [SetText(x, IN[1]) for x in items]
+else:
+	if isinstance(IN[1], list): OUT = False
+	else: OUT = SetText(items, IN[1])
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="1da84079-f5bd-46db-92fe-331f3856ffe8" start_index="0" end="eec66f2b-34bd-4169-b2c3-4facdca53cc7" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1da84079-f5bd-46db-92fe-331f3856ffe8" start_index="0" end="33a866fd-53e7-4d29-b752-0e046772155c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="13d6200c-40de-4ef1-92fc-0bdde1fa130a" start_index="0" end="eec66f2b-34bd-4169-b2c3-4facdca53cc7" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="eec66f2b-34bd-4169-b2c3-4facdca53cc7" start_index="0" end="00647e50-4ae1-49bd-846e-671a6f65e557" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
