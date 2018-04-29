@@ -1,72 +1,265 @@
-<Workspace Version="0.8.2.2392" X="30" Y="244.565605095541" zoom="0.81656050955414" Name="Assembly.RemoveMembers" Description="Removes any given elements to a given assembly." ID="d1b052e9-5d34-4a15-ab75-e9c5122fcf81" Category="Clockwork.Revit.Elements.Actions">
-  <NamespaceResolutionMap>
-    <ClassMap partialName="FamilyInstance" resolvedName="Revit.Elements.FamilyInstance" assemblyName="RevitNodes.dll" />
-  </NamespaceResolutionMap>
-  <Elements>
-    <DSIronPythonNode.PythonNode guid="977ec454-8f30-4337-9bc3-c46956b75289" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="469" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="2">
-      <Script>import clr
-from System.Collections.Generic import *
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.GeometryConversion)
-
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
-assembly = UnwrapElement(IN[0])
-element_array = UnwrapElement(IN[1])
-
-# add items to assembly
-TransactionManager.Instance.EnsureInTransaction(doc)
-# create a Revit-compatible list of IDs
-ids = list()
-for elem in element_array:
-	ids.append(elem.Id)	
-idlist = List[ElementId](ids)
-try:
-	assembly.RemoveMemberIds(idlist)
-	OUT = assembly
-except:
-	OUT = None
-TransactionManager.Instance.TransactionTaskDone()</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Function guid="97824008-330b-448d-a0b8-fe3b0273d71a" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="200" y="55" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Symbol guid="104d4bcb-2888-49ba-86a8-bf1978aba92c" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="assembly" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="aa2a01c5-a8d5-4251-929b-7676ecb44078" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="84" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="elements" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="8f7f6567-a412-46f2-aef0-60d381fc521b" type="Dynamo.Nodes.Output" nickname="Output" x="693" y="29" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <Symbol value="assembly" />
-    </Dynamo.Nodes.Output>
-  </Elements>
-  <Connectors>
-    <Dynamo.Models.ConnectorModel start="977ec454-8f30-4337-9bc3-c46956b75289" start_index="0" end="8f7f6567-a412-46f2-aef0-60d381fc521b" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="97824008-330b-448d-a0b8-fe3b0273d71a" start_index="0" end="977ec454-8f30-4337-9bc3-c46956b75289" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="104d4bcb-2888-49ba-86a8-bf1978aba92c" start_index="0" end="977ec454-8f30-4337-9bc3-c46956b75289" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="aa2a01c5-a8d5-4251-929b-7676ecb44078" start_index="0" end="97824008-330b-448d-a0b8-fe3b0273d71a" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "d1b052e9-5d34-4a15-ab75-e9c5122fcf81",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Actions",
+  "Description": "Removes any given elements to a given assembly.",
+  "Name": "Assembly.RemoveMembers",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "FamilyInstance": {
+        "Key": "Revit.Elements.FamilyInstance",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nassembly = UnwrapElement(IN[0])\r\nelement_array = UnwrapElement(IN[1])\r\n\r\n# add items to assembly\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n# create a Revit-compatible list of IDs\r\nids = list()\r\nfor elem in element_array:\r\n\tids.append(elem.Id)\t\r\nidlist = List[ElementId](ids)\r\ntry:\r\n\tassembly.RemoveMemberIds(idlist)\r\n\tOUT = assembly\r\nexcept:\r\n\tOUT = None\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "VariableInputPorts": true,
+      "Id": "977ec4548f3043379bc3c46956b75289",
+      "Inputs": [
+        {
+          "Id": "eb88e728b8d1478e9615a28d2e06c4bc",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4b5ce8120a2f4a858e6d479d0161e254",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a84ae0e557bc44a294cd4dc958fdaa98",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "97824008330b448da0b8fe3b0273d71a",
+      "Inputs": [
+        {
+          "Id": "07cbf5c3719d44c5957824cf39044b03",
+          "Name": "unknownItem",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e1213aa19faf4e83bb13458eb152333f",
+          "Name": "seq",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns an element (or a nested list) into a flat list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "assembly",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "104d4bcb288849ba86a8bf1978aba92c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "07c684e50fde44f29af39289193de837",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "elements",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "aa2a01c5a8d54251929b7676ecb44078",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "68b99c5f64e94a95bbfed416de8f2a6a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "assembly",
+      "Id": "8f7f6567a41246f2aef060d381fc521b",
+      "Inputs": [
+        {
+          "Id": "cb78aae656424e8ba69c5e490af482c2",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "a84ae0e557bc44a294cd4dc958fdaa98",
+      "End": "cb78aae656424e8ba69c5e490af482c2",
+      "Id": "8371a3e0cec84df289491aa0847f78fc"
+    },
+    {
+      "Start": "e1213aa19faf4e83bb13458eb152333f",
+      "End": "4b5ce8120a2f4a858e6d479d0161e254",
+      "Id": "88f4632dd03d442bbe3822375decd701"
+    },
+    {
+      "Start": "07c684e50fde44f29af39289193de837",
+      "End": "eb88e728b8d1478e9615a28d2e06c4bc",
+      "Id": "4984a9401d4b4e2f8e1a4e4e4b71db73"
+    },
+    {
+      "Start": "68b99c5f64e94a95bbfed416de8f2a6a",
+      "End": "07cbf5c3719d44c5957824cf39044b03",
+      "Id": "f509c495d66e4ba1bab7831843da1f0f"
+    }
+  ],
+  "Dependencies": [
+    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "977ec4548f3043379bc3c46956b75289",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 469.0,
+        "Y": 29.0
+      },
+      {
+        "Id": "97824008330b448da0b8fe3b0273d71a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "TurnIntoList",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 200.0,
+        "Y": 55.0
+      },
+      {
+        "Id": "104d4bcb288849ba86a8bf1978aba92c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "aa2a01c5a8d54251929b7676ecb44078",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 84.0
+      },
+      {
+        "Id": "8f7f6567a41246f2aef060d381fc521b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 693.0,
+        "Y": 29.0
+      }
+    ],
+    "Annotations": [],
+    "X": 30.0,
+    "Y": 244.565605095541,
+    "Zoom": 0.81656050955414
+  }
+}

@@ -1,118 +1,934 @@
-<Workspace Version="1.3.0.875" X="381.284792584592" Y="4.35607907555209" zoom="0.743275269308035" ScaleFactor="1" Name="Surface.FilterByOrientation" Description="Sorts surfaces in three lists based on their orientation (vertical, horizontal up &amp; horizontal down) and also returns three corresponding lists of booleans." ID="3325a597-4c74-4292-9152-66b7177b27f1" Category="Clockwork.Geometry.Surfaces.Actions">
-  <NamespaceResolutionMap>
-    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
-    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
-    <ClassMap partialName="Surface" resolvedName="Autodesk.DesignScript.Geometry.Surface" assemblyName="ProtoGeometry.dll" />
-  </NamespaceResolutionMap>
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="20c6f45c-db12-45ea-bfc1-b5e5ea9047c9" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-430.053896085667" y="581.473660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="surfaces : Surface[]" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="db73eaf3-90a7-44eb-b415-50c997d0b728" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1335.94610391433" y="456.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="vertical" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1756e85f-bc0b-469e-ac10-68ad07c55616" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Math.AlmostZero" x="167.946103914333" y="474.473660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <ID value="7203b34a-da51-4672-8993-3591ebf9537d" />
-      <Name value="Math.AlmostZero" />
-      <Description value="Returns a feasable computational tolerance to zero (1.0e-9 or a billionth of 1) for use in calculations. More background info: https://github.com/ikeough/Dynamo/issues/879" />
-      <Inputs />
-      <Outputs>
-        <Output value="1.0e-9" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4166aea5-8b6b-4c47-b682-b4c9c05a111d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Vector.ZAxisNegative" x="167.946103914333" y="787.473660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <ID value="4cb9a1f2-5c84-47cf-b976-28b92bd7f882" />
-      <Name value="Vector.ZAxisNegative" />
-      <Description value="Returns an XYZ of 0,0,-1" />
-      <Inputs />
-      <Outputs>
-        <Output value="0,0,-1" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="4a88381e-db5e-4e0d-9dd2-2db8e45d3649" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1335.94610391433" y="373.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="isVertical" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="53e8c6a7-9e23-4bec-b50c-6133f28c0bf4" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1335.94610391433" y="623.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="horizontalUp" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="0a296e00-d861-4844-b011-a8fb08067cc9" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1335.94610391433" y="539.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="isHorizontalUp" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="6115c652-68f2-4962-aaec-2a3467fe4a5e" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1335.94610391433" y="789.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="horizontalDown" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="99a5d194-d9f5-4881-b79c-f6e2ea56e816" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1335.94610391433" y="706.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="isHorizontalDown" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5b54bfee-7a02-4fe9-89c1-1b9fa5194151" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.Z" x="167.946103914333" y="364.900326973125" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Z">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="27c0793f-cf0a-4b56-85d8-6ea1f91dbaea" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.ZAxis" x="167.946103914333" y="620.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.ZAxis" />
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3d641f01-94b2-4612-b2de-f0424fe18bc3" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Surface.NormalAtParameter" x="-135.053896085667" y="594.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Surface.NormalAtParameter@double,double">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="True" />
-      <PortInfo index="2" default="True" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="41f08090-332e-4849-966a-1e3d5dd6d173" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-430.053896085667" y="666.186993639792" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="0.5;" ShouldFocus="false" />
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c7beb5f6-2b3b-429f-baf5-6a660ccc73cc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.IsAlmostEqualTo" x="466.946103914333" y="594.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.IsAlmostEqualTo@Autodesk.DesignScript.Geometry.Vector">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="6f941f0a-3ed8-42f5-b460-97daf4c13968" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.IsAlmostEqualTo" x="466.946103914333" y="761.473660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.IsAlmostEqualTo@Autodesk.DesignScript.Geometry.Vector">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e4e9a36c-7351-43f5-aa99-6b8b5449c957" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="466.946103914333" y="415.113660306459" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="// Is vertical?&#xA;z &gt;= (0 - almostzero) &amp;&amp; z &lt;= (0 + almostzero);" ShouldFocus="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a3b7d7f3-a789-4184-8983-c77fbcca511f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="1064.94610391433" y="456.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3daefe84-5050-4d37-833f-425dbb1d4c7c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="1064.94610391433" y="623.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="38169b33-2045-45d3-aeeb-565ff8fe16b1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FilterByBoolMask" x="1064.94610391433" y="789.973660306459" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FilterByBoolMask@var[]..[],var[]..[]">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="20c6f45c-db12-45ea-bfc1-b5e5ea9047c9" start_index="0" end="3d641f01-94b2-4612-b2de-f0424fe18bc3" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="20c6f45c-db12-45ea-bfc1-b5e5ea9047c9" start_index="0" end="a3b7d7f3-a789-4184-8983-c77fbcca511f" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="20c6f45c-db12-45ea-bfc1-b5e5ea9047c9" start_index="0" end="3daefe84-5050-4d37-833f-425dbb1d4c7c" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="20c6f45c-db12-45ea-bfc1-b5e5ea9047c9" start_index="0" end="38169b33-2045-45d3-aeeb-565ff8fe16b1" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="1756e85f-bc0b-469e-ac10-68ad07c55616" start_index="0" end="e4e9a36c-7351-43f5-aa99-6b8b5449c957" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="4166aea5-8b6b-4c47-b682-b4c9c05a111d" start_index="0" end="6f941f0a-3ed8-42f5-b460-97daf4c13968" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5b54bfee-7a02-4fe9-89c1-1b9fa5194151" start_index="0" end="e4e9a36c-7351-43f5-aa99-6b8b5449c957" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="27c0793f-cf0a-4b56-85d8-6ea1f91dbaea" start_index="0" end="c7beb5f6-2b3b-429f-baf5-6a660ccc73cc" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3d641f01-94b2-4612-b2de-f0424fe18bc3" start_index="0" end="5b54bfee-7a02-4fe9-89c1-1b9fa5194151" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3d641f01-94b2-4612-b2de-f0424fe18bc3" start_index="0" end="c7beb5f6-2b3b-429f-baf5-6a660ccc73cc" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3d641f01-94b2-4612-b2de-f0424fe18bc3" start_index="0" end="6f941f0a-3ed8-42f5-b460-97daf4c13968" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="41f08090-332e-4849-966a-1e3d5dd6d173" start_index="0" end="3d641f01-94b2-4612-b2de-f0424fe18bc3" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="41f08090-332e-4849-966a-1e3d5dd6d173" start_index="0" end="3d641f01-94b2-4612-b2de-f0424fe18bc3" end_index="2" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c7beb5f6-2b3b-429f-baf5-6a660ccc73cc" start_index="0" end="3daefe84-5050-4d37-833f-425dbb1d4c7c" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c7beb5f6-2b3b-429f-baf5-6a660ccc73cc" start_index="0" end="0a296e00-d861-4844-b011-a8fb08067cc9" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="6f941f0a-3ed8-42f5-b460-97daf4c13968" start_index="0" end="38169b33-2045-45d3-aeeb-565ff8fe16b1" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="6f941f0a-3ed8-42f5-b460-97daf4c13968" start_index="0" end="99a5d194-d9f5-4881-b79c-f6e2ea56e816" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="e4e9a36c-7351-43f5-aa99-6b8b5449c957" start_index="0" end="a3b7d7f3-a789-4184-8983-c77fbcca511f" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="e4e9a36c-7351-43f5-aa99-6b8b5449c957" start_index="0" end="4a88381e-db5e-4e0d-9dd2-2db8e45d3649" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="a3b7d7f3-a789-4184-8983-c77fbcca511f" start_index="0" end="db73eaf3-90a7-44eb-b415-50c997d0b728" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3daefe84-5050-4d37-833f-425dbb1d4c7c" start_index="0" end="53e8c6a7-9e23-4bec-b50c-6133f28c0bf4" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="38169b33-2045-45d3-aeeb-565ff8fe16b1" start_index="0" end="6115c652-68f2-4962-aaec-2a3467fe4a5e" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "3325a597-4c74-4292-9152-66b7177b27f1",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Geometry.Surfaces.Actions",
+  "Description": "Sorts surfaces in three lists based on their orientation (vertical, horizontal up & horizontal down) and also returns three corresponding lists of booleans.",
+  "Name": "Surface.FilterByOrientation",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Surface": {
+        "Key": "Autodesk.DesignScript.Geometry.Surface",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "surfaces",
+        "TypeName": "Autodesk.DesignScript.Geometry.Surface",
+        "TypeRank": 1,
+        "DefaultValue": null
+      },
+      "Id": "20c6f45cdb1245eabfc1b5e5ea9047c9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8f023eff8d9d4acfb51d930c0f2712d7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "vertical",
+      "Id": "db73eaf390a744ebb41550c997d0b728",
+      "Inputs": [
+        {
+          "Id": "d185d2257cd54104929305444076509c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "7203b34a-da51-4672-8993-3591ebf9537d",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "1756e85fbc0b469eac1068ad07c55616",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "174e7292df874c42a1ed476087adf2b0",
+          "Name": "1.0e-9",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns a feasable computational tolerance to zero (1.0e-9 or a billionth of 1) for use in calculations. More background info: https://github.com/ikeough/Dynamo/issues/879"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "4cb9a1f2-5c84-47cf-b976-28b92bd7f882",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "4166aea58b6b4c47b682b4c9c05a111d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "df60f1b8c50c4277a1a2ba8f6ccb33be",
+          "Name": "0,0,-1",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns an XYZ of 0,0,-1"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isVertical",
+      "Id": "4a88381edb5e4e0d9dd22db8e45d3649",
+      "Inputs": [
+        {
+          "Id": "265c57d1ce9a41e7934c1d582890834f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "horizontalUp",
+      "Id": "53e8c6a79e234becb50c6133f28c0bf4",
+      "Inputs": [
+        {
+          "Id": "9552d26f4d234052aa83056fdb92d240",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isHorizontalUp",
+      "Id": "0a296e00d8614844b011a8fb08067cc9",
+      "Inputs": [
+        {
+          "Id": "2b90812629b34affb3e7f6bf8a818643",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "horizontalDown",
+      "Id": "6115c65268f24962aaec2a3467fe4a5e",
+      "Inputs": [
+        {
+          "Id": "940dc4174cfd4f86967c2cd7191e5c08",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isHorizontalDown",
+      "Id": "99a5d194d9f54881b79cf6e2ea56e816",
+      "Inputs": [
+        {
+          "Id": "8419b0b084784e48a9c978c49c5dcc39",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.Z",
+      "Id": "5b54bfee7a024fe989c11b9fa5194151",
+      "Inputs": [
+        {
+          "Id": "19fa7cbaf68d4cd9b4ec2ea45aa18722",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "23144580307d42708a4dfcfb394857b1",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the Z component of a Vector\n\nVector.Z: double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.ZAxis",
+      "Id": "27c0793fcf0a4b5685d86ea1f91dbaea",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "09b17daaa6ac4fabb2443c75e02df1db",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the canonical Z axis Vector (0,0,1)\n\nVector.ZAxis ( ): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Surface.NormalAtParameter@double,double",
+      "Id": "3d641f0194b24612b2def0424fe18bc3",
+      "Inputs": [
+        {
+          "Id": "e57d1f5abca24e5795b0950bbf79a6d4",
+          "Name": "surface",
+          "Description": "Autodesk.DesignScript.Geometry.Surface",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9e80a11532384bbfbdbbb1a8c62a1a77",
+          "Name": "u",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dc58c19589a64fc2a1342c117901b6bf",
+          "Name": "v",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c912a4a8c52e4c25b5852a12922e497b",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Return the normal Vector at specified U and V parameters.\n\nSurface.NormalAtParameter (u: double = 0, v: double = 0): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "0.5;",
+      "Id": "41f08090332e4849966a1e3d5dd6d173",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5cdc90f9db394b56a9aaad2bb7e72b7b",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.IsAlmostEqualTo@Autodesk.DesignScript.Geometry.Vector",
+      "Id": "c7beb5f62b3b429fbaf56a660ccc73cc",
+      "Inputs": [
+        {
+          "Id": "01d374527c9446c98e0b70467138c750",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "39f3d259c82b4dc099e0145da9e10336",
+          "Name": "other",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d838bcd67d9f45dc8f71f3c34b60715e",
+          "Name": "bool",
+          "Description": "bool",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Determine whether two vectors ae almost equal\n\nVector.IsAlmostEqualTo (other: Vector): bool"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.IsAlmostEqualTo@Autodesk.DesignScript.Geometry.Vector",
+      "Id": "6f941f0a3ed842f5b46097daf4c13968",
+      "Inputs": [
+        {
+          "Id": "417650f989144f4faf15d8a226860afb",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0ebb69993d48461984114631da942209",
+          "Name": "other",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "89a3047d84dd409da41f89e4b4feda18",
+          "Name": "bool",
+          "Description": "bool",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Determine whether two vectors ae almost equal\n\nVector.IsAlmostEqualTo (other: Vector): bool"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "// Is vertical?\nz >= (0 - almostzero) && z <= (0 + almostzero);",
+      "Id": "e4e9a36c735143f5aa996b8b5449c957",
+      "Inputs": [
+        {
+          "Id": "0c31717005af4986956e01e36fd168c7",
+          "Name": "z",
+          "Description": "z",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dc2a494cc09b4de680ef2b64d1b8b00f",
+          "Name": "almostzero",
+          "Description": "almostzero",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c08245312af047eebff466f2344f5088",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "a3b7d7f3a78941848983c77fbcca511f",
+      "Inputs": [
+        {
+          "Id": "d7ed9306c7854f2099491ff54947c72b",
+          "Name": "list",
+          "Description": "List to filter.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "36df0f9486444a82a4b1acc85e01502d",
+          "Name": "mask",
+          "Description": "List of booleans representing a mask.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a3246bda74e44540a2e9e691002b8fa0",
+          "Name": "in",
+          "Description": "Items whose mask index is true.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "123578638105403983a4d454e3226d23",
+          "Name": "out",
+          "Description": "Items whose mask index is false.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "3daefe8450504d37833f425dbb1d4c7c",
+      "Inputs": [
+        {
+          "Id": "2d9f98ef216d4c01a36f08ddc19b4a92",
+          "Name": "list",
+          "Description": "List to filter.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5e36c597b1da4bf7b4d73f8ed5e3544c",
+          "Name": "mask",
+          "Description": "List of booleans representing a mask.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "725400d35a27477caf1e5cfc10e5013a",
+          "Name": "in",
+          "Description": "Items whose mask index is true.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ab3d42d9204d4415ad7fa43a8d4435bc",
+          "Name": "out",
+          "Description": "Items whose mask index is false.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FilterByBoolMask@var[]..[],var[]..[]",
+      "Id": "38169b33204545d3aeeb565ff8fe16b1",
+      "Inputs": [
+        {
+          "Id": "201c65c451b3421cb1243162e85a5cac",
+          "Name": "list",
+          "Description": "List to filter.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1668abfb8d5948e7a8467128a070c35a",
+          "Name": "mask",
+          "Description": "List of booleans representing a mask.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "73dbcafae4ef4a8b95a504b2f53efaa4",
+          "Name": "in",
+          "Description": "Items whose mask index is true.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e5b313922b034e53849803dcc8c76feb",
+          "Name": "out",
+          "Description": "Items whose mask index is false.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Filters a sequence by looking up corresponding indices in a separate list of booleans.\n\nList.FilterByBoolMask (list: var[]..[], mask: var[]..[]): var[]..[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8f023eff8d9d4acfb51d930c0f2712d7",
+      "End": "e57d1f5abca24e5795b0950bbf79a6d4",
+      "Id": "ea37107bf38442ad96a294b86ade93d9"
+    },
+    {
+      "Start": "8f023eff8d9d4acfb51d930c0f2712d7",
+      "End": "d7ed9306c7854f2099491ff54947c72b",
+      "Id": "717409e48c484209a273aa446ef6ad65"
+    },
+    {
+      "Start": "8f023eff8d9d4acfb51d930c0f2712d7",
+      "End": "2d9f98ef216d4c01a36f08ddc19b4a92",
+      "Id": "dbd9bc40716f4a2894733e9381f1e8cf"
+    },
+    {
+      "Start": "8f023eff8d9d4acfb51d930c0f2712d7",
+      "End": "201c65c451b3421cb1243162e85a5cac",
+      "Id": "b61c86c1966845688dd6570eaccb54e8"
+    },
+    {
+      "Start": "174e7292df874c42a1ed476087adf2b0",
+      "End": "dc2a494cc09b4de680ef2b64d1b8b00f",
+      "Id": "0bc4a7ddd17744c281e27fe351097ed1"
+    },
+    {
+      "Start": "df60f1b8c50c4277a1a2ba8f6ccb33be",
+      "End": "0ebb69993d48461984114631da942209",
+      "Id": "119213dca70f4850b92bc4b882eeb3ad"
+    },
+    {
+      "Start": "23144580307d42708a4dfcfb394857b1",
+      "End": "0c31717005af4986956e01e36fd168c7",
+      "Id": "9340e4b488014462b479ab33fd4e9450"
+    },
+    {
+      "Start": "09b17daaa6ac4fabb2443c75e02df1db",
+      "End": "39f3d259c82b4dc099e0145da9e10336",
+      "Id": "912d48c9dae4429b8123044fe569ca82"
+    },
+    {
+      "Start": "c912a4a8c52e4c25b5852a12922e497b",
+      "End": "19fa7cbaf68d4cd9b4ec2ea45aa18722",
+      "Id": "be9f49403c394d42aa6b21e6f2d71cb2"
+    },
+    {
+      "Start": "c912a4a8c52e4c25b5852a12922e497b",
+      "End": "01d374527c9446c98e0b70467138c750",
+      "Id": "5f1609250e4947a3826616aaa5fbcc2d"
+    },
+    {
+      "Start": "c912a4a8c52e4c25b5852a12922e497b",
+      "End": "417650f989144f4faf15d8a226860afb",
+      "Id": "ebff3d0199c84a0392ceb341287bb81d"
+    },
+    {
+      "Start": "5cdc90f9db394b56a9aaad2bb7e72b7b",
+      "End": "9e80a11532384bbfbdbbb1a8c62a1a77",
+      "Id": "906a51dd5e3b4e0892c8d24a083b5d05"
+    },
+    {
+      "Start": "5cdc90f9db394b56a9aaad2bb7e72b7b",
+      "End": "dc58c19589a64fc2a1342c117901b6bf",
+      "Id": "3fabe2b85d3d42b6ad33e7ee928c2e0a"
+    },
+    {
+      "Start": "d838bcd67d9f45dc8f71f3c34b60715e",
+      "End": "5e36c597b1da4bf7b4d73f8ed5e3544c",
+      "Id": "cb1b2ecba3ec40e4be6049d103857eae"
+    },
+    {
+      "Start": "d838bcd67d9f45dc8f71f3c34b60715e",
+      "End": "2b90812629b34affb3e7f6bf8a818643",
+      "Id": "eca49e64c906489c9ca28b517f9bc76e"
+    },
+    {
+      "Start": "89a3047d84dd409da41f89e4b4feda18",
+      "End": "1668abfb8d5948e7a8467128a070c35a",
+      "Id": "ad8891e1134249a2899efef6729056a1"
+    },
+    {
+      "Start": "89a3047d84dd409da41f89e4b4feda18",
+      "End": "8419b0b084784e48a9c978c49c5dcc39",
+      "Id": "d31f52268259426893bea91b00ba1386"
+    },
+    {
+      "Start": "c08245312af047eebff466f2344f5088",
+      "End": "36df0f9486444a82a4b1acc85e01502d",
+      "Id": "c12f49bb204240ddbf1ea107616185fa"
+    },
+    {
+      "Start": "c08245312af047eebff466f2344f5088",
+      "End": "265c57d1ce9a41e7934c1d582890834f",
+      "Id": "dc9a085d2e32461aaea4b1b6bd8553ca"
+    },
+    {
+      "Start": "a3246bda74e44540a2e9e691002b8fa0",
+      "End": "d185d2257cd54104929305444076509c",
+      "Id": "dbc546dff04243ffb58c20dea33fc440"
+    },
+    {
+      "Start": "725400d35a27477caf1e5cfc10e5013a",
+      "End": "9552d26f4d234052aa83056fdb92d240",
+      "Id": "75084a52b5c947a295ee3fdcf933905c"
+    },
+    {
+      "Start": "73dbcafae4ef4a8b95a504b2f53efaa4",
+      "End": "940dc4174cfd4f86967c2cd7191e5c08",
+      "Id": "3a525f66c15644cca0604e2b1769ba30"
+    }
+  ],
+  "Dependencies": [
+    "7203b34a-da51-4672-8993-3591ebf9537d",
+    "4cb9a1f2-5c84-47cf-b976-28b92bd7f882"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "20c6f45cdb1245eabfc1b5e5ea9047c9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -430.053896085667,
+        "Y": 581.473660306459
+      },
+      {
+        "Id": "db73eaf390a744ebb41550c997d0b728",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1335.94610391433,
+        "Y": 456.973660306459
+      },
+      {
+        "Id": "1756e85fbc0b469eac1068ad07c55616",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Math.AlmostZero",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 167.946103914333,
+        "Y": 474.473660306459
+      },
+      {
+        "Id": "4166aea58b6b4c47b682b4c9c05a111d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.ZAxisNegative",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 167.946103914333,
+        "Y": 787.473660306459
+      },
+      {
+        "Id": "4a88381edb5e4e0d9dd22db8e45d3649",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1335.94610391433,
+        "Y": 373.973660306459
+      },
+      {
+        "Id": "53e8c6a79e234becb50c6133f28c0bf4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1335.94610391433,
+        "Y": 623.973660306459
+      },
+      {
+        "Id": "0a296e00d8614844b011a8fb08067cc9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1335.94610391433,
+        "Y": 539.973660306459
+      },
+      {
+        "Id": "6115c65268f24962aaec2a3467fe4a5e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1335.94610391433,
+        "Y": 789.973660306459
+      },
+      {
+        "Id": "99a5d194d9f54881b79cf6e2ea56e816",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1335.94610391433,
+        "Y": 706.973660306459
+      },
+      {
+        "Id": "5b54bfee7a024fe989c11b9fa5194151",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.Z",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 167.946103914333,
+        "Y": 364.900326973125
+      },
+      {
+        "Id": "27c0793fcf0a4b5685d86ea1f91dbaea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.ZAxis",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 167.946103914333,
+        "Y": 620.973660306459
+      },
+      {
+        "Id": "3d641f0194b24612b2def0424fe18bc3",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Surface.NormalAtParameter",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -135.053896085667,
+        "Y": 594.973660306459
+      },
+      {
+        "Id": "41f08090332e4849966a1e3d5dd6d173",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -430.053896085667,
+        "Y": 666.186993639792
+      },
+      {
+        "Id": "c7beb5f62b3b429fbaf56a660ccc73cc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.IsAlmostEqualTo",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 466.946103914333,
+        "Y": 594.973660306459
+      },
+      {
+        "Id": "6f941f0a3ed842f5b46097daf4c13968",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.IsAlmostEqualTo",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 466.946103914333,
+        "Y": 761.473660306459
+      },
+      {
+        "Id": "e4e9a36c735143f5aa996b8b5449c957",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 466.946103914333,
+        "Y": 415.113660306459
+      },
+      {
+        "Id": "a3b7d7f3a78941848983c77fbcca511f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.FilterByBoolMask",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1064.94610391433,
+        "Y": 456.973660306459
+      },
+      {
+        "Id": "3daefe8450504d37833f425dbb1d4c7c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.FilterByBoolMask",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1064.94610391433,
+        "Y": 623.973660306459
+      },
+      {
+        "Id": "38169b33204545d3aeeb565ff8fe16b1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.FilterByBoolMask",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1064.94610391433,
+        "Y": 789.973660306459
+      }
+    ],
+    "Annotations": [],
+    "X": 381.284792584592,
+    "Y": 4.35607907555209,
+    "Zoom": 0.743275269308035
+  }
+}

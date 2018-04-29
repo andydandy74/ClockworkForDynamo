@@ -1,114 +1,544 @@
-<Workspace Version="1.3.1.1736" X="-66.6827038338437" Y="181.553138354889" zoom="0.64920515613941" ScaleFactor="1" Name="DividedSurface.EvaluateGridNodes" Description="Returns UV and XYZ coordinates as well as surface normals for all grid nodes of a given divided surface. Also returns the underlying face." ID="5238a365-de30-43a9-bd8a-b5ebd79e2fe6" Category="Clockwork.Revit.Elements.Query">
-  <NamespaceResolutionMap />
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="ec43968a-e4a4-477f-ad44-885bf4705f5f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="114.673755244749" y="108.333988344988" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="dividedSurface" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="143b3a89-6e2b-4d8d-9199-5c28819de919" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1227.591561012" y="256.618022773231" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="UVs" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="59b26563-aac4-45dc-9104-06a04e7ae61f" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="752.381712820541" y="57.8809869463882" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="points" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="0828d98b-883e-45e2-8d5b-e7d423862578" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="752.381712820541" y="-25.1190130536118" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="normals" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="8ecf4aae-6b13-455d-b466-50671b7dfcb0" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="752.381712820541" y="141.880986946388" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="surface" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d6e37e42-1fba-4ff6-be85-1dbe3c090c15" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-91.9703588143526" y="191.151024440977" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="includeOverhangingNodes : bool = false" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="f5a56a53-4479-4d60-a360-ba60e5a33006" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="520" y="136.091666666667" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];&#xA;seq[3];" ShouldFocus="false">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
-    <PythonNodeModels.PythonNode guid="1604fdce-df3c-4792-b63b-8f0c9ce84e9c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="323.301430049786" y="131.873333333333" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
-clr.ImportExtensions(Revit.GeometryConversion)
-
-ds = UnwrapElement(IN[0])
-overhanging = IN[1]
-uvlist = list()
-uvnormals = list()
-uvxyzs = list()
-
-face = ds.Host.GetGeometryObjectFromReference(ds.HostReference)
-gn = GridNode()
-if overhanging == True:
-	i = 0
-	j = 1
-else:
-	i = 1
-	j = 3
-u = i
-while (u &lt; (ds.NumberOfUGridlines-i)):
-	gn.UIndex = u
-	v = i
-	vlist = list()
-	vnormals = list()
-	vxyzs = list()
-	while (v &lt; (ds.NumberOfVGridlines-i)):
-		gn.VIndex = v
-		uv = ds.GetGridNodeUV(gn)
- 		vlist.append(uv)
- 		vnormals.append(face.ComputeNormal(uv).ToVector())
- 		vxyzs.append(face.Evaluate(uv).ToPoint())
- 		v += 1
- 	uvlist.append(vlist)
- 	uvnormals.append(vnormals)
- 	uvxyzs.append(vxyzs)
- 	u += 1
-OUT = (uvnormals,uvxyzs,face.ToProtoType(),uvlist)</Script>
-    </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="01e19d6a-59fd-4c53-b5db-bc9830fc6d6d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="RevitUV.ToDynamoUV" x="752.83802743675" y="231.461982961396" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="5b7a7da0-f3cb-4c81-9245-0277d1d81cd9" />
-      <Name value="RevitUV.ToDynamoUV" />
-      <Description value="Converts Revit UV coordinates to Dynamo UV coordinates" />
-      <Inputs>
-        <Input value="RevitUV" />
-      </Inputs>
-      <Outputs>
-        <Output value="DynamoUV" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5174bd08-8e07-4bf3-a4e5-5a9846372e3a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Chop" x="990.687827997543" y="255.496847624033" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.Chop@var[]..[],int[]">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="a07a44a0-a6fd-477e-a572-7ae2661529e1" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.Count" x="762.618789935761" y="316.514011325637" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.Count@var[]..[]">
-      <PortInfo index="0" default="False" useLevels="True" level="2" shouldKeepListStructure="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="ec43968a-e4a4-477f-ad44-885bf4705f5f" start_index="0" end="1604fdce-df3c-4792-b63b-8f0c9ce84e9c" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="d6e37e42-1fba-4ff6-be85-1dbe3c090c15" start_index="0" end="1604fdce-df3c-4792-b63b-8f0c9ce84e9c" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f5a56a53-4479-4d60-a360-ba60e5a33006" start_index="0" end="0828d98b-883e-45e2-8d5b-e7d423862578" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f5a56a53-4479-4d60-a360-ba60e5a33006" start_index="1" end="59b26563-aac4-45dc-9104-06a04e7ae61f" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f5a56a53-4479-4d60-a360-ba60e5a33006" start_index="2" end="8ecf4aae-6b13-455d-b466-50671b7dfcb0" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f5a56a53-4479-4d60-a360-ba60e5a33006" start_index="3" end="01e19d6a-59fd-4c53-b5db-bc9830fc6d6d" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f5a56a53-4479-4d60-a360-ba60e5a33006" start_index="3" end="a07a44a0-a6fd-477e-a572-7ae2661529e1" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="1604fdce-df3c-4792-b63b-8f0c9ce84e9c" start_index="0" end="f5a56a53-4479-4d60-a360-ba60e5a33006" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="01e19d6a-59fd-4c53-b5db-bc9830fc6d6d" start_index="0" end="5174bd08-8e07-4bf3-a4e5-5a9846372e3a" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5174bd08-8e07-4bf3-a4e5-5a9846372e3a" start_index="0" end="143b3a89-6e2b-4d8d-9199-5c28819de919" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="a07a44a0-a6fd-477e-a572-7ae2661529e1" start_index="0" end="5174bd08-8e07-4bf3-a4e5-5a9846372e3a" end_index="1" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "5238a365-de30-43a9-bd8a-b5ebd79e2fe6",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns UV and XYZ coordinates as well as surface normals for all grid nodes of a given divided surface. Also returns the underlying face.",
+  "Name": "DividedSurface.EvaluateGridNodes",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "dividedSurface",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "ec43968ae4a4477fad44885bf4705f5f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "14760a0ab46342648dfec6df56e8e97e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "UVs",
+      "Id": "143b3a896e2b4d8d91995c28819de919",
+      "Inputs": [
+        {
+          "Id": "5fef74745cc9439c97d6a612b235439a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "points",
+      "Id": "59b26563aac445dc910406a04e7ae61f",
+      "Inputs": [
+        {
+          "Id": "9d1016ed000b43579ebb24c6572df235",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "normals",
+      "Id": "0828d98b883e45e28d5be7d423862578",
+      "Inputs": [
+        {
+          "Id": "f76d381c6b40484e8ca4b6effda40ad9",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "surface",
+      "Id": "8ecf4aae6b13455db46650671b7dfcb0",
+      "Inputs": [
+        {
+          "Id": "79760cee4d99419d85f855a8c7d7b9a7",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "includeOverhangingNodes",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false"
+      },
+      "Id": "d6e37e421fba4ff6be851dbe3c090c15",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f58be4f738e84a368ce8b6b3c66c5fa5",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "seq[0];\nseq[1];\nseq[2];\nseq[3];",
+      "Id": "f5a56a5344794d60a360ba60e5a33006",
+      "Inputs": [
+        {
+          "Id": "dc4c2c34951e45c39a614845330a0a4c",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c4ea8c1c430a4b1ca60d06a5aa8fc6b5",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "db8012e2a6874a899623504ab35238c0",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c60ba31464ea4d50ac8589e9c2e14faf",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dbeb16e460424d0293a6307e59aa0e3e",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nds = UnwrapElement(IN[0])\r\noverhanging = IN[1]\r\nuvlist = list()\r\nuvnormals = list()\r\nuvxyzs = list()\r\n\r\nface = ds.Host.GetGeometryObjectFromReference(ds.HostReference)\r\ngn = GridNode()\r\nif overhanging == True:\r\n\ti = 0\r\n\tj = 1\r\nelse:\r\n\ti = 1\r\n\tj = 3\r\nu = i\r\nwhile (u < (ds.NumberOfUGridlines-i)):\r\n\tgn.UIndex = u\r\n\tv = i\r\n\tvlist = list()\r\n\tvnormals = list()\r\n\tvxyzs = list()\r\n\twhile (v < (ds.NumberOfVGridlines-i)):\r\n\t\tgn.VIndex = v\r\n\t\tuv = ds.GetGridNodeUV(gn)\r\n \t\tvlist.append(uv)\r\n \t\tvnormals.append(face.ComputeNormal(uv).ToVector())\r\n \t\tvxyzs.append(face.Evaluate(uv).ToPoint())\r\n \t\tv += 1\r\n \tuvlist.append(vlist)\r\n \tuvnormals.append(vnormals)\r\n \tuvxyzs.append(vxyzs)\r\n \tu += 1\r\nOUT = (uvnormals,uvxyzs,face.ToProtoType(),uvlist)",
+      "VariableInputPorts": true,
+      "Id": "1604fdcedf3c4792b63b8f0c9ce84e9c",
+      "Inputs": [
+        {
+          "Id": "ff7bb9ac421c490e9f4388bcbf298f42",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2b0ca38a89a44041aa06cda8e5b17d7d",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "693c51e5e2d24d3ea8553f962a43d13f",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "5b7a7da0-f3cb-4c81-9245-0277d1d81cd9",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "01e19d6a59fd4c53b5dbbc9830fc6d6d",
+      "Inputs": [
+        {
+          "Id": "14d00f5cdf8f43329198cfc9fbb50606",
+          "Name": "RevitUV",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "97d40301ff404dc0bf056189be11ee34",
+          "Name": "DynamoUV",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Converts Revit UV coordinates to Dynamo UV coordinates"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Chop@var[]..[],int[]",
+      "Id": "5174bd088e074bf3a4e55a9846372e3a",
+      "Inputs": [
+        {
+          "Id": "71d1edf6cbc746429fbacb9df09580d2",
+          "Name": "list",
+          "Description": "List to chop into sublists\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "41312975cf5f44d2aa710d12f5151880",
+          "Name": "lengths",
+          "Description": "Lengths of consecutive sublists to be created from the input list\n\nint[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8d261b855c57414382b686075d6e2269",
+          "Name": "lists",
+          "Description": "Sublists created from the list",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Chop a list into a set of consecutive sublists with the specified lengths. List division begins at the top of the list.\n\nList.Chop (list: var[]..[], lengths: int[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Count@var[]..[]",
+      "Id": "a07a44a0a6fd477ea5727ae2661529e1",
+      "Inputs": [
+        {
+          "Id": "5b0a6fdde033467e9c37c8b8e0714601",
+          "Name": "list",
+          "Description": "List to get the item count of.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": true,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "dfb93419c636416ab55d53ef6cce5380",
+          "Name": "count",
+          "Description": "List length.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the number of items stored in the given list.\n\nList.Count (list: var[]..[]): int"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "14760a0ab46342648dfec6df56e8e97e",
+      "End": "ff7bb9ac421c490e9f4388bcbf298f42",
+      "Id": "d4ab0118a3084d8b852c5b8a2d985026"
+    },
+    {
+      "Start": "f58be4f738e84a368ce8b6b3c66c5fa5",
+      "End": "2b0ca38a89a44041aa06cda8e5b17d7d",
+      "Id": "5c70288f155f4ec9aa8132a24aa1c18d"
+    },
+    {
+      "Start": "c4ea8c1c430a4b1ca60d06a5aa8fc6b5",
+      "End": "f76d381c6b40484e8ca4b6effda40ad9",
+      "Id": "215248a861a2498c8c6b33a163b3c91e"
+    },
+    {
+      "Start": "db8012e2a6874a899623504ab35238c0",
+      "End": "9d1016ed000b43579ebb24c6572df235",
+      "Id": "76d1da643b5d4ab087cb41b520f5a8a6"
+    },
+    {
+      "Start": "c60ba31464ea4d50ac8589e9c2e14faf",
+      "End": "79760cee4d99419d85f855a8c7d7b9a7",
+      "Id": "06aa26232d46440aac9d091fec994ca5"
+    },
+    {
+      "Start": "dbeb16e460424d0293a6307e59aa0e3e",
+      "End": "14d00f5cdf8f43329198cfc9fbb50606",
+      "Id": "4f72f6ae3b5445d3a9ed24a5840b5340"
+    },
+    {
+      "Start": "dbeb16e460424d0293a6307e59aa0e3e",
+      "End": "5b0a6fdde033467e9c37c8b8e0714601",
+      "Id": "a7f5c21aa39b45188dec0674e7340120"
+    },
+    {
+      "Start": "693c51e5e2d24d3ea8553f962a43d13f",
+      "End": "dc4c2c34951e45c39a614845330a0a4c",
+      "Id": "48957c02c40642eb9dcd8f53734880f3"
+    },
+    {
+      "Start": "97d40301ff404dc0bf056189be11ee34",
+      "End": "71d1edf6cbc746429fbacb9df09580d2",
+      "Id": "885506fb913447b8b8bb9e7151367217"
+    },
+    {
+      "Start": "8d261b855c57414382b686075d6e2269",
+      "End": "5fef74745cc9439c97d6a612b235439a",
+      "Id": "61b09178aa874b40a5041e2bf27021e6"
+    },
+    {
+      "Start": "dfb93419c636416ab55d53ef6cce5380",
+      "End": "41312975cf5f44d2aa710d12f5151880",
+      "Id": "e2cc86122d964df2b5c55c6404c7228c"
+    }
+  ],
+  "Dependencies": [
+    "5b7a7da0-f3cb-4c81-9245-0277d1d81cd9"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "ec43968ae4a4477fad44885bf4705f5f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 114.673755244749,
+        "Y": 108.333988344988
+      },
+      {
+        "Id": "143b3a896e2b4d8d91995c28819de919",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1227.591561012,
+        "Y": 256.618022773231
+      },
+      {
+        "Id": "59b26563aac445dc910406a04e7ae61f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 752.381712820541,
+        "Y": 57.8809869463882
+      },
+      {
+        "Id": "0828d98b883e45e28d5be7d423862578",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 752.381712820541,
+        "Y": -25.1190130536118
+      },
+      {
+        "Id": "8ecf4aae6b13455db46650671b7dfcb0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 752.381712820541,
+        "Y": 141.880986946388
+      },
+      {
+        "Id": "d6e37e421fba4ff6be851dbe3c090c15",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -91.9703588143526,
+        "Y": 191.151024440977
+      },
+      {
+        "Id": "f5a56a5344794d60a360ba60e5a33006",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 520.0,
+        "Y": 136.091666666667
+      },
+      {
+        "Id": "1604fdcedf3c4792b63b8f0c9ce84e9c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 323.301430049786,
+        "Y": 131.873333333333
+      },
+      {
+        "Id": "01e19d6a59fd4c53b5dbbc9830fc6d6d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "RevitUV.ToDynamoUV",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 752.83802743675,
+        "Y": 231.461982961396
+      },
+      {
+        "Id": "5174bd088e074bf3a4e55a9846372e3a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Chop",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 990.687827997543,
+        "Y": 255.496847624033
+      },
+      {
+        "Id": "a07a44a0a6fd477ea5727ae2661529e1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Count",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 762.618789935761,
+        "Y": 316.514011325637
+      }
+    ],
+    "Annotations": [],
+    "X": -66.6827038338437,
+    "Y": 181.553138354889,
+    "Zoom": 0.64920515613941
+  }
+}

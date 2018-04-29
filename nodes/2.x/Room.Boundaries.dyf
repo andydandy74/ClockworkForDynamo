@@ -1,85 +1,372 @@
-<Workspace Version="1.3.1.1736" X="288.885064351549" Y="-108.657948444286" zoom="1.01715733291329" ScaleFactor="1" Name="Room.Boundaries" Description="Gets a list of all boundaries of a given room or area and a corresponding list of the elements that are generating those boundaries." ID="fb07f5d8-94b8-4985-bf2f-a54fe832aa66" Category="Clockwork.Revit.Elements.Query">
-  <NamespaceResolutionMap />
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="981a0e03-9fe7-44f9-9504-2ea77ca18745" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="202.864994270082" y="500.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="room" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="aa6058d6-2d2c-419c-adc4-23f58c7f5767" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="921.864994270082" y="500.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="elements" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="d71efcb4-3df8-472f-b598-63d7a11c097e" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="921.864994270082" y="584.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="curves" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="3a8e8c07-23e8-4c4f-a986-ae45a639d204" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Application.Version" x="202.864994270082" y="584.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <ID value="3df0961d-9d46-464f-9175-0a74eeb61bc1" />
-      <Name value="Application.Version" />
-      <Description value="Retrieves the name, version and build of the current Revit application." />
-      <Inputs />
-      <Outputs>
-        <Output value="Name" />
-        <Output value="Version" />
-        <Output value="Build" />
-        <Output value="Language" />
-        <Output value="fullVersion" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="4d32882c-fa42-4ef8-b257-3b4d70502139" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.864994270082" y="542.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-import Autodesk
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.GeometryConversion)
-
-def GetRoomBoundaries(item, version):
-	doc = item.Document
-	calculator = SpatialElementGeometryCalculator(doc)
-	options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()
-	# get boundary location from area computation settings
-	boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)
-	options.SpatialElementBoundaryLocation = boundloc
-	# get boundary segments
-	elements = []
-	curves = []
-	try:
-		for boundarylist in item.GetBoundarySegments(options):
-			for boundary in boundarylist:
-				elements.append(doc.GetElement(boundary.ElementId))
-				if version &gt; 2016: curves.append(boundary.GetCurve().ToProtoType())
-				else: curves.append(boundary.Curve.ToProtoType())
-	except: pass
-	return elements, curves
-
-items = UnwrapElement(IN[0])
-
-if isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))
-else: OUT = GetRoomBoundaries(items, IN[1])</Script>
-    </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="46e00936-fd26-4b51-9e18-786ea60d3c26" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="658.864994270082" y="488.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="da75b170-e491-49d8-9baf-ccbaca37459a" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="658.864994270082" y="596.208648936222" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="981a0e03-9fe7-44f9-9504-2ea77ca18745" start_index="0" end="4d32882c-fa42-4ef8-b257-3b4d70502139" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="3a8e8c07-23e8-4c4f-a986-ae45a639d204" start_index="1" end="4d32882c-fa42-4ef8-b257-3b4d70502139" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="4d32882c-fa42-4ef8-b257-3b4d70502139" start_index="0" end="46e00936-fd26-4b51-9e18-786ea60d3c26" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="4d32882c-fa42-4ef8-b257-3b4d70502139" start_index="0" end="da75b170-e491-49d8-9baf-ccbaca37459a" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="46e00936-fd26-4b51-9e18-786ea60d3c26" start_index="0" end="aa6058d6-2d2c-419c-adc4-23f58c7f5767" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="da75b170-e491-49d8-9baf-ccbaca37459a" start_index="0" end="d71efcb4-3df8-472f-b598-63d7a11c097e" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "fb07f5d8-94b8-4985-bf2f-a54fe832aa66",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets a list of all boundaries of a given room or area and a corresponding list of the elements that are generating those boundaries.",
+  "Name": "Room.Boundaries",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "room",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "981a0e039fe744f995042ea77ca18745",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4eb53659bab74cb3ac0e4e41fa81d602",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elements",
+      "Id": "aa6058d62d2c419cadc423f58c7f5767",
+      "Inputs": [
+        {
+          "Id": "680b924c312e4ebb87eb9a5b8cbb629b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "curves",
+      "Id": "d71efcb43df8472fb59863d7a11c097e",
+      "Inputs": [
+        {
+          "Id": "003fb90128bf4afaa967a2e3309f13dc",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "3a8e8c0723e84c4fa986ae45a639d204",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "460585152f8b4db2beaca05ac260d181",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b24be8b78f2e48159142187ee5142206",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "58b5f97004e248859ad02bf2303599d3",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cf2579c3be1141c08ab7f6861b90acdc",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "db927bafab00471e9eb584a73129ce93",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef GetRoomBoundaries(item, version):\r\n\tdoc = item.Document\r\n\tcalculator = SpatialElementGeometryCalculator(doc)\r\n\toptions = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n\t# get boundary location from area computation settings\r\n\tboundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n\toptions.SpatialElementBoundaryLocation = boundloc\r\n\t# get boundary segments\r\n\telements = []\r\n\tcurves = []\r\n\ttry:\r\n\t\tfor boundarylist in item.GetBoundarySegments(options):\r\n\t\t\tfor boundary in boundarylist:\r\n\t\t\t\telements.append(doc.GetElement(boundary.ElementId))\r\n\t\t\t\tif version > 2016: curves.append(boundary.GetCurve().ToProtoType())\r\n\t\t\t\telse: curves.append(boundary.Curve.ToProtoType())\r\n\texcept: pass\r\n\treturn elements, curves\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))\r\nelse: OUT = GetRoomBoundaries(items, IN[1])",
+      "VariableInputPorts": true,
+      "Id": "4d32882cfa424ef8b2573b4d70502139",
+      "Inputs": [
+        {
+          "Id": "af9096b3dbce44c9802906d3aba9cfb6",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "902bd357ce9243adaf404ca58519be96",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2db1e393c97241afaae5d169d3bd4ce9",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "46e00936fd264b519e18786ea60d3c26",
+      "Inputs": [
+        {
+          "Id": "76fd6f5734bf497c873c13a7bd49375f",
+          "Name": "list",
+          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6fe747170cc64f1cb7d1ccb10fd04809",
+          "Name": "item",
+          "Description": "First item in the list.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "da75b170e49149d89bafccbaca37459a",
+      "Inputs": [
+        {
+          "Id": "a760f33e5d004735a5c765d33dfc0216",
+          "Name": "list",
+          "Description": "List to get the last item of.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e9cd019e651f4e01b4fe67db3dab90fb",
+          "Name": "last",
+          "Description": "Last item in the list.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4eb53659bab74cb3ac0e4e41fa81d602",
+      "End": "af9096b3dbce44c9802906d3aba9cfb6",
+      "Id": "602f0765e08d408b8e9103f559969138"
+    },
+    {
+      "Start": "b24be8b78f2e48159142187ee5142206",
+      "End": "902bd357ce9243adaf404ca58519be96",
+      "Id": "28a4967777204ee2bd1138e9284e7870"
+    },
+    {
+      "Start": "2db1e393c97241afaae5d169d3bd4ce9",
+      "End": "76fd6f5734bf497c873c13a7bd49375f",
+      "Id": "16e562730028409e99fb1e60c0a5ba28"
+    },
+    {
+      "Start": "2db1e393c97241afaae5d169d3bd4ce9",
+      "End": "a760f33e5d004735a5c765d33dfc0216",
+      "Id": "b60b98b044ba4695a6dc3c7df01a84aa"
+    },
+    {
+      "Start": "6fe747170cc64f1cb7d1ccb10fd04809",
+      "End": "680b924c312e4ebb87eb9a5b8cbb629b",
+      "Id": "9c649624301a477b897ec23b85afb54a"
+    },
+    {
+      "Start": "e9cd019e651f4e01b4fe67db3dab90fb",
+      "End": "003fb90128bf4afaa967a2e3309f13dc",
+      "Id": "6032bb594ef544baaa2df059109c8d4d"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "981a0e039fe744f995042ea77ca18745",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 202.864994270082,
+        "Y": 500.208648936222
+      },
+      {
+        "Id": "aa6058d62d2c419cadc423f58c7f5767",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 921.864994270082,
+        "Y": 500.208648936222
+      },
+      {
+        "Id": "d71efcb43df8472fb59863d7a11c097e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 921.864994270082,
+        "Y": 584.208648936222
+      },
+      {
+        "Id": "3a8e8c0723e84c4fa986ae45a639d204",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Application.Version",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 202.864994270082,
+        "Y": 584.208648936222
+      },
+      {
+        "Id": "4d32882cfa424ef8b2573b4d70502139",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 434.864994270082,
+        "Y": 542.208648936222
+      },
+      {
+        "Id": "46e00936fd264b519e18786ea60d3c26",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.FirstItem",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 658.864994270082,
+        "Y": 488.208648936222
+      },
+      {
+        "Id": "da75b170e49149d89bafccbaca37459a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.LastItem",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 658.864994270082,
+        "Y": 596.208648936222
+      }
+    ],
+    "Annotations": [],
+    "X": 288.885064351549,
+    "Y": -108.657948444286,
+    "Zoom": 1.01715733291329
+  }
+}

@@ -1,54 +1,212 @@
-<Workspace Version="1.3.1.1736" X="352.907190824699" Y="300.600541109339" zoom="0.505499004765837" ScaleFactor="1" Name="Subcategory.ByName" Description="Creates a new subcategory for a given element category (unless a subcategory of that name already exists - in that case it returns the existing subcategory)." ID="c228eea3-78a1-4aca-8fab-8678c97f17c0" Category="Clockwork.Revit.Elements.Create">
-  <NamespaceResolutionMap />
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d6d71d1f-01c6-41d4-b96d-c508f552dfe6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="388.7300607589" y="137.021307324387" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="category" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="f7e2d305-757e-4518-af0c-2158ef95c640" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="388.7300607589" y="221.021307324387" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="name : string" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="bbf8d8cc-b3aa-492f-ba7f-c4d5c2147b92" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="849.7300607589" y="166.021307324387" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="subCategory" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <PythonNodeModels.PythonNode guid="cbe4eace-d62f-451c-9adf-5b69faf85052" type="PythonNodeModels.PythonNode" nickname="Python Script" x="625.7300607589" y="166.021307324387" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
-
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
-cat = UnwrapElement(IN[0])
-subcatname = IN[1]
-subcat = [x for x in cat.SubCategories if x.Name == subcatname]
-if len(subcat) == 1: subcat = subcat[0]
-else:
-	TransactionManager.Instance.EnsureInTransaction(doc)
-	try: subcat = doc.Settings.Categories.NewSubcategory(cat, subcatname)
-	except: subcat = None
-	TransactionManager.Instance.TransactionTaskDone()
-OUT = subcat</Script>
-    </PythonNodeModels.PythonNode>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="d6d71d1f-01c6-41d4-b96d-c508f552dfe6" start_index="0" end="cbe4eace-d62f-451c-9adf-5b69faf85052" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f7e2d305-757e-4518-af0c-2158ef95c640" start_index="0" end="cbe4eace-d62f-451c-9adf-5b69faf85052" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="cbe4eace-d62f-451c-9adf-5b69faf85052" start_index="0" end="bbf8d8cc-b3aa-492f-ba7f-c4d5c2147b92" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "c228eea3-78a1-4aca-8fab-8678c97f17c0",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Create",
+  "Description": "Creates a new subcategory for a given element category (unless a subcategory of that name already exists - in that case it returns the existing subcategory).",
+  "Name": "Subcategory.ByName",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "category",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "d6d71d1f01c641d4b96dc508f552dfe6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "04073a25600143e58ce65f9a7883dfea",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "name",
+        "TypeName": "string",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "f7e2d305757e4518af0c2158ef95c640",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9116448a49da41ccbaf9b12f12c990b7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "subCategory",
+      "Id": "bbf8d8ccb3aa492fba7fc4d5c2147b92",
+      "Inputs": [
+        {
+          "Id": "8c1d99d7d4384506a5b954f5bee536f3",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncat = UnwrapElement(IN[0])\r\nsubcatname = IN[1]\r\nsubcat = [x for x in cat.SubCategories if x.Name == subcatname]\r\nif len(subcat) == 1: subcat = subcat[0]\r\nelse:\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\ttry: subcat = doc.Settings.Categories.NewSubcategory(cat, subcatname)\r\n\texcept: subcat = None\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\nOUT = subcat",
+      "VariableInputPorts": true,
+      "Id": "cbe4eaced62f451c9adf5b69faf85052",
+      "Inputs": [
+        {
+          "Id": "016199b31613491892c5a772d1bf481d",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "668c42e2c6bf408ab6b7f9c6b7da12f5",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9c03bff2df4f48bd881a7f8d576685d7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "04073a25600143e58ce65f9a7883dfea",
+      "End": "016199b31613491892c5a772d1bf481d",
+      "Id": "049f0c0ee1cd4a338ee6ec78b4f37125"
+    },
+    {
+      "Start": "9116448a49da41ccbaf9b12f12c990b7",
+      "End": "668c42e2c6bf408ab6b7f9c6b7da12f5",
+      "Id": "6b9c5d66792447f6b9b073630d7ab5b6"
+    },
+    {
+      "Start": "9c03bff2df4f48bd881a7f8d576685d7",
+      "End": "8c1d99d7d4384506a5b954f5bee536f3",
+      "Id": "33492794ce934f478499743e65ce6b30"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "d6d71d1f01c641d4b96dc508f552dfe6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 388.7300607589,
+        "Y": 137.021307324387
+      },
+      {
+        "Id": "f7e2d305757e4518af0c2158ef95c640",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 388.7300607589,
+        "Y": 221.021307324387
+      },
+      {
+        "Id": "bbf8d8ccb3aa492fba7fc4d5c2147b92",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 849.7300607589,
+        "Y": 166.021307324387
+      },
+      {
+        "Id": "cbe4eaced62f451c9adf5b69faf85052",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 625.7300607589,
+        "Y": 166.021307324387
+      }
+    ],
+    "Annotations": [],
+    "X": 352.907190824699,
+    "Y": 300.600541109339,
+    "Zoom": 0.505499004765837
+  }
+}

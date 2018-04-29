@@ -1,106 +1,354 @@
-<Workspace Version="1.3.1.1736" X="229.776480044444" Y="277.791613757917" zoom="0.847618571998227" ScaleFactor="1" Name="RoomTag.Room" Description="Returns the room of a given room tag" ID="6367a8db-eab0-4473-8672-df51384ed1f8" Category="Clockwork.Revit.Elements.Query">
-  <NamespaceResolutionMap />
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="e1a4df2b-8233-40bf-b7cf-0c1741e00524" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="ReturnListOrSingleValue" x="622" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the unknown item is not a list but rather a single item, only the first item of the list (input &quot;seq&quot;) will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="0eb7f82b-70a4-448d-a76a-71e9730165c1" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="250" y="50" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="5b87204c-e826-415a-91e9-ed26096bf6fe" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="roomTag" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="ea33ea05-7e47-45db-a596-71e0aa31f4de" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="860" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="room" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="c0f013b3-a805-4b72-8df1-90c9785fbd18" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Application.Version" x="285.769481648477" y="169.562697409644" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <ID value="3df0961d-9d46-464f-9175-0a74eeb61bc1" />
-      <Name value="Application.Version" />
-      <Description value="Retrieves the name, version and build of the current Revit application." />
-      <Inputs />
-      <Outputs>
-        <Output value="Name" />
-        <Output value="Version (int)" />
-        <Output value="Build" />
-        <Output value="Language" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="448bb06f-125d-4ee7-902f-907d64f55279" type="PythonNodeModels.PythonNode" nickname="Python Script" x="466.027053003405" y="122.942547136993" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-import Autodesk
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.GeometryConversion)
-
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
-
-roomtags = UnwrapElement(IN[0])
-version = IN[1]
-elementlist = list()
-
-for tag in roomtags:
-	if version &gt; 2016:
-		try:
-			trID = tag.TaggedRoomId
-			if trID.HostElementId.IntegerValue != -1:
-				elementlist.append(doc.GetElement(trID.HostElementId))
-			elif trID.LinkedElementId.IntegerValue != -1:
-				linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()
-				elementlist.append(linkdoc.GetElement(trID.LinkedElementId))
-			else:
-				elementlist.append(None)
-		except:
-			elementlist.append(None)
-	else:
-		try:
-			elementlist.append(tag.Room)
-		except:
-			elementlist.append(None)
-OUT = elementlist</Script>
-    </PythonNodeModels.PythonNode>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="e1a4df2b-8233-40bf-b7cf-0c1741e00524" start_index="0" end="ea33ea05-7e47-45db-a596-71e0aa31f4de" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="0eb7f82b-70a4-448d-a76a-71e9730165c1" start_index="0" end="448bb06f-125d-4ee7-902f-907d64f55279" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5b87204c-e826-415a-91e9-ed26096bf6fe" start_index="0" end="e1a4df2b-8233-40bf-b7cf-0c1741e00524" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5b87204c-e826-415a-91e9-ed26096bf6fe" start_index="0" end="0eb7f82b-70a4-448d-a76a-71e9730165c1" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c0f013b3-a805-4b72-8df1-90c9785fbd18" start_index="1" end="448bb06f-125d-4ee7-902f-907d64f55279" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="448bb06f-125d-4ee7-902f-907d64f55279" start_index="0" end="e1a4df2b-8233-40bf-b7cf-0c1741e00524" end_index="1" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "6367a8db-eab0-4473-8672-df51384ed1f8",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns the room of a given room tag",
+  "Name": "RoomTag.Room",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "e1a4df2b823340bfb7cf0c1741e00524",
+      "Inputs": [
+        {
+          "Id": "5d71afb2cc8f47039db1c216e56d0284",
+          "Name": "unknownItem",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "463e58e2d53247c4b8db71ccf3bbd4c9",
+          "Name": "seq",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5dbb99f091e24ccf905b58ef3b6ea950",
+          "Name": "",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "0eb7f82b70a4448da76a71e9730165c1",
+      "Inputs": [
+        {
+          "Id": "e428d7219a5a4b8a8a0e17f295382e84",
+          "Name": "unknownItem",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4e8c7966665546b08fccd0db3aefd18a",
+          "Name": "seq",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns an element (or a nested list) into a flat list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "roomTag",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "5b87204ce826415a91e9ed26096bf6fe",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "3362129e07e044d3929c0a15fdac5e22",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "room",
+      "Id": "ea33ea057e4745dba59671e0aa31f4de",
+      "Inputs": [
+        {
+          "Id": "39b8df44c160471ab7160f8d9619d1ca",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "c0f013b3a8054b728df190c9785fbd18",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "684930f6afb34416aa122352f3259da8",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9c029b60d7254ee9ba7dfefc5bc64d5e",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "91aa6e26465a46e3b162a12ce422f923",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "61ea92bba35e4ca48dc2dec1fbff3b9f",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6be092e282dd4d0eb8dcc35160ed93e3",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nroomtags = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nelementlist = list()\r\n\r\nfor tag in roomtags:\r\n\tif version > 2016:\r\n\t\ttry:\r\n\t\t\ttrID = tag.TaggedRoomId\r\n\t\t\tif trID.HostElementId.IntegerValue != -1:\r\n\t\t\t\telementlist.append(doc.GetElement(trID.HostElementId))\r\n\t\t\telif trID.LinkedElementId.IntegerValue != -1:\r\n\t\t\t\tlinkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()\r\n\t\t\t\telementlist.append(linkdoc.GetElement(trID.LinkedElementId))\r\n\t\t\telse:\r\n\t\t\t\telementlist.append(None)\r\n\t\texcept:\r\n\t\t\telementlist.append(None)\r\n\telse:\r\n\t\ttry:\r\n\t\t\telementlist.append(tag.Room)\r\n\t\texcept:\r\n\t\t\telementlist.append(None)\r\nOUT = elementlist",
+      "VariableInputPorts": true,
+      "Id": "448bb06f125d4ee7902f907d64f55279",
+      "Inputs": [
+        {
+          "Id": "fdcc647cb0cb4f6ea1ef10faf8e21f5e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c2793038b02d47039a20ed180d22e1dd",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8b0b354af898402aba8f927aa4df8563",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "5dbb99f091e24ccf905b58ef3b6ea950",
+      "End": "39b8df44c160471ab7160f8d9619d1ca",
+      "Id": "398ddfad2f33493c9488a41c36ab5903"
+    },
+    {
+      "Start": "4e8c7966665546b08fccd0db3aefd18a",
+      "End": "fdcc647cb0cb4f6ea1ef10faf8e21f5e",
+      "Id": "f937a74b787a4775ad43035e04cf6d57"
+    },
+    {
+      "Start": "3362129e07e044d3929c0a15fdac5e22",
+      "End": "5d71afb2cc8f47039db1c216e56d0284",
+      "Id": "cc24cb21bf1c45a8a36d8dab305e6449"
+    },
+    {
+      "Start": "3362129e07e044d3929c0a15fdac5e22",
+      "End": "e428d7219a5a4b8a8a0e17f295382e84",
+      "Id": "5528fa68f88642cab07f14c527e4e736"
+    },
+    {
+      "Start": "9c029b60d7254ee9ba7dfefc5bc64d5e",
+      "End": "c2793038b02d47039a20ed180d22e1dd",
+      "Id": "0e59426970d843edbb7df65fc05be4ae"
+    },
+    {
+      "Start": "8b0b354af898402aba8f927aa4df8563",
+      "End": "463e58e2d53247c4b8db71ccf3bbd4c9",
+      "Id": "393f617e400f435e9f1e1b9513681a37"
+    }
+  ],
+  "Dependencies": [
+    "44ac4888-4aa4-49a9-9344-23b729c11df9",
+    "cd09ad33-8c34-4850-ac26-24448d92c38f",
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "e1a4df2b823340bfb7cf0c1741e00524",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "ReturnListOrSingleValue",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 622.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "0eb7f82b70a4448da76a71e9730165c1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "TurnIntoList",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 250.0,
+        "Y": 50.0
+      },
+      {
+        "Id": "5b87204ce826415a91e9ed26096bf6fe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "ea33ea057e4745dba59671e0aa31f4de",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 860.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "c0f013b3a8054b728df190c9785fbd18",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Application.Version",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 285.769481648477,
+        "Y": 169.562697409644
+      },
+      {
+        "Id": "448bb06f125d4ee7902f907d64f55279",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 466.027053003405,
+        "Y": 122.942547136993
+      }
+    ],
+    "Annotations": [],
+    "X": 229.776480044444,
+    "Y": 277.791613757917,
+    "Zoom": 0.847618571998227
+  }
+}

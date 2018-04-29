@@ -1,64 +1,277 @@
-<Workspace Version="0.8.2.2392" X="-31.0193391688133" Y="260.898996039685" zoom="1.16438980805626" Name="RevitFaceReference.FromDynamoSurface" Description="Returns the underlying Revit face reference of a given surface" ID="3204925d-0493-4b8b-b42b-fb0d8041837b" Category="Clockwork.Revit.Selection.ByFace.Query">
-  <NamespaceResolutionMap>
-    <ClassMap partialName="Surface" resolvedName="Autodesk.DesignScript.Geometry.Surface" assemblyName="ProtoGeometry.dll" />
-  </NamespaceResolutionMap>
-  <Elements>
-    <DSIronPythonNode.PythonNode guid="9f09ad84-3ad1-445d-95e3-93d4287a50c8" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="426" y="54" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-faces = UnwrapElement(IN[0])
-elementlist = list()
-for face in faces:
-	try:
-		ref = face.Tags.LookupTag("RevitFaceReference")
-		elementlist.append(ref)
-	except:
-		elementlist.append(list())
-OUT = elementlist</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Function guid="292286dd-3261-44f0-baa2-b628244bf078" type="Dynamo.Nodes.Function" nickname="ReturnListOrSingleValue" x="590" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <ID value="44ac4888-4aa4-49a9-9344-23b729c11df9" />
-      <Name value="ReturnListOrSingleValue" />
-      <Description value="If the item in input #1 is not a list, only the first item of the list in input #2 will be returned." />
-      <Inputs>
-        <Input value="unknownItem" />
-        <Input value="seq" />
-      </Inputs>
-      <Outputs>
-        <Output value="" />
-      </Outputs>
-    </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Function guid="aed91cb7-181e-4d17-943a-6eef4d3feda0" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="261.435275688884" y="51.5291353332603" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="Turn Into List" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Symbol guid="cdbb4b23-c6c2-4433-a99d-0a1823143b9a" type="Dynamo.Nodes.Symbol" nickname="Input" x="-31.9640194109297" y="-1.85881892222102" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="DynamoSurface : Surface" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="54cd4ae3-ac87-4def-9e98-d631a43c0372" type="Dynamo.Nodes.Output" nickname="Output" x="807" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <Symbol value="RevitFaceReference" />
-    </Dynamo.Nodes.Output>
-  </Elements>
-  <Connectors>
-    <Dynamo.Models.ConnectorModel start="9f09ad84-3ad1-445d-95e3-93d4287a50c8" start_index="0" end="292286dd-3261-44f0-baa2-b628244bf078" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="292286dd-3261-44f0-baa2-b628244bf078" start_index="0" end="54cd4ae3-ac87-4def-9e98-d631a43c0372" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="aed91cb7-181e-4d17-943a-6eef4d3feda0" start_index="0" end="9f09ad84-3ad1-445d-95e3-93d4287a50c8" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="cdbb4b23-c6c2-4433-a99d-0a1823143b9a" start_index="0" end="aed91cb7-181e-4d17-943a-6eef4d3feda0" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="cdbb4b23-c6c2-4433-a99d-0a1823143b9a" start_index="0" end="292286dd-3261-44f0-baa2-b628244bf078" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "3204925d-0493-4b8b-b42b-fb0d8041837b",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Selection.ByFace.Query",
+  "Description": "Returns the underlying Revit face reference of a given surface",
+  "Name": "RevitFaceReference.FromDynamoSurface",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Surface": {
+        "Key": "Autodesk.DesignScript.Geometry.Surface",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nfaces = UnwrapElement(IN[0])\r\nelementlist = list()\r\nfor face in faces:\r\n\ttry:\r\n\t\tref = face.Tags.LookupTag(\"RevitFaceReference\")\r\n\t\telementlist.append(ref)\r\n\texcept:\r\n\t\telementlist.append(list())\r\nOUT = elementlist",
+      "VariableInputPorts": true,
+      "Id": "9f09ad843ad1445d95e393d4287a50c8",
+      "Inputs": [
+        {
+          "Id": "860dafb00fc54db9bdeca51c6590ecb0",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4510386bf36045c0bb01a38d47f7d0ca",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "292286dd326144f0baa2b628244bf078",
+      "Inputs": [
+        {
+          "Id": "dd2145723bdb4905a21c1f2b06e33034",
+          "Name": "unknownItem",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8cab9d675b14451bb0b8f83fa8b45048",
+          "Name": "seq",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b89156acb58e4c99b2e2ae66a727e388",
+          "Name": "",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "aed91cb7181e4d17943a6eef4d3feda0",
+      "Inputs": [
+        {
+          "Id": "0dde944c6f154e95a8b91633c246e439",
+          "Name": "",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f9e369bb203149c8b55dcca430102ac0",
+          "Name": "seq",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Turns an element (or a nested list) into a flat list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "DynamoSurface",
+        "TypeName": "Autodesk.DesignScript.Geometry.Surface",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "cdbb4b23c6c24433a99d0a1823143b9a",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e72414a6db784574bdb33af796efe275",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "RevitFaceReference",
+      "Id": "54cd4ae3ac874def9e98d631a43c0372",
+      "Inputs": [
+        {
+          "Id": "b7666eff2e2d47dfa30d88544f66887f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4510386bf36045c0bb01a38d47f7d0ca",
+      "End": "8cab9d675b14451bb0b8f83fa8b45048",
+      "Id": "1b6479b04e1c450686f058fd77473352"
+    },
+    {
+      "Start": "b89156acb58e4c99b2e2ae66a727e388",
+      "End": "b7666eff2e2d47dfa30d88544f66887f",
+      "Id": "37a23b2e454348629950c0aaf61552ea"
+    },
+    {
+      "Start": "f9e369bb203149c8b55dcca430102ac0",
+      "End": "860dafb00fc54db9bdeca51c6590ecb0",
+      "Id": "a2432de5bb844410bf66260a24c8a33e"
+    },
+    {
+      "Start": "e72414a6db784574bdb33af796efe275",
+      "End": "0dde944c6f154e95a8b91633c246e439",
+      "Id": "f26faa3c9d014df48c433dec77ba4d3e"
+    },
+    {
+      "Start": "e72414a6db784574bdb33af796efe275",
+      "End": "dd2145723bdb4905a21c1f2b06e33034",
+      "Id": "2e254ed156c3418e913db76da8892163"
+    }
+  ],
+  "Dependencies": [
+    "44ac4888-4aa4-49a9-9344-23b729c11df9",
+    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "9f09ad843ad1445d95e393d4287a50c8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 426.0,
+        "Y": 54.0
+      },
+      {
+        "Id": "292286dd326144f0baa2b628244bf078",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "ReturnListOrSingleValue",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 590.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "aed91cb7181e4d17943a6eef4d3feda0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Turn Into List",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 261.435275688884,
+        "Y": 51.5291353332603
+      },
+      {
+        "Id": "cdbb4b23c6c24433a99d0a1823143b9a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -31.9640194109297,
+        "Y": -1.85881892222102
+      },
+      {
+        "Id": "54cd4ae3ac874def9e98d631a43c0372",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 807.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": -31.0193391688133,
+    "Y": 260.898996039685,
+    "Zoom": 1.16438980805626
+  }
+}

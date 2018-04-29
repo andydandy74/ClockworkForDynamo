@@ -1,61 +1,211 @@
-<Workspace Version="0.8.2.2392" X="30" Y="327.313868613139" zoom="0.86374695863747" Name="Group.Ungroup" Description="Ungroups a group and returns the ungrouped elements." ID="cfe0d03d-c8ba-4cf7-9c4b-e5851d620ffb" Category="Clockwork.Revit.Elements.Actions">
-  <NamespaceResolutionMap />
-  <Elements>
-    <DSIronPythonNode.PythonNode guid="f72347c7-e09c-40b9-9f3c-64cb84e0f34c" type="DSIronPythonNode.PythonNode" nickname="Python Script" x="444" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="1">
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-from System.Collections.Generic import *
-
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
-groups = UnwrapElement(IN[0])
-elementlist = list()
-TransactionManager.Instance.EnsureInTransaction(doc)
-for group in groups:
-	try:
-		ids = group.UngroupMembers()
-		ungrouped = list()
-		for id in ids:
-			ungrouped.append(group.Document.GetElement(id))
-		elementlist.append(ungrouped)
-	except:
-		elementlist.append(list())
-TransactionManager.Instance.TransactionTaskDone()
-
-OUT = elementlist</Script>
-    </DSIronPythonNode.PythonNode>
-    <Dynamo.Nodes.Function guid="d07ba3ce-ed97-4a0b-b186-f4031c60fcf4" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="175" y="0" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Symbol guid="818537c2-09c7-4bb4-868c-2e7a3743b744" type="Dynamo.Nodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="group" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="7c740030-632e-4e2d-84aa-d7028e9b086d" type="Dynamo.Nodes.Output" nickname="Output" x="668" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <Symbol value="ungroupedElements" />
-    </Dynamo.Nodes.Output>
-  </Elements>
-  <Connectors>
-    <Dynamo.Models.ConnectorModel start="f72347c7-e09c-40b9-9f3c-64cb84e0f34c" start_index="0" end="7c740030-632e-4e2d-84aa-d7028e9b086d" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="d07ba3ce-ed97-4a0b-b186-f4031c60fcf4" start_index="0" end="f72347c7-e09c-40b9-9f3c-64cb84e0f34c" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="818537c2-09c7-4bb4-868c-2e7a3743b744" start_index="0" end="d07ba3ce-ed97-4a0b-b186-f4031c60fcf4" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="background_preview" eyeX="10" eyeY="15" eyeZ="10" lookX="-10" lookY="-10" lookZ="-10" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "cfe0d03d-c8ba-4cf7-9c4b-e5851d620ffb",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Actions",
+  "Description": "Ungroups a group and returns the ungrouped elements.",
+  "Name": "Group.Ungroup",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ngroups = UnwrapElement(IN[0])\r\nelementlist = list()\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor group in groups:\r\n\ttry:\r\n\t\tids = group.UngroupMembers()\r\n\t\tungrouped = list()\r\n\t\tfor id in ids:\r\n\t\t\tungrouped.append(group.Document.GetElement(id))\r\n\t\telementlist.append(ungrouped)\r\n\texcept:\r\n\t\telementlist.append(list())\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
+      "VariableInputPorts": true,
+      "Id": "f72347c7e09c40b99f3c64cb84e0f34c",
+      "Inputs": [
+        {
+          "Id": "0ac625d30eb94579bce13c548c832221",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d6eabe465a2f447fb03ce993f9d4d1e5",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "d07ba3ceed974a0bb186f4031c60fcf4",
+      "Inputs": [
+        {
+          "Id": "69cf872ba9674200a019396efc25748b",
+          "Name": "unknownItem",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "887fe0971a924250a19879600a6c7537",
+          "Name": "seq",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns an element (or a nested list) into a flat list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "group",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "818537c209c74bb4868c2e7a3743b744",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "679a25c277f04d0da2d7e902e0f16ae7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "ungroupedElements",
+      "Id": "7c740030632e4e2d84aad7028e9b086d",
+      "Inputs": [
+        {
+          "Id": "c240ab260f09468ab90ac8c15dd24e10",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d6eabe465a2f447fb03ce993f9d4d1e5",
+      "End": "c240ab260f09468ab90ac8c15dd24e10",
+      "Id": "c13bf4ce9a4d4cea944fa0624032aeb0"
+    },
+    {
+      "Start": "887fe0971a924250a19879600a6c7537",
+      "End": "0ac625d30eb94579bce13c548c832221",
+      "Id": "c24a91e38e2048c9a788189fc97973ce"
+    },
+    {
+      "Start": "679a25c277f04d0da2d7e902e0f16ae7",
+      "End": "69cf872ba9674200a019396efc25748b",
+      "Id": "80490c931b604173924d7593f051d821"
+    }
+  ],
+  "Dependencies": [
+    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "f72347c7e09c40b99f3c64cb84e0f34c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 444.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "d07ba3ceed974a0bb186f4031c60fcf4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "TurnIntoList",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 175.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "818537c209c74bb4868c2e7a3743b744",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 0.0
+      },
+      {
+        "Id": "7c740030632e4e2d84aad7028e9b086d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 668.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 30.0,
+    "Y": 327.313868613139,
+    "Zoom": 0.86374695863747
+  }
+}

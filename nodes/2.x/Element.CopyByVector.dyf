@@ -1,87 +1,367 @@
-<Workspace Version="0.9.0.3067" X="311" Y="351" zoom="1" Name="Element.CopyByVector" Description="Copies an element or a list of elements by a given vector." ID="baf73550-ccd9-4c94-8543-5eb088bfd742" Category="Clockwork.Revit.Elements.Actions">
-  <NamespaceResolutionMap>
-    <ClassMap partialName="List" resolvedName="DSCore.List" assemblyName="DSCoreNodes.dll" />
-    <ClassMap partialName="Level" resolvedName="Revit.Elements.Level" assemblyName="RevitNodes.dll" />
-    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
-  </NamespaceResolutionMap>
-  <Elements>
-    <PythonNodeModels.PythonNode guid="a322c46d-7e6d-407d-b51a-37c7e0d978fd" type="PythonNodeModels.PythonNode" nickname="Python Script" x="491.938130562526" y="49.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" inputcount="3">
-      <Script>import clr
-from System.Collections.Generic import *
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-import Autodesk
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
-clr.ImportExtensions(Revit.GeometryConversion)
-
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
-items = UnwrapElement(IN[0])
-xyz = UnwrapElement(IN[1]).ToXyz()
-rehost = IN[2]
-
-ids = list()
-for item in items:
-	ids.append(item.Id)	
-itemlist = List[ElementId](ids)
-
-TransactionManager.Instance.EnsureInTransaction(doc)
-if rehost:
-	newitems = ElementTransformUtils.CopyElements(doc,itemlist,doc,Transform.CreateTranslation(xyz),None)
-else:
-	newitems = ElementTransformUtils.CopyElements(doc,itemlist,xyz)
-TransactionManager.Instance.TransactionTaskDone()
-
-elementlist = list()
-for item in newitems:
-	elementlist.append(doc.GetElement(item).ToDSType(False))
-
-OUT = elementlist</Script>
-    </PythonNodeModels.PythonNode>
-    <Dynamo.Nodes.Function guid="76e7fd82-e446-45ed-88e1-3cd1c149d94c" type="Dynamo.Nodes.Function" nickname="TurnIntoList" x="222.938130562526" y="8.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False">
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.DSFunction guid="6beafa4d-8247-4b62-9fe2-504317432db8" type="Dynamo.Nodes.DSFunction" nickname="Vector.AsPoint" x="222.938130562526" y="116.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.AsPoint" />
-    <Dynamo.Nodes.Symbol guid="39901164-f868-406d-b202-6a462356d2d2" type="Dynamo.Nodes.Symbol" nickname="Input" x="-35.0618694374735" y="8.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="element" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol guid="f73e03f0-ce11-4fd7-8db1-e5d38b080889" type="Dynamo.Nodes.Symbol" nickname="Input" x="-35.0618694374735" y="116.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="vector : Vector" />
-    </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Output guid="573c1475-5f36-479d-add1-48e7c9cbd930" type="Dynamo.Nodes.Output" nickname="Output" x="715.938130562526" y="49.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False">
-      <Symbol value="newElement" />
-    </Dynamo.Nodes.Output>
-    <Dynamo.Nodes.Symbol guid="d3e0d0bb-df6c-4ecf-a112-1aa6cb230163" type="Dynamo.Nodes.Symbol" nickname="Input" x="-44.0618694374735" y="248.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True">
-      <Symbol value="rehostToClosestLevel : bool = false" />
-    </Dynamo.Nodes.Symbol>
-  </Elements>
-  <Connectors>
-    <Dynamo.Models.ConnectorModel start="a322c46d-7e6d-407d-b51a-37c7e0d978fd" start_index="0" end="573c1475-5f36-479d-add1-48e7c9cbd930" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="76e7fd82-e446-45ed-88e1-3cd1c149d94c" start_index="0" end="a322c46d-7e6d-407d-b51a-37c7e0d978fd" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="6beafa4d-8247-4b62-9fe2-504317432db8" start_index="0" end="a322c46d-7e6d-407d-b51a-37c7e0d978fd" end_index="1" portType="0" />
-    <Dynamo.Models.ConnectorModel start="39901164-f868-406d-b202-6a462356d2d2" start_index="0" end="76e7fd82-e446-45ed-88e1-3cd1c149d94c" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="f73e03f0-ce11-4fd7-8db1-e5d38b080889" start_index="0" end="6beafa4d-8247-4b62-9fe2-504317432db8" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="d3e0d0bb-df6c-4ecf-a112-1aa6cb230163" start_index="0" end="a322c46d-7e6d-407d-b51a-37c7e0d978fd" end_index="2" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "baf73550-ccd9-4c94-8543-5eb088bfd742",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Actions",
+  "Description": "Copies an element or a list of elements by a given vector.",
+  "Name": "Element.CopyByVector",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Level": {
+        "Key": "Revit.Elements.Level",
+        "Value": "RevitNodes.dll"
+      },
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nxyz = UnwrapElement(IN[1]).ToXyz()\r\nrehost = IN[2]\r\n\r\nids = list()\r\nfor item in items:\r\n\tids.append(item.Id)\t\r\nitemlist = List[ElementId](ids)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif rehost:\r\n\tnewitems = ElementTransformUtils.CopyElements(doc,itemlist,doc,Transform.CreateTranslation(xyz),None)\r\nelse:\r\n\tnewitems = ElementTransformUtils.CopyElements(doc,itemlist,xyz)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nelementlist = list()\r\nfor item in newitems:\r\n\telementlist.append(doc.GetElement(item).ToDSType(False))\r\n\r\nOUT = elementlist",
+      "VariableInputPorts": true,
+      "Id": "a322c46d7e6d407db51a37c7e0d978fd",
+      "Inputs": [
+        {
+          "Id": "c976ef37f24b49ceab146f02f60c33a3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a5e768c3029d4e02a3ee2f19718d2eca",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "62c134ad982548029071f3bfb8316f6b",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c091aa8336b94d48b39ef74c95b8b4e6",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "76e7fd82e44645ed88e13cd1c149d94c",
+      "Inputs": [
+        {
+          "Id": "f1129e447d9a4f19a0369a54cc76432e",
+          "Name": "unknownItem",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1ccd45caee444effb18f136090bdedcf",
+          "Name": "seq",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns an element (or a nested list) into a flat list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.AsPoint",
+      "Id": "6beafa4d82474b629fe2504317432db8",
+      "Inputs": [
+        {
+          "Id": "9cc80d25508f4e8680a74936f6e81c98",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "462968819f3f4d869f75b2258cdd960b",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the Point with the same X, Y, and Z component\n\nVector.AsPoint ( ): Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "39901164f868406db2026a462356d2d2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7a6fd6d6ee71463380143460a2801a44",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "vector",
+        "TypeName": "Autodesk.DesignScript.Geometry.Vector",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "f73e03f0ce114fd78db1e5d38b080889",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "22f0ddaa781d4421bfa429feb70dd74b",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "newElement",
+      "Id": "573c14755f36479dadd148e7c9cbd930",
+      "Inputs": [
+        {
+          "Id": "d86e7415e729439f88157e39010eee5a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "rehostToClosestLevel",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false"
+      },
+      "Id": "d3e0d0bbdf6c4ecfa1121aa6cb230163",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a96662a6ada24816a32527dba33cd5fd",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c091aa8336b94d48b39ef74c95b8b4e6",
+      "End": "d86e7415e729439f88157e39010eee5a",
+      "Id": "8596382f8ceb410299986e7e4a172c8b"
+    },
+    {
+      "Start": "1ccd45caee444effb18f136090bdedcf",
+      "End": "c976ef37f24b49ceab146f02f60c33a3",
+      "Id": "b0d5f568667c4db9adddff7bef2b645e"
+    },
+    {
+      "Start": "462968819f3f4d869f75b2258cdd960b",
+      "End": "a5e768c3029d4e02a3ee2f19718d2eca",
+      "Id": "d9138ae8ab674c28bc6a82d3a93be152"
+    },
+    {
+      "Start": "7a6fd6d6ee71463380143460a2801a44",
+      "End": "f1129e447d9a4f19a0369a54cc76432e",
+      "Id": "7458f407d1184ceeac98d67550bf29af"
+    },
+    {
+      "Start": "22f0ddaa781d4421bfa429feb70dd74b",
+      "End": "9cc80d25508f4e8680a74936f6e81c98",
+      "Id": "9c9b11114b7e412185debe07a17e9bec"
+    },
+    {
+      "Start": "a96662a6ada24816a32527dba33cd5fd",
+      "End": "62c134ad982548029071f3bfb8316f6b",
+      "Id": "132e1074ec1944388b531bbd9c0658f3"
+    }
+  ],
+  "Dependencies": [
+    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "a322c46d7e6d407db51a37c7e0d978fd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 491.938130562526,
+        "Y": 49.5
+      },
+      {
+        "Id": "76e7fd82e44645ed88e13cd1c149d94c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "TurnIntoList",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 222.938130562526,
+        "Y": 8.5
+      },
+      {
+        "Id": "6beafa4d82474b629fe2504317432db8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.AsPoint",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 222.938130562526,
+        "Y": 116.5
+      },
+      {
+        "Id": "39901164f868406db2026a462356d2d2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -35.0618694374735,
+        "Y": 8.5
+      },
+      {
+        "Id": "f73e03f0ce114fd78db1e5d38b080889",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -35.0618694374735,
+        "Y": 116.5
+      },
+      {
+        "Id": "573c14755f36479dadd148e7c9cbd930",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 715.938130562526,
+        "Y": 49.5
+      },
+      {
+        "Id": "d3e0d0bbdf6c4ecfa1121aa6cb230163",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -44.0618694374735,
+        "Y": 248.5
+      }
+    ],
+    "Annotations": [],
+    "X": 311.0,
+    "Y": 351.0,
+    "Zoom": 1.0
+  }
+}

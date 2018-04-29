@@ -1,51 +1,168 @@
-<Workspace Version="1.3.1.1736" X="59.5869001487624" Y="283.484019237933" zoom="0.787053582575142" ScaleFactor="1" Name="Wall.Orientation" Description="Gets the orientation of a given wall instance (normal of the exterior face of the wall). Will *not* work for walls hosted on mass faces or in-place walls." ID="8cfc6f31-34cf-4c99-be21-5af290dbe7b7" Category="Clockwork.Revit.Elements.Query">
-  <NamespaceResolutionMap>
-    <ClassMap partialName="Wall" resolvedName="Revit.Elements.Wall" assemblyName="RevitNodes.dll" />
-  </NamespaceResolutionMap>
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="7d675e6f-ff05-4b4b-89eb-be20b050e79e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="244.703555809089" y="56.8670406525547" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="wall : Wall" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="4fc294fd-e0ca-4307-8144-597c5fd12d37" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="689.703555809089" y="56.8670406525547" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="Normal" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <PythonNodeModels.PythonNode guid="9822dc6d-4666-4600-8871-44414d2727a2" type="PythonNodeModels.PythonNode" nickname="Python Script" x="465.703555809089" y="56.8670406525547" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
-      <PortInfo index="0" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
-clr.ImportExtensions(Revit.GeometryConversion)
-
-def WallOrientation(wall):
-	loc = wall.Location
-	if hasattr(loc, "Curve"):
-		lcurve = loc.Curve
-		if str(type(lcurve)) == "Autodesk.Revit.DB.Line":
-			return wall.Orientation.ToVector()
-		else:
-			direction = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()
-			return XYZ.BasisZ.CrossProduct(direction).ToVector()
-	else: return None
-
-walls = UnwrapElement(IN[0])
-
-if isinstance(IN[0], list): OUT = [WallOrientation(x) for x in walls]
-else: OUT = WallOrientation(walls)</Script>
-    </PythonNodeModels.PythonNode>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="7d675e6f-ff05-4b4b-89eb-be20b050e79e" start_index="0" end="9822dc6d-4666-4600-8871-44414d2727a2" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="9822dc6d-4666-4600-8871-44414d2727a2" start_index="0" end="4fc294fd-e0ca-4307-8144-597c5fd12d37" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "8cfc6f31-34cf-4c99-be21-5af290dbe7b7",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets the orientation of a given wall instance (normal of the exterior face of the wall). Will *not* work for walls hosted on mass faces or in-place walls.",
+  "Name": "Wall.Orientation",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Wall": {
+        "Key": "Revit.Elements.Wall",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "wall",
+        "TypeName": "Revit.Elements.Wall",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "7d675e6fff054b4b89ebbe20b050e79e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "54a2b39dbbfe435cb739739e6d466e48",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "Normal",
+      "Id": "4fc294fde0ca43078144597c5fd12d37",
+      "Inputs": [
+        {
+          "Id": "883f70ab37c34bcebe207ee43e79ffee",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef WallOrientation(wall):\r\n\tloc = wall.Location\r\n\tif hasattr(loc, \"Curve\"):\r\n\t\tlcurve = loc.Curve\r\n\t\tif str(type(lcurve)) == \"Autodesk.Revit.DB.Line\":\r\n\t\t\treturn wall.Orientation.ToVector()\r\n\t\telse:\r\n\t\t\tdirection = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()\r\n\t\t\treturn XYZ.BasisZ.CrossProduct(direction).ToVector()\r\n\telse: return None\r\n\r\nwalls = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [WallOrientation(x) for x in walls]\r\nelse: OUT = WallOrientation(walls)",
+      "VariableInputPorts": true,
+      "Id": "9822dc6d46664600887144414d2727a2",
+      "Inputs": [
+        {
+          "Id": "1b863efae51048d1b512373ad5d14cc4",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9e616031c88e42bb9e7063eb025ca026",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "54a2b39dbbfe435cb739739e6d466e48",
+      "End": "1b863efae51048d1b512373ad5d14cc4",
+      "Id": "32814d2b776b4f448fd05fd488964b30"
+    },
+    {
+      "Start": "9e616031c88e42bb9e7063eb025ca026",
+      "End": "883f70ab37c34bcebe207ee43e79ffee",
+      "Id": "dec7163a29554393ab9c475c1981bb05"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "7d675e6fff054b4b89ebbe20b050e79e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 244.703555809089,
+        "Y": 56.8670406525547
+      },
+      {
+        "Id": "4fc294fde0ca43078144597c5fd12d37",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 689.703555809089,
+        "Y": 56.8670406525547
+      },
+      {
+        "Id": "9822dc6d46664600887144414d2727a2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 465.703555809089,
+        "Y": 56.8670406525547
+      }
+    ],
+    "Annotations": [],
+    "X": 59.5869001487624,
+    "Y": 283.484019237933,
+    "Zoom": 0.787053582575142
+  }
+}

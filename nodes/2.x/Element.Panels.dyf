@@ -1,53 +1,163 @@
-<Workspace Version="1.3.1.1736" X="61" Y="209" zoom="1" ScaleFactor="1" Name="Element.Panels" Description="Retrieves the panels nested in a curtain wall, curtain system or glazed roof. &#xD;&#xA;Differences to OOTB node CurtainPanel.ByElement:&#xD;&#xA;- Returns embedded walls&#xD;&#xA;- Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. &#xD;&#xA;PLEASE NOTE: Will not work for glazed roofs created by RoofByFace method." ID="413a2361-4460-4bd6-90b7-3c137a5595ee" Category="Clockwork.Revit.Elements.Query">
-  <NamespaceResolutionMap />
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11485846-15e6-4e2a-a561-a0210c07c137" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="213.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="hostElement" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e2525691-1397-4f18-878b-ed73f3490523" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="658.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="panels" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <PythonNodeModels.PythonNode guid="628c73c0-897a-40a6-9914-5fafa11df794" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
-      <PortInfo index="0" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
-
-def GetCurtainPanels(host):
-	if hasattr(host, "CurtainGrid"):
-		return GetCurtainPanelsByGrid(host.CurtainGrid, host)
-	elif hasattr(host, "CurtainGrids"):
-		return [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]
-	else: return []
-
-def GetCurtainPanelsByGrid(grid, host):
-	panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
-	for panel in panellist:
-		if hasattr(panel, "FindHostPanel"):
-			hostpanelid = panel.FindHostPanel()
-			if hostpanelid.IntegerValue != -1:
-				panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
-	return [x.ToDSType(True) for x in panellist]
-
-items = UnwrapElement(IN[0])
-
-if isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]
-else: OUT = GetCurtainPanels(items)</Script>
-    </PythonNodeModels.PythonNode>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="11485846-15e6-4e2a-a561-a0210c07c137" start_index="0" end="628c73c0-897a-40a6-9914-5fafa11df794" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="628c73c0-897a-40a6-9914-5fafa11df794" start_index="0" end="e2525691-1397-4f18-878b-ed73f3490523" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "413a2361-4460-4bd6-90b7-3c137a5595ee",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves the panels nested in a curtain wall, curtain system or glazed roof. \r\nDifferences to OOTB node CurtainPanel.ByElement:\r\n- Returns embedded walls\r\n- Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. \r\nPLEASE NOTE: Will not work for glazed roofs created by RoofByFace method.",
+  "Name": "Element.Panels",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "hostElement",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "1148584615e64e2aa561a0210c07c137",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "30f0fc9a629e48079ac39ab1e3b35188",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "panels",
+      "Id": "e252569113974f18878bed73f3490523",
+      "Inputs": [
+        {
+          "Id": "e4625103eda648fcbc136b681278be93",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCurtainPanels(host):\r\n\tif hasattr(host, \"CurtainGrid\"):\r\n\t\treturn GetCurtainPanelsByGrid(host.CurtainGrid, host)\r\n\telif hasattr(host, \"CurtainGrids\"):\r\n\t\treturn [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]\r\n\telse: return []\r\n\r\ndef GetCurtainPanelsByGrid(grid, host):\r\n\tpanellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]\r\n\tfor panel in panellist:\r\n\t\tif hasattr(panel, \"FindHostPanel\"):\r\n\t\t\thostpanelid = panel.FindHostPanel()\r\n\t\t\tif hostpanelid.IntegerValue != -1:\r\n\t\t\t\tpanellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)\r\n\treturn [x.ToDSType(True) for x in panellist]\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]\r\nelse: OUT = GetCurtainPanels(items)",
+      "VariableInputPorts": true,
+      "Id": "628c73c0897a40a699145fafa11df794",
+      "Inputs": [
+        {
+          "Id": "80eb9440315b42f084c49be4085adf4f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "da8af204feb9413b90940bd2049dc983",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "30f0fc9a629e48079ac39ab1e3b35188",
+      "End": "80eb9440315b42f084c49be4085adf4f",
+      "Id": "60da6123a26c4a54950ab1d9d6b253fa"
+    },
+    {
+      "Start": "da8af204feb9413b90940bd2049dc983",
+      "End": "e4625103eda648fcbc136b681278be93",
+      "Id": "966d5a9a99c54aba904a69de9d3ceb0c"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "1148584615e64e2aa561a0210c07c137",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 213.913347075248,
+        "Y": 77.0
+      },
+      {
+        "Id": "e252569113974f18878bed73f3490523",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 658.913347075248,
+        "Y": 77.0
+      },
+      {
+        "Id": "628c73c0897a40a699145fafa11df794",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 434.913347075248,
+        "Y": 77.0
+      }
+    ],
+    "Annotations": [],
+    "X": 61.0,
+    "Y": 209.0,
+    "Zoom": 1.0
+  }
+}

@@ -1,171 +1,571 @@
-<Workspace Version="1.3.1.1736" X="326.261378943467" Y="186.208611169102" zoom="0.991871263722181" ScaleFactor="1" Name="Element.Location+" Description="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " ID="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" Category="Clockwork.Revit.Elements.Query">
-  <NamespaceResolutionMap />
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="467e3f8f-3faf-49fc-94c3-76b1b0c59c5e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="element" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3ebf8af8-90b7-44f8-afdf-742ff53b9f65" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="-13.753237059281" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="points" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="fe6d5941-e752-40bb-b243-e86bdd061ab9" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="42.1780581895263" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="curveEndpoints" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="fef50bd5-ee46-46bb-bc91-c1d356b52c80" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="98.1093534383336" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="curves" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="9c5fe234-6333-42d1-8497-fa4ae9ff0a2d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="154.040648687141" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="isPoint" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="21d34519-3cea-4d3f-b917-cbe99953d0f1" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="209.971943935948" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="isCurve" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bd3f39ee-762e-4a88-a57d-373694197124" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="551.355185870988" y="139.870950208536" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];&#xA;seq[3];&#xA;seq[4];&#xA;seq[5];&#xA;seq[6];&#xA;seq[7];" ShouldFocus="false">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.CodeBlockNodeModel>
-    <PythonNodeModels.PythonNode guid="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" type="PythonNodeModels.PythonNode" nickname="Python Script" x="404" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
-      <PortInfo index="0" default="False" />
-      <Script>import clr
-import math
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.GeometryConversion)
-
-items = UnwrapElement(IN[0])
-pointlist, curvepointlist, ispoint, iscurve, curves, haslocation, angles, hasrotation = [], [], [], [], [], [], [], []
-
-for item in items:
-	try:
-		# points and text notes
-		pointlist.append(item.Coord.ToPoint())
-		ispoint.append(True)
-		iscurve.append(False)
-		haslocation.append(True)
-		hasrotation.append(False)
-	except:
-		try:
-			loc = item.Location
-			if loc.ToString() == 'Autodesk.Revit.DB.LocationCurve':
-				# line-based elements (e.g. walls)
-				curvepoints = (loc.Curve.GetEndPoint(0).ToPoint(),loc.Curve.GetEndPoint(1).ToPoint())
-				curvepointlist.append(curvepoints)
-				curves.append(loc.Curve.ToProtoType())
-				ispoint.append(False)
-				iscurve.append(True)
-				haslocation.append(True)
-				hasrotation.append(False)
-			elif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':
-				# point-based elements
-				pointlist.append(loc.Point.ToPoint())
-				ispoint.append(True)
-				iscurve.append(False)
-				haslocation.append(True)
-				try:
-					angles.append(math.degrees(loc.Rotation))
-					hasrotation.append(True)
-				except:
-					hasrotation.append(False)
-			else:
-				# check for host objects outlines (floor slabs etc.)
-				try:
-					refs = HostObjectUtils.GetTopFaces(item)
-					blines = []
-					bpoints = []
-					for ref in refs:
-						try:
-							boundaries = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
-							for loop in boundaries:
-								cloop = []
-								clooppoints = []
-								for line in loop:
-									cloop.append(line.ToProtoType())
-									curvepoint = (line.GetEndPoint(0).ToPoint(),line.GetEndPoint(1).ToPoint())
-									clooppoints.append(curvepoint)
-								blines.append(cloop)
-								bpoints.append(clooppoints)
-						except:
-							pass
-					if (len(blines) &gt; 0):
-						curves.append(blines)
-						curvepointlist.append(bpoints)
-						iscurve.append(True)
-						haslocation.append(True)
-					else:
-						iscurve.append(False)
-						haslocation.append(False)
-					ispoint.append(False)
-					hasrotation.append(False)
-				except:
-					ispoint.append(False)
-					iscurve.append(False)
-					haslocation.append(False)
-					hasrotation.append(False)
-		except:
-			try:
-				# curves
-				curvepoints = (item.GetEndPoint(0).ToPoint(),item.GetEndPoint(1).ToPoint())
-				curvepointlist.append(curvepoints)
-				curves.append(item.ToProtoType())
-				ispoint.append(False)
-				iscurve.append(True)
-				haslocation.append(True)
-				hasrotation.append(False)
-			except:
-				ispoint.append(False)
-				iscurve.append(False)
-				haslocation.append(False)
-				hasrotation.append(False)
-OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrotation)</Script>
-    </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f049edbf-dc90-4d9d-8d55-aec33858083d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="265.903239184756" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="hasLocation" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="14d49b05-5d40-4fbf-b0e4-71bfaaee0839" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="321.834534433563" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="angle" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="83ee1aef-f798-4e80-8bef-4ac8b8479804" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="377.76582968237" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="hasRotation" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="157124ef-0735-43df-b3be-fc62d61d9f09" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="TurnIntoList" x="141.892023898732" y="137.912442707094" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="cd09ad33-8c34-4850-ac26-24448d92c38f" />
-      <Name value="TurnIntoList" />
-      <Description value="Turns an element (or a nested list) into a flat list" />
-      <Inputs>
-        <Input value="unknownItem" />
-      </Inputs>
-      <Outputs>
-        <Output value="seq" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="467e3f8f-3faf-49fc-94c3-76b1b0c59c5e" start_index="0" end="157124ef-0735-43df-b3be-fc62d61d9f09" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="0" end="3ebf8af8-90b7-44f8-afdf-742ff53b9f65" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="1" end="fe6d5941-e752-40bb-b243-e86bdd061ab9" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="2" end="fef50bd5-ee46-46bb-bc91-c1d356b52c80" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="3" end="9c5fe234-6333-42d1-8497-fa4ae9ff0a2d" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="4" end="21d34519-3cea-4d3f-b917-cbe99953d0f1" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="5" end="f049edbf-dc90-4d9d-8d55-aec33858083d" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="6" end="14d49b05-5d40-4fbf-b0e4-71bfaaee0839" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="7" end="83ee1aef-f798-4e80-8bef-4ac8b8479804" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" start_index="0" end="bd3f39ee-762e-4a88-a57d-373694197124" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="157124ef-0735-43df-b3be-fc62d61d9f09" start_index="0" end="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" end_index="0" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "0b59c4d8-afe4-4063-bf7e-2195fa33e8a9",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. ",
+  "Name": "Element.Location+",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null
+      },
+      "Id": "467e3f8f3faf49fc94c376b1b0c59c5e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7ceecc03d1b14b18bb7b52c92b6332d5",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "points",
+      "Id": "3ebf8af890b744f8afdf742ff53b9f65",
+      "Inputs": [
+        {
+          "Id": "d00cb0b9190f4bf4ad23cf3c61a4ee57",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "curveEndpoints",
+      "Id": "fe6d5941e75240bbb243e86bdd061ab9",
+      "Inputs": [
+        {
+          "Id": "883a475a09fb42bab63b50c209d770f1",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "curves",
+      "Id": "fef50bd5ee4646bbbc91c1d356b52c80",
+      "Inputs": [
+        {
+          "Id": "755bbeabd7c5467b9de4e30dbe53f236",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isPoint",
+      "Id": "9c5fe234633342d18497fa4ae9ff0a2d",
+      "Inputs": [
+        {
+          "Id": "4a690dfdf3d5491f9ef1373afb6137ba",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "isCurve",
+      "Id": "21d345193cea4d3fb917cbe99953d0f1",
+      "Inputs": [
+        {
+          "Id": "34c71a60b4b84c38a7edcb74aa9b387a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "seq[0];\nseq[1];\nseq[2];\nseq[3];\nseq[4];\nseq[5];\nseq[6];\nseq[7];",
+      "Id": "bd3f39ee762e4a88a57d373694197124",
+      "Inputs": [
+        {
+          "Id": "a3f86729644040878891c0758ac54837",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f4a116ca6b0a450eafd06f237346f3bb",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "96c14e202e38418399e0e79351d3bc40",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e6ae2ae924e94cce910ccd203cbe6c57",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9dac0cc5838b47c9bf336bab5a60c8c5",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ffa4f5ab18d940febf7050c97976877f",
+          "Name": "",
+          "Description": "Value of expression at line 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6cb7d6ecf9ec4f19afc26e873bb2ab65",
+          "Name": "",
+          "Description": "Value of expression at line 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d597e8ac96924aa092f6e5dde77baa75",
+          "Name": "",
+          "Description": "Value of expression at line 7",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ab46bc4c7d3f426fb942577bf5ac4d53",
+          "Name": "",
+          "Description": "Value of expression at line 8",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport math\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nitems = UnwrapElement(IN[0])\r\npointlist, curvepointlist, ispoint, iscurve, curves, haslocation, angles, hasrotation = [], [], [], [], [], [], [], []\r\n\r\nfor item in items:\r\n\ttry:\r\n\t\t# points and text notes\r\n\t\tpointlist.append(item.Coord.ToPoint())\r\n\t\tispoint.append(True)\r\n\t\tiscurve.append(False)\r\n\t\thaslocation.append(True)\r\n\t\thasrotation.append(False)\r\n\texcept:\r\n\t\ttry:\r\n\t\t\tloc = item.Location\r\n\t\t\tif loc.ToString() == 'Autodesk.Revit.DB.LocationCurve':\r\n\t\t\t\t# line-based elements (e.g. walls)\r\n\t\t\t\tcurvepoints = (loc.Curve.GetEndPoint(0).ToPoint(),loc.Curve.GetEndPoint(1).ToPoint())\r\n\t\t\t\tcurvepointlist.append(curvepoints)\r\n\t\t\t\tcurves.append(loc.Curve.ToProtoType())\r\n\t\t\t\tispoint.append(False)\r\n\t\t\t\tiscurve.append(True)\r\n\t\t\t\thaslocation.append(True)\r\n\t\t\t\thasrotation.append(False)\r\n\t\t\telif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':\r\n\t\t\t\t# point-based elements\r\n\t\t\t\tpointlist.append(loc.Point.ToPoint())\r\n\t\t\t\tispoint.append(True)\r\n\t\t\t\tiscurve.append(False)\r\n\t\t\t\thaslocation.append(True)\r\n\t\t\t\ttry:\r\n\t\t\t\t\tangles.append(math.degrees(loc.Rotation))\r\n\t\t\t\t\thasrotation.append(True)\r\n\t\t\t\texcept:\r\n\t\t\t\t\thasrotation.append(False)\r\n\t\t\telse:\r\n\t\t\t\t# check for host objects outlines (floor slabs etc.)\r\n\t\t\t\ttry:\r\n\t\t\t\t\trefs = HostObjectUtils.GetTopFaces(item)\r\n\t\t\t\t\tblines = []\r\n\t\t\t\t\tbpoints = []\r\n\t\t\t\t\tfor ref in refs:\r\n\t\t\t\t\t\ttry:\r\n\t\t\t\t\t\t\tboundaries = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()\r\n\t\t\t\t\t\t\tfor loop in boundaries:\r\n\t\t\t\t\t\t\t\tcloop = []\r\n\t\t\t\t\t\t\t\tclooppoints = []\r\n\t\t\t\t\t\t\t\tfor line in loop:\r\n\t\t\t\t\t\t\t\t\tcloop.append(line.ToProtoType())\r\n\t\t\t\t\t\t\t\t\tcurvepoint = (line.GetEndPoint(0).ToPoint(),line.GetEndPoint(1).ToPoint())\r\n\t\t\t\t\t\t\t\t\tclooppoints.append(curvepoint)\r\n\t\t\t\t\t\t\t\tblines.append(cloop)\r\n\t\t\t\t\t\t\t\tbpoints.append(clooppoints)\r\n\t\t\t\t\t\texcept:\r\n\t\t\t\t\t\t\tpass\r\n\t\t\t\t\tif (len(blines) > 0):\r\n\t\t\t\t\t\tcurves.append(blines)\r\n\t\t\t\t\t\tcurvepointlist.append(bpoints)\r\n\t\t\t\t\t\tiscurve.append(True)\r\n\t\t\t\t\t\thaslocation.append(True)\r\n\t\t\t\t\telse:\r\n\t\t\t\t\t\tiscurve.append(False)\r\n\t\t\t\t\t\thaslocation.append(False)\r\n\t\t\t\t\tispoint.append(False)\r\n\t\t\t\t\thasrotation.append(False)\r\n\t\t\t\texcept:\r\n\t\t\t\t\tispoint.append(False)\r\n\t\t\t\t\tiscurve.append(False)\r\n\t\t\t\t\thaslocation.append(False)\r\n\t\t\t\t\thasrotation.append(False)\r\n\t\texcept:\r\n\t\t\ttry:\r\n\t\t\t\t# curves\r\n\t\t\t\tcurvepoints = (item.GetEndPoint(0).ToPoint(),item.GetEndPoint(1).ToPoint())\r\n\t\t\t\tcurvepointlist.append(curvepoints)\r\n\t\t\t\tcurves.append(item.ToProtoType())\r\n\t\t\t\tispoint.append(False)\r\n\t\t\t\tiscurve.append(True)\r\n\t\t\t\thaslocation.append(True)\r\n\t\t\t\thasrotation.append(False)\r\n\t\t\texcept:\r\n\t\t\t\tispoint.append(False)\r\n\t\t\t\tiscurve.append(False)\r\n\t\t\t\thaslocation.append(False)\r\n\t\t\t\thasrotation.append(False)\r\nOUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrotation)",
+      "VariableInputPorts": true,
+      "Id": "f9cf6ebe4cb643a4b682f29bf6633963",
+      "Inputs": [
+        {
+          "Id": "117554e3b9e2455b9c5bda5792c407f8",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6cd69ac9c87e4bbaa7849d787db46f63",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "hasLocation",
+      "Id": "f049edbfdc904d9d8d55aec33858083d",
+      "Inputs": [
+        {
+          "Id": "b00ce5e741624a6e9d038bb288a41229",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "angle",
+      "Id": "14d49b055d404fbfb0e471bfaaee0839",
+      "Inputs": [
+        {
+          "Id": "c3f524de99d24d7984da929164b412cd",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "hasRotation",
+      "Id": "83ee1aeff7984e808bef4ac8b8479804",
+      "Inputs": [
+        {
+          "Id": "a64627a6899744029dd3507eec1032cb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "157124ef073543dfb3befc62d61d9f09",
+      "Inputs": [
+        {
+          "Id": "cc4602b99fe2405ba9451682ea43a062",
+          "Name": "unknownItem",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8e3ee51bce604f3f8852a0e1b93be574",
+          "Name": "seq",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns an element (or a nested list) into a flat list"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7ceecc03d1b14b18bb7b52c92b6332d5",
+      "End": "cc4602b99fe2405ba9451682ea43a062",
+      "Id": "87764558173d4323b380b30d561a0a70"
+    },
+    {
+      "Start": "f4a116ca6b0a450eafd06f237346f3bb",
+      "End": "d00cb0b9190f4bf4ad23cf3c61a4ee57",
+      "Id": "a5bce3b321cc4d9793cc57787e0549af"
+    },
+    {
+      "Start": "96c14e202e38418399e0e79351d3bc40",
+      "End": "883a475a09fb42bab63b50c209d770f1",
+      "Id": "2054c8ed338746198dec3737b80d8777"
+    },
+    {
+      "Start": "e6ae2ae924e94cce910ccd203cbe6c57",
+      "End": "755bbeabd7c5467b9de4e30dbe53f236",
+      "Id": "9fe8cddca3d845bbb55dd444e690c829"
+    },
+    {
+      "Start": "9dac0cc5838b47c9bf336bab5a60c8c5",
+      "End": "4a690dfdf3d5491f9ef1373afb6137ba",
+      "Id": "ef4f19b0b5de40d0817de3611ba7880b"
+    },
+    {
+      "Start": "ffa4f5ab18d940febf7050c97976877f",
+      "End": "34c71a60b4b84c38a7edcb74aa9b387a",
+      "Id": "2718c8b8ae524ca4a9d24413a2de885c"
+    },
+    {
+      "Start": "6cb7d6ecf9ec4f19afc26e873bb2ab65",
+      "End": "b00ce5e741624a6e9d038bb288a41229",
+      "Id": "b423b0ef0e034ca4bdf3b1f3d013b706"
+    },
+    {
+      "Start": "d597e8ac96924aa092f6e5dde77baa75",
+      "End": "c3f524de99d24d7984da929164b412cd",
+      "Id": "deb41afc9211450186253059fbb90f34"
+    },
+    {
+      "Start": "ab46bc4c7d3f426fb942577bf5ac4d53",
+      "End": "a64627a6899744029dd3507eec1032cb",
+      "Id": "5b8580f7a6264b2499c1d8900a89e989"
+    },
+    {
+      "Start": "6cd69ac9c87e4bbaa7849d787db46f63",
+      "End": "a3f86729644040878891c0758ac54837",
+      "Id": "a3723ffebedb403f9bcdb860bc987cb8"
+    },
+    {
+      "Start": "8e3ee51bce604f3f8852a0e1b93be574",
+      "End": "117554e3b9e2455b9c5bda5792c407f8",
+      "Id": "09e43dcf5046480daac5cc4c2b2ef5ea"
+    }
+  ],
+  "Dependencies": [
+    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "467e3f8f3faf49fc94c376b1b0c59c5e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 0.0,
+        "Y": 136.0
+      },
+      {
+        "Id": "3ebf8af890b744f8afdf742ff53b9f65",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": -13.753237059281
+      },
+      {
+        "Id": "fe6d5941e75240bbb243e86bdd061ab9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 42.1780581895263
+      },
+      {
+        "Id": "fef50bd5ee4646bbbc91c1d356b52c80",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 98.1093534383336
+      },
+      {
+        "Id": "9c5fe234633342d18497fa4ae9ff0a2d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 154.040648687141
+      },
+      {
+        "Id": "21d345193cea4d3fb917cbe99953d0f1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 209.971943935948
+      },
+      {
+        "Id": "bd3f39ee762e4a88a57d373694197124",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 551.355185870988,
+        "Y": 139.870950208536
+      },
+      {
+        "Id": "f9cf6ebe4cb643a4b682f29bf6633963",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 404.0,
+        "Y": 136.0
+      },
+      {
+        "Id": "f049edbfdc904d9d8d55aec33858083d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 265.903239184756
+      },
+      {
+        "Id": "14d49b055d404fbfb0e471bfaaee0839",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 321.834534433563
+      },
+      {
+        "Id": "83ee1aeff7984e808bef4ac8b8479804",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 829.411443410782,
+        "Y": 377.76582968237
+      },
+      {
+        "Id": "157124ef073543dfb3befc62d61d9f09",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "TurnIntoList",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 141.892023898732,
+        "Y": 137.912442707094
+      }
+    ],
+    "Annotations": [],
+    "X": 326.261378943467,
+    "Y": 186.208611169102,
+    "Zoom": 0.991871263722181
+  }
+}

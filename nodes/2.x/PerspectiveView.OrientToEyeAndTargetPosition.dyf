@@ -1,130 +1,804 @@
-<Workspace Version="1.3.1.1736" X="294.839575615572" Y="444.606881572088" zoom="0.424234539005694" ScaleFactor="1" Name="PerspectiveView.OrientToEyeAndTargetPosition" Description="Sets the orientation of a given perspective view based on a given eye and target position. View needs to be in an unlocked state." ID="161bade3-e592-4aff-a1f7-0a49f2f92bab" Category="Clockwork.Revit.Views.Actions">
-  <NamespaceResolutionMap>
-    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
-    <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
-    <ClassMap partialName="PerspectiveView" resolvedName="Revit.Elements.Views.PerspectiveView" assemblyName="RevitNodes.dll" />
-    <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
-  </NamespaceResolutionMap>
-  <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="0211070c-6bf7-4490-a398-9f05a7517dff" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Vector.CorrectOrientation" x="844.624054473067" y="152.80418033354" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <ID value="2f9c4a7e-aa1d-49da-8132-5fd89adea518" />
-      <Name value="Normal.CorrectOrientation" />
-      <Description value="Inverts normal A if its inversion is closer to normal B" />
-      <Inputs>
-        <Input value="VectorA" />
-        <Input value="VectorB" />
-      </Inputs>
-      <Outputs>
-        <Output value="Vector" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <PythonNodeModels.PythonNode guid="d9ec8776-ff01-41cd-a52c-297fb0ebe385" type="PythonNodeModels.PythonNode" nickname="Python Script" x="1090.14570959355" y="97.8858220842622" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <PortInfo index="2" default="False" />
-      <PortInfo index="3" default="False" />
-      <Script>import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
-clr.ImportExtensions(Revit.GeometryConversion)
-
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-from RevitServices.Transactions import TransactionManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
-view = UnwrapElement(IN[0])
-eyeposition = IN[1].ToXyz()
-updirection = IN[2].ToXyz()
-forwarddirection = IN[3].ToXyz()
-
-TransactionManager.Instance.EnsureInTransaction(doc)
-try:
-	newVO = ViewOrientation3D(eyeposition, updirection, forwarddirection)
-	view.SetOrientation(newVO)
-	view.SaveOrientation()
-	OUT = True
-except:
-	OUT = False
-TransactionManager.Instance.TransactionTaskDone()</Script>
-    </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="06467a3d-689d-4c95-9a25-05bd2cf20268" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="810.590828341304" y="65.037693699018" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="view : PerspectiveView" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-503.197560536818" y="50.6415598181511" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="eyePosition : Autodesk.Point" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="74de2f0e-1a37-462f-a236-939123e6bc9b" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-529.05374749039" y="125.335593314185" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="targetPosition : Autodesk.Point" />
-    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="91787c15-2230-4d7c-b7da-5c43f9bbd807" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1088.96856497556" y="22.9444956315137" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="View" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5fbfe93e-17aa-4467-a9cd-d9c9a437a16b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.ByTwoPoints" x="89.035644619588" y="288.363241690642" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.ByTwoPoints@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="420cd17a-c313-4559-a163-77c6fae5997b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.Normalized" x="324.592515850387" y="286.799950384993" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Normalized">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="656eaf82-10df-4798-8cd9-849763e605ba" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.ZAxis" x="-325.349818536337" y="308.163619879199" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.ZAxis" />
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="39a91f35-d2f1-43b2-9832-d5d674f1c6ac" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Point.Add" x="-203.02657729023" y="188.860905467815" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.Add@Autodesk.DesignScript.Geometry.Vector">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="72d005ce-fff2-4d7d-b7e0-c5d91e57dd9b" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Plane.ByThreePoints" x="65.5693907089378" y="136.528757815442" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.ByThreePoints@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <PortInfo index="2" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="81415e74-ab9d-4020-8627-53cf6fc91a4f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Plane.Normal" x="322.837603008669" y="136.528757815442" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.Normal">
-      <PortInfo index="0" default="False" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c09353c7-2f1e-4d9d-b708-6c03e174be60" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Vector.Rotate" x="602.218757263138" y="152.247236631427" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Vector.Rotate@Autodesk.DesignScript.Geometry.Vector,double">
-      <PortInfo index="0" default="False" />
-      <PortInfo index="1" default="False" />
-      <PortInfo index="2" default="True" />
-    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="ba1a2df1-1dbb-4352-a4c6-287320ac7e89" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="445.367008065831" y="383.645547654318" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="90;" ShouldFocus="false" />
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="10d64f22-bc8d-4241-99bd-74b993339b91" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1262.27012732968" y="97.3569755115579" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <Symbol value="success" />
-    </Dynamo.Graph.Nodes.CustomNodes.Output>
-  </Elements>
-  <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="0211070c-6bf7-4490-a398-9f05a7517dff" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="2" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="d9ec8776-ff01-41cd-a52c-297fb0ebe385" start_index="0" end="10d64f22-bc8d-4241-99bd-74b993339b91" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="06467a3d-689d-4c95-9a25-05bd2cf20268" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="06467a3d-689d-4c95-9a25-05bd2cf20268" start_index="0" end="91787c15-2230-4d7c-b7da-5c43f9bbd807" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" start_index="0" end="5fbfe93e-17aa-4467-a9cd-d9c9a437a16b" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="0bc4eb96-3476-427e-b1c5-71a8ea04eaf2" start_index="0" end="72d005ce-fff2-4d7d-b7e0-c5d91e57dd9b" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="74de2f0e-1a37-462f-a236-939123e6bc9b" start_index="0" end="5fbfe93e-17aa-4467-a9cd-d9c9a437a16b" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="74de2f0e-1a37-462f-a236-939123e6bc9b" start_index="0" end="39a91f35-d2f1-43b2-9832-d5d674f1c6ac" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="74de2f0e-1a37-462f-a236-939123e6bc9b" start_index="0" end="72d005ce-fff2-4d7d-b7e0-c5d91e57dd9b" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="5fbfe93e-17aa-4467-a9cd-d9c9a437a16b" start_index="0" end="420cd17a-c313-4559-a163-77c6fae5997b" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="420cd17a-c313-4559-a163-77c6fae5997b" start_index="0" end="d9ec8776-ff01-41cd-a52c-297fb0ebe385" end_index="3" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="420cd17a-c313-4559-a163-77c6fae5997b" start_index="0" end="c09353c7-2f1e-4d9d-b708-6c03e174be60" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="656eaf82-10df-4798-8cd9-849763e605ba" start_index="0" end="39a91f35-d2f1-43b2-9832-d5d674f1c6ac" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="656eaf82-10df-4798-8cd9-849763e605ba" start_index="0" end="0211070c-6bf7-4490-a398-9f05a7517dff" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="39a91f35-d2f1-43b2-9832-d5d674f1c6ac" start_index="0" end="72d005ce-fff2-4d7d-b7e0-c5d91e57dd9b" end_index="2" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="72d005ce-fff2-4d7d-b7e0-c5d91e57dd9b" start_index="0" end="81415e74-ab9d-4020-8627-53cf6fc91a4f" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="81415e74-ab9d-4020-8627-53cf6fc91a4f" start_index="0" end="c09353c7-2f1e-4d9d-b708-6c03e174be60" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="c09353c7-2f1e-4d9d-b708-6c03e174be60" start_index="0" end="0211070c-6bf7-4490-a398-9f05a7517dff" end_index="0" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="ba1a2df1-1dbb-4352-a4c6-287320ac7e89" start_index="0" end="c09353c7-2f1e-4d9d-b708-6c03e174be60" end_index="2" portType="0" />
-  </Connectors>
-  <Notes />
-  <Annotations />
-  <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
-</Workspace>
+{
+  "Uuid": "161bade3-e592-4aff-a1f7-0a49f2f92bab",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Actions",
+  "Description": "Sets the orientation of a given perspective view based on a given eye and target position. View needs to be in an unlocked state.",
+  "Name": "PerspectiveView.OrientToEyeAndTargetPosition",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Vector": {
+        "Key": "Autodesk.DesignScript.Geometry.Vector",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Plane": {
+        "Key": "Autodesk.DesignScript.Geometry.Plane",
+        "Value": "ProtoGeometry.dll"
+      },
+      "PerspectiveView": {
+        "Key": "Revit.Elements.Views.PerspectiveView",
+        "Value": "RevitNodes.dll"
+      },
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "2f9c4a7e-aa1d-49da-8132-5fd89adea518",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "0211070c6bf74490a3989f05a7517dff",
+      "Inputs": [
+        {
+          "Id": "982b11bf02e344ab878fe34ca1d88ef6",
+          "Name": "VectorA",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e7d859e4481142b7bee2674ac7cd4949",
+          "Name": "VectorB",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ae2ce3182faa49ae8468d1e403ac961b",
+          "Name": "Vector",
+          "Description": "Output #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Inverts normal A if its inversion is closer to normal B"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nview = UnwrapElement(IN[0])\r\neyeposition = IN[1].ToXyz()\r\nupdirection = IN[2].ToXyz()\r\nforwarddirection = IN[3].ToXyz()\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ntry:\r\n\tnewVO = ViewOrientation3D(eyeposition, updirection, forwarddirection)\r\n\tview.SetOrientation(newVO)\r\n\tview.SaveOrientation()\r\n\tOUT = True\r\nexcept:\r\n\tOUT = False\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "VariableInputPorts": true,
+      "Id": "d9ec8776ff0141cda52c297fb0ebe385",
+      "Inputs": [
+        {
+          "Id": "aa9cdb913a6c4249bc02b302cc09cb74",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3abbb23d44bf445bb7a752e85a28dde7",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2997a48f5961429eae7926591547636c",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d632c75bb6d64af7ae71d80b4c059b10",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "caad7b30dc99467c9198bac865d09301",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "Revit.Elements.Views.PerspectiveView",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "06467a3d689d4c959a2505bd2cf20268",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "30c3a502e3eb48aea680a854c2036ac1",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "eyePosition",
+        "TypeName": "Autodesk.DesignScript.Geometry.Point",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "0bc4eb963476427eb1c571a8ea04eaf2",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6f1f8a1ed01246d2a6cca5ce04641116",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "targetPosition",
+        "TypeName": "Autodesk.DesignScript.Geometry.Point",
+        "TypeRank": 0,
+        "DefaultValue": null
+      },
+      "Id": "74de2f0e1a37462fa236939123e6bc9b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0e06767c702b476ba580aa48597771a8",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "View",
+      "Id": "91787c1522304d7cb7da5c43f9bbd807",
+      "Inputs": [
+        {
+          "Id": "5a98958b2ec9485b9982ed9a6f8121d4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.ByTwoPoints@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point",
+      "Id": "5fbfe93e17aa4467a9cdd9c9a437a16b",
+      "Inputs": [
+        {
+          "Id": "c70b535d1d4c4b1789ae9b9f9533bceb",
+          "Name": "start",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9485bbe9bcf24f5eb57a304f273dfa76",
+          "Name": "end",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a0d7b5a6bcac41d28f33443ff106e4c9",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Form a Vector by two end points. The result is a vector from the start to the end point.\n\nVector.ByTwoPoints (start: Point, end: Point): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.Normalized",
+      "Id": "420cd17ac3134559a16377c6fae5997b",
+      "Inputs": [
+        {
+          "Id": "973c09b39f5e4d31ad90ab3ef444bc67",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f169a530b9524225b7e7e42ffc4e0992",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the normalized version of a vector\n\nVector.Normalized ( ): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.ZAxis",
+      "Id": "656eaf8210df47988cd9849763e605ba",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5be388de003d4bb9a064de0ccd57ba0b",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the canonical Z axis Vector (0,0,1)\n\nVector.ZAxis ( ): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.Add@Autodesk.DesignScript.Geometry.Vector",
+      "Id": "39a91f35d2f143b29832d5d674f1c6ac",
+      "Inputs": [
+        {
+          "Id": "c72c797ea5674816be4a9b2f90d07132",
+          "Name": "point",
+          "Description": "Autodesk.DesignScript.Geometry.Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f20b2c4dd281414fbf532e024c2ed1b1",
+          "Name": "vectorToAdd",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8f363609e35646f784fb93190ec4179f",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Add a vector to a point. The same as Translate(Vector).\n\nPoint.Add (vectorToAdd: Vector): Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Plane.ByThreePoints@Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point,Autodesk.DesignScript.Geometry.Point",
+      "Id": "72d005cefff24d7db7e0c5d91e57dd9b",
+      "Inputs": [
+        {
+          "Id": "526f8518498f4c07a56e6485fbfd14e6",
+          "Name": "origin",
+          "Description": "The plane origin\n\nPoint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b01967890fa8463eb78e9c137720066b",
+          "Name": "planePoint",
+          "Description": "Any point lying on the plane\n\nPoint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "82617f67e86d4de18e2457c248c27c40",
+          "Name": "xAxisPoint",
+          "Description": "The point lying on the X-axis of the plane wrt to the plane origin\n\nPoint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "89c064a0cfd9439a892d7ec2c26b47f1",
+          "Name": "Plane",
+          "Description": "Plane",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Create a the Plane containing the three input Points.\n\nPlane.ByThreePoints (origin: Point, planePoint: Point, xAxisPoint: Point): Plane"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Plane.Normal",
+      "Id": "81415e74ab9d4020862753cf6fc91a4f",
+      "Inputs": [
+        {
+          "Id": "4fe43e9208da4d79a2426b44bdc4e5e8",
+          "Name": "plane",
+          "Description": "Autodesk.DesignScript.Geometry.Plane",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "81d641edbd194cb19f0a9853503a9726",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the normal direction of the Plane.\n\nPlane.Normal: Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Vector.Rotate@Autodesk.DesignScript.Geometry.Vector,double",
+      "Id": "c09353c72f1e4d9db7086c03e174be60",
+      "Inputs": [
+        {
+          "Id": "9b495455cde74cdb97553033b7e0b580",
+          "Name": "vector",
+          "Description": "Autodesk.DesignScript.Geometry.Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d67d65915e484b299183da15cba52eab",
+          "Name": "axis",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4f66542f9bfb4a9bba344e7b8c1ac62f",
+          "Name": "degrees",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0b87c57997a845d2b2edb783be395b94",
+          "Name": "Vector",
+          "Description": "Vector",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Rotates a Vector around an axis by a specified number of degrees\n\nVector.Rotate (axis: Vector, degrees: double = 0): Vector"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "90;",
+      "Id": "ba1a2df11dbb4352a4c6287320ac7e89",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f4b053220ffa45e79b260df47e71f1d0",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "10d64f22bc8d424199bd74b993339b91",
+      "Inputs": [
+        {
+          "Id": "990fbfccb14346c0ab53ad14f20003ce",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ae2ce3182faa49ae8468d1e403ac961b",
+      "End": "2997a48f5961429eae7926591547636c",
+      "Id": "50f9419757b0422ca1916d703b6d78e8"
+    },
+    {
+      "Start": "caad7b30dc99467c9198bac865d09301",
+      "End": "990fbfccb14346c0ab53ad14f20003ce",
+      "Id": "a528fe9a94744f678ae8322c0180de57"
+    },
+    {
+      "Start": "30c3a502e3eb48aea680a854c2036ac1",
+      "End": "aa9cdb913a6c4249bc02b302cc09cb74",
+      "Id": "ba0bb5e2ecba4c7d881693c89bb291a8"
+    },
+    {
+      "Start": "30c3a502e3eb48aea680a854c2036ac1",
+      "End": "5a98958b2ec9485b9982ed9a6f8121d4",
+      "Id": "c9bfdd430e4b48709a31817e6b3cbefa"
+    },
+    {
+      "Start": "6f1f8a1ed01246d2a6cca5ce04641116",
+      "End": "3abbb23d44bf445bb7a752e85a28dde7",
+      "Id": "9ae82ae847eb43ceab11abd44fc7ce49"
+    },
+    {
+      "Start": "6f1f8a1ed01246d2a6cca5ce04641116",
+      "End": "c70b535d1d4c4b1789ae9b9f9533bceb",
+      "Id": "b7f6a0bc7c554498a5b709f30f203c82"
+    },
+    {
+      "Start": "6f1f8a1ed01246d2a6cca5ce04641116",
+      "End": "526f8518498f4c07a56e6485fbfd14e6",
+      "Id": "7719163a38a74ef99a78372c1b3ad2d6"
+    },
+    {
+      "Start": "0e06767c702b476ba580aa48597771a8",
+      "End": "9485bbe9bcf24f5eb57a304f273dfa76",
+      "Id": "a60b62ba3d8d4baab8aa7a9ea10b80b8"
+    },
+    {
+      "Start": "0e06767c702b476ba580aa48597771a8",
+      "End": "c72c797ea5674816be4a9b2f90d07132",
+      "Id": "405c9a2a83774c0f89b4935e9e91e694"
+    },
+    {
+      "Start": "0e06767c702b476ba580aa48597771a8",
+      "End": "b01967890fa8463eb78e9c137720066b",
+      "Id": "c4a3222b6aef4ad3b975a0972693aa90"
+    },
+    {
+      "Start": "a0d7b5a6bcac41d28f33443ff106e4c9",
+      "End": "973c09b39f5e4d31ad90ab3ef444bc67",
+      "Id": "a48540b9559e4b1596d9573b8dd4ab32"
+    },
+    {
+      "Start": "f169a530b9524225b7e7e42ffc4e0992",
+      "End": "d632c75bb6d64af7ae71d80b4c059b10",
+      "Id": "81a8d40d65d142d1b127a35d7c377032"
+    },
+    {
+      "Start": "f169a530b9524225b7e7e42ffc4e0992",
+      "End": "9b495455cde74cdb97553033b7e0b580",
+      "Id": "a506fcd9ba854b0a9c7947c38ee21349"
+    },
+    {
+      "Start": "5be388de003d4bb9a064de0ccd57ba0b",
+      "End": "f20b2c4dd281414fbf532e024c2ed1b1",
+      "Id": "46c39795d74a4395884e2dc3dd1e866c"
+    },
+    {
+      "Start": "5be388de003d4bb9a064de0ccd57ba0b",
+      "End": "e7d859e4481142b7bee2674ac7cd4949",
+      "Id": "79a394977cfe4c23b6fa12303d901d70"
+    },
+    {
+      "Start": "8f363609e35646f784fb93190ec4179f",
+      "End": "82617f67e86d4de18e2457c248c27c40",
+      "Id": "353bf48744b749afa8510b17f7083a27"
+    },
+    {
+      "Start": "89c064a0cfd9439a892d7ec2c26b47f1",
+      "End": "4fe43e9208da4d79a2426b44bdc4e5e8",
+      "Id": "897aeecd14d341f3b65a0deb81054998"
+    },
+    {
+      "Start": "81d641edbd194cb19f0a9853503a9726",
+      "End": "d67d65915e484b299183da15cba52eab",
+      "Id": "f177c5d866b14fdc876a7d0ea002e024"
+    },
+    {
+      "Start": "0b87c57997a845d2b2edb783be395b94",
+      "End": "982b11bf02e344ab878fe34ca1d88ef6",
+      "Id": "b88fd460dfec4b969835564735ac5d3b"
+    },
+    {
+      "Start": "f4b053220ffa45e79b260df47e71f1d0",
+      "End": "4f66542f9bfb4a9bba344e7b8c1ac62f",
+      "Id": "f2ca71b585ea4eaf854cfbbbe47b29bd"
+    }
+  ],
+  "Dependencies": [
+    "2f9c4a7e-aa1d-49da-8132-5fd89adea518"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.0.4654",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "0211070c6bf74490a3989f05a7517dff",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Normal.CorrectOrientation",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 844.624054473067,
+        "Y": 152.80418033354
+      },
+      {
+        "Id": "d9ec8776ff0141cda52c297fb0ebe385",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1090.14570959355,
+        "Y": 97.8858220842622
+      },
+      {
+        "Id": "06467a3d689d4c959a2505bd2cf20268",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 810.590828341304,
+        "Y": 65.037693699018
+      },
+      {
+        "Id": "0bc4eb963476427eb1c571a8ea04eaf2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -503.197560536818,
+        "Y": 50.6415598181511
+      },
+      {
+        "Id": "74de2f0e1a37462fa236939123e6bc9b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -529.05374749039,
+        "Y": 125.335593314185
+      },
+      {
+        "Id": "91787c1522304d7cb7da5c43f9bbd807",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1088.96856497556,
+        "Y": 22.9444956315137
+      },
+      {
+        "Id": "5fbfe93e17aa4467a9cdd9c9a437a16b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.ByTwoPoints",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 89.035644619588,
+        "Y": 288.363241690642
+      },
+      {
+        "Id": "420cd17ac3134559a16377c6fae5997b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.Normalized",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 324.592515850387,
+        "Y": 286.799950384993
+      },
+      {
+        "Id": "656eaf8210df47988cd9849763e605ba",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.ZAxis",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -325.349818536337,
+        "Y": 308.163619879199
+      },
+      {
+        "Id": "39a91f35d2f143b29832d5d674f1c6ac",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Point.Add",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -203.02657729023,
+        "Y": 188.860905467815
+      },
+      {
+        "Id": "72d005cefff24d7db7e0c5d91e57dd9b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Plane.ByThreePoints",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 65.5693907089378,
+        "Y": 136.528757815442
+      },
+      {
+        "Id": "81415e74ab9d4020862753cf6fc91a4f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Plane.Normal",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 322.837603008669,
+        "Y": 136.528757815442
+      },
+      {
+        "Id": "c09353c72f1e4d9db7086c03e174be60",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Vector.Rotate",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 602.218757263138,
+        "Y": 152.247236631427
+      },
+      {
+        "Id": "ba1a2df11dbb4352a4c6287320ac7e89",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 445.367008065831,
+        "Y": 383.645547654318
+      },
+      {
+        "Id": "10d64f22bc8d424199bd74b993339b91",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1262.27012732968,
+        "Y": 97.3569755115579
+      }
+    ],
+    "Annotations": [],
+    "X": 294.839575615572,
+    "Y": 444.606881572088,
+    "Zoom": 0.424234539005694
+  }
+}
