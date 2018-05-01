@@ -2,16 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetFamilyName(item):
+	if hasattr(item, "FamilyName"): return item.FamilyName
+	else: return None
 
-famtypes = UnwrapElement(IN[0])
-elementlist = list()
-for item in famtypes:
-	try: 
-		elementlist.append(item.FamilyName)
-	except:
-		elementlist.append(None)
-			
-OUT = elementlist
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetFamilyName(x) for x in items]
+else: OUT = GetFamilyName(items)

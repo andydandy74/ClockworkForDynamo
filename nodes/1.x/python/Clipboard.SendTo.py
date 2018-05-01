@@ -9,12 +9,12 @@ def SetText(text):
     t = Thread(ThreadStart(thread_proc))
     t.ApartmentState = System.Threading.ApartmentState.STA
     t.Start()
-    
+
 try:
-	if IN[0] != "":
+	if IN[0] != "" and IN[0] != None:
 		SetText(IN[0])
 		OUT = IN[0]
 	else:
-		OUT = "String was empty"
+		OUT = "Invalid input: Empty string or Null value!"
 except:
-	OUT = 'Data could not be copied to clipboard'
+	OUT = 'Data could not be copied to clipboard!'

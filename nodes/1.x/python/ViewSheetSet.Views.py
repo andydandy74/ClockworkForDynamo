@@ -6,11 +6,12 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetSheetSetViews(set):
+	if hasattr(set, 'Views'):
+		return [x.ToDSType(True) for x in set.Views]
+	else: return []
+
 viewsheetsets = UnwrapElement(IN[0])
-elementlist = list()
-for set in viewsheetsets:
-	views = list()
-	for view in set.Views:
-		views.append(view.ToDSType(True))
-	elementlist.append(views)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [GetSheetSetViews(x) for x in viewsheetsets]
+else: OUT = GetSheetSetViews(viewsheetsets)

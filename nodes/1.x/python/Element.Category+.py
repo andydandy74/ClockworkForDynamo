@@ -6,20 +6,18 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
+def GetCategory(item):
 	objtype = item.GetType().ToString()
-	try:
-		if objtype == "Autodesk.Revit.DB.ViewSchedule":
-			elementlist.append(Revit.Elements.Category.ById(item.Definition.CategoryId.IntegerValue))
-		elif objtype == "Autodesk.Revit.DB.Family":
-			elementlist.append(Revit.Elements.Category.ById(item.FamilyCategoryId.IntegerValue))
-		elif objtype == "Autodesk.Revit.DB.GraphicsStyle":
-			elementlist.append(Revit.Elements.Category.ById(item.GraphicsStyleCategory.Id.IntegerValue))
-		else:
-			elementlist.append(Revit.Elements.Category.ById(item.Category.Id.IntegerValue))
-	except:
-		elementlist.append(None)
+	if objtype == "Autodesk.Revit.DB.ViewSchedule": return Revit.Elements.Category.ById(item.Definition.CategoryId.IntegerValue)
+	elif objtype == "Autodesk.Revit.DB.Family": return Revit.Elements.Category.ById(item.FamilyCategoryId.IntegerValue)
+	elif objtype == "Autodesk.Revit.DB.GraphicsStyle": return Revit.Elements.Category.ById(item.GraphicsStyleCategory.Id.IntegerValue)
+	elif objtype == "Autodesk.Revit.DB.Category": 
+		if item.Parent: return Revit.Elements.Category.ById(item.Parent.Id.IntegerValue)
+		else: return None
+	elif hasattr(item, "Category"): return Revit.Elements.Category.ById(item.Category.Id.IntegerValue)
+	else: return None
 
-OUT = elementlist
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetCategory(x) for x in items]
+else: OUT = GetCategory(items)

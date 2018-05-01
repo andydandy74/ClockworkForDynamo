@@ -6,15 +6,14 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-wallinstances = UnwrapElement(IN[0])
-methodlist = list()
-for item in wallinstances:
-	typename = item.GetType().Name
-	if typename == 'Wall':
-		methodlist.append('Standard')
-	elif typename == 'FaceWall':
-		methodlist.append('By Face')
-	elif typename == 'FamilyInstance':
-		methodlist.append('In-Place')
-	else: methodlist.append(None)
-OUT = methodlist
+def WallCreationMethod(wall):
+	typename = wall.GetType().Name
+	if typename == 'Wall': return 'Standard'
+	elif typename == 'FaceWall': return 'By Face'
+	elif typename == 'FamilyInstance': return 'In-Place'
+	else: return None
+
+walls = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [WallCreationMethod(x) for x in walls]
+else: OUT = WallCreationMethod(walls)

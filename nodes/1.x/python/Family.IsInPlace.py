@@ -3,11 +3,11 @@ import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-fams = UnwrapElement(IN[0])
-elementlist = list()
+def IsInPlace(item):
+	if hasattr(item, "IsInPlace"): return item.IsInPlace
+	else: return None
 
-for fam in fams:
-	if fam.GetType().ToString() == "Autodesk.Revit.DB.Family":
-		elementlist.append(fam.IsInPlace)
-	else: elementlist.append(False)
-OUT = elementlist
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [IsInPlace(x) for x in items]
+else: OUT = IsInPlace(items)

@@ -7,12 +7,16 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def TempHideIsolateToPerm(view):
+	try:
+		view.ConvertTemporaryHideIsolateToPermanent()
+		return True
+	except: return False
+
 doc = DocumentManager.Instance.CurrentDBDocument
-view = UnwrapElement(IN[0])
+views = UnwrapElement(IN[0])
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-try:
-	view.ConvertTemporaryHideIsolateToPermanent()
-	OUT = (view,True)
-except: OUT = (view,False)
+if isinstance(IN[0], list): OUT = [TempHideIsolateToPerm(x) for x in views]
+else: OUT = TempHideIsolateToPerm(views)
 TransactionManager.Instance.TransactionTaskDone()

@@ -6,11 +6,11 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetOwnerView(item):
+	if hasattr(item, "OwnerViewId"): return item.Document.GetElement(item.OwnerViewId)
+	else: return None
+
 items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
-	try:
-		elementlist.append(item.Document.GetElement(item.OwnerViewId).ToDSType(True))
-	except:
-		elementlist.append(None)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [GetOwnerView(x) for x in items]
+else: OUT = GetOwnerView(items)

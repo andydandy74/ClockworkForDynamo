@@ -2,13 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-colors = UnwrapElement(IN[0])
-rlist = list()
-glist = list()
-blist = list()
+def GetColorComponents(color):
+	if hasattr(color, "Red") and hasattr(color, "Blue") and hasattr(color, "Green"): return color.Red, color.Green, color.Blue
+	else: return None, None, None
 
-for color in colors:
-	rlist.append(color.Red)
-	glist.append(color.Green)
-	blist.append(color.Blue)
-OUT = (rlist,glist,blist)
+colors = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetColorComponents(x) for x in colors]))
+else: OUT = GetColorComponents(colors)

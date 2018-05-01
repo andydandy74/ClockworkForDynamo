@@ -6,14 +6,12 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
+def ElementByFace(face, doc):
+	try: return doc.GetElement(face.Tags.LookupTag("RevitFaceReference"))
+	except: return None
+
 doc = DocumentManager.Instance.CurrentDBDocument
 faces = UnwrapElement(IN[0])
-elementlist = list()
-for face in faces:
-	try:
-		ref = face.Tags.LookupTag("RevitFaceReference")
-		elem = doc.GetElement(ref)
-		elementlist.append(elem)
-	except:
-		elementlist.append(list())
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [ElementByFace(x, doc) for x in faces]
+else: OUT = ElementByFace(faces, doc)

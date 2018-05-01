@@ -10,23 +10,21 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-items = UnwrapElement(IN[0])
-inputdoc = UnwrapElement(IN[1])
-if inputdoc == None:
-	doc = DocumentManager.Instance.CurrentDBDocument
-elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
-	doc = inputdoc.GetLinkDocument()
-elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
-	doc = inputdoc
-else: doc = None
-
-elementlist = list()
-for item in items:
+def ElementById(item, doc):
 	try: 
-		elementlist.append(doc.GetElement(item).ToDSType(True))
+		return doc.GetElement(item).ToDSType(True)
 	except:
 		try:
-			elementlist.append(doc.GetElement(ElementId(item)).ToDSType(True))
+			return doc.GetElement(ElementId(item)).ToDSType(True)
 		except:
-			elementlist.append(None)
-OUT = elementlist
+			return None
+
+items = UnwrapElement(IN[0])
+inputdoc = UnwrapElement(IN[1])
+if not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance": doc = inputdoc.GetLinkDocument()
+elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document": doc = inputdoc
+else: doc = DocumentManager.Instance.CurrentDBDocument
+
+if isinstance(IN[0], list): OUT = [ElementById(x, doc) for x in items]
+else: OUT = ElementById(items, doc)

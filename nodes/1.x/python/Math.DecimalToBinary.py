@@ -1,5 +1,2 @@
-vals = IN[0]
-elementlist = []
-for val in vals:
-	elementlist.append(bin(val))
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [bin(x) for x in IN[0]]
+else: OUT = bin(IN[0])

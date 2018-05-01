@@ -6,11 +6,14 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-faminsts = UnwrapElement(IN[0])
-elementlist = list()
-for item in faminsts:
-	try:
-		elementlist.append(item.Document.GetElement(item.FindHostPanel()).ToDSType(True))
-	except:
-		elementlist.append(item)
-OUT = elementlist
+def GetHostPanel(item):
+	if hasattr(item, "FindHostPanel"):
+		hpId = item.FindHostPanel()
+		if hpId.IntegerValue > 0: return item.Document.GetElement(hpId).ToDSType(True)
+		else: return item
+	else: return item
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHostPanel(x) for x in items]
+else: OUT = GetHostPanel(items)

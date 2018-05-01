@@ -9,21 +9,11 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-appcreation = Creation.Application
-r = IN[0]
-g = IN[1]
-b = IN[2]
-counter = 0
-elementlist = list()
+red = IN[0]
+green = IN[1]
+blue = IN[2]
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for red in r:
-	try:
-		newcolor = Color(red,g[counter],b[counter])
-		elementlist.append(newcolor)
-	except:
-		elementlist.append(None)
-	counter += 1
+if isinstance(IN[0], list): OUT = [Color(r, g, b) for r, g, b in zip(red, green, blue)]
+else: OUT = Color(red, green, blue)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = elementlist

@@ -11,23 +11,16 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
-doc = DocumentManager.Instance.CurrentDBDocument
-minp = [x.ToXyz() for x in IN[0]]
-maxp = [x.ToXyz() for x in IN[1]]
-counter = 0
-elementlist = list()
-failedlist = list()
-
-TransactionManager.Instance.EnsureInTransaction(doc)
-for newmin in minp:
+def MakeBoundingBox(min, max):
 	try:
 		newbox = BoundingBoxXYZ()
-		newbox.Max = maxp[counter]
-		newbox.Min = newmin
-		elementlist.append(newbox)
-	except:
-		elementlist.append(None)
-	counter += 1
-TransactionManager.Instance.TransactionTaskDone()
+		newbox.Max = max.ToXyz()
+		newbox.Min = min.ToXyz()
+		return newbox
+	except: return None
 
-OUT = elementlist
+doc = DocumentManager.Instance.CurrentDBDocument
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list): OUT = [MakeBoundingBox(x, y) for x, y in zip(IN[0], IN[1])]
+else: OUT = MakeBoundingBox(IN[0], IN[1])
+TransactionManager.Instance.TransactionTaskDone()

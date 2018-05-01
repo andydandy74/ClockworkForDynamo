@@ -16,24 +16,27 @@ compact = IN[5]
 saveLocalBefore = IN[6]
 saveLocalAfter = IN[7]
 comment = IN[8]
+runme = IN[9]
 
-doc = DocumentManager.Instance.CurrentDBDocument
-tOptions = TransactWithCentralOptions()
-rOptions = RelinquishOptions(False)
-rOptions.StandardWorksets = relStandardWS
-rOptions.ViewWorksets = relViewWS
-rOptions.FamilyWorksets = relFamWS
-rOptions.UserWorksets = relUserWS
-rOptions.CheckedOutElements = relCheckedOutElems
-sOptions = SynchronizeWithCentralOptions()
-sOptions.SetRelinquishOptions(rOptions)
-sOptions.Compact = compact
-sOptions.SaveLocalBefore = saveLocalBefore
-sOptions.SaveLocalAfter = saveLocalAfter
-sOptions.Comment = comment
-TransactionManager.Instance.ForceCloseTransaction()
-try:
-	doc.SynchronizeWithCentral(tOptions, sOptions)
-	OUT = True
-except:
-	OUT = false
+if runme:
+	doc = DocumentManager.Instance.CurrentDBDocument
+	tOptions = TransactWithCentralOptions()
+	rOptions = RelinquishOptions(False)
+	rOptions.StandardWorksets = relStandardWS
+	rOptions.ViewWorksets = relViewWS
+	rOptions.FamilyWorksets = relFamWS
+	rOptions.UserWorksets = relUserWS
+	rOptions.CheckedOutElements = relCheckedOutElems
+	sOptions = SynchronizeWithCentralOptions()
+	sOptions.SetRelinquishOptions(rOptions)
+	sOptions.Compact = compact
+	sOptions.SaveLocalBefore = saveLocalBefore
+	sOptions.SaveLocalAfter = saveLocalAfter
+	sOptions.Comment = comment
+	TransactionManager.Instance.ForceCloseTransaction()
+	try:
+		doc.SynchronizeWithCentral(tOptions, sOptions)
+		OUT = True
+	except:
+		OUT = false
+else: OUT = false

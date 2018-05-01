@@ -7,16 +7,18 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 clr.ImportExtensions(Revit.GeometryConversion)
 
-wallinstances = UnwrapElement(IN[0])
-vectorlist = list()
-for item in wallinstances:
-	try:
-		lcurve = item.Location.Curve
+def WallOrientation(wall):
+	loc = wall.Location
+	if hasattr(loc, "Curve"):
+		lcurve = loc.Curve
 		if str(type(lcurve)) == "Autodesk.Revit.DB.Line":
-			vectorlist.append(item.Orientation.ToVector())
+			return wall.Orientation.ToVector()
 		else:
 			direction = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()
-			vectorlist.append(XYZ.BasisZ.CrossProduct(direction).ToVector())
-	except:
-		vectorlist.append(None)
-OUT = vectorlist
+			return XYZ.BasisZ.CrossProduct(direction).ToVector()
+	else: return None
+
+walls = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [WallOrientation(x) for x in walls]
+else: OUT = WallOrientation(walls)

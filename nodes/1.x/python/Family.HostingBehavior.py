@@ -2,10 +2,14 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-fams = UnwrapElement(IN[0])
-hosttypes = list()
-for fam in fams:
-	if fam.GetType().ToString() == "Autodesk.Revit.DB.Family":
-		hosttypes.append(fam.get_Parameter(BuiltInParameter.FAMILY_HOSTING_BEHAVIOR).AsValueString())
-	else: hosttypes.append(None)
-OUT = hosttypes
+def GetHostingBehavior(item):
+	if item.GetType().ToString() == "Autodesk.Revit.DB.Family":
+		hb = item.get_Parameter(BuiltInParameter.FAMILY_HOSTING_BEHAVIOR).AsValueString()
+		if hb == "": return None
+		else: return hb
+	else: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHostingBehavior(x) for x in items]
+else: OUT = GetHostingBehavior(items)

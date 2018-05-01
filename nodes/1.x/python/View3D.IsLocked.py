@@ -3,14 +3,6 @@ clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
 views = UnwrapElement(IN[0])
-elementlist = list()
-notaview = list()
-for view in views:
-	try:
-		if view.IsLocked:
-			elementlist.append(True)
-		else:
-			elementlist.append(False)
-	except:
-		elementlist.append(False)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [x.IsLocked for x in views]
+else: OUT = views.IsLocked

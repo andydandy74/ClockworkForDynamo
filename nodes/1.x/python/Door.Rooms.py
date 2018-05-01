@@ -2,27 +2,16 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
+def GetRooms(item, phase):
+	if hasattr(item, "FromRoom") and str(phase.GetType()) == "Autodesk.Revit.DB.Phase":
+		exits = 0
+		if item.FromRoom[phase]: exits += 1
+		if item.ToRoom[phase]: exits += 1
+		return item.FromRoom[phase], item.ToRoom[phase], exits
+	else: return None, None, 0
+
 items = UnwrapElement(IN[0])
 phase = UnwrapElement(IN[1])
-fromlist = list()
-tolist = list()
-numexits = list()
 
-for item in items:
-	exits = 0
-	try:	
-		if item.FromRoom[phase]:
-			fromlist.append(item.FromRoom[phase])
-			exits += 1
-		else:
-			fromlist.append(None)
-		if item.ToRoom[phase]:
-			tolist.append(item.ToRoom[phase])
-			exits += 1
-		else:
-			tolist.append(None)
-	except:
-		fromlist.append(None)
-		tolist.append(None)
-	numexits.append(exits)
-OUT = (fromlist,tolist,numexits)
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetRooms(x, phase) for x in items]))
+else: OUT = GetRooms(items, phase)

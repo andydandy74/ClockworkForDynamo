@@ -2,14 +2,14 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-foundinstances = UnwrapElement(IN[0])
-kindlist = list()
-for item in foundinstances:
-	try:
-		if item.GetType().Name == 'FamilyInstance': kindlist.append('Isolated')
-		elif item.GetType().Name == 'WallFoundation': kindlist.append('Wall Footing')
-		elif item.GetType().Name == 'Floor': kindlist.append('Slab')
-		else: kindlist.append(None)
-	except:
-		kindlist.append(None)
-OUT = kindlist
+def GetFoundationKind(item):
+	if not item: return None
+	elif item.GetType().Name == 'FamilyInstance': return 'Isolated'
+	elif item.GetType().Name == 'WallFoundation': return 'Wall Footing'
+	elif item.GetType().Name == 'Floor': return 'Slab'
+	else: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetFoundationKind(x) for x in items]
+else: OUT = GetFoundationKind(items)

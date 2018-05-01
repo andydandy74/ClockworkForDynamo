@@ -6,8 +6,11 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-desopts = UnwrapElement(IN[0])
-elementlist = list()
-for item in desopts:
-	elementlist.append(item.Document.GetElement(item.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()).ToDSType(True))
-OUT = elementlist
+def GetDesignOptionSet(item):
+	try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.OPTION_SET_ID).AsElementId()).ToDSType(True)
+	except: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetDesignOptionSet(x) for x in items]
+else: OUT = GetDesignOptionSet(items)

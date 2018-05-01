@@ -7,17 +7,16 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
-doc = DocumentManager.Instance.CurrentDBDocument
-faminstances = UnwrapElement(IN[0])
-booleans = []
-
-TransactionManager.Instance.EnsureInTransaction(doc)
-for item in faminstances:
+def FlipHand(item):
 	try:
 		item.flipHand()
-		booleans.append(True)
-	except:
-		booleans.append(False)
+		return True
+	except: return False
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list): OUT = [FlipHand(x) for x in items]
+else: OUT = FlipHand(items)
 TransactionManager.Instance.TransactionTaskDone()
-		
-OUT = (faminstances,booleans)

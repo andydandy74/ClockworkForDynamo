@@ -2,16 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetFunction(item):
+	try: return item.get_Parameter(BuiltInParameter.FUNCTION_PARAM).AsValueString()
+	except: return None
 
 items = UnwrapElement(IN[0])
-functionlist = list()
 
-for item in items:
-	try:
-		functionlist.append(item.get_Parameter(BuiltInParameter.FUNCTION_PARAM).AsValueString())
-	except:
-		functionlist.append(None)
-OUT = functionlist
+if isinstance(IN[0], list): OUT = [GetFunction(x) for x in items]
+else: OUT = GetFunction(items)

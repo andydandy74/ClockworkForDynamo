@@ -23,10 +23,30 @@ else: doc = None
 names = []
 cats = []
 vag = []
+pgs = []
+pts = []
+uts = []
+isvis = []
+elems = []
+guids = []
+isinst = []
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
 	vag.append(iterator.Key.VariesAcrossGroups)
 	names.append(iterator.Key.Name)
+	pgs.append(iterator.Key.ParameterGroup)
+	pts.append(iterator.Key.ParameterType)
+	uts.append(iterator.Key.UnitType)
+	isvis.append(iterator.Key.Visible)
+	elem = doc.GetElement(iterator.Key.Id)
+	elems.append(elem)
+	if elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':
+		guids.append(elem.GuidValue)
+	else: guids.append(None)
+	if iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':
+		isinst.append(True)
+	else:
+		isinst.append(False)
 	thesecats = []
 	for cat in iterator.Current.Categories:
 		try:
@@ -36,4 +56,4 @@ while iterator.MoveNext():
 			# This way the user knows there are unsupported categories assigned
 			thesecats.append(None)
 	cats.append(thesecats)
-OUT = (names,cats,vag)
+OUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst)

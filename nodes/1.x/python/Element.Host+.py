@@ -6,27 +6,18 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-faminsts = UnwrapElement(IN[0])
-elementlist = list()
-for item in faminsts:
-	try:
-		elementlist.append(item.Host.ToDSType(True))
-	except:
-		# if that doesn't work, maybe it's a WallSweep
-		try:
-			hostidlist = list()
-			for host in item.GetHostIds():
-				hostidlist.append(item.Document.GetElement(host).ToDSType(True))
-			elementlist.append(hostidlist)
-		except:
-			# if that doesn't work, maybe it's a wall foundation
-			try:
-				elementlist.append(item.Document.GetElement(item.WallId).ToDSType(True))
-			except:
-				# if that doesn't work, maybe it's a railing, a building pad or a topo subregion
-				try: 
-					elementlist.append(item.Document.GetElement(item.HostId).ToDSType(True))
-				except:
-					elementlist.append(None)
-			
-OUT = elementlist
+def GetHost(item):
+	# standard
+	if hasattr(item, "Host"): return item.Host
+	# Wall sweeps
+	elif hasattr(item, "GetHostIds"): return [item.Document.GetElement(x) for x in item.GetHostIds()]
+	# Wall foundations
+	elif hasattr(item, "WallId"): return item.Document.GetElement(item.WallId)
+	# railingd, building pads, topo subregions
+	elif hasattr(item, "HostId"): return item.Document.GetElement(item.HostId)
+	else: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHost(x) for x in items]
+else: OUT = GetHost(items)

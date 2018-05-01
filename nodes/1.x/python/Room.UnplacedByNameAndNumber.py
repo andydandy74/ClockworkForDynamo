@@ -7,23 +7,18 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def CreateUnplacedRoom(name, number, phase, doc):
+	try:
+		newroom = doc.Create.NewRoom(phase)
+		newroom.Name = name
+		newroom.Number = number
+		return newroom
+	except: return None
+
 doc = DocumentManager.Instance.CurrentDBDocument
-doccreation = doc.Create
-names = IN[0]
-numbers = IN[1]
 phase = UnwrapElement(IN[2])
-counter = 0
-elementlist = list()
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for name in names:
-	try:
-		newroom = doccreation.NewRoom(phase)
-		newroom.Name = name
-		newroom.Number = numbers[counter]
-		elementlist.append(newroom)
-	except: elementlist.append(None)
-	counter += 1
+if isinstance(IN[0], list) and isinstance(IN[1], list): OUT = [CreateUnplacedRoom(x, y, phase, doc) for x, y in zip(IN[0], IN[1])]
+else: OUT = None
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = elementlist

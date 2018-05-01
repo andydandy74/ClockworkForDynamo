@@ -2,21 +2,12 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-items = UnwrapElement(IN[0])
-createdlist = list()
-demolist = list()
+def GetPhases(item):
+	if hasattr(item, "CreatedPhaseId"):
+		return item.Document.GetElement(item.CreatedPhaseId), item.Document.GetElement(item.DemolishedPhaseId)
+	else: return None, None
 
-for item in items:
-	try:
-		if item.CreatedPhaseId.IntegerValue == -1:
-			createdlist.append(None)
-		else:
-			createdlist.append(item.Document.GetElement(item.CreatedPhaseId))
-		if item.DemolishedPhaseId.IntegerValue == -1:
-			demolist.append(None)
-		else:
-			demolist.append(item.Document.GetElement(item.DemolishedPhaseId))
-	except:
-		createdlist.append(None)
-		demolist.append(None)
-OUT = (createdlist,demolist)
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetPhases(x) for x in items]))
+else: OUT = GetPhases(items)

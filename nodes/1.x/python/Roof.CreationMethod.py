@@ -2,12 +2,15 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-roofinstances = UnwrapElement(IN[0])
-elementlist = list()
-for item in roofinstances:
-	if item.GetType().Name == 'FootPrintRoof': elementlist.append('By Footprint')
-	elif item.GetType().Name == 'ExtrusionRoof': elementlist.append('By Extrusion')
-	elif item.GetType().Name == 'RoofBase': elementlist.append('By Face')
-	elif item.GetType().Name == 'FamilyInstance': elementlist.append('In-Place')
-	else: elementlist.append(None)
-OUT = elementlist
+def GetRoofCreationMethod(item):
+	if not item: return None
+	elif item.GetType().Name == 'FootPrintRoof': return 'By Footprint'
+	elif item.GetType().Name == 'ExtrusionRoof': return 'By Extrusion'
+	elif item.GetType().Name == 'RoofBase': return 'By Face'
+	elif item.GetType().Name == 'FamilyInstance': return 'In-Place'
+	else: return None
+
+roofs = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetRoofCreationMethod(x) for x in roofs]
+else: OUT = GetRoofCreationMethod(roofs)

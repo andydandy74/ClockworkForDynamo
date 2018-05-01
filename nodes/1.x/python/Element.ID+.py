@@ -6,11 +6,11 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetId(item):
+	if hasattr(item, "Id"): return item.Id.IntegerValue
+	else: return None
+
 items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
-	try:
-		elementlist.append(item.Id.IntegerValue)
-	except:
-		elementlist.append(None)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [GetId(x) for x in items]
+else: OUT = GetId(items)

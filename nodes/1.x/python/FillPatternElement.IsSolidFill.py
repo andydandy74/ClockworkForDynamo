@@ -2,9 +2,10 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-fillpatterns = UnwrapElement(IN[0])
-booleans = list()
+def IsSolidFill(fp):
+	return fp.GetFillPattern().IsSolidFill
 
-for fp in fillpatterns:
-	booleans.append(fp.GetFillPattern().IsSolidFill)
-OUT = booleans
+fillpatterns = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [IsSolidFill(x) for x in fillpatterns]
+else: OUT = IsSolidFill(fillpatterns)

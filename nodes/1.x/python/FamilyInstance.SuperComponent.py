@@ -2,16 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetSuperComponent(item):
+	if hasattr(item, "SuperComponent"): return item.SuperComponent
+	else: return None
 
 items = UnwrapElement(IN[0])
-elementlist = list()
 
-for item in items:
-	try:
-		elementlist.append(item.SuperComponent.ToDSType(True))
-	except:
-		elementlist.append(None)
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [GetSuperComponent(x) for x in items]
+else: OUT = GetSuperComponent(items)

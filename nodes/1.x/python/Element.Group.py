@@ -2,18 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetGroup(item):
+	if hasattr(item, "GroupId"): return item.Document.GetElement(item.GroupId)
+	else: return None
 
 items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
-	try:
-		if item.Document.GetElement(item.GroupId) == None:
-			elementlist.append(None)
-		else:
-			elementlist.append(item.Document.GetElement(item.GroupId))
-	except:
-		elementlist.append(None)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [GetGroup(x) for x in items]
+else: OUT = GetGroup(items)

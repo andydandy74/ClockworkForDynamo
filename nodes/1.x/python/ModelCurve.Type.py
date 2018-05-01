@@ -2,11 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
+def GetCurveType(item):
+	if hasattr(item, "CurveElementType"): return item.CurveElementType
+	else: return None
+
 items = UnwrapElement(IN[0])
-typelist = list()
-for item in items:	
-	try: 
-		typelist.append(item.CurveElementType)
-	except:
-		typelist.append(None)
-OUT = typelist
+
+if isinstance(IN[0], list): OUT = [GetCurveType(x) for x in items]
+else: OUT = GetCurveType(items)

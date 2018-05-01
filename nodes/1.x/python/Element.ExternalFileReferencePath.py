@@ -2,18 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
-
-doc = DocumentManager.Instance.CurrentDBDocument
+def GetExtFileRefPath(item):
+	try: return ModelPathUtils.ConvertModelPathToUserVisiblePath(item.GetExternalFileReference().GetAbsolutePath())
+	except: return None
 
 items = UnwrapElement(IN[0])
-elementlist = []
-for item in items:
-	try:
-		exref = ModelPathUtils.ConvertModelPathToUserVisiblePath(item.GetExternalFileReference().GetAbsolutePath())
-		elementlist.append(exref)
-	except:
-		elementlist.append(None)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [GetExtFileRefPath(x) for x in items]
+else: OUT = GetExtFileRefPath(items)

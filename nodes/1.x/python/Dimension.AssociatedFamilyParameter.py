@@ -15,9 +15,9 @@ for dimension in dimensions:
 			paramlist.append(dimension.FamilyLabel)
 			paramnamelist.append(dimension.FamilyLabel.Definition.Name)
 		else:	
-			paramlist.append(list())
-			paramnamelist.append(list())
+			paramlist.append(None)
+			paramnamelist.append(None)
 	except:
-		paramlist.append(list())
-		paramnamelist.append(list())
+		paramlist.append(None)
+		paramnamelist.append(None)
 OUT = (paramlist,paramnamelist)

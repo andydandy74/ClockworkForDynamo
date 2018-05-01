@@ -1,12 +1,5 @@
 import clr
 import re
 
-thisexp = IN[0]
-regexlist = IN[1]
-elementlist = list()
-for item in regexlist:
-	try:
-		elementlist.append(thisexp.split(item))
-	except:
-		elementlist.append(list())
-OUT = elementlist
+if isinstance(IN[1], list): OUT = [IN[0].split(x) for x in IN[1]]
+else: OUT = IN[0].split(IN[1])

@@ -2,26 +2,20 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
+def IsCategoryVisibleInView(cat, view, version):
+	if version > 2016:
+		if view.GetCategoryHidden(cat.Id): return False
+		else: return True
+	else:
+		if view.GetVisibility(cat): return True
+		else: return False
+
 cats = UnwrapElement(IN[0])
 views = UnwrapElement(IN[1])
-version = IN[2]
 
-elementlist = list()
-for cat in cats:
-	catlist = list()
-	for view in views:
-		try:
-			if version > 2016:
-				if view.GetCategoryHidden(cat.Id):
-					catlist.append(False)
-				else:
-					catlist.append(True)
-			else:
-				if view.GetVisibility(cat):
-					catlist.append(True)
-				else:
-					catlist.append(False)	
-		except:
-			catlist.append(None)
-	elementlist.append(catlist)
-OUT = elementlist
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list):  OUT = [[IsCategoryVisibleInView(x, y, IN[2]) for x in cats] for y in views]
+	else: OUT = [IsCategoryVisibleInView(x, views, IN[2]) for x in cats]
+else:
+	if isinstance(IN[1], list): OUT = [IsCategoryVisibleInView(cats, x, IN[2]) for x in views]
+	else: OUT = IsCategoryVisibleInView(cats, views, IN[2])

@@ -6,26 +6,23 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetCurtainPanels(host):
+	if hasattr(host, "CurtainGrid"):
+		return GetCurtainPanelsByGrid(host.CurtainGrid, host)
+	elif hasattr(host, "CurtainGrids"):
+		return [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]
+	else: return []
+
+def GetCurtainPanelsByGrid(grid, host):
+	panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
+	for panel in panellist:
+		if hasattr(panel, "FindHostPanel"):
+			hostpanelid = panel.FindHostPanel()
+			if hostpanelid.IntegerValue != -1:
+				panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
+	return [x.ToDSType(True) for x in panellist]
+
 items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
-	try:
-		# Curtain systems
-		systemlist = list()
-		for grid in item.CurtainGrids:
-			panellist = list()
-			for panel in grid.GetPanelIds():
-				panellist.append(item.Document.GetElement(panel).ToDSType(True))
-			systemlist.append(panellist)
-		elementlist.append(systemlist)
-	except:
-		try:
-			# Curtain walls
-			panellist = list()
-			for panel in item.CurtainGrid.GetPanelIds():
-				panellist.append(item.Document.GetElement(panel).ToDSType(True))
-			elementlist.append(panellist)
-		except:
-			# Anything else
-			elementlist.append(list())
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]
+else: OUT = GetCurtainPanels(items)

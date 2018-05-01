@@ -29,13 +29,15 @@ catfilter = ElementMulticategoryFilter(filtercats)
 
 intersectorlist = list()
 for cutter in cutters:
-	bbox = cutter.get_BoundingBox(view)
-	bboxfilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max),tol)
-	collector = FilteredElementCollector(doc, view.Id)
-	excludelist = []
-	excludelist.append(cutter.Id)
-	excludeIDs = List[ElementId](excludelist)
-	excfilter = ExclusionFilter(excludeIDs)
-	intersectorlist.append(collector.WherePasses(bboxfilter).WherePasses(excfilter).WherePasses(catfilter).ToElements())
+	if cutter is None: intersectorlist.append([])
+	else:
+		bbox = cutter.get_BoundingBox(view)
+		bboxfilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max),tol)
+		collector = FilteredElementCollector(doc, view.Id)
+		excludelist = []
+		excludelist.append(cutter.Id)
+		excludeIDs = List[ElementId](excludelist)
+		excfilter = ExclusionFilter(excludeIDs)
+		intersectorlist.append(collector.WherePasses(bboxfilter).WherePasses(excfilter).WherePasses(catfilter).ToElements())
 	
 OUT = intersectorlist

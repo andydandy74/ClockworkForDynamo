@@ -2,17 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
+def GetViewTemplate(view):
+	if view.ViewTemplateId.IntegerValue == -1: return None
+	else: return view.Document.GetElement(view.ViewTemplateId)
 
-doc = DocumentManager.Instance.CurrentDBDocument
 views = UnwrapElement(IN[0])
-elementlist = list()
 
-for view in views:
-	if view.ViewTemplateId.IntegerValue == -1:
-		elementlist.append(None)
-	else:
-		elementlist.append(view.Document.GetElement(view.ViewTemplateId))
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [GetViewTemplate(x) for x in views]
+else: OUT = GetViewTemplate(views)

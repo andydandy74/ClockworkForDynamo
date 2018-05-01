@@ -6,15 +6,12 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-cats = UnwrapElement(IN[0])
-elementlist = list()
+def GetSubcategories(cat):
+	if hasattr(cat, "SubCategories"):
+		return [Revit.Elements.Category.ById(x.Id.IntegerValue) for x in cat.SubCategories]
+	else: return []
 
-for cat in cats:
-	try:
-		sublist = []
-		for subcat in cat.SubCategories:
-			sublist.append(Revit.Elements.Category.ById(subcat.Id.IntegerValue))
-		elementlist.append(sublist)
-	except:
-		elementlist.append(list())
-OUT = elementlist
+cats = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetSubcategories(x) for x in cats]
+else: OUT = GetSubcategories(cats)
