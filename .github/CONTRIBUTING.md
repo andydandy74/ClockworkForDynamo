@@ -11,5 +11,4 @@ Some simple rules for posting issues and pull requests for Clockwork for Dynamo
 
 ### Pull Requests
 - **Describe the purpose of your PR and what you have changed in the original code.**
-- **Do *not* submit anything authored in a 2.x build.**
 - **Make sure you are running the *supported* Clockwork version and it's the *latest available version** (see https://github.com/andydandy74/ClockworkForDynamo#versions)
