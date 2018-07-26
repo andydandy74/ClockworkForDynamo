@@ -60,7 +60,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCurtainPanels(host):\r\n\tif hasattr(host, \"CurtainGrid\"):\r\n\t\treturn GetCurtainPanelsByGrid(host.CurtainGrid, host)\r\n\telif hasattr(host, \"CurtainGrids\"):\r\n\t\treturn [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]\r\n\telse: return []\r\n\r\ndef GetCurtainPanelsByGrid(grid, host):\r\n\tpanellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]\r\n\tfor panel in panellist:\r\n\t\tif hasattr(panel, \"FindHostPanel\"):\r\n\t\t\thostpanelid = panel.FindHostPanel()\r\n\t\t\tif hostpanelid.IntegerValue != -1:\r\n\t\t\t\tpanellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)\r\n\treturn [x.ToDSType(True) for x in panellist]\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]\r\nelse: OUT = GetCurtainPanels(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCurtainPanels(host):\r\n\tif hasattr(host, \"CurtainGrid\"):\r\n\t\treturn GetCurtainPanelsByGrid(host.CurtainGrid, host)\r\n\telif hasattr(host, \"CurtainGrids\"):\r\n\t\treturn [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]\r\n\telse: return []\r\n\r\ndef GetCurtainPanelsByGrid(grid, host):\r\n\tif grid:\r\n\t\tpanellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]\r\n\t\tfor panel in panellist:\r\n\t\t\tif hasattr(panel, \"FindHostPanel\"):\r\n\t\t\t\thostpanelid = panel.FindHostPanel()\r\n\t\t\t\tif hostpanelid.IntegerValue != -1:\r\n\t\t\t\t\tpanellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)\r\n\t\treturn [x.ToDSType(True) for x in panellist]\r\n\telse: return list()\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]\r\nelse: OUT = GetCurtainPanels(items)",
       "VariableInputPorts": true,
       "Id": "628c73c0897a40a699145fafa11df794",
       "Inputs": [
@@ -113,7 +113,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -126,31 +126,31 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "1148584615e64e2aa561a0210c07c137",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 213.913347075248,
         "Y": 77.0
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "e252569113974f18878bed73f3490523",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 658.913347075248,
         "Y": 77.0
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "628c73c0897a40a699145fafa11df794",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 434.913347075248,
         "Y": 77.0
