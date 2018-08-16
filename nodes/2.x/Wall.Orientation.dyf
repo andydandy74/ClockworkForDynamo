@@ -65,7 +65,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef WallOrientation(wall):\r\n\tloc = wall.Location\r\n\tif hasattr(loc, \"Curve\"):\r\n\t\tlcurve = loc.Curve\r\n\t\tif str(type(lcurve)) == \"Autodesk.Revit.DB.Line\":\r\n\t\t\treturn wall.Orientation.ToVector()\r\n\t\telse:\r\n\t\t\tdirection = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()\r\n\t\t\treturn XYZ.BasisZ.CrossProduct(direction).ToVector()\r\n\telse: return None\r\n\r\nwalls = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [WallOrientation(x) for x in walls]\r\nelse: OUT = WallOrientation(walls)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef WallOrientation(wall):\r\n\tloc = wall.Location\r\n\tflipped = False\r\n\tif hasattr(loc, \"Curve\"):\r\n\t\tlcurve = loc.Curve\r\n\t\tif hasattr(wall, \"Flipped\"): flipped = wall.Flipped\r\n\t\tif str(type(lcurve)) == \"Autodesk.Revit.DB.Line\":\r\n\t\t\tif flipped: return wall.Orientation.ToVector().Reverse()\r\n\t\t\telse: return wall.Orientation.ToVector()\r\n\t\telse:\r\n\t\t\tdirection = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()\r\n\t\t\tif flipped: return XYZ.BasisZ.CrossProduct(direction).ToVector().Reverse()\r\n\t\t\telse: return XYZ.BasisZ.CrossProduct(direction).ToVector()\r\n\telse: return None\r\n\r\nwalls = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [WallOrientation(x) for x in walls]\r\nelse: OUT = WallOrientation(walls)",
       "VariableInputPorts": true,
       "Id": "9822dc6d46664600887144414d2727a2",
       "Inputs": [
@@ -131,31 +131,31 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "7d675e6fff054b4b89ebbe20b050e79e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 244.703555809089,
         "Y": 56.8670406525547
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "4fc294fde0ca43078144597c5fd12d37",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 689.703555809089,
         "Y": 56.8670406525547
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "9822dc6d46664600887144414d2727a2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 465.703555809089,
         "Y": 56.8670406525547
