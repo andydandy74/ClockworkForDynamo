@@ -1,4 +1,4 @@
-<Workspace Version="1.3.2.2480" X="-197.82123694723" Y="108.905717891621" zoom="0.931811528498331" ScaleFactor="1" Name="Element.Category+" Description="Returns the category of a given element. Unlike the OOTB node Element.GetCategory, it will work for families, schedules, subcategories and graphics styles as well." ID="59ab539a-8b69-4b1d-9496-839b33050232" Category="Clockwork.Revit.Elements.Element.Query">
+<Workspace Version="1.3.2.2480" X="-132.82123694723" Y="274.905717891621" zoom="0.931811528498331" ScaleFactor="1" Name="Element.Category+" Description="Returns the category of a given element. Unlike the OOTB node Element.GetCategory, it will work for families, schedules, subcategories and graphics styles as well." ID="59ab539a-8b69-4b1d-9496-839b33050232" Category="Clockwork.Revit.Elements.Element.Query">
   <NamespaceResolutionMap>
     <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
   </NamespaceResolutionMap>
@@ -22,14 +22,15 @@ clr.ImportExtensions(Revit.Elements)
 
 def GetCategory(item):
 	objtype = item.GetType().ToString()
-	if objtype == "Autodesk.Revit.DB.ViewSchedule": return Revit.Elements.Category.ById(item.Definition.CategoryId.IntegerValue)
-	elif objtype == "Autodesk.Revit.DB.Family": return Revit.Elements.Category.ById(item.FamilyCategoryId.IntegerValue)
-	elif objtype == "Autodesk.Revit.DB.GraphicsStyle": return Revit.Elements.Category.ById(item.GraphicsStyleCategory.Id.IntegerValue)
+	returnID = None
+	if objtype == "Autodesk.Revit.DB.ViewSchedule": returnID = item.Definition.CategoryId
+	elif objtype == "Autodesk.Revit.DB.Family": returnID = item.FamilyCategoryId
+	elif objtype == "Autodesk.Revit.DB.GraphicsStyle":  returnID = item.GraphicsStyleCategory.Id
 	elif objtype == "Autodesk.Revit.DB.Category": 
-		if item.Parent: return Revit.Elements.Category.ById(item.Parent.Id.IntegerValue)
-		else: return None
-	elif hasattr(item, "Category"): 
-		try: return Revit.Elements.Category.ById(item.Category.Id.IntegerValue)
+		if item.Parent: returnID = item.Parent.Id
+	elif hasattr(item, "Category"): returnID = item.Category.Id
+	if returnID:
+		try: return Revit.Elements.Category.ById(returnID.IntegerValue)
 		except: return None
 	else: return None
 
