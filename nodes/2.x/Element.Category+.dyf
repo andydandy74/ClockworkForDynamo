@@ -29,7 +29,7 @@
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "975276d4967e470797c35534f19032f0",
+          "Id": "58d61cc7b9d2439ab054d3919b0a8021",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -39,7 +39,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -49,7 +49,7 @@
       "Id": "4f6ba5ebe7f3472fbca472ef40b1087d",
       "Inputs": [
         {
-          "Id": "6e62a9275470469c92129081e23f28d1",
+          "Id": "27d4fb67a07f447a9865acb191812cbc",
           "Name": "",
           "Description": "",
           "UsingDefaultValue": false,
@@ -60,17 +60,17 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tobjtype = item.GetType().ToString()\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": return Revit.Elements.Category.ById(item.Definition.CategoryId.IntegerValue)\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": return Revit.Elements.Category.ById(item.FamilyCategoryId.IntegerValue)\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\": return Revit.Elements.Category.ById(item.GraphicsStyleCategory.Id.IntegerValue)\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: return Revit.Elements.Category.ById(item.Parent.Id.IntegerValue)\r\n\t\telse: return None\r\n\telif hasattr(item, \"Category\"): \r\n\t\ttry: return Revit.Elements.Category.ById(item.Category.Id.IntegerValue)\r\n\t\texcept: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCategory(x) for x in items]\r\nelse: OUT = GetCategory(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\ttry: return Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCategory(x) for x in items]\r\nelse: OUT = GetCategory(items)",
       "VariableInputPorts": true,
-      "Id": "c753ce1f58884112b9a3dbe79cb25778",
+      "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "Inputs": [
         {
-          "Id": "7f551eba5e244e249b6e0115505ad4cd",
+          "Id": "594e8fdda69b4a96b94209ae703c2bfd",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -81,9 +81,9 @@
       ],
       "Outputs": [
         {
-          "Id": "125abae8c2154d27b8cc88736ff3f243",
+          "Id": "452f3978bf874032b352c320d87ccbc9",
           "Name": "OUT",
-          "Description": "Result of the python script",
+          "Description": "Ergebnis des Python-Skripts",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -91,19 +91,19 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes IronPython-Skript aus."
     }
   ],
   "Connectors": [
     {
-      "Start": "975276d4967e470797c35534f19032f0",
-      "End": "7f551eba5e244e249b6e0115505ad4cd",
-      "Id": "419439feb5564288a4be8f4dc5bbb5c5"
+      "Start": "58d61cc7b9d2439ab054d3919b0a8021",
+      "End": "594e8fdda69b4a96b94209ae703c2bfd",
+      "Id": "d4b18b57dfd54fa085bf35536590f76b"
     },
     {
-      "Start": "125abae8c2154d27b8cc88736ff3f243",
-      "End": "6e62a9275470469c92129081e23f28d1",
-      "Id": "76cde82778de4cb3b15c058aabcd72f2"
+      "Start": "452f3978bf874032b352c320d87ccbc9",
+      "End": "27d4fb67a07f447a9865acb191812cbc",
+      "Id": "b6ca9e0876f84cc7b92c8275937c08dc"
     }
   ],
   "Dependencies": [],
@@ -118,7 +118,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -137,8 +137,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 240.46111159012298,
-        "Y": 177.61189891217407
+        "X": 285.461111590123,
+        "Y": 181.744630690073
       },
       {
         "ShowGeometry": true,
@@ -147,23 +147,23 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 742.461111590123,
-        "Y": 177.61189891217407
+        "X": 697.461111590123,
+        "Y": 181.744630690073
       },
       {
         "ShowGeometry": true,
         "Name": "Python Script",
-        "Id": "c753ce1f58884112b9a3dbe79cb25778",
+        "Id": "b4b979ee8b544c808efd2356bf9eec69",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 518.461111590123,
-        "Y": 177.61189891217407
+        "X": 473.461111590123,
+        "Y": 181.744630690073
       }
     ],
     "Annotations": [],
-    "X": -190.44901895931514,
-    "Y": 146.95387272946761,
-    "Zoom": 1.0936956485456304
+    "X": -132.82123694723,
+    "Y": 274.905717891621,
+    "Zoom": 0.931811528498331
   }
 }
