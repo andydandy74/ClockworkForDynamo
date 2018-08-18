@@ -50,3 +50,13 @@ for param in params:
 	canassignformula.append(param.CanAssignFormula)
 	
 OUT = (pname,guid,pgroup,ptype,utype,dutype,stype,isinstance,isreporting,isshared,isreadonly,usermodifiable,formula,determinedbyformula,associatedparams,canassignformula,associatedelements)
+
+##### NEXT PYTHON NODE #####
+
+import clr
+OUT = []
+for chunks in IN[0]:
+	sublist = []
+	if chunks: [sublist.append(x) for x in chunks if x in IN[1]]
+	OUT.append(sublist)
+	

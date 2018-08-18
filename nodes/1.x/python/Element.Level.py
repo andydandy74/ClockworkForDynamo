@@ -7,10 +7,17 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 def GetLevel(item):
-	if hasattr(item, "LevelId"): return item.Document.GetElement(item.LevelId)
-	elif hasattr(item, "Level"): return item.Level
-	elif hasattr(item, "GenLevel"): return item.GenLevel
-	else:
+	val = None
+	if hasattr(item, "LevelId"): 
+		val = item.Document.GetElement(item.LevelId)
+		if val: return val
+	if hasattr(item, "Level"):
+		val = item.Level
+		if val: return val
+	if hasattr(item, "GenLevel"):
+		val = item.GenLevel
+		if val: return val
+	if not val:
 		try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM).AsElementId())
 		except: 
 			try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_SCHEDULE_ONLY_LEVEL_PARAM).AsElementId())

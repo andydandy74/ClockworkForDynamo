@@ -9,13 +9,17 @@ clr.ImportExtensions(Revit.GeometryConversion)
 
 def WallOrientation(wall):
 	loc = wall.Location
+	flipped = False
 	if hasattr(loc, "Curve"):
 		lcurve = loc.Curve
+		if hasattr(wall, "Flipped"): flipped = wall.Flipped
 		if str(type(lcurve)) == "Autodesk.Revit.DB.Line":
-			return wall.Orientation.ToVector()
+			if flipped: return wall.Orientation.ToVector().Reverse()
+			else: return wall.Orientation.ToVector()
 		else:
 			direction = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()
-			return XYZ.BasisZ.CrossProduct(direction).ToVector()
+			if flipped: return XYZ.BasisZ.CrossProduct(direction).ToVector().Reverse()
+			else: return XYZ.BasisZ.CrossProduct(direction).ToVector()
 	else: return None
 
 walls = UnwrapElement(IN[0])

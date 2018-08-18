@@ -14,13 +14,15 @@ def GetCurtainPanels(host):
 	else: return []
 
 def GetCurtainPanelsByGrid(grid, host):
-	panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
-	for panel in panellist:
-		if hasattr(panel, "FindHostPanel"):
-			hostpanelid = panel.FindHostPanel()
-			if hostpanelid.IntegerValue != -1:
-				panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
-	return [x.ToDSType(True) for x in panellist]
+	if grid:
+		panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
+		for panel in panellist:
+			if hasattr(panel, "FindHostPanel"):
+				hostpanelid = panel.FindHostPanel()
+				if hostpanelid.IntegerValue != -1:
+					panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
+		return [x.ToDSType(True) for x in panellist]
+	else: return list()
 
 items = UnwrapElement(IN[0])
 

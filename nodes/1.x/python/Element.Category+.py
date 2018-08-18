@@ -8,13 +8,16 @@ clr.ImportExtensions(Revit.Elements)
 
 def GetCategory(item):
 	objtype = item.GetType().ToString()
-	if objtype == "Autodesk.Revit.DB.ViewSchedule": return Revit.Elements.Category.ById(item.Definition.CategoryId.IntegerValue)
-	elif objtype == "Autodesk.Revit.DB.Family": return Revit.Elements.Category.ById(item.FamilyCategoryId.IntegerValue)
-	elif objtype == "Autodesk.Revit.DB.GraphicsStyle": return Revit.Elements.Category.ById(item.GraphicsStyleCategory.Id.IntegerValue)
+	returnID = None
+	if objtype == "Autodesk.Revit.DB.ViewSchedule": returnID = item.Definition.CategoryId
+	elif objtype == "Autodesk.Revit.DB.Family": returnID = item.FamilyCategoryId
+	elif objtype == "Autodesk.Revit.DB.GraphicsStyle":  returnID = item.GraphicsStyleCategory.Id
 	elif objtype == "Autodesk.Revit.DB.Category": 
-		if item.Parent: return Revit.Elements.Category.ById(item.Parent.Id.IntegerValue)
-		else: return None
-	elif hasattr(item, "Category"): return Revit.Elements.Category.ById(item.Category.Id.IntegerValue)
+		if item.Parent: returnID = item.Parent.Id
+	elif hasattr(item, "Category"): returnID = item.Category.Id
+	if returnID:
+		try: return Revit.Elements.Category.ById(returnID.IntegerValue)
+		except: return None
 	else: return None
 
 items = UnwrapElement(IN[0])

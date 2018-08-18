@@ -13,7 +13,7 @@ def GetHost(item):
 	elif hasattr(item, "GetHostIds"): return [item.Document.GetElement(x) for x in item.GetHostIds()]
 	# Wall foundations
 	elif hasattr(item, "WallId"): return item.Document.GetElement(item.WallId)
-	# railingd, building pads, topo subregions
+	# railings, building pads, topo subregions
 	elif hasattr(item, "HostId"): return item.Document.GetElement(item.HostId)
 	else: return None
 

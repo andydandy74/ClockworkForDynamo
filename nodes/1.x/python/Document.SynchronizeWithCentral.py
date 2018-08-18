@@ -38,5 +38,5 @@ if runme:
 		doc.SynchronizeWithCentral(tOptions, sOptions)
 		OUT = True
 	except:
-		OUT = false
-else: OUT = false
+		OUT = False
+else: OUT = False

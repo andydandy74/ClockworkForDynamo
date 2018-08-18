@@ -13,5 +13,5 @@ for item in items:
 			hasmatch = True
 		counter += 1
 	if hasmatch == False:
-		elementlist.append(list())
+		elementlist.append(None)
 OUT = elementlist
