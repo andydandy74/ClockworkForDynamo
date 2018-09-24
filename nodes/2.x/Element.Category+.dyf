@@ -65,7 +65,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\ttry: return Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCategory(x) for x in items]\r\nelse: OUT = GetCategory(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\ttry: return Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCategory(x) for x in items]\r\nelse: OUT = GetCategory(items)",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "Inputs": [
@@ -118,7 +118,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -137,7 +137,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 285.461111590123,
+        "X": 240.46111159012298,
         "Y": 181.744630690073
       },
       {
@@ -147,7 +147,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 697.461111590123,
+        "X": 742.461111590123,
         "Y": 181.744630690073
       },
       {
@@ -157,7 +157,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 473.461111590123,
+        "X": 518.461111590123,
         "Y": 181.744630690073
       }
     ],
