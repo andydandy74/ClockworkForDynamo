@@ -1,7 +1,7 @@
 <Workspace Version="1.3.3.4651" X="0" Y="0" zoom="1" ScaleFactor="1" Name="FamilyParameter.MakeType" Description="Converts an instance parameter to a type parameter. ATTENTION: Only works in a family document." ID="7a654d3e-8413-4585-a949-5a6d89767a31" Category="Clockwork.Revit.Elements.FamilyParameter.Actions">
   <NamespaceResolutionMap />
   <Elements>
-    <PythonNodeModels.PythonNode guid="7d0801b5-5ce6-45a0-a788-bf53d81e1558" type="PythonNodeModels.PythonNode" nickname="Python Script" x="250" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+    <PythonNodeModels.PythonNode guid="7d0801b5-5ce6-45a0-a788-bf53d81e1558" type="PythonNodeModels.PythonNode" nickname="Python Script" x="310.5" y="246.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
       <PortInfo index="0" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
@@ -13,27 +13,44 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 def MakeTypeParam(doc, param):
+	success = False
 	if doc.IsFamilyDocument and hasattr(param, "Formula"):
-		doc.FamilyManager.MakeType(param)
-	return param
+		try:
+			doc.FamilyManager.MakeType(param)
+			success = True
+		except: pass
+	return param, success
 
 doc = DocumentManager.Instance.CurrentDBDocument
 TransactionManager.Instance.EnsureInTransaction(doc)
-if isinstance(IN[0], list): OUT = [MakeTypeParam(doc, x) for x in IN[0]]
+if isinstance(IN[0], list): OUT = map(list, zip(*[MakeTypeParam(doc, x) for x in IN[0]]))
 else: OUT = MakeTypeParam(doc, IN[0])
 TransactionManager.Instance.TransactionTaskDone()</Script>
     </PythonNodeModels.PythonNode>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9a88bac4-e1e9-4370-b9ae-ca38b05f978d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9a88bac4-e1e9-4370-b9ae-ca38b05f978d" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="56.5" y="246.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="familyParameter" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2ba60525-4ca9-4846-8b37-fda8cce9f001" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="449" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2ba60525-4ca9-4846-8b37-fda8cce9f001" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="797.5" y="204.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
       <Symbol value="familyParameter" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="60c53dd6-58fe-44e6-91a2-903c487bd9dc" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="534.5" y="192.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="7de95d0c-3f8b-4da5-8f5f-a689ba11581c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="534.5" y="300.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="a54d87cb-a127-49df-b722-550ef74e1070" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="797.5" y="288.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="success" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
-    <Dynamo.Graph.Connectors.ConnectorModel start="7d0801b5-5ce6-45a0-a788-bf53d81e1558" start_index="0" end="2ba60525-4ca9-4846-8b37-fda8cce9f001" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7d0801b5-5ce6-45a0-a788-bf53d81e1558" start_index="0" end="60c53dd6-58fe-44e6-91a2-903c487bd9dc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7d0801b5-5ce6-45a0-a788-bf53d81e1558" start_index="0" end="7de95d0c-3f8b-4da5-8f5f-a689ba11581c" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="9a88bac4-e1e9-4370-b9ae-ca38b05f978d" start_index="0" end="7d0801b5-5ce6-45a0-a788-bf53d81e1558" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="60c53dd6-58fe-44e6-91a2-903c487bd9dc" start_index="0" end="2ba60525-4ca9-4846-8b37-fda8cce9f001" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="7de95d0c-3f8b-4da5-8f5f-a689ba11581c" start_index="0" end="a54d87cb-a127-49df-b722-550ef74e1070" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
