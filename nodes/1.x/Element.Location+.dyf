@@ -1,4 +1,4 @@
-<Workspace Version="1.3.1.1736" X="326.261378943467" Y="186.208611169102" zoom="0.991871263722181" ScaleFactor="1" Name="Element.Location+" Description="Returns the location of an element as point, curve or curve loop, along with some booleans to help filtering the results. Unlike the OOTB Element.GetLocation node, it also retunrs sketch lines of sketch-based elements like floor slabs as well as the element's rotation property." ID="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" Category="Clockwork.Revit.Elements.Element.Query">
+<Workspace Version="1.3.3.4651" X="326.261378943467" Y="186.208611169102" zoom="0.991871263722181" ScaleFactor="1" Name="Element.Location+" Description="Returns the location of an element as an XYZ (or if it's line-based the start and end point of the line), along with some booleans to help filtering the results. Use this for some element types (e.g. walls or lines) that do not work with the built-in Get Family Instance Location node. " ID="0b59c4d8-afe4-4063-bf7e-2195fa33e8a9" Category="Clockwork.Revit.Elements.Element.Query">
   <NamespaceResolutionMap />
   <Elements>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="467e3f8f-3faf-49fc-94c3-76b1b0c59c5e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="0" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
@@ -24,7 +24,7 @@
       <PortInfo index="0" default="False" />
       <Symbol value="isCurve" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bd3f39ee-762e-4a88-a57d-373694197124" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="551.355185870988" y="139.870950208536" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];&#xA;seq[3];&#xA;seq[4];&#xA;seq[5];&#xA;seq[6];&#xA;seq[7];" ShouldFocus="false">
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="bd3f39ee-762e-4a88-a57d-373694197124" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="551.355185870988" y="139.870950208536" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="seq[0];&#xA;seq[1];&#xA;seq[2];&#xA;seq[3];&#xA;seq[4];&#xA;seq[5];&#xA;seq[6];&#xA;seq[7];&#xA;seq[8];&#xA;seq[9];" ShouldFocus="false">
       <PortInfo index="0" default="False" />
     </Dynamo.Graph.Nodes.CodeBlockNodeModel>
     <PythonNodeModels.PythonNode guid="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" type="PythonNodeModels.PythonNode" nickname="Python Script" x="404" y="136" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
@@ -39,90 +39,105 @@ import Revit
 clr.ImportExtensions(Revit.GeometryConversion)
 
 items = UnwrapElement(IN[0])
-pointlist, curvepointlist, ispoint, iscurve, curves, haslocation, angles, hasrotation = [], [], [], [], [], [], [], []
 
-for item in items:
-	try:
-		# points and text notes
-		pointlist.append(item.Coord.ToPoint())
-		ispoint.append(True)
-		iscurve.append(False)
-		haslocation.append(True)
-		hasrotation.append(False)
-	except:
-		try:
-			loc = item.Location
+def GetCurvePoints(curve):
+	return curve.GetEndPoint(0).ToPoint(), curve.GetEndPoint(1).ToPoint()
+
+def GetLocation(item):
+	# returns the following properties:
+	# [0] point
+	# [1] curve
+	# [2] is point?
+	# [3] is curve?
+	# [4] has location?
+	# [5] rotation angle
+	# [6] has rotation?
+	# [7] is curve loop?
+	# [8] curve loop
+	
+	# default values
+	point = None
+	curveendpoints = None
+	curve = None
+	ispoint = False
+	iscurve = False
+	haslocation = False
+	rotationangle = None
+	hasrotation = False
+	iscurveloop = False
+	curveloop = None
+	# template for return statements:
+	# return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+	
+	# points and text notes
+	if hasattr(item, "Coord"): 
+		return item.Coord.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# grids, dimensions and boundary segments
+	elif hasattr(item, "Curve"): 
+		return point, GetCurvePoints(item.Curve), item.Curve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# curtain grid lines
+	elif hasattr(item, "FullCurve"): 
+		return point, GetCurvePoints(item.FullCurve), item.FullCurve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# curves
+	elif hasattr(item, "GetEndpoint"): 
+		return point, GetCurvePoints(item), item.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# railings and top rails
+	elif hasattr(item, "GetPath"):
+		railpath = [x.ToProtoType() for x in item.GetPath()]
+		# paths with multiple segments
+		if len(railpath) &gt; 1: return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, railpath
+		# paths with a single segment
+		else: return point, GetCurvePoints(railpath[0].ToRevitType()), railpath[0], ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# openings
+	elif hasattr(item, "BoundaryCurves"):
+		# rectangular openings
+		# ToDo: find a good way of returning the boundary as a curve loop
+		# for now, return defaults in this case
+		if item.IsRectBoundary:
+			return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+		# none-rectangular openings
+		else: 
+			openingloop = [x.ToProtoType() for x in item.BoundaryCurves]
+			return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, openingloop
+	# other elements
+	elif hasattr(item, "Location"):
+		loc = item.Location
+		if loc:
+			# line-based elements (e.g. walls)
 			if loc.ToString() == 'Autodesk.Revit.DB.LocationCurve':
-				# line-based elements (e.g. walls)
-				curvepoints = (loc.Curve.GetEndPoint(0).ToPoint(),loc.Curve.GetEndPoint(1).ToPoint())
-				curvepointlist.append(curvepoints)
-				curves.append(loc.Curve.ToProtoType())
-				ispoint.append(False)
-				iscurve.append(True)
-				haslocation.append(True)
-				hasrotation.append(False)
+				return point, GetCurvePoints(loc.Curve), loc.Curve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+			# point-based elements (e.g. most loadable families)
 			elif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':
-				# point-based elements
-				pointlist.append(loc.Point.ToPoint())
-				ispoint.append(True)
-				iscurve.append(False)
-				haslocation.append(True)
-				try:
-					angles.append(math.degrees(loc.Rotation))
-					hasrotation.append(True)
-				except:
-					hasrotation.append(False)
+				if hasattr(loc, "Rotation"):
+					rotationangle = math.degrees(loc.Rotation)
+					hasrotation = True
+				return loc.Point.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+			# some elements have a location property but don't return curves or points
 			else:
-				# check for host objects outlines (floor slabs etc.)
+				# sketch-based elements (e.g. floor slabs)
 				try:
-					refs = HostObjectUtils.GetTopFaces(item)
-					blines = []
-					bpoints = []
-					for ref in refs:
-						try:
-							boundaries = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
-							for loop in boundaries:
-								cloop = []
-								clooppoints = []
-								for line in loop:
-									cloop.append(line.ToProtoType())
-									curvepoint = (line.GetEndPoint(0).ToPoint(),line.GetEndPoint(1).ToPoint())
-									clooppoints.append(curvepoint)
-								blines.append(cloop)
-								bpoints.append(clooppoints)
-						except:
-							pass
-					if (len(blines) &gt; 0):
-						curves.append(blines)
-						curvepointlist.append(bpoints)
-						iscurve.append(True)
-						haslocation.append(True)
-					else:
-						iscurve.append(False)
-						haslocation.append(False)
-					ispoint.append(False)
-					hasrotation.append(False)
+					sketchloop = []
+					for ref in HostObjectUtils.GetTopFaces(item):
+						boundaryloops = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
+						for loop in boundaryloops:
+							sketchloop.append([x.ToProtoType() for x in loop])
+						return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
+				# other elements we can't process (e.g. stairs)
+				# return defaults in these cases
 				except:
-					ispoint.append(False)
-					iscurve.append(False)
-					haslocation.append(False)
-					hasrotation.append(False)
-		except:
-			try:
-				# curves
-				curvepoints = (item.GetEndPoint(0).ToPoint(),item.GetEndPoint(1).ToPoint())
-				curvepointlist.append(curvepoints)
-				curves.append(item.ToProtoType())
-				ispoint.append(False)
-				iscurve.append(True)
-				haslocation.append(True)
-				hasrotation.append(False)
-			except:
-				ispoint.append(False)
-				iscurve.append(False)
-				haslocation.append(False)
-				hasrotation.append(False)
-OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrotation)</Script>
+					return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+		# some elements (e.g.groups, curtain panels etc.)  have a location property which only returns a NoneType
+		# return defaults in these cases
+		else: return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+	# in all other cases return defaults
+	else: return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+
+locations = [GetLocation(x) for x in items]
+
+# Transpose and remove NoneTypes
+OUT = []
+for prop in map(list, zip(*locations)):
+	OUT.append(filter(lambda x: x!=None, prop))</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="f049edbf-dc90-4d9d-8d55-aec33858083d" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="829.411443410782" y="265.903239184756" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
@@ -148,6 +163,14 @@ OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrot
         <Output value="seq" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="2b61f8fb-796b-4523-a3bc-00a3c5804bd4" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="835.313265954627" y="443.134620619139" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="hasMultipleCurves" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="0f4a063f-78d6-4b9c-ac40-e614f593607b" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="844.305070600477" y="504.552583680809" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="multipleCurves" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="467e3f8f-3faf-49fc-94c3-76b1b0c59c5e" start_index="0" end="157124ef-0735-43df-b3be-fc62d61d9f09" end_index="0" portType="0" />
@@ -159,6 +182,8 @@ OUT = (pointlist,curvepointlist,curves,ispoint,iscurve,haslocation,angles,hasrot
     <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="5" end="f049edbf-dc90-4d9d-8d55-aec33858083d" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="6" end="14d49b05-5d40-4fbf-b0e4-71bfaaee0839" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="7" end="83ee1aef-f798-4e80-8bef-4ac8b8479804" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="8" end="2b61f8fb-796b-4523-a3bc-00a3c5804bd4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="bd3f39ee-762e-4a88-a57d-373694197124" start_index="9" end="0f4a063f-78d6-4b9c-ac40-e614f593607b" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" start_index="0" end="bd3f39ee-762e-4a88-a57d-373694197124" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="157124ef-0735-43df-b3be-fc62d61d9f09" start_index="0" end="f9cf6ebe-4cb6-43a4-b682-f29bf6633963" end_index="0" portType="0" />
   </Connectors>
