@@ -1,4 +1,4 @@
-<Workspace Version="1.3.3.4651" X="708.701876812766" Y="-734.327445386159" zoom="0.719840997570876" ScaleFactor="1" Name="All Intersecting Elements Of Category By Vector" Description="Finds all elements of a specified category that intersect with a list of vectors" ID="335463a8-f774-4d16-bb66-55ff7eaea076" Category="Clockwork.Revit.Selection.ByCollector">
+<Workspace Version="1.3.3.4651" X="-1350.44406482605" Y="-1171.52971749059" zoom="0.969330132557686" ScaleFactor="1" Name="All Intersecting Elements Of Category By Vector" Description="Finds all elements of a specified category that intersect with a list of vectors" ID="335463a8-f774-4d16-bb66-55ff7eaea076" Category="Clockwork.Revit.Selection.ByCollector">
   <NamespaceResolutionMap>
     <ClassMap partialName="Elements.View3D" resolvedName="Revit.Elements.Views.View3D" assemblyName="RevitNodes.dll" />
     <ClassMap partialName="Autodesk.Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
@@ -54,18 +54,6 @@
       </Inputs>
       <Outputs>
         <Output value="passThrough" />
-      </Outputs>
-    </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4c79293a-95ab-4e43-8763-5c092b5051bc" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Tool.Eraser" x="2125.6299155893" y="1854.44322755441" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-      <ID value="73f2fb6b-75ab-46ae-a9a6-731e4899e8b7" />
-      <Name value="Tool.Eraser" />
-      <Description value="Try to delete any element from project" />
-      <Inputs>
-        <Input value="List" />
-      </Inputs>
-      <Outputs>
-        <Output value="Can't delete (Ids)" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="82e423b6-a137-46a8-b956-163aa3cf3753" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Passthrough" x="1799.71092459149" y="1988.85081721933" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
@@ -152,6 +140,39 @@
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="914dfe83-9d1a-4320-a730-4ee921e3b05e" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="109.544856799729" y="2136.85265782984" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="toggle : bool = true" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <PythonNodeModels.PythonNode guid="50c87125-3099-4d0c-8944-a60abb218e4c" type="PythonNodeModels.PythonNode" nickname="Python Script" x="2133.89019421921" y="1854.40404369521" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+from System.Collections.Generic import *
+
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+
+def DeleteElement(item):
+	if hasattr(item, "Id"):
+		try: 
+			doc.Delete(item.Id)
+			return True
+		except: return False
+	else: return False
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list): OUT = [DeleteElement(x) for x in items]
+else: OUT = DeleteElement(items)
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="ea2a65bc-dd9f-4940-b509-063c9df271f8" start_index="0" end="0df05a20-b41d-408d-90e8-3f6755e01e34" end_index="0" portType="0" />
@@ -169,7 +190,7 @@
     <Dynamo.Graph.Connectors.ConnectorModel start="85fcd3f4-f210-4a37-acc0-2e2054335336" start_index="0" end="70eb4429-6bbc-4d4b-8655-d716fc2b7a08" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="85fcd3f4-f210-4a37-acc0-2e2054335336" start_index="0" end="f8c5a54c-6246-4edb-a8c7-48e413c99dce" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="6839c283-0d32-4ce7-967c-8f1aa1cc45eb" start_index="0" end="85fcd3f4-f210-4a37-acc0-2e2054335336" end_index="1" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="f8c5a54c-6246-4edb-a8c7-48e413c99dce" start_index="0" end="4c79293a-95ab-4e43-8763-5c092b5051bc" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f8c5a54c-6246-4edb-a8c7-48e413c99dce" start_index="0" end="50c87125-3099-4d0c-8944-a60abb218e4c" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="82e423b6-a137-46a8-b956-163aa3cf3753" start_index="0" end="a2037b1d-cfa3-4bfd-aab5-85ea56c7f1f4" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="0b272cb2-daad-4b5d-adc6-56e1471de62b" start_index="0" end="3b37cc7c-b01e-4e52-a42f-87e257e94b15" end_index="3" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="8048e0d9-5096-4e33-8429-1a4af4ea7adf" start_index="0" end="0b272cb2-daad-4b5d-adc6-56e1471de62b" end_index="0" portType="0" />
