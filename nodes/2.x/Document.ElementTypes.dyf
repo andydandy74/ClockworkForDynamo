@@ -81,7 +81,7 @@
         {
           "Id": "d06749fcf2404000a7b6a2d5886dac97",
           "Name": "element",
-          "Description": "Input #1",
+          "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -92,7 +92,7 @@
         {
           "Id": "084102750f204d54b66d392dbc342d92",
           "Name": "name",
-          "Description": "Output #1",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -100,12 +100,12 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Gets an element's name (Dynamo's built-in Name nodes don't work for all element types, e.g. worksets...)"
+      "Description": "Gets an element's name. Unlike the OOTB node, this node should work for all Revit elements that have names and will also return the localized names of system parameters, parameter groups, display unit types, parameter types, unit symbol types and unit types."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nimport System.Reflection\r\nimport System.AppDomain\r\n\r\nrAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]\r\nrElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]\r\nOUT = [x for x in rAssembly.GetTypes() if x.IsClass and x.Namespace == 'Autodesk.Revit.DB' and x.IsSubclassOf(rElement)]",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nimport System.Reflection\r\nimport System.AppDomain\r\n\r\nrAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]\r\nrElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]\r\nOUT = [x for x in rAssembly.GetTypes() if x.IsClass and x.IsSubclassOf(rElement)]",
       "VariableInputPorts": true,
       "Id": "e1965a80a5ff41c1b2da69aeac4b2314",
       "Inputs": [],
@@ -143,6 +143,27 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elementTypeNames",
+      "Id": "1be334abb7eb4fb0a03f2182e2016634",
+      "Inputs": [
+        {
+          "Id": "b6f99d783b0b445ca856877e8e025486",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
@@ -150,6 +171,11 @@
       "Start": "29a17564720f466cac13cc87f7ecb2d4",
       "End": "24616c0efdad400d971fc9670748714d",
       "Id": "baf70d925d1d4aab8109edc0f310da6b"
+    },
+    {
+      "Start": "ee293e1d9065458bb717a7373cc12778",
+      "End": "b6f99d783b0b445ca856877e8e025486",
+      "Id": "f350d16856204e5f912ada0fd1bb0440"
     },
     {
       "Start": "084102750f204d54b66d392dbc342d92",
@@ -194,44 +220,54 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "List.SortByKey",
         "Id": "088ea15bc5c045a3859367460ce59dd5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "List.SortByKey",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 655.700591370788,
-        "Y": 0.0
+        "X": 687.350295685394,
+        "Y": 38.328064570579642
       },
       {
+        "ShowGeometry": true,
+        "Name": "Element.Name+",
         "Id": "80960194b87c4782b74d4ad4aa590693",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Element.Name+",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 407.133202194047,
-        "Y": 77.6561291411593
+        "X": 383.35029568539403,
+        "Y": 64.328064570579642
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "e1965a80a5ff41c1b2da69aeac4b2314",
         "IsSetAsInput": true,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 250.0,
-        "Y": 1.71014154689667
+        "X": 189.35029568539403,
+        "Y": 51.328064570579656
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "a60d983514064dea9a6a794b7cc0f25b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 945.700591370788,
-        "Y": 0.0
+        "X": 1002.350295685394,
+        "Y": 9.3280645705796417
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "1be334abb7eb4fb0a03f2182e2016634",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1002.350295685394,
+        "Y": 93.328064570579642
       }
     ],
     "Annotations": [],
