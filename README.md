@@ -1,7 +1,7 @@
-[![](https://img.shields.io/badge/current%201.x%20version-1.32.0-brightgreen.svg)](http://dynamopackages.com/) [![](https://img.shields.io/badge/current%202.x%20version-2.1.0-brightgreen.svg)](http://dynamopackages.com/)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/andydandy74/ClockworkForDynamo/blob/master/.github/CONTRIBUTING.md) [![](https://img.shields.io/twitter/follow/a_dieckmann.svg?label=Follow&style=social)](https://twitter.com/a_dieckmann)
+[![Current 1.x version](https://img.shields.io/badge/current%201.x%20version-1.32.0-brightgreen.svg)](http://dynamopackages.com/) [![Current 2.x version](https://img.shields.io/badge/current%202.x%20version-2.1.0-brightgreen.svg)](http://dynamopackages.com/) ![Node count](https://img.shields.io/badge/node%20count-406%20%2F%20403-brightgreen.svg)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/andydandy74/ClockworkForDynamo/blob/master/.github/CONTRIBUTING.md) [![Follow me on Twitter for updates](https://img.shields.io/twitter/follow/a_dieckmann.svg?label=Follow&style=social)](https://twitter.com/a_dieckmann)
 
-![Image](clockwork-logo.png)
+![Clockwork logo](clockwork-logo.png)
 
 **Clockwork** is a collection of custom nodes for the [Dynamo](http://www.dynamobim.com) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 400+ nodes of which a large portion was previously published in a number of separate packages.
 
