@@ -2,8 +2,8 @@
   "Uuid": "27a35be1-7b94-48e9-8972-022c3767bbb9",
   "IsCustomNode": true,
   "Category": "Clockwork.Revit.Elements.Query",
-  "Description": "Retrieves the supercomponent of a given family instance",
-  "Name": "FamilyInstance.SuperComponent",
+  "Description": "Retrieves the supercomponent of a given family instance, hand rail, top rail, stair component or beam in a beam system.",
+  "Name": "Element.SuperComponent",
   "ElementResolver": {
     "ResolutionMap": {}
   },
@@ -14,7 +14,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "familyInstance",
+        "Name": "element",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
@@ -60,7 +60,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetSuperComponent(item):\r\n\tif hasattr(item, \"SuperComponent\"): return item.SuperComponent\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetSuperComponent(x) for x in items]\r\nelse: OUT = GetSuperComponent(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetSuperComponent(item):\r\n\tif hasattr(item, \"SuperComponent\"): \r\n\t\tsc = item.SuperComponent\r\n\t\tif sc: return sc\r\n\t\telse: return BeamSystem.BeamBelongsTo(item)\r\n\tif hasattr(item, \"HostRailingId\"): return item.Document.GetElement(item.HostRailingId)\r\n\telif hasattr(item, \"GetStairs\"): return item.GetStairs()\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetSuperComponent(x) for x in items]\r\nelse: OUT = GetSuperComponent(items)",
       "VariableInputPorts": true,
       "Id": "e3c35b2105004cd2bc7b62c5c797f69e",
       "Inputs": [
@@ -102,7 +102,6 @@
     }
   ],
   "Dependencies": [],
-  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
@@ -113,7 +112,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -126,31 +125,31 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "89c41088f7794eadb1a226ecfb16eda2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 236.445228300119,
         "Y": -15.640799377513
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "74748e7a8c4b4d0f85959a63a6c890c9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 705.445228300119,
         "Y": -15.640799377513
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "e3c35b2105004cd2bc7b62c5c797f69e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 481.445228300119,
         "Y": -15.640799377513

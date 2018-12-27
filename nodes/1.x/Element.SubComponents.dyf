@@ -1,0 +1,56 @@
+<Workspace Version="1.3.3.4651" X="-241.905" Y="261.5725" zoom="1.1575" ScaleFactor="1" Name="Element.SubComponents" Description="Retrieves all (retrievable) subcomponents of a given family instance, beam system, stair (runs, landings and supports) or railing (top rails and hand rails)." ID="6434c64b-0da0-48a9-9049-2cb4902db026" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="FamilyInstance" resolvedName="Revit.Elements.FamilyInstance" assemblyName="RevitNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="8f79cd06-ae5e-42d0-89f6-fc950a362127" type="PythonNodeModels.PythonNode" nickname="Python Script" x="475.445228300119" y="6.7229137018452" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+items = UnwrapElement(IN[0])
+
+def GetSubComponents(item):
+	# FamilyInstances
+	if hasattr(item, "GetSubComponentIds"):
+		return [item.Document.GetElement(x) for x in item.GetSubComponentIds()]
+	# Stairs
+	elif hasattr(item, "GetStairsLandings"):
+		stair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]
+		stair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsRuns()])
+		stair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsSupports()])
+		return stair_comps
+	# Railings
+	elif hasattr(item, "GetHandRails"):
+		rail_comps = [item.Document.GetElement(x) for x in item.GetHandRails()]
+		rail_comps.append(item.Document.GetElement(item.TopRail))
+		return rail_comps
+	# Beam systems
+	elif hasattr(item, "GetBeamIds"):
+		return [item.Document.GetElement(x) for x in item.GetBeamIds()]
+	else: return []
+
+if isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]
+else: OUT = GetSubComponents(items)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="295974ab-903c-48b9-904c-e9c1e6defecd" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="230.445228300119" y="7.58684458737435" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element: var[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="3e56ebab-c4c7-4851-b0db-bc3f55da4784" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="699.445228300119" y="7.58684458737436" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="subComponents" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8f79cd06-ae5e-42d0-89f6-fc950a362127" start_index="0" end="3e56ebab-c4c7-4851-b0db-bc3f55da4784" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="295974ab-903c-48b9-904c-e9c1e6defecd" start_index="0" end="8f79cd06-ae5e-42d0-89f6-fc950a362127" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>
