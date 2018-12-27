@@ -72,6 +72,10 @@ def GetLocation(item):
 	# points and text notes
 	if hasattr(item, "Coord"): 
 		return item.Coord.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# stair runs and landings
+	if hasattr(item, "GetFootprintBoundary"):
+		footprint = [x.ToProtoType() for x in item.GetFootprintBoundary()]
+		return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, footprint
 	# grids, dimensions and boundary segments
 	elif hasattr(item, "Curve"): 
 		return point, GetCurvePoints(item.Curve), item.Curve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
@@ -122,7 +126,7 @@ def GetLocation(item):
 						for loop in boundaryloops:
 							sketchloop.append([x.ToProtoType() for x in loop])
 						return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
-				# other elements we can't process (e.g. stairs)
+				# other elements we can't process
 				# return defaults in these cases
 				except:
 					return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
