@@ -20,6 +20,7 @@ for member in refGroupMembers:
 	if elem.GetType().ToString() == "Autodesk.Revit.DB.FamilyInstance":
 		state = elem.Mirrored
 		membernum = counter
+		famtype = elem.GetTypeId().IntegerValue
 		break
 	counter += 1
 	
@@ -44,6 +45,8 @@ else:
 		elif refGroupType != group.GroupType.Id.IntegerValue: bools.append(None)
 		# Return null for group instances with excluded members
 		elif theseMembersNum < numMembers: bools.append(None)
+		# Return null if family instance to compare if of a diffent type
+		elif group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue != famtype: bools.append(None)
 		# Otherwise compare Mirrored state
 		else: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)
 			

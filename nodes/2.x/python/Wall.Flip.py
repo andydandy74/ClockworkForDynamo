@@ -9,15 +9,16 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 walls = UnwrapElement(IN[0])
-elementlist = list()
+
+def FlipWall(item):
+	if hasattr(item, "Flip"):
+		try:
+			item.Flip()
+			return True
+		except: return False
+	else: return False
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for item in walls:
-	try:
-		item.Flip()
-		elementlist.append(item)
-	except:
-		elementlist.append(list())
+if isinstance(IN[0], list): OUT = [FlipWall(x) for x in walls]
+else: OUT = FlipWall(walls)
 TransactionManager.Instance.TransactionTaskDone()
-		
-OUT = elementlist

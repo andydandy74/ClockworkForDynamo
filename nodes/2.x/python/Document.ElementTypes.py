@@ -10,4 +10,4 @@ import System.AppDomain
 
 rAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]
 rElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]
-OUT = [x for x in rAssembly.GetTypes() if x.IsClass and x.Namespace == 'Autodesk.Revit.DB' and x.IsSubclassOf(rElement)]
+OUT = [x for x in rAssembly.GetTypes() if x.IsClass and x.IsSubclassOf(rElement)]
