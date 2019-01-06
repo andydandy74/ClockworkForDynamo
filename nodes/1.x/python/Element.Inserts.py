@@ -11,14 +11,15 @@ incopenings = IN[1]
 incshadows = IN[2]
 incwalls = IN[3]
 incshared = IN[4]
-elementlist = list()
 
-for item in items:
-	itemlist = list()
-	try:
-		for insert in item.FindInserts(incopenings,incshadows,incwalls,incshared):
-			itemlist.append(item.Document.GetElement(insert).ToDSType(True))
-	except:
-		pass
-	elementlist.append(itemlist)
-OUT = elementlist
+def GetInserts(item,incopenings,incshadows,incwalls,incshared):
+	# Regular host objects
+	if hasattr(item, "FindInserts"):
+		return [item.Document.GetElement(x) for x in item.FindInserts(incopenings,incshadows,incwalls,incshared)]
+	# Railings
+	if hasattr(item, "GetAssociatedRailings"):
+		return [item.Document.GetElement(x) for x in item.GetAssociatedRailings()]
+	else: return []
+
+if isinstance(IN[0], list): OUT = [GetInserts(x,incopenings,incshadows,incwalls,incshared) for x in items]
+else: GetInserts(items,incopenings,incshadows,incwalls,incshared)

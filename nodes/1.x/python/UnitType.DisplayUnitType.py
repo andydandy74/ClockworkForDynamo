@@ -8,7 +8,9 @@ from RevitServices.Persistence import DocumentManager
 
 dynunittype = IN[0]
 
-if str(dynunittype) == 'DynamoUnits.Area':
+if str(dynunittype.GetType()) == "Autodesk.Revit.DB.UnitType":
+	unittype = dynunittype
+elif str(dynunittype) == 'DynamoUnits.Area':
 	unittype = UnitType.UT_Area
 elif str(dynunittype) == 'DynamoUnits.Length':
 	unittype = UnitType.UT_Length

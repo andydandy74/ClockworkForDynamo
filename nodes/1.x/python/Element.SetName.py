@@ -14,17 +14,25 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
 names = IN[1]
-booleans = []
-counter = 0
+
+def SetElementName(item, name):
+	if item.GetType().ToString() == "Autodesk.Revit.DB.FamilyParameter":
+		try: 
+			doc.FamilyManager.RenameParameter(item, name)
+			return True
+		except: return False
+	elif hasattr(item, "Name"):
+		try: 
+			item.Name = name
+			return True
+		except: return False
+	else: return False
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-while counter < len(items):
-	try:
-		items[counter].Name = names[counter]
-		booleans.append(True)
-	except:
-		booleans.append(False)
-	counter += 1
+if isinstance(IN[0], list):
+	if isinstance(names, list): OUT = [SetElementName(x, y) for x, y in zip(items, names)]
+	else: OUT = [SetElementName(x, names) for x in items]
+else:
+	if isinstance(names, list): OUT = SetElementName(items, names[0])
+	else: OUT = SetElementName(items, names)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = (items, booleans)

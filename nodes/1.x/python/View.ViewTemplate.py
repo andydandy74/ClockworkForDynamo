@@ -3,8 +3,11 @@ clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
 def GetViewTemplate(view):
-	if view.ViewTemplateId.IntegerValue == -1: return None
-	else: return view.Document.GetElement(view.ViewTemplateId)
+	if not view: return None
+	elif hasattr(view, "ViewTemplateId"):
+		if view.ViewTemplateId.IntegerValue == -1: return None
+		else: return view.Document.GetElement(view.ViewTemplateId)
+	else: return None
 
 views = UnwrapElement(IN[0])
 
