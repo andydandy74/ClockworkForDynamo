@@ -1,0 +1,55 @@
+<Workspace Version="1.3.3.4651" X="215" Y="47" zoom="1" ScaleFactor="1" Name="Category.FromInput" Description="Returns a category from a category, a Dynamo-wrapped category, a BuiltInCategory or a string representing a BuiltInCategory." ID="3fe585a9-94df-4dce-99e1-306888ccb457" Category="Clockwork.Revit.Selection.Miscellaneous">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="f6f1249c-ad3f-4e4a-b05b-14e7eeaecc45" type="PythonNodeModels.PythonNode" nickname="Python Script" x="214.5" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import System
+import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+
+def GetCatFromInput(var):	
+	cat = None
+	if var:
+		cattype = var.GetType().ToString()
+		if cattype == "Autodesk.Revit.DB.Category": cat = var
+		elif cattype == "Autodesk.Revit.DB.BuiltInCategory": cat = Category.GetCategory(doc, var)
+		elif cattype == "System.String": 
+			found = [x for x in bics if x.ToString() == var]
+			if len(found) &gt; 0: cat = Category.GetCategory(doc, found[0])
+	return cat
+
+doc = DocumentManager.Instance.CurrentDBDocument
+bics = System.Enum.GetValues(BuiltInCategory)
+cats = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetCatFromInput(x) for x in cats]
+else: OUT = GetCatFromInput(cats)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="0c0219c8-9cdd-45e4-aaa5-d77d1b0c844c" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="10.5" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="var[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="b5314fc9-a6ae-417e-a100-44e38d60a14a" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="438.5" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="RevitCategory" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="f6f1249c-ad3f-4e4a-b05b-14e7eeaecc45" start_index="0" end="b5314fc9-a6ae-417e-a100-44e38d60a14a" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0c0219c8-9cdd-45e4-aaa5-d77d1b0c844c" start_index="0" end="f6f1249c-ad3f-4e4a-b05b-14e7eeaecc45" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
