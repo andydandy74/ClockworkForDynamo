@@ -1,4 +1,4 @@
-<Workspace Version="1.3.4.6666" X="212.031741396571" Y="298.918886039947" zoom="0.832865595068324" ScaleFactor="1" Name="All Family Types Of Category" Description="Gets all family types/symbols of a given category in the model." ID="65f93a80-674c-4a98-9d0c-db3a138287e5" Category="Clockwork.Revit.Selection.ByCollector">
+<Workspace Version="1.3.4.6666" X="212.031741396571" Y="298.918886039947" zoom="0.832865595068324" ScaleFactor="1" Name="All Elements Of Category+" Description="Gets all placed elements of a given category in the model." ID="d2b11c37-6e44-4479-beca-578b82cfe32e" Category="Clockwork.Revit.Selection.ByCollector">
   <NamespaceResolutionMap>
     <ClassMap partialName="Category" resolvedName="Revit.Elements.Category" assemblyName="RevitNodes.dll" />
   </NamespaceResolutionMap>
@@ -8,7 +8,7 @@
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="e72cc930-7abf-411f-b378-d51ad9ffce1e" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="1156.16793870292" y="-42.26222248919" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
-      <Symbol value="familyTypes" />
+      <Symbol value="elements" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
     <PythonNodeModels.PythonNode guid="1402905f-1a88-40d8-a4d3-627f9c44bca0" type="PythonNodeModels.PythonNode" nickname="Python Script" x="932.167938702919" y="-42.26222248919" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="3">
       <PortInfo index="0" default="False" />
@@ -23,8 +23,8 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-def ElementTypesByCategory(bic, doc):
-	collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsElementType()
+def ElementsByCategory(bic, doc):
+	collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsNotElementType()
 	return collector.ToElements()
 
 inputdoc = UnwrapElement(IN[2])
@@ -33,8 +33,8 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance": doc
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document": doc = inputdoc
 else: doc = DocumentManager.Instance.CurrentDBDocument
 
-if isinstance(IN[0], list): OUT = [ElementTypesByCategory(x, doc) for x in IN[0]]
-else: OUT = ElementTypesByCategory(IN[0], doc)</Script>
+if isinstance(IN[0], list): OUT = [ElementsByCategory(x, doc) for x in IN[0]]
+else: OUT = ElementsByCategory(IN[0], doc)</Script>
     </PythonNodeModels.PythonNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="cd1510d6-5a85-4b7b-aac1-e5b12f93cdda" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="414.167938702919" y="-8.26222248918999" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="toggle : bool = true" />
