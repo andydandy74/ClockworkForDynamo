@@ -1,15 +1,16 @@
-<Workspace Version="1.3.2.2480" X="61" Y="209" zoom="1" ScaleFactor="1" Name="Element.Panels" Description="Retrieves the panels nested in a curtain wall, curtain system or glazed roof. &#xD;&#xA;Differences to OOTB node CurtainPanel.ByElement:&#xD;&#xA;- Returns embedded walls&#xD;&#xA;- Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. &#xD;&#xA;PLEASE NOTE: Will not work for glazed roofs created by RoofByFace method." ID="413a2361-4460-4bd6-90b7-3c137a5595ee" Category="Clockwork.Revit.Elements.Element.Query">
+<Workspace Version="1.3.4.6666" X="61" Y="209" zoom="1" ScaleFactor="1" Name="Element.Panels" Description="Retrieves the panels nested in a curtain wall, curtain system or glazed roof. &#xD;&#xA;Differences to OOTB node CurtainPanel.ByElement:&#xD;&#xA;- Returns embedded walls&#xD;&#xA;- Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. &#xD;&#xA;PLEASE NOTE: Will not work for glazed roofs created by RoofByFace method." ID="413a2361-4460-4bd6-90b7-3c137a5595ee" Category="Clockwork.Revit.Elements.Element.Query">
   <NamespaceResolutionMap />
   <Elements>
-    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11485846-15e6-4e2a-a561-a0210c07c137" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="213.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="11485846-15e6-4e2a-a561-a0210c07c137" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="139.913347075248" y="128" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <Symbol value="hostElement" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
-    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e2525691-1397-4f18-878b-ed73f3490523" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="658.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="e2525691-1397-4f18-878b-ed73f3490523" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="732.913347075248" y="157" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
       <Symbol value="panels" />
     </Dynamo.Graph.Nodes.CustomNodes.Output>
-    <PythonNodeModels.PythonNode guid="628c73c0-897a-40a6-9914-5fafa11df794" type="PythonNodeModels.PythonNode" nickname="Python Script" x="434.913347075248" y="77" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="1">
+    <PythonNodeModels.PythonNode guid="628c73c0-897a-40a6-9914-5fafa11df794" type="PythonNodeModels.PythonNode" nickname="Python Script" x="508.913347075248" y="157" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="true" inputcount="2">
       <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
       <Script>import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -27,24 +28,46 @@ def GetCurtainPanels(host):
 
 def GetCurtainPanelsByGrid(grid, host):
 	if grid:
-		panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
-		for panel in panellist:
-			if hasattr(panel, "FindHostPanel"):
-				hostpanelid = panel.FindHostPanel()
-				if hostpanelid.IntegerValue != -1:
-					panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
-		return [x.ToDSType(True) for x in panellist]
+		if organizeInRows:
+			uGrids = [ElementId.InvalidElementId]
+			[uGrids.append(x) for x in grid.GetUGridLineIds()]
+			vGrids = [ElementId.InvalidElementId]
+			[vGrids.append(x) for x in grid.GetVGridLineIds()]
+			panels = []
+			for u in uGrids:
+				row = []
+				for v in vGrids:
+					panel = grid.GetPanel(u,v)
+					if hasattr(panel, "FindHostPanel"):
+						hostpanelid = panel.FindHostPanel()
+						if hostpanelid.IntegerValue != -1: panel = host.Document.GetElement(hostpanelid)
+					row.append(panel)
+				panels.append(row)
+			return panels
+		else:
+			panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]
+			for panel in panellist:
+				if hasattr(panel, "FindHostPanel"):
+					hostpanelid = panel.FindHostPanel()
+					if hostpanelid.IntegerValue != -1:
+						panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
+			return [x.ToDSType(True) for x in panellist]
 	else: return list()
 
 items = UnwrapElement(IN[0])
+organizeInRows = IN[1]
 
 if isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]
 else: OUT = GetCurtainPanels(items)</Script>
     </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="00bc52f4-19e9-4519-8bf4-d0fe53211bc0" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="139.913347075248" y="212" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="organizeInRows : bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="11485846-15e6-4e2a-a561-a0210c07c137" start_index="0" end="628c73c0-897a-40a6-9914-5fafa11df794" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="628c73c0-897a-40a6-9914-5fafa11df794" start_index="0" end="e2525691-1397-4f18-878b-ed73f3490523" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="00bc52f4-19e9-4519-8bf4-d0fe53211bc0" start_index="0" end="628c73c0-897a-40a6-9914-5fafa11df794" end_index="1" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
