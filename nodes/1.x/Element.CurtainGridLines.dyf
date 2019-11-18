@@ -1,0 +1,61 @@
+<Workspace Version="1.3.4.6666" X="0" Y="0" zoom="1" ScaleFactor="1" Name="Element.CurtainGridLines" Description="Retrieves the grid lines of curtain walls, curtain systems or glazed roofs. " ID="9cc64fc5-99b8-410f-9e05-c337ebfb84c5" Category="Clockwork.Revit.Elements.Element.Query">
+  <NamespaceResolutionMap />
+  <Elements>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="615d173f-4a77-43a2-bd94-53b36f9be80f" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.LastItem" x="448.159887456105" y="107.27554874205" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.LastItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <PythonNodeModels.PythonNode guid="c1a24582-708b-4880-8a1f-30c4a5edd7a4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="224.159887456105" y="53.2755487420498" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+def GetCurtainGridLines(host):
+	if hasattr(host, "CurtainGrid"):
+		return GetCurtainGridLinesByGrid(host.CurtainGrid, host)
+	elif hasattr(host, "CurtainGrids"):
+		return map(list, zip(*[GetCurtainGridLinesByGrid(x, host) for x in host.CurtainGrids]))	
+	else: return []
+
+def GetCurtainGridLinesByGrid(grid, host):
+	if grid:
+		uGrids = [host.Document.GetElement(x) for x in grid.GetUGridLineIds()]
+		vGrids = [host.Document.GetElement(x) for x in grid.GetVGridLineIds()]
+		return uGrids, vGrids
+	else: return list()
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetCurtainGridLines(x) for x in items]
+else: OUT = GetCurtainGridLines(items)</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5dc7b299-1a38-4b3a-ac1d-9b74b404837c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="List.FirstItem" x="448.159887456105" y="-0.724451257950193" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="DSCoreNodes.dll" function="DSCore.List.FirstItem@var[]..[]">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="a0f0fc77-5456-4242-8c27-cff79582cfa6" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="3.15988745610463" y="53.2755487420498" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="hostElement" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="c1da7b4e-23d8-452a-8d96-e564d66982bd" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="711.159887456105" y="11.2755487420498" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="uGridLines" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="99d8236d-0bde-494c-9dd7-440787965ab0" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="711.159887456105" y="95.2755487420498" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="vGridLines" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="615d173f-4a77-43a2-bd94-53b36f9be80f" start_index="0" end="99d8236d-0bde-494c-9dd7-440787965ab0" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c1a24582-708b-4880-8a1f-30c4a5edd7a4" start_index="0" end="5dc7b299-1a38-4b3a-ac1d-9b74b404837c" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c1a24582-708b-4880-8a1f-30c4a5edd7a4" start_index="0" end="615d173f-4a77-43a2-bd94-53b36f9be80f" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5dc7b299-1a38-4b3a-ac1d-9b74b404837c" start_index="0" end="c1da7b4e-23d8-452a-8d96-e564d66982bd" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="a0f0fc77-5456-4242-8c27-cff79582cfa6" start_index="0" end="c1a24582-708b-4880-8a1f-30c4a5edd7a4" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+</Workspace>
