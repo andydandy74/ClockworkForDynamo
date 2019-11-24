@@ -1,0 +1,74 @@
+<Workspace Version="1.3.4.6666" X="46" Y="106" zoom="1" ScaleFactor="1" Name="Element.Mirror" Description="Mirrors a n element about a given plane." ID="e258c6eb-4df1-4d35-8635-653175697092" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" type="PythonNodeModels.PythonNode" nickname="Python Script" x="536.133871473783" y="29.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="False" />
+      <PortInfo index="3" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+from System.Collections.Generic import *
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.GeometryConversion)
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+def MirrorMirror(doc, items, plane, copymode):
+	itemids = List[ElementId]([x.Id for x in items])
+	mirroredids = ElementTransformUtils.MirrorElements(doc, itemids, plane, copymode)
+	if copymode: return [doc.GetElement(x) for x in mirroredids]
+	else: return items
+
+doc = DocumentManager.Instance.CurrentDBDocument
+items = UnwrapElement(IN[0])
+copymode = IN[1]
+planenormal = IN[2].ToRevitType()
+planeorigin = IN[3].ToRevitType()
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+plane = Plane.CreateByNormalAndOrigin(planenormal, planeorigin)
+if isinstance(IN[0], list): OUT = MirrorMirror(doc, items, plane, copymode)
+else: OUT = MirrorMirror(doc, [items], plane, copymode)[0]
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="c4e9e6d2-59a3-433b-aa2c-e6886e0584d4" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Plane.Normal" x="244.133871473783" y="104.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.Normal">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="d413c297-4b1a-4bf4-9bc0-12c25cdc0381" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Plane.Origin" x="244.133871473783" y="212.5" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Plane.Origin">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="cb92c08e-9c83-4065-a2e2-e1c9d3c4ecc5" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="244.133871473783" y="-63.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="element : var[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="192c2037-d078-4de1-a06a-ca6e806079ab" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="7.13387147378262" y="158.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="plane : Plane" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="f3b22e4a-5fa4-4baf-be79-20412b2f5471" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="760.133871473783" y="29.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="element" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="39fec606-13fe-4f70-8a29-cdd4b270ed5f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="244.133871473783" y="20.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="copy : bool = false" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" start_index="0" end="f3b22e4a-5fa4-4baf-be79-20412b2f5471" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="c4e9e6d2-59a3-433b-aa2c-e6886e0584d4" start_index="0" end="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="d413c297-4b1a-4bf4-9bc0-12c25cdc0381" start_index="0" end="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="cb92c08e-9c83-4065-a2e2-e1c9d3c4ecc5" start_index="0" end="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="192c2037-d078-4de1-a06a-ca6e806079ab" start_index="0" end="c4e9e6d2-59a3-433b-aa2c-e6886e0584d4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="192c2037-d078-4de1-a06a-ca6e806079ab" start_index="0" end="d413c297-4b1a-4bf4-9bc0-12c25cdc0381" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="39fec606-13fe-4f70-8a29-cdd4b270ed5f" start_index="0" end="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
