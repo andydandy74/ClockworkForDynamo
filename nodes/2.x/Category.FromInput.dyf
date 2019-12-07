@@ -1,0 +1,164 @@
+{
+  "Uuid": "3fe585a9-94df-4dce-99e1-306888ccb457",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Selection.Miscellaneous",
+  "Description": "Returns a category from a category, a Dynamo-wrapped category, a BuiltInCategory or a string representing a BuiltInCategory.",
+  "Name": "Category.FromInput",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef GetCatFromInput(var):\t\r\n\tcat = None\r\n\tif var:\r\n\t\tcattype = var.GetType().ToString()\r\n\t\tif cattype == \"Autodesk.Revit.DB.Category\": cat = var\r\n\t\telif cattype == \"Autodesk.Revit.DB.BuiltInCategory\": cat = Category.GetCategory(doc, var)\r\n\t\telif cattype == \"System.String\": \r\n\t\t\tfound = [x for x in bics if x.ToString() == var]\r\n\t\t\tif len(found) > 0: cat = Category.GetCategory(doc, found[0])\r\n\treturn cat\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nbics = System.Enum.GetValues(BuiltInCategory)\r\ncats = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCatFromInput(x) for x in cats]\r\nelse: OUT = GetCatFromInput(cats)",
+      "VariableInputPorts": true,
+      "Id": "f6f1249cad3f4e4ab05b14e7eeaecc45",
+      "Inputs": [
+        {
+          "Id": "964688c6f593481fbf634378a144478b",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "925027689c2b485aa7f4baa432584a61",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "var[]..[]",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "0c0219c89cdd45e4aaa5d77d1b0c844c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fe4e9bd13a9041e7a1d30901323ead81",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "RevitCategory",
+      "Id": "b5314fc9a6ae417ea10044e38d60a14a",
+      "Inputs": [
+        {
+          "Id": "c03d44eb08bd47b5b6ec48bd9d46e565",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "925027689c2b485aa7f4baa432584a61",
+      "End": "c03d44eb08bd47b5b6ec48bd9d46e565",
+      "Id": "44069a481fd94bb08203c3b5faa9d8d7"
+    },
+    {
+      "Start": "fe4e9bd13a9041e7a1d30901323ead81",
+      "End": "964688c6f593481fbf634378a144478b",
+      "Id": "9e6b84bbcffe408faaff3d70ecab5b83"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": false,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "f6f1249cad3f4e4ab05b14e7eeaecc45",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 214.5,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "0c0219c89cdd45e4aaa5d77d1b0c844c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 10.5,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "b5314fc9a6ae417ea10044e38d60a14a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 438.5,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 215.0,
+    "Y": 47.0,
+    "Zoom": 1.0
+  }
+}

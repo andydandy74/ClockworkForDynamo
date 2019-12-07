@@ -1,0 +1,164 @@
+{
+  "Uuid": "7d85bda8-a044-4ba0-82bc-1f55d9e28b9f",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Selection.Miscellaneous",
+  "Description": "Returns a BuiltInCategory from a category, a Dynamo-wrapped category, a BuiltInCategory or a string representing a BuiltInCategory.",
+  "Name": "BuiltInCategory.FromInput",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef GetBicFromInput(var):\t\r\n\tbic = None\r\n\tif var:\r\n\t\tcattype = var.GetType().ToString()\r\n\t\tif cattype == \"Revit.Elements.Category\": bic = System.Enum.ToObject(BuiltInCategory, var.Id)\r\n\t\telif cattype == \"Autodesk.Revit.DB.BuiltInCategory\": bic = var\r\n\t\telif cattype == \"System.String\": \r\n\t\t\tfound = [x for x in bics if x.ToString() == var]\r\n\t\t\tif len(found) > 0: bic = found[0]\r\n\treturn bic\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nbics = System.Enum.GetValues(BuiltInCategory)\r\n\r\nif isinstance(IN[0], list): OUT = [GetBicFromInput(x) for x in IN[0]]\r\nelse: OUT = GetBicFromInput(IN[0])",
+      "VariableInputPorts": true,
+      "Id": "ba0f21ce28724fd184e29079fceef7d7",
+      "Inputs": [
+        {
+          "Id": "d683bef5191c4d15a0f90538c935fca8",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c2e26ed946cc42578c129e7c047b778c",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "var[]..[]",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "ff133d85817d42eab66db19d9f5f06d5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a674eef9f4514dc8a6a0a0a7cc7f4df2",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "BuiltInCategory",
+      "Id": "d9f4a67bda374744bc8a9564a520528c",
+      "Inputs": [
+        {
+          "Id": "1bae0f5a04e74445bc9d4688765aa124",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c2e26ed946cc42578c129e7c047b778c",
+      "End": "1bae0f5a04e74445bc9d4688765aa124",
+      "Id": "18d4496abaf2429b9bfb86cd3f359816"
+    },
+    {
+      "Start": "a674eef9f4514dc8a6a0a0a7cc7f4df2",
+      "End": "d683bef5191c4d15a0f90538c935fca8",
+      "Id": "cfdcb15316dd4cfa83358ece3df8f164"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": false,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "ba0f21ce28724fd184e29079fceef7d7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 214.5,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "ff133d85817d42eab66db19d9f5f06d5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -55.751040775466777,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d9f4a67bda374744bc8a9564a520528c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 438.5,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 135.43721680182108,
+    "Y": 196.09748439351245,
+    "Zoom": 1.5546925571943861
+  }
+}

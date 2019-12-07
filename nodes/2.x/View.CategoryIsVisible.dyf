@@ -18,7 +18,7 @@
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
-        "Description": ""
+        "Description": " Works with categories, BuiltInCategories and BuiltInCategories as strings"
       },
       "Id": "753cd25379a44c4bab10aee58856bc74",
       "Inputs": [],
@@ -94,7 +94,7 @@
         {
           "Id": "7862133558b24e4784cfce0aace608da",
           "Name": "Name",
-          "Description": "Output #1",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -103,7 +103,7 @@
         {
           "Id": "d107a0ee216b465c8fff65f99e6eb6f9",
           "Name": "Version",
-          "Description": "Output #2",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -112,7 +112,7 @@
         {
           "Id": "b22273670857406bb1d0581b21f98e45",
           "Name": "Build",
-          "Description": "Output #3",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -121,7 +121,7 @@
         {
           "Id": "577a38b64c9f4bf5bf4d525bd7cb301e",
           "Name": "Language",
-          "Description": "Output #4",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -130,7 +130,7 @@
         {
           "Id": "8f1e40908d3049c0937b4d91480f9bd0",
           "Name": "fullVersion",
-          "Description": "Output #5",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -143,7 +143,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef IsCategoryVisibleInView(cat, view, version):\r\n\tif version > 2016:\r\n\t\tif view.GetCategoryHidden(cat.Id): return False\r\n\t\telse: return True\r\n\telse:\r\n\t\tif view.GetVisibility(cat): return True\r\n\t\telse: return False\r\n\r\ncats = UnwrapElement(IN[0])\r\nviews = UnwrapElement(IN[1])\r\n\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[1], list):  OUT = [[IsCategoryVisibleInView(x, y, IN[2]) for x in cats] for y in views]\r\n\telse: OUT = [IsCategoryVisibleInView(x, views, IN[2]) for x in cats]\r\nelse:\r\n\tif isinstance(IN[1], list): OUT = [IsCategoryVisibleInView(cats, x, IN[2]) for x in views]\r\n\telse: OUT = IsCategoryVisibleInView(cats, views, IN[2])",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef IsCategoryVisibleInView(cat, view, version):\r\n\tif version > 2016:\r\n\t\tif view.GetCategoryHidden(cat.Id): return False\r\n\t\telse: return True\r\n\telse:\r\n\t\tif view.GetVisibility(cat): return True\r\n\t\telse: return False\r\n\r\ncats = IN[0]\r\nviews = UnwrapElement(IN[1])\r\n\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[1], list):  OUT = [[IsCategoryVisibleInView(x, y, IN[2]) for x in cats] for y in views]\r\n\telse: OUT = [IsCategoryVisibleInView(x, views, IN[2]) for x in cats]\r\nelse:\r\n\tif isinstance(IN[1], list): OUT = [IsCategoryVisibleInView(cats, x, IN[2]) for x in views]\r\n\telse: OUT = IsCategoryVisibleInView(cats, views, IN[2])",
       "VariableInputPorts": true,
       "Id": "108b7cd97810419c800f6cd2810d3979",
       "Inputs": [
@@ -188,13 +188,44 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3fe585a9-94df-4dce-99e1-306888ccb457",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "36bd42f0bdf44e7291e9695836d01843",
+      "Inputs": [
+        {
+          "Id": "969248a644774d0fa5f9dc83ae8b4cce",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c0b99f4a1eb149229206a625e926b346",
+          "Name": "RevitCategory",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns a category from a category, a Dynamo-wrapped category, a BuiltInCategory or a string representing a BuiltInCategory."
     }
   ],
   "Connectors": [
     {
       "Start": "b16e035f6c0e402da63f25d6763140ec",
-      "End": "ac14cf5c21e94f1596f06224f1b0034f",
-      "Id": "ddc1077a44ed461cb7826ac31558b7e5"
+      "End": "969248a644774d0fa5f9dc83ae8b4cce",
+      "Id": "71c9f554b917428fbccf46c62a871e40"
     },
     {
       "Start": "bda091de99e241fda9008a57516eba63",
@@ -210,10 +241,16 @@
       "Start": "96bcce7fa658442281e6f94539a6724b",
       "End": "648d508ad6d0481296553d9f3a344751",
       "Id": "9eb82b9c7f454c5691282ffc7dbd951b"
+    },
+    {
+      "Start": "c0b99f4a1eb149229206a625e926b346",
+      "End": "ac14cf5c21e94f1596f06224f1b0034f",
+      "Id": "83bdb7b83a6841ea832be91c1b3894fa"
     }
   ],
   "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+    "3fe585a9-94df-4dce-99e1-306888ccb457"
   ],
   "Bindings": [],
   "View": {
@@ -221,12 +258,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -239,54 +276,64 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "753cd25379a44c4bab10aee58856bc74",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 188.83565284066,
-        "Y": -10.0371245370856
+        "X": -177.66434715933997,
+        "Y": 17.907877701631094
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "8391a372b1134e1ab6eaaa1f0875826c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 644.83565284066,
-        "Y": 55.9628754629144
+        "X": 1149.33565284066,
+        "Y": 100.90787770163109
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "89cbe01bccc34ab5a510eb7e838c5ecb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 188.83565284066,
-        "Y": 72.9628754629144
+        "X": 579.33565284066,
+        "Y": 126.90787770163108
       },
       {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
         "Id": "95c44e1b3d1a48f29db6fdeb3dc98d92",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Application.Version",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 188.83565284066,
-        "Y": 156.962875462914
+        "X": 579.33565284066,
+        "Y": 209.90787770163109
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "108b7cd97810419c800f6cd2810d3979",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 420.83565284066,
-        "Y": 55.9628754629144
+        "X": 925.33565284066,
+        "Y": 100.90787770163109
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Category.FromInput",
+        "Id": "36bd42f0bdf44e7291e9695836d01843",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 579.33565284066,
+        "Y": 17.907877701631122
       }
     ],
     "Annotations": [],

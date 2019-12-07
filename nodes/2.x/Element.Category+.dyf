@@ -65,7 +65,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\ttry: return Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCategory(x) for x in items]\r\nelse: OUT = GetCategory(items)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\nelse: OUT = GetCategory(items)",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "Inputs": [
@@ -92,6 +92,87 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes IronPython-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "5cbbb185d77a4c84a31c692f0fcaf9e2",
+      "Inputs": [
+        {
+          "Id": "2fd91b584183440eb62b0a857d3331e6",
+          "Name": "list",
+          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a625348d25584499b921546d0c279849",
+          "Name": "item",
+          "Description": "First item in the list.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "d66964871d4240ccb2b7d68c0ac1f156",
+      "Inputs": [
+        {
+          "Id": "0a33950b47734ca69cc53024a43869b4",
+          "Name": "list",
+          "Description": "List to get the last item of.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5aab4c13819741aa9345d2236384900e",
+          "Name": "last",
+          "Description": "Last item in the list.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "builtInCategory",
+      "Id": "7c1dd5750b754dd9b6687157478a53de",
+      "Inputs": [
+        {
+          "Id": "d7ecdd8a1f8946ea9208a3cc9a0127e5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
@@ -102,8 +183,23 @@
     },
     {
       "Start": "452f3978bf874032b352c320d87ccbc9",
+      "End": "2fd91b584183440eb62b0a857d3331e6",
+      "Id": "fdfc8900cec34a0f80180f35a62b0035"
+    },
+    {
+      "Start": "452f3978bf874032b352c320d87ccbc9",
+      "End": "0a33950b47734ca69cc53024a43869b4",
+      "Id": "d0a1e3f9b8134dbd83268fef2a479f46"
+    },
+    {
+      "Start": "a625348d25584499b921546d0c279849",
       "End": "27d4fb67a07f447a9865acb191812cbc",
-      "Id": "b6ca9e0876f84cc7b92c8275937c08dc"
+      "Id": "b49bc8a39afc432693b505f76dc38b54"
+    },
+    {
+      "Start": "5aab4c13819741aa9345d2236384900e",
+      "End": "d7ecdd8a1f8946ea9208a3cc9a0127e5",
+      "Id": "769973f896894f2db63fb27de5d290c7"
     }
   ],
   "Dependencies": [],
@@ -113,7 +209,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -137,8 +233,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 240.46111159012298,
-        "Y": 181.744630690073
+        "X": 166.96111159012298,
+        "Y": 152.49251352081069
       },
       {
         "ShowGeometry": true,
@@ -147,8 +243,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 742.461111590123,
-        "Y": 181.744630690073
+        "X": 931.961111590123,
+        "Y": 110.4925135208107
       },
       {
         "ShowGeometry": true,
@@ -157,8 +253,38 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 518.461111590123,
-        "Y": 181.744630690073
+        "X": 444.961111590123,
+        "Y": 152.49251352081069
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
+        "Id": "5cbbb185d77a4c84a31c692f0fcaf9e2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 668.961111590123,
+        "Y": 97.492513520810718
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.LastItem",
+        "Id": "d66964871d4240ccb2b7d68c0ac1f156",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 668.961111590123,
+        "Y": 207.49251352081069
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "7c1dd5750b754dd9b6687157478a53de",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 931.961111590123,
+        "Y": 194.49251352081069
       }
     ],
     "Annotations": [],
