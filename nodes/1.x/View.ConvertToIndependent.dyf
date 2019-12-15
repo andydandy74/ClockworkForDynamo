@@ -1,0 +1,54 @@
+<Workspace Version="1.3.4.6666" X="173" Y="96" zoom="1" ScaleFactor="1" Name="View.ConvertToIndependent" Description="Converts a given dependent view to an independent view" ID="e1f11598-fe0f-4bd9-8ac8-b8bd24efcb67" Category="Clockwork.Revit.Views.View.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Math" resolvedName="DSCore.Math" assemblyName="DSCoreNodes.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <PythonNodeModels.PythonNode guid="8581da1d-b17d-423a-8844-3ef54b4c47f4" type="PythonNodeModels.PythonNode" nickname="Python Script" x="255" y="53" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="1">
+      <PortInfo index="0" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+def DependentToIndependent(view):
+	try:
+		view.ConvertToIndependent()
+		return True
+	except: return False
+
+doc = DocumentManager.Instance.CurrentDBDocument
+views = UnwrapElement(IN[0])
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list): OUT = [DependentToIndependent(x) for x in views]
+else: OUT = DependentToIndependent(views)
+TransactionManager.Instance.TransactionTaskDone()</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8d954a1f-39eb-4b81-affa-2a9a64c5e5d4" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="1" y="11" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="view: var[]..[]" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="050c9f11-ff4e-441a-ad4b-d38bdc60ab68" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="479" y="-31" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="view" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="94727108-b9ac-4021-b00c-06d2d9a435cb" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="479" y="53" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="success" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="8581da1d-b17d-423a-8844-3ef54b4c47f4" start_index="0" end="94727108-b9ac-4021-b00c-06d2d9a435cb" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d954a1f-39eb-4b81-affa-2a9a64c5e5d4" start_index="0" end="8581da1d-b17d-423a-8844-3ef54b4c47f4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="8d954a1f-39eb-4b81-affa-2a9a64c5e5d4" start_index="0" end="050c9f11-ff4e-441a-ad4b-d38bdc60ab68" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
