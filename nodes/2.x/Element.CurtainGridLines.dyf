@@ -1,0 +1,290 @@
+{
+  "Uuid": "9cc64fc5-99b8-410f-9e05-c337ebfb84c5",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves the grid lines of curtain walls, curtain systems or glazed roofs. ",
+  "Name": "Element.CurtainGridLines",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "615d173f4a7743a2bd9453b36f9be80f",
+      "Inputs": [
+        {
+          "Id": "4f5f337343f54c34ae3547ae6ff5f167",
+          "Name": "list",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b85af31939d547469c0464062b106d47",
+          "Name": "last",
+          "Description": "Das letzte Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCurtainGridLines(host):\r\n\tif hasattr(host, \"CurtainGrid\"):\r\n\t\treturn GetCurtainGridLinesByGrid(host.CurtainGrid, host)\r\n\telif hasattr(host, \"CurtainGrids\"):\r\n\t\treturn map(list, zip(*[GetCurtainGridLinesByGrid(x, host) for x in host.CurtainGrids]))\t\r\n\telse: return []\r\n\r\ndef GetCurtainGridLinesByGrid(grid, host):\r\n\tif grid:\r\n\t\tuGrids = [host.Document.GetElement(x) for x in grid.GetUGridLineIds()]\r\n\t\tvGrids = [host.Document.GetElement(x) for x in grid.GetVGridLineIds()]\r\n\t\treturn uGrids, vGrids\r\n\telse: return list()\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCurtainGridLines(x) for x in items]\r\nelse: OUT = GetCurtainGridLines(items)",
+      "VariableInputPorts": true,
+      "Id": "c1a24582708b48808a1f30c4a5edd7a4",
+      "Inputs": [
+        {
+          "Id": "aa5309e0123b4a4598d6aa6adf087479",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2338cc02807049ad999aafd32c890d84",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "5dc7b2991a384b3aac1d9b74b404837c",
+      "Inputs": [
+        {
+          "Id": "1842c1b1222c4fa6a263fb1f9fc73f83",
+          "Name": "list",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bb147ec9d4884a90bb7b7aecd6020078",
+          "Name": "item",
+          "Description": "Das erste Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "hostElement",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "a0f0fc77545642428c27cff79582cfa6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7a3db57ef3604fdc8ae8f2306fdf52d7",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "uGridLines",
+      "Id": "c1da7b4e23d8452a8d96e564d66982bd",
+      "Inputs": [
+        {
+          "Id": "845f916aefe74ac5ab9b634836ada1a9",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "vGridLines",
+      "Id": "99d8236d0bde494c9dd7440787965ab0",
+      "Inputs": [
+        {
+          "Id": "f634c2d6f3be4723a478ca6e44718200",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b85af31939d547469c0464062b106d47",
+      "End": "f634c2d6f3be4723a478ca6e44718200",
+      "Id": "ee5d9d26f46d44c688cd5871c1223fb2"
+    },
+    {
+      "Start": "2338cc02807049ad999aafd32c890d84",
+      "End": "1842c1b1222c4fa6a263fb1f9fc73f83",
+      "Id": "4bf0b7293c484655b8f1bfab8f6888ae"
+    },
+    {
+      "Start": "2338cc02807049ad999aafd32c890d84",
+      "End": "4f5f337343f54c34ae3547ae6ff5f167",
+      "Id": "337c267cc7f4464fb81c583a35e79245"
+    },
+    {
+      "Start": "bb147ec9d4884a90bb7b7aecd6020078",
+      "End": "845f916aefe74ac5ab9b634836ada1a9",
+      "Id": "154d3097efba4ccc880eac06a28f626f"
+    },
+    {
+      "Start": "7a3db57ef3604fdc8ae8f2306fdf52d7",
+      "End": "aa5309e0123b4a4598d6aa6adf087479",
+      "Id": "3caa02d7d6c74ea3947e0169506ff3a6"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "List.LastItem",
+        "Id": "615d173f4a7743a2bd9453b36f9be80f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 448.159887456105,
+        "Y": 107.27554874205
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "c1a24582708b48808a1f30c4a5edd7a4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 224.159887456105,
+        "Y": 53.2755487420498
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
+        "Id": "5dc7b2991a384b3aac1d9b74b404837c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 448.159887456105,
+        "Y": -0.724451257950193
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "a0f0fc77545642428c27cff79582cfa6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 3.15988745610463,
+        "Y": 53.2755487420498
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "c1da7b4e23d8452a8d96e564d66982bd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 711.159887456105,
+        "Y": 11.2755487420498
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "99d8236d0bde494c9dd7440787965ab0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 711.159887456105,
+        "Y": 95.2755487420498
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}
