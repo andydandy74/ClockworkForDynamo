@@ -14,17 +14,17 @@
 import System
 clr.AddReference('RevitAPI')
 clr.AddReference('RevitAPIUI')
-from Autodesk.Revit.DB import *
 import Autodesk
 
+rAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]
+
 def GetEnumValues(typename):
-	if hasattr(Autodesk.Revit.DB, typename):
-		enumtype = getattr(Autodesk.Revit.DB, typename)
-		if hasattr(enumtype, 'GetNames'):
-			enumnames = System.Enum.GetNames(enumtype)
-			return enumnames, [int(System.Enum.Parse(enumtype, x)) for x in enumnames]
-		else: return []
-	else: return []
+	foundenums = [x for x in rAssembly.GetTypes() if x.Name == typename and x.BaseType == System.Enum]
+	try:
+		enumnames = foundenums[0].GetEnumNames()
+		enumvals = [int(System.Enum.Parse(foundenums[0], x)) for x in enumnames]
+		return (enumnames, enumvals)
+	except: return ([], [])
 
 enums = IN[0]
 
