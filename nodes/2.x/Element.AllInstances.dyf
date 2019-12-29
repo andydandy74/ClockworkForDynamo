@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nelements = UnwrapElement(IN[0])\r\n\r\nelementlist = list()\r\nfor e in elements:\r\n\tcollector = FilteredElementCollector(doc)\r\n\tbic = System.Enum.ToObject(BuiltInCategory, e.Category.Id.IntegerValue)\r\n\tcollector.OfCategory(bic)\r\n\t# This is a workaround\r\n\t# because I was to lazy to learn\r\n\t# how to implement LINQ in Python\r\n\telist =  list()\r\n\tfor item in collector.ToElements():\r\n\t\tif item.GetTypeId().IntegerValue == e.GetTypeId().IntegerValue:\r\n\t\t\telist.append(item)\r\n\telementlist.append(elist)\r\nOUT = elementlist",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetAllInstances(item):\r\n\tcollector = FilteredElementCollector(item.Document)\r\n\tbic = System.Enum.ToObject(BuiltInCategory, item.Category.Id.IntegerValue)\r\n\tcollector.OfCategory(bic)\r\n\t# This is a workaround\r\n\t# because I was too lazy to learn\r\n\t# how to implement LINQ in Python\r\n\treturn [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == item.GetTypeId().IntegerValue]\r\n\r\nelements = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetAllInstances(x) for x in elements]\r\nelse: OUT = GetAllInstances(elements)",
       "VariableInputPorts": true,
       "Id": "e6677cac8a4644e895b1a356863cfe53",
       "Inputs": [
@@ -40,77 +40,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "8c5b329dd8f6427588f9176007f42601",
-      "Inputs": [
-        {
-          "Id": "08d9552da1ed48e1a66ce4de3c25a038",
-          "Name": "unknownItem",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "a49c3468d5294f3982d6fe8bfaf56246",
-          "Name": "seq",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "48a71996ded643d8b26a7e1779655b4b",
-          "Name": "",
-          "Description": "Output #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "0ce328af74434997b3b0227ac4351832",
-      "Inputs": [
-        {
-          "Id": "ef2ead85321a4bc6ae1d0bf734f64903",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "0253b26c121542d6a69edfb748f593aa",
-          "Name": "seq",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Turns an element (or a nested list) into a flat list"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -163,41 +92,23 @@
   "Connectors": [
     {
       "Start": "7ada5a87a58f464dbea2a5e8fd2c0297",
-      "End": "a49c3468d5294f3982d6fe8bfaf56246",
-      "Id": "bb28897c4b3d48a4836dd02f7e844985"
-    },
-    {
-      "Start": "48a71996ded643d8b26a7e1779655b4b",
       "End": "cab067386690418db85c81b7526bd366",
-      "Id": "92238de9449b4712bf5f655b912b60f0"
+      "Id": "dbeaa41cf32547289bc9fda3fa4488fa"
     },
     {
-      "Start": "0253b26c121542d6a69edfb748f593aa",
+      "Start": "dc02572800074da792f1128d18cb852e",
       "End": "7d1d8ca0d9834423b4836337b77b1828",
-      "Id": "bd49f1d5298e42fb9892593e97911ff1"
-    },
-    {
-      "Start": "dc02572800074da792f1128d18cb852e",
-      "End": "08d9552da1ed48e1a66ce4de3c25a038",
-      "Id": "f10884b3d4774d20accdf69e5992dca9"
-    },
-    {
-      "Start": "dc02572800074da792f1128d18cb852e",
-      "End": "ef2ead85321a4bc6ae1d0bf734f64903",
-      "Id": "0de8e23be1554880aa1082b3dbab0591"
+      "Id": "75820afa8797451f98915da231061e0e"
     }
   ],
-  "Dependencies": [
-    "44ac4888-4aa4-49a9-9344-23b729c11df9",
-    "cd09ad33-8c34-4850-ac26-24448d92c38f"
-  ],
+  "Dependencies": [],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -215,59 +126,39 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "e6677cac8a4644e895b1a356863cfe53",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 455.0,
-        "Y": 80.3221523905518
+        "X": 470.1057156834915,
+        "Y": 40.161076195275911
       },
       {
-        "Id": "8c5b329dd8f6427588f9176007f42601",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
         "ShowGeometry": true,
-        "Excluded": false,
-        "X": 619.211431366983,
-        "Y": 0.0
-      },
-      {
-        "Id": "0ce328af74434997b3b0227ac4351832",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "Turn Into List",
-        "ShowGeometry": true,
-        "Excluded": false,
-        "X": 250.0,
-        "Y": 80.3221523905518
-      },
-      {
+        "Name": "Input",
         "Id": "e4c88eec724c4052aef84d9cf22cefd9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 192.1057156834915,
+        "Y": 40.161076195275918
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "896e74bcdec74abe949cc48718aad496",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 886.211431366983,
-        "Y": 0.0
+        "X": 694.10571568349155,
+        "Y": 40.161076195275918
       }
     ],
     "Annotations": [],
-    "X": -274.0,
-    "Y": 62.0,
+    "X": 381.0,
+    "Y": 292.0,
     "Zoom": 1.0
   }
 }
