@@ -1,5 +1,7 @@
-<Workspace Version="1.3.4.6666" X="46" Y="106" zoom="1" ScaleFactor="1" Name="Element.Mirror" Description="Mirrors a n element about a given plane." ID="e258c6eb-4df1-4d35-8635-653175697092" Category="Clockwork.Revit.Elements.Element.Actions">
-  <NamespaceResolutionMap />
+<Workspace Version="1.3.4.6666" X="46" Y="106" zoom="1" ScaleFactor="1" Name="Element.Mirror" Description="Mirrors an element about a given plane." ID="e258c6eb-4df1-4d35-8635-653175697092" Category="Clockwork.Revit.Elements.Element.Actions">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Plane" resolvedName="Autodesk.DesignScript.Geometry.Plane" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
   <Elements>
     <PythonNodeModels.PythonNode guid="438ffba4-5e41-4562-ab88-1fc6f5d4cc44" type="PythonNodeModels.PythonNode" nickname="Python Script" x="536.133871473783" y="29.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="4">
       <PortInfo index="0" default="False" />
@@ -13,6 +15,7 @@ from System.Collections.Generic import *
 clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.GeometryConversion)
+clr.ImportExtensions(Revit.Elements)
 clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
@@ -21,7 +24,7 @@ from RevitServices.Transactions import TransactionManager
 def MirrorMirror(doc, items, plane, copymode):
 	itemids = List[ElementId]([x.Id for x in items])
 	mirroredids = ElementTransformUtils.MirrorElements(doc, itemids, plane, copymode)
-	if copymode: return [doc.GetElement(x) for x in mirroredids]
+	if copymode: return [doc.GetElement(x).ToDSType(False) for x in mirroredids]
 	else: return items
 
 doc = DocumentManager.Instance.CurrentDBDocument
@@ -68,7 +71,4 @@ TransactionManager.Instance.TransactionTaskDone()</Script>
   <Notes />
   <Annotations />
   <Presets />
-  <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
-  </Cameras>
 </Workspace>
