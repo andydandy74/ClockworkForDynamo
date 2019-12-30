@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nname = IN[1]\r\n\r\n# create itemset\r\nitems = UnwrapElement(IN[0])\r\nids = list()\r\nfor item in items:\r\n\tids.append(item.Id)\r\nitemset = List[ElementId](ids)\r\n\r\n# collect all existing filters from the model \r\nnames = list()\r\ncollector = FilteredElementCollector(doc)\r\nfilters = collector.OfClass(FilterElement).ToElements();\r\n\r\nselset = False\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n# if a filter of that name already exists, delete its content\r\nfor filter in filters:\r\n\tif str(filter.Name) == name:\r\n\t\tfilter.Clear()\r\n\t\tselset = filter\r\n# create a new selection set if it doesn't already exist\r\nif selset == False:\r\n\tselset = SelectionFilterElement.Create(doc,name)\r\n# add the items to the selection set\r\ntry: \r\n\tselset.AddSet(itemset)\r\n\tOUT = selset.ToDSType(False)\r\nexcept: OUT = None\r\nTransactionManager.Instance.TransactionTaskDone()\r\n",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nname = IN[1]\r\n\r\n# create itemset\r\nitems = UnwrapElement(IN[0])\r\nids = list()\r\nfor item in items:\r\n\tids.append(item.Id)\r\nitemset = List[ElementId](ids)\r\n\r\n# collect all existing filters from the model \r\nnames = list()\r\ncollector = FilteredElementCollector(doc)\r\nfilters = collector.OfClass(FilterElement).ToElements();\r\n\r\nselset = False\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n# if a filter of that name already exists, delete its content\r\nfor filter in filters:\r\n\tif filter.Name == name:\r\n\t\tfilter.Clear()\r\n\t\tselset = filter\r\n# create a new selection set if it doesn't already exist\r\nif selset == False:\r\n\tselset = SelectionFilterElement.Create(doc,name)\r\n# add the items to the selection set\r\ntry: \r\n\tselset.AddSet(itemset)\r\n\tOUT = selset.ToDSType(False)\r\nexcept: OUT = None\r\nTransactionManager.Instance.TransactionTaskDone()\r\n",
       "VariableInputPorts": true,
       "Id": "497f8c2991da48c6ad82483dce66eca1",
       "Inputs": [
@@ -71,7 +71,7 @@
         {
           "Id": "9330a185e1624435a25ac6ca7a1b04b5",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -85,7 +85,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "Name",
+        "Name": "name",
         "TypeName": "string",
         "TypeRank": 0,
         "DefaultValue": null,
@@ -186,12 +186,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -204,53 +204,53 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "497f8c2991da48c6ad82483dce66eca1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 751.415161780418,
+        "X": 824.415161780418,
         "Y": 185.910321982136
       },
       {
+        "ShowGeometry": true,
+        "Name": "Turn Into List",
         "Id": "02efed4a91a641d9a14cdc354836c16d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Turn Into List",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 482.415161780418,
-        "Y": 156.910321982136
+        "X": 500.415161780418,
+        "Y": 144.910321982136
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "3848e8d626a74b23b905870458cef8f2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 482.415161780418,
-        "Y": 240.910321982136
+        "X": 500.415161780418,
+        "Y": 252.910321982136
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "131449f24dbf49b7be5c6d6332a0d383",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 286.415161780418,
-        "Y": 156.910321982136
+        "X": 213.41516178041798,
+        "Y": 144.910321982136
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "2dfefa932b2b4c608cbd6134665af54d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 975.415161780418,
+        "X": 1048.415161780418,
         "Y": 185.910321982136
       }
     ],
