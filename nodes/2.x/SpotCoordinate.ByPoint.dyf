@@ -34,7 +34,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\npts = UnwrapElement(IN[1])\r\nbend = UnwrapElement(IN[2])\r\nend = UnwrapElement(IN[3])\r\nleader = UnwrapElement(IN[4])\r\nisoview = UnwrapElement(IN[5])\r\nintsecvec = UnwrapElement(IN[6])\r\nelementlist = []\r\n\r\ni = 0;\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor pt in pts:\r\n\tview = views[i]\r\n\tpt = pt.ToXyz()\r\n\trefintsec = ReferenceIntersector(isoview)\r\n\trefintsec.TargetType = FindReferenceTarget.Face\r\n\ttry:\r\n\t\tref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()\r\n\t\telementlist.append(doc.Create.NewSpotCoordinate(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))\r\n\texcept:\r\n\t\telementlist.append(None)\r\n\ti += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\npts = UnwrapElement(IN[1])\r\nbend = UnwrapElement(IN[2])\r\nend = UnwrapElement(IN[3])\r\nleader = UnwrapElement(IN[4])\r\nisoview = UnwrapElement(IN[5])\r\nintsecvec = UnwrapElement(IN[6])\r\nelementlist = []\r\n\r\ni = 0;\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor pt in pts:\r\n\tview = views[i]\r\n\tpt = pt.ToXyz()\r\n\trefintsec = ReferenceIntersector(isoview)\r\n\trefintsec.TargetType = FindReferenceTarget.All\r\n\ttry:\r\n\t\tref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()\r\n\t\telementlist.append(doc.Create.NewSpotCoordinate(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))\r\n\texcept:\r\n\t\telementlist.append(None)\r\n\ti += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
       "VariableInputPorts": true,
       "Id": "ce1b75deeff54540a0aa571ace531dbd",
       "Inputs": [
@@ -126,7 +126,7 @@
         {
           "Id": "a816c42ea3d4468c8a5a1b6862445ce2",
           "Name": "toggle",
-          "Description": "bool\nDefault value : true",
+          "Description": "bool\nVorgabewert : true",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -135,7 +135,7 @@
         {
           "Id": "3b63cef194724d088a0bbaf7702aa025",
           "Name": "docOrRevitLinkInstance",
-          "Description": " Use only if you want to query a linked model\n\nvar\nDefault value : null",
+          "Description": " Use only if you want to query a linked model\n\nvar\nVorgabewert : null",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -146,7 +146,7 @@
         {
           "Id": "9bf3b900d1cf41be9ff3706485f10738",
           "Name": "view",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -154,7 +154,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the default view of the current model (if there is such a view)"
+      "Description": "Returns the default 3D view of the current model (if there is such a view)"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -184,7 +184,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Get the reverse of the vector. Essentially this negates the X, Y, and Z components of the Vector.\n\nVector.Reverse ( ): Vector"
+      "Description": "Ruft den Gegenvektor des Vektors ab. Dies gibt die Negativwerte der X-, Y- und Z-Komponenten des Vektors an.\n\nVector.Reverse ( ): Vector"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -207,7 +207,7 @@
         {
           "Id": "dd7d6cd2bcab42ce9ffa5c04a49d1136",
           "Name": "vector",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -238,7 +238,7 @@
         {
           "Id": "ff0410e604b84633b61b1c79040e6ebb",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -269,7 +269,7 @@
         {
           "Id": "34aff1f1628a419783dce8a72d7d5d01",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -504,12 +504,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,

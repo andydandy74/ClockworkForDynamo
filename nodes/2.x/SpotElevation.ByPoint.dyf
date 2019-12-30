@@ -34,7 +34,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\npts = UnwrapElement(IN[1])\r\nbend = UnwrapElement(IN[2])\r\nend = UnwrapElement(IN[3])\r\nleader = UnwrapElement(IN[4])\r\nisoview = UnwrapElement(IN[5])\r\nintsecvec = UnwrapElement(IN[6])\r\nelementlist = []\r\n\r\ni = 0;\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor pt in pts:\r\n\tview = views[i]\r\n\tpt = pt.ToXyz()\r\n\trefintsec = ReferenceIntersector(isoview)\r\n\trefintsec.TargetType = FindReferenceTarget.Face\r\n\ttry:\r\n\t\tref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()\r\n\t\telementlist.append(doc.Create.NewSpotElevation(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))\r\n\texcept:\r\n\t\telementlist.append(None)\r\n\ti += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\npts = UnwrapElement(IN[1])\r\nbend = UnwrapElement(IN[2])\r\nend = UnwrapElement(IN[3])\r\nleader = UnwrapElement(IN[4])\r\nisoview = UnwrapElement(IN[5])\r\nintsecvec = UnwrapElement(IN[6])\r\nelementlist = []\r\n\r\ni = 0;\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor pt in pts:\r\n\tview = views[i]\r\n\tpt = pt.ToXyz()\r\n\trefintsec = ReferenceIntersector(isoview)\r\n\trefintsec.TargetType = FindReferenceTarget.All\r\n\ttry:\r\n\t\tref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()\r\n\t\telementlist.append(doc.Create.NewSpotElevation(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))\r\n\texcept:\r\n\t\telementlist.append(None)\r\n\ti += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
       "VariableInputPorts": true,
       "Id": "ce1b75deeff54540a0aa571ace531dbd",
       "Inputs": [
@@ -126,7 +126,7 @@
         {
           "Id": "3b9fb2f2df4c4afbbe90d068d0f91607",
           "Name": "toggle",
-          "Description": "Input #1",
+          "Description": "bool\nVorgabewert : true",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -135,7 +135,7 @@
         {
           "Id": "63255a9788d24f4fb90cd4d026294701",
           "Name": "docOrRevitLinkInstance",
-          "Description": "Input #2",
+          "Description": " Use only if you want to query a linked model\n\nvar\nVorgabewert : null",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -146,7 +146,7 @@
         {
           "Id": "22486e022fba443b89d8737e522e7815",
           "Name": "view",
-          "Description": "Output #1",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -154,7 +154,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the default view of the current model (if there is such a view)"
+      "Description": "Returns the default 3D view of the current model (if there is such a view)"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -184,7 +184,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Get the reverse of the vector. Essentially this negates the X, Y, and Z components of the Vector.\n\nVector.Reverse ( ): Vector"
+      "Description": "Ruft den Gegenvektor des Vektors ab. Dies gibt die Negativwerte der X-, Y- und Z-Komponenten des Vektors an.\n\nVector.Reverse ( ): Vector"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -207,7 +207,7 @@
         {
           "Id": "1a62fdcca357446b9c21deb2cebb5229",
           "Name": "vector",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -238,7 +238,7 @@
         {
           "Id": "75485185cc4947e3a4fe78ad99725139",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -269,7 +269,7 @@
         {
           "Id": "bb7519bc13234e389e64172200948775",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -504,12 +504,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -522,121 +522,121 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "ce1b75deeff54540a0aa571ace531dbd",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 850.882073635981,
         "Y": 280.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Document.Default3DView",
         "Id": "9e38c95282114f15a1f04550b026b137",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Document.Default3DView",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 448.722143293792,
         "Y": 486.200823928214
       },
       {
+        "ShowGeometry": true,
+        "Name": "Vector.Reverse",
         "Id": "a9607fcb7b4a4ccaa492191ebc91d0bf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Vector.Reverse",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 515.882073635981,
         "Y": 604.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "View.Direction",
         "Id": "d53eb7a564264442a899f7769e24d014",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "View.Direction",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 271.882073635981,
         "Y": 604.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "TurnIntoList",
         "Id": "b40d16cfb51d4674aae05012250e3087",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 515.882073635981,
         "Y": 138.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "TurnIntoList",
         "Id": "e77db83163424d9ca00e7f016442d440",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 8.88207363598053,
         "Y": 442.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "6c8d73d200bd4ff09fed945bce2bf038",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 271.882073635981,
         "Y": 138.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "837b826c36434cfba24d35d506d939da",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": -334.117926364019,
         "Y": 442.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "7b41a9031b474ad99c723090451188bb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1072.88207363598,
         "Y": 280.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "529eb314fdb14f99840c6db176c4f10a",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 515.882073635981,
         "Y": 246.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "1313106f226b401d8317a96874bd75d3",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 515.882073635981,
         "Y": 329.338171904393
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "ffae3364f58e4cba89f04614f1724072",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 515.882073635981,
         "Y": 413.338171904393
