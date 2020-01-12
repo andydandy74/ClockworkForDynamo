@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "# This script is based on code from the node\r\n# DirectShape.ByGeometry from package SpringNodes.\r\n# Thanks Dimitar for doing all the hard work for me... ;-)\r\n\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ngeometry = UnwrapElement(IN[0])\r\ncat = UnwrapElement(IN[1])\r\nnames = IN[2]\r\ncounter = 0\r\nelementlist = list()\r\n\r\ndsLib = DirectShapeLibrary.GetDirectShapeLibrary(doc)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor geom in geometry:\r\n\t# delete old DS type if the name already exists\r\n\tif dsLib.ContainsType(names[counter]):\r\n\t\told_type = dsLib.FindDefinitionType(names[counter])\r\n\t\ttry: doc.Delete(old_type)\r\n\t\texcept: pass\r\n\ttry:\r\n\t\t# create new DS type\r\n\t\tnewDStype = DirectShapeType.Create(doc, names[counter], cat.Id)\r\n\t\tnewDStype.SetShape(geom)\r\n\t\tdsLib.AddDefinitionType(names[counter], newDStype.Id)\r\n\t\t# create new DS instance\r\n\t\tnewDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity, \"Dynamo\",\"Clockwork\")\r\n\t\tnewDS.SetTypeId(newDStype.Id)\r\n\t\telementlist.append(newDS)\r\n\texcept: elementlist.append(None)\r\n\tcounter += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
+      "Code": "# This script is based on code from the node\r\n# DirectShape.ByGeometry from package SpringNodes.\r\n# Thanks Dimitar for doing all the hard work for me... ;-)\r\n\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ngeometry = UnwrapElement(IN[0])\r\ncat = UnwrapElement(IN[1])\r\nnames = IN[2]\r\ncounter = 0\r\nelementlist = list()\r\n\r\ndsLib = DirectShapeLibrary.GetDirectShapeLibrary(doc)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor geom in geometry:\r\n\t# delete old DS type if the name already exists\r\n\tif dsLib.ContainsType(names[counter]):\r\n\t\told_type = dsLib.FindDefinitionType(names[counter])\r\n\t\ttry: doc.Delete(old_type)\r\n\t\texcept: pass\r\n\ttry:\r\n\t\t# create new DS type\r\n\t\tnewDStype = DirectShapeType.Create(doc, names[counter], cat.Id)\r\n\t\tnewDStype.SetShape(geom)\r\n\t\tdsLib.AddDefinitionType(names[counter], newDStype.Id)\r\n\t\t# create new DS instance\r\n\t\tnewDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity)\r\n\t\tnewDS.SetTypeId(newDStype.Id)\r\n\t\telementlist.append(newDS)\r\n\texcept: elementlist.append(None)\r\n\tcounter += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
       "VariableInputPorts": true,
       "Id": "58a0f303784745ad8c362a1e6b6c9507",
       "Inputs": [
@@ -193,7 +193,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -218,7 +218,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 637.559840977082,
-        "Y": -52.7383314065851
+        "Y": -52.738331406585104
       },
       {
         "ShowGeometry": true,
