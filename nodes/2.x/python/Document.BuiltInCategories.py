@@ -7,11 +7,11 @@ import Autodesk
 clr.AddReference("RevitNodes")
 import Revit
 
-bics = System.Enum.GetValues(BuiltInCategory)
-cdata = list()
-for bic in bics:
-	try:
-		cdata.append((bic,ElementId(bic),Revit.Elements.Category.ById(ElementId(bic).IntegerValue)))
+dynamoCatsOnly = IN[0]
+biclist = System.Enum.GetValues(BuiltInCategory)
+cdata = []
+for bic in biclist:
+	try: cdata.append((bic, ElementId(bic), Revit.Elements.Category.ById(ElementId(bic).IntegerValue)))
 	except:
-		pass
-OUT = cdata
+		if not dynamoCatsOnly: cdata.append((bic, ElementId(bic), None))
+OUT = map(list, zip(*cdata))

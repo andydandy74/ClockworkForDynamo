@@ -19,12 +19,7 @@ doc = DocumentManager.Instance.CurrentDBDocument
 cutters = UnwrapElement(IN[0])
 view = UnwrapElement(IN[1])
 tol = IN[2]
-cats = UnwrapElement(IN[3])
-
-catlist = []
-for cat in cats:
-	catlist.append(cat.Id)
-filtercats = List[ElementId](catlist)
+filtercats = List[ElementId]([x.Id for x in IN[3]])
 catfilter = ElementMulticategoryFilter(filtercats)
 
 intersectorlist = list()

@@ -47,7 +47,7 @@ class CustomNode:
 					for line in outputdef[:-1]: outputdef2 += line[2:].strip() + " "
 				self.OutputDescriptions.append(outputdef2)
 			elif node['NodeType'] == 'PythonScriptNode': self.PythonScripts.append(node['Code'])
-			elif node['NodeType'] == 'FunctionNode' and node['ConcreteType'] == 'Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore':
+			elif node['NodeType'] == 'FunctionNode' and node['Concrete'+'Type'] == 'Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore':
 				customnodename = data['View']['NodeViews'][data['Nodes'].index(node)]['Name']
 				if customnodename not in self.NestedCustomNodes:
 					self.NestedCustomNodes.append(data['View']['NodeViews'][data['Nodes'].index(node)]['Name'])

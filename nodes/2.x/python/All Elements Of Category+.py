@@ -7,8 +7,8 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
-def ElementTypesByCategory(bic, doc):
-	collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsElementType()
+def ElementsByCategory(bic, doc):
+	collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsNotElementType()
 	return collector.ToElements()
 
 inputdoc = UnwrapElement(IN[2])
@@ -17,5 +17,5 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance": doc
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document": doc = inputdoc
 else: doc = DocumentManager.Instance.CurrentDBDocument
 
-if isinstance(IN[0], list): OUT = [ElementTypesByCategory(x, doc) for x in IN[0]]
-else: OUT = ElementTypesByCategory(IN[0], doc)
+if isinstance(IN[0], list): OUT = [ElementsByCategory(x, doc) for x in IN[0]]
+else: OUT = ElementsByCategory(IN[0], doc)

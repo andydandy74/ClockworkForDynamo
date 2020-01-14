@@ -6,7 +6,9 @@ clr.AddReference("RevitNodes")
 import Revit
 
 def GetDependentViews(view):
-	return [view.Document.GetElement(x) for x in view.GetDependentViewIds()]
+	if hasattr(view, "GetDependentViewIds"):
+		return [view.Document.GetElement(x) for x in view.GetDependentViewIds()]
+	else: return []
 
 views = UnwrapElement(IN[0])
 

@@ -7,18 +7,18 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
+def CollectByView(bic, view):
+	collector = FilteredElementCollector(doc)
+	filter = ElementOwnerViewFilter(view.Id)
+	return collector.WherePasses(filter).OfCategory(bic).ToElements()
+
+def GetViewDependentElements(cat, views):
+	if isinstance(views, list): return [CollectByView(cat, x) for x in UnwrapElement(views)]
+	else: return CollectByView(cat, UnwrapElement(views))
+
 doc = DocumentManager.Instance.CurrentDBDocument
 cats = IN[0]
-views = UnwrapElement(IN[1])
+views = IN[1]
 
-elementlist = list()
-# This could be more elegant if only I knew how to implement a Multicategory filter in Python....
-for cat in cats:
-	catlist = list()
-	for view in views:
-		collector = FilteredElementCollector(doc)
-		filter = ElementOwnerViewFilter(view.Id)
-		bic = System.Enum.ToObject(BuiltInCategory, cat.Id)
-		catlist.append(collector.WherePasses(filter).OfCategory(bic).ToElements())
-	elementlist.append(catlist)
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [GetViewDependentElements(x, views) for x in cats]
+else: OUT = GetViewDependentElements(cats, views)

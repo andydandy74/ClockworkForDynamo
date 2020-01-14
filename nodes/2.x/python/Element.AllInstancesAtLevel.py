@@ -3,19 +3,18 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
+def GetAllInstancesAtLevel(item, lvl):
+	collector = FilteredElementCollector(item.Document)
+	bic = System.Enum.ToObject(BuiltInCategory, item.Category.Id.IntegerValue)
+	lvlfilter = ElementLevelFilter(lvl.Id)
+	collector.OfCategory(bic).WherePasses(lvlfilter)
+	# This is a workaround
+	# because I was too lazy to learn
+	# how to implement LINQ in Python
+	return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == item.GetTypeId().IntegerValue]
 
-doc = DocumentManager.Instance.CurrentDBDocument
 elements = UnwrapElement(IN[0])
-selection = UnwrapElement(IN[1])
+lvl = UnwrapElement(IN[1])
 
-elementlist = list()
-for e in elements:
-	elist =  list()
-	for item in selection:
-		if item.GetTypeId().IntegerValue == e.GetTypeId().IntegerValue:
-			elist.append(item)
-	elementlist.append(elist)
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [GetAllInstancesAtLevel(x, lvl) for x in elements]
+else: OUT = GetAllInstancesAtLevel(elements, lvl)

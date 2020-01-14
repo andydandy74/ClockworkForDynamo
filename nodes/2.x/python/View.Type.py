@@ -2,9 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-views = UnwrapElement(IN[0])
-elementlist = list()
+def GetViewType(view):
+	if hasattr(view, "ViewType"): return str(view.ViewType)
+	else: return None
 
-for view in views:
-	elementlist.append(str(view.ViewType))
-OUT = elementlist
+views = UnwrapElement(IN[0])
+
+if isinstance(IN[0],list): OUT = [GetViewType(x) for x in views]
+else: OUT = GetViewType(views)
