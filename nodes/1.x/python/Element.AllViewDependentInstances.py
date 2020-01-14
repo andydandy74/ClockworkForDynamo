@@ -3,26 +3,18 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitServices")
-import RevitServices
-from RevitServices.Persistence import DocumentManager
+def GetAllInstancesInView(item, view):
+	collector = FilteredElementCollector(item.Document)
+	bic = System.Enum.ToObject(BuiltInCategory, item.Category.Id.IntegerValue)
+	viewfilter = ElementOwnerViewFilter(view.Id)
+	collector.WherePasses(viewfilter).OfCategory(bic)
+	# This is a workaround
+	# because I was too lazy to learn
+	# how to implement LINQ in Python
+	return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == item.GetTypeId().IntegerValue]
 
-doc = DocumentManager.Instance.CurrentDBDocument
 elements = UnwrapElement(IN[0])
-views = UnwrapElement(IN[1])
+view = UnwrapElement(IN[1])
 
-elementlist = list()
-# This could be more elegant if only I knew how to implement a Multicategory filter in Python....
-for e in elements:
-	elist = list()
-	for view in views:
-		vlist = list()
-		collector = FilteredElementCollector(doc)
-		filter = ElementOwnerViewFilter(view.Id)
-		bic = System.Enum.ToObject(BuiltInCategory, e.Category.Id.IntegerValue)
-		for item in collector.WherePasses(filter).OfCategory(bic).ToElements():
-			if item.GetTypeId().IntegerValue == e.GetTypeId().IntegerValue:
-				vlist.append(item)
-		elist.append(vlist)
-	elementlist.append(elist)
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [GetAllInstancesInView(x, view) for x in elements]
+else: OUT = GetAllInstancesInView(elements, view)

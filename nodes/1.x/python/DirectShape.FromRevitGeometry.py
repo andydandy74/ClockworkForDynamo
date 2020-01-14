@@ -37,7 +37,7 @@ for geom in geometry:
 		newDStype.SetShape(geom)
 		dsLib.AddDefinitionType(names[counter], newDStype.Id)
 		# create new DS instance
-		newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity, "Dynamo","Clockwork")
+		newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity)
 		newDS.SetTypeId(newDStype.Id)
 		elementlist.append(newDS)
 	except: elementlist.append(None)

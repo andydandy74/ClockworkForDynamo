@@ -21,12 +21,21 @@ def SetElementName(item, name):
 			doc.FamilyManager.RenameParameter(item, name)
 			return True
 		except: return False
-	elif hasattr(item, "Name"):
+	elif item.GetType().ToString() =="Autodesk.Revit.DB.Workset":
+		try: 
+			doc.GetWorksetTable().RenameWorkset(doc, item.Id, name)
+			return True
+		except: return False
+	elif item.GetType().ToString() == "Archilab.Grimshaw.Elements.Workset":
+		try: 
+			doc.GetWorksetTable().RenameWorkset(doc, WorksetId(item.Id), name)
+			return True
+		except: return False
+	else:
 		try: 
 			item.Name = name
 			return True
 		except: return False
-	else: return False
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 if isinstance(IN[0], list):

@@ -7,11 +7,12 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 cats = UnwrapElement(IN[0])
-elementlist = list()
 
-for cat in cats:
-	try:
-		elementlist.append(cat.Material.ToDSType(True))
-	except:
-		elementlist.append(None)
-OUT = elementlist
+def GetCatMat(cat):
+	if hasattr(cat, "Material"): 
+		try: return cat.Material.ToDSType(True)
+		except: return None
+	else: return None
+
+if isinstance(IN[0], list): OUT = [GetCatMat(x) for x in cats]
+else: OUT = GetCatMat(cats)

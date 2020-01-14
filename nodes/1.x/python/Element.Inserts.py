@@ -17,9 +17,9 @@ def GetInserts(item,incopenings,incshadows,incwalls,incshared):
 	if hasattr(item, "FindInserts"):
 		return [item.Document.GetElement(x) for x in item.FindInserts(incopenings,incshadows,incwalls,incshared)]
 	# Railings
-	if hasattr(item, "GetAssociatedRailings"):
+	elif hasattr(item, "GetAssociatedRailings"):
 		return [item.Document.GetElement(x) for x in item.GetAssociatedRailings()]
 	else: return []
 
 if isinstance(IN[0], list): OUT = [GetInserts(x,incopenings,incshadows,incwalls,incshared) for x in items]
-else: GetInserts(items,incopenings,incshadows,incwalls,incshared)
+else: OUT = GetInserts(items,incopenings,incshadows,incwalls,incshared)

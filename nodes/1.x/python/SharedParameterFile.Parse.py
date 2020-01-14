@@ -20,6 +20,9 @@ for line in IN[0].splitlines():
 		datacategories.append(line[4])
 		groupnames.append(groups[line[5]])
 		visible.append(line[6] == "1")
-		description.append(line[7])
-		usermodifiable.append(line[8] == "1")
+		# optional items (not present in all SP files)
+		if len(line) > 7: description.append(line[7])
+		else: description.append(None)
+		if len(line) > 8: usermodifiable.append(line[8] == "1")
+		else: usermodifiable.append(True)
 OUT = names, guids, datatypes, datacategories, groupnames, description, visible, usermodifiable

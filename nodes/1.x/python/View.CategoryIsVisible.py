@@ -10,7 +10,7 @@ def IsCategoryVisibleInView(cat, view, version):
 		if view.GetVisibility(cat): return True
 		else: return False
 
-cats = UnwrapElement(IN[0])
+cats = IN[0]
 views = UnwrapElement(IN[1])
 
 if isinstance(IN[0], list):

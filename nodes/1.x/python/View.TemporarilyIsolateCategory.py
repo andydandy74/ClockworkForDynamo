@@ -11,7 +11,7 @@ from RevitServices.Transactions import TransactionManager
 def TempIsolateCategories(view, cats):
 	if not cats: return False
 	elif not isinstance(cats, list): cats = [cats]
-	icats = List[ElementId]([x.Id for x in UnwrapElement(cats)])
+	icats = List[ElementId]([x.Id for x in cats])
 	try:
 		UnwrapElement(view).IsolateCategoriesTemporary(icats)
 		return True

@@ -6,7 +6,9 @@ clr.AddReference("RevitNodes")
 import Revit
 
 def GetPrimaryView(view):
-	return view.Document.GetElement(view.GetPrimaryViewId())
+	if hasattr(view, "GetPrimaryViewId"):
+		return view.Document.GetElement(view.GetPrimaryViewId())
+	else: return None
 
 views = UnwrapElement(IN[0])
 

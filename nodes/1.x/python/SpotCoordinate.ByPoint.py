@@ -27,7 +27,7 @@ for pt in pts:
 	view = views[i]
 	pt = pt.ToXyz()
 	refintsec = ReferenceIntersector(isoview)
-	refintsec.TargetType = FindReferenceTarget.Face
+	refintsec.TargetType = FindReferenceTarget.All
 	try:
 		ref = refintsec.FindNearest(pt,intsecvec[i].AsPoint().ToXyz()).GetReference()
 		elementlist.append(doc.Create.NewSpotCoordinate(view, ref, pt, pt.Add(bend.AsPoint().ToXyz()), pt.Add(end.AsPoint().ToXyz()), pt, leader))

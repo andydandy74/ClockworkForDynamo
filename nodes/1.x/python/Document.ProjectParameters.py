@@ -1,3 +1,4 @@
+import System
 import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -30,6 +31,7 @@ isvis = []
 elems = []
 guids = []
 isinst = []
+bics = []
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
 	vag.append(iterator.Key.VariesAcrossGroups)
@@ -48,6 +50,7 @@ while iterator.MoveNext():
 	else:
 		isinst.append(False)
 	thesecats = []
+	builtincats = []
 	for cat in iterator.Current.Categories:
 		try:
 			thesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))
@@ -55,5 +58,7 @@ while iterator.MoveNext():
 			# Return null if category is not supported by Dynamo
 			# This way the user knows there are unsupported categories assigned
 			thesecats.append(None)
+		builtincats.append(System.Enum.ToObject(BuiltInCategory, cat.Id.IntegerValue))
 	cats.append(thesecats)
-OUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst)
+	bics.append(builtincats)
+OUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst, bics)

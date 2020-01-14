@@ -31,7 +31,7 @@ selset = False
 TransactionManager.Instance.EnsureInTransaction(doc)
 # if a filter of that name already exists, delete its content
 for filter in filters:
-	if str(filter.Name) == name:
+	if filter.Name == name:
 		filter.Clear()
 		selset = filter
 # create a new selection set if it doesn't already exist

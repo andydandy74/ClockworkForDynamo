@@ -72,6 +72,10 @@ def GetLocation(item):
 		else: 
 			openingloop = [x.ToProtoType() for x in item.BoundaryCurves]
 			return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, openingloop
+	# extrusion roofs
+	elif hasattr(item, "GetProfile"):
+		sketchloop = [x.GeometryCurve.ToProtoType() for x in item.GetProfile()]
+		return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
 	# other elements
 	elif hasattr(item, "Location"):
 		loc = item.Location
@@ -94,7 +98,7 @@ def GetLocation(item):
 						boundaryloops = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
 						for loop in boundaryloops:
 							sketchloop.append([x.ToProtoType() for x in loop])
-						return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
+					return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
 				# other elements we can't process
 				# return defaults in these cases
 				except:
