@@ -65,7 +65,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\nelse: OUT = GetCategory(items)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnIDs = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n\telif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\telif returnIDs:\r\n\t\treturnCat = []\r\n\t\treturnBic = []\r\n\t\tfor returnID in returnIDs:\r\n\t\t\treturnBic.append(System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue))\r\n\t\t\ttry: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))\r\n\t\t\texcept: returnCat.append(None)\r\n\t\treturnCat.sort()\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\nelse: OUT = GetCategory(items)",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "Inputs": [
@@ -102,7 +102,7 @@
         {
           "Id": "2fd91b584183440eb62b0a857d3331e6",
           "Name": "list",
-          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -113,7 +113,7 @@
         {
           "Id": "a625348d25584499b921546d0c279849",
           "Name": "item",
-          "Description": "First item in the list.",
+          "Description": "Das erste Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -121,7 +121,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -132,7 +132,7 @@
         {
           "Id": "0a33950b47734ca69cc53024a43869b4",
           "Name": "list",
-          "Description": "List to get the last item of.\n\nvar[]..[]",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -143,7 +143,7 @@
         {
           "Id": "5aab4c13819741aa9345d2236384900e",
           "Name": "last",
-          "Description": "Last item in the list.",
+          "Description": "Das letzte Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -151,7 +151,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -214,7 +214,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
