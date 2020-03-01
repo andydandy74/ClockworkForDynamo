@@ -1,0 +1,66 @@
+<Workspace Version="1.3.4.6666" X="96" Y="70" zoom="1" ScaleFactor="1" Name="Document.SetComputeVolumes" Description="Toggle the area and volume setting to compute volumes on (true) or off (false)." ID="f20adbc6-41e9-4118-a55c-70b2ff8861fb" Category="Clockwork.Revit.Document.Actions">
+  <NamespaceResolutionMap />
+  <Elements>
+    <PythonNodeModels.PythonNode guid="3f8ba9ed-baa8-4748-9ba2-059f87273c3d" type="PythonNodeModels.PythonNode" nickname="Python Script" x="539.047330888091" y="120.653555291286" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" inputcount="2">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <Script>import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
+
+clr.AddReference("RevitNodes")
+import Revit
+clr.ImportExtensions(Revit.Elements)
+
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+from RevitServices.Transactions import TransactionManager
+
+doc = DocumentManager.Instance.CurrentDBDocument
+compvol = IN[0]
+compvolstate = IN[1]
+
+if compvol != compvolstate:
+	TransactionManager.Instance.EnsureInTransaction(doc)
+	try:
+		AreaVolumeSettings.GetAreaVolumeSettings(doc).ComputeVolumes = compvol
+		OUT = True
+	except: OUT = False
+	TransactionManager.Instance.TransactionTaskDone()
+else: OUT = True</Script>
+    </PythonNodeModels.PythonNode>
+    <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4466fbf4-d425-491b-9357-306bc0ba7381" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="150.047330888091" y="91.6535552912862" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <Symbol value="bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Symbol>
+    <Dynamo.Graph.Nodes.CustomNodes.Output guid="0abb6bdd-cae9-4439-8afa-8e6bfcf803b4" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="763.047330888091" y="120.653555291286" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <Symbol value="bool" />
+    </Dynamo.Graph.Nodes.CustomNodes.Output>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="4148adaa-a870-4caa-88a6-727a060b5934" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Document.AreaVolumeSettingsComputeVolumes" x="150.047330888091" y="175.653555291286" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <ID value="13f3b4fb-56da-4788-892f-b64fc4baec17" />
+      <Name value="Document.ComputeVolumes" />
+      <Description value="Returns whether or not the area and volume settings are set to compute volumes." />
+      <Inputs>
+        <Input value="toggle" />
+        <Input value="docOrRevitLinkInstance" />
+      </Inputs>
+      <Outputs>
+        <Output value="bool" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="3f8ba9ed-baa8-4748-9ba2-059f87273c3d" start_index="0" end="0abb6bdd-cae9-4439-8afa-8e6bfcf803b4" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4466fbf4-d425-491b-9357-306bc0ba7381" start_index="0" end="3f8ba9ed-baa8-4748-9ba2-059f87273c3d" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4148adaa-a870-4caa-88a6-727a060b5934" start_index="0" end="3f8ba9ed-baa8-4748-9ba2-059f87273c3d" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+  </Cameras>
+</Workspace>
