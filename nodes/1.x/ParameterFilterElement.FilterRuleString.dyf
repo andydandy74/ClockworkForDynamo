@@ -22,15 +22,55 @@ for bip in System.Enum.GetValues(BuiltInParameter):
 
 def GetFilterRuleStringWrapper(item):
 	if version &gt; 2018 and hasattr(item, "GetElementFilter"): 
-		efilter = item.GetElementFilter()
-		return GetFilterRuleString(efilter, item.Document)		
+		return GetFilterRuleStringNew(item.GetElementFilter(), item.Document)		
 	elif version &lt; 2019 and hasattr(item, "GetRules"): 
-		#filters = item.GetRules()
-		#filtertypes.append("AND")
-		return None
+		return GetFilterRuleStringOld(item)	
+	else: return None
 		
-def GetFilterRuleString(efilter, doc):
+def GetFilterRuleStringOld(filter):
 	rulestrings = []
+	sep = " AND "
+	doc = filter.Document
+	if hasattr(filter, "GetRules"):
+		for rule in filter.GetRules():
+			# inverted rules
+				ruleInverted = ""
+				if hasattr(rule, "GetInnerRule"): 
+					rule = rule.GetInnerRule()
+					ruleInverted = "Not"
+				# rule parameters
+				paramId = filter.GetRuleParameter(rule)
+				thisparam = doc.GetElement(paramId)
+				if thisparam: thisparam = thisparam.Name
+				else: thisparam = bips[paramId.IntegerValue]
+				# rule evaluators
+				if hasattr(rule, "GetEvaluator"):
+					thiseval = rule.GetEvaluator().ToString().replace("Autodesk.Revit.DB.Filter","")
+					thiseval = thiseval.replace("Numeric","")
+					thiseval = thiseval.replace("String","")
+					thiseval = thiseval + ruleInverted
+					if thiseval == "Equals": thiseval = "=="
+					elif thiseval == "EqualsNot": thiseval = "!="
+					elif thiseval == "Greater": thiseval = "&gt;"
+					elif thiseval == "GreaterOrEqual": thiseval = "&gt;="
+					elif thiseval == "Less": thiseval = "&lt;"
+					elif thiseval == "LessOrEqual": thiseval = "&lt;="
+				elif hasattr(rule, "ParameterName"): thiseval = "Exists"
+				else: thiseval = ""
+				# rule values
+				if hasattr(rule, "RuleString"): thisval = rule.RuleString
+				elif hasattr(rule, "RuleValue"): thisval = rule.RuleValue.ToString()
+				else: thisval = ""
+				rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
+	if len(rulestrings) &gt; 0:
+		rulestrings.sort()
+		return sep.join(rulestrings)
+	else: return '&lt;&lt;&lt;No rules defined&gt;&gt;&gt;'
+		
+def GetFilterRuleStringNew(efilter, doc):
+	rulestrings = []
+	# Filters without rules will arrive as nulls:
+	if not efilter: return '&lt;&lt;&lt;No rules defined&gt;&gt;&gt;'
 	efilterstr = efilter.ToString()		
 	if "And" in efilterstr: sep = " AND "
 	elif "Or" in efilterstr: sep = " OR "
@@ -67,9 +107,8 @@ def GetFilterRuleString(efilter, doc):
 				if hasattr(rule, "RuleString"): thisval = rule.RuleString
 				elif hasattr(rule, "RuleValue"): thisval = rule.RuleValue.ToString()
 				else: thisval = ""
-				# rule strings
 				rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
-		else: rulestrings.append("(" + GetFilterRuleString(filter, doc)+ ")")
+		else: rulestrings.append("(" + GetFilterRuleStringNew(filter, doc)+ ")")
 	rulestrings.sort()
 	return sep.join(rulestrings)
 		
@@ -109,6 +148,6 @@ else: OUT = GetFilterRuleStringWrapper(items)</Script>
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Hintergrundvorschau" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
+    <Camera Name="Background Preview" eyeX="-17" eyeY="24" eyeZ="50" lookX="12" lookY="-13" lookZ="-58" upX="0" upY="1" upZ="0" />
   </Cameras>
 </Workspace>
