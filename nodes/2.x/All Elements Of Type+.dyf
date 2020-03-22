@@ -1,11 +1,20 @@
 {
-  "Uuid": "101f846a-7a95-4756-bfa4-12c2bf3c9d8c",
+  "Uuid": "c19b9768-4da1-4591-bde5-73c07bbfbe6c",
   "IsCustomNode": true,
   "Category": "Clockwork.Revit.Selection.Collectors.Query",
-  "Description": "Gets all placed elements of a given element type in the model. Unlike the OOTB node, it can also return ConnectorElements, CurveElements and Materials.",
-  "Name": "All Elements Of Type+",
+  "Description": "Gets all placed elements of a given element type in the model. Unlike the OOTB node, it works for virtually all element types.",
+  "Name": "All Elements of Type+",
   "ElementResolver": {
-    "ResolutionMap": {}
+    "ResolutionMap": {
+      "List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Category": {
+        "Key": "Revit.Elements.Category",
+        "Value": "RevitNodes.dll"
+      }
+    }
   },
   "Inputs": [],
   "Outputs": [],
@@ -20,11 +29,11 @@
         "DefaultValue": null,
         "Description": ""
       },
-      "Id": "67382b4b9da345a2a514e2d948000771",
+      "Id": "7051506d098749068b5b68f643bb6941",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "f265663d275b4249b8136bb7b4c4e607",
+          "Id": "b01a8a150d374ef68440268376541ebb",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -37,6 +46,27 @@
       "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elements",
+      "Id": "27647f3ac7d748fabf008adabac27375",
+      "Inputs": [
+        {
+          "Id": "79bee0896b30452a8351f463dfb9eba5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -46,11 +76,11 @@
         "DefaultValue": "true",
         "Description": ""
       },
-      "Id": "ecf375d71e3b4b0b9e7c7c00d5b27299",
+      "Id": "86e66cba645b41a195de0dd4a0c548c9",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "198fa95b163d45fdaad40184ce77afc3",
+          "Id": "a485744308234d9380bd6bc4ae7764e8",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -72,11 +102,11 @@
         "DefaultValue": "null",
         "Description": " Use only if you want to query a linked model"
       },
-      "Id": "b2316b934cd146dcbe318fa89a06ecee",
+      "Id": "5445afc61f3c4d71824825ab27252a13",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "01af360eab41477481dad8f240b5f627",
+          "Id": "e128ab211b5748fb9421ca110cd9cd64",
           "Name": "",
           "Description": "Symbol",
           "UsingDefaultValue": false,
@@ -93,10 +123,10 @@
       "NodeType": "PythonScriptNode",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementsByType(etype, doc):\r\n\t# Special cases where we need to pull FamilyInstances first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbol\", \"Autodesk.Revit.DB.Mullion\", \"Autodesk.Revit.DB.Panel\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilyInstance)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull FamilySymbols first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbolType\", \"Autodesk.Revit.DB.AreaTagType\", \"Autodesk.Revit.DB.Architecture.RoomTagType\", \"Autodesk.Revit.DB.Mechanical.SpaceTagType\", \"Autodesk.Revit.DB.Structure.TrussType\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilySymbol)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.Room\", \"Autodesk.Revit.DB.Mechanical.Space\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElement)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElementTags first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AreaTag\", \"Autodesk.Revit.DB.Architecture.RoomTag\", \"Autodesk.Revit.DB.Mechanical.SpaceTag\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElementTag)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull CurveElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Structure.AreaReinforcementCurve\", \"Autodesk.Revit.DB.CurveByPoints\", \"Autodesk.Revit.DB.DetailArc\", \"Autodesk.Revit.DB.DetailCurve\", \"Autodesk.Revit.DB.DetailEllipse\", \"Autodesk.Revit.DB.DetailLine\", \"Autodesk.Revit.DB.DetailNurbSpline\", \"Autodesk.Revit.DB.ModelArc\", \"Autodesk.Revit.DB.ModelCurve\", \"Autodesk.Revit.DB.ModelEllipse\", \"Autodesk.Revit.DB.ModelHermiteSpline\", \"Autodesk.Revit.DB.ModelLine\", \"Autodesk.Revit.DB.ModelNurbSpline\", \"Autodesk.Revit.DB.SymbolicCurve\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.CurveElement)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull HostedSweep first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.Architecture.Fascia\", \"Autodesk.Revit.DB.Architecture.Gutter\", \"Autodesk.Revit.DB.SlabEdge\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.HostedSweep)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\telse:\r\n\t\ttry:\r\n\t\t\tcollector = FilteredElementCollector(doc).OfClass(etype)\r\n\t\t\treturn collector.ToElements()\r\n\t\texcept: return None\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [ElementsByType(x, doc) for x in IN[0]]\r\nelse: OUT = ElementsByType(IN[0], doc)",
       "VariableInputPorts": true,
-      "Id": "39eedf5350a5424284b237cadf35cfd3",
+      "Id": "6f90ee4b4ecc4eaa9b4511d83eec8b01",
       "Inputs": [
         {
-          "Id": "b6d3493c5c584882a78a3a28956c0acb",
+          "Id": "7e6f283d5e424053a59100c7a02ad514",
           "Name": "IN[0]",
           "Description": "Input #0",
           "UsingDefaultValue": false,
@@ -105,7 +135,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "c2730772bed143309b3ae6dc716ac96a",
+          "Id": "dc21ecd3152947a2906351c958fb4342",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -114,7 +144,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "a95fc98d3d524f2cb896e7a22eac1dea",
+          "Id": "cc101be925f340a1b236ef264dbc3d6c",
           "Name": "IN[2]",
           "Description": "Input #2",
           "UsingDefaultValue": false,
@@ -125,7 +155,7 @@
       ],
       "Outputs": [
         {
-          "Id": "d853dfcfa30844b98ada7840f4431970",
+          "Id": "28f921d1908046219c646a71295854cf",
           "Name": "OUT",
           "Description": "Ergebnis des Python-Skripts",
           "UsingDefaultValue": false,
@@ -136,49 +166,28 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes IronPython-Skript aus."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
-      "ElementResolver": null,
-      "Symbol": "elements",
-      "Id": "23e30cb6a0104f43a3d8c68f97f7db5f",
-      "Inputs": [
-        {
-          "Id": "c4787fc770e2411ea43fe0ed8e74d0da",
-          "Name": "",
-          "Description": "",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [],
-      "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
     {
-      "Start": "f265663d275b4249b8136bb7b4c4e607",
-      "End": "b6d3493c5c584882a78a3a28956c0acb",
-      "Id": "3fbe447caa314610a633a24ce405b78c"
+      "Start": "b01a8a150d374ef68440268376541ebb",
+      "End": "7e6f283d5e424053a59100c7a02ad514",
+      "Id": "364dc77c796947048e62ff7e0ba49b3c"
     },
     {
-      "Start": "198fa95b163d45fdaad40184ce77afc3",
-      "End": "c2730772bed143309b3ae6dc716ac96a",
-      "Id": "ccdd9ab09658404494fe6ab58e73a76a"
+      "Start": "a485744308234d9380bd6bc4ae7764e8",
+      "End": "dc21ecd3152947a2906351c958fb4342",
+      "Id": "56aabedd6ce24383839e695777309a0a"
     },
     {
-      "Start": "01af360eab41477481dad8f240b5f627",
-      "End": "a95fc98d3d524f2cb896e7a22eac1dea",
-      "Id": "330d5b85d2104e8e8ba47c3ae4dfb8a4"
+      "Start": "e128ab211b5748fb9421ca110cd9cd64",
+      "End": "cc101be925f340a1b236ef264dbc3d6c",
+      "Id": "d6186c7a443f4b74bfdc04bffa1921e8"
     },
     {
-      "Start": "d853dfcfa30844b98ada7840f4431970",
-      "End": "c4787fc770e2411ea43fe0ed8e74d0da",
-      "Id": "2abdd5acba024b19800fb9bec6276e9b"
+      "Start": "28f921d1908046219c646a71295854cf",
+      "End": "79bee0896b30452a8351f463dfb9eba5",
+      "Id": "e9ec4fdebade4c269ae33a962da471b8"
     }
   ],
   "Dependencies": [],
@@ -208,57 +217,57 @@
       {
         "ShowGeometry": true,
         "Name": "Input",
-        "Id": "67382b4b9da345a2a514e2d948000771",
+        "Id": "7051506d098749068b5b68f643bb6941",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 500.0,
-        "Y": 177.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "ecf375d71e3b4b0b9e7c7c00d5b27299",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 500.0,
-        "Y": 260.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Input",
-        "Id": "b2316b934cd146dcbe318fa89a06ecee",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 500.0,
-        "Y": 343.0
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Python Script",
-        "Id": "39eedf5350a5424284b237cadf35cfd3",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 1034.0,
-        "Y": 233.99999999999997
+        "X": 171.369278068583,
+        "Y": 61.0177681360315
       },
       {
         "ShowGeometry": true,
         "Name": "Output",
-        "Id": "23e30cb6a0104f43a3d8c68f97f7db5f",
+        "Id": "27647f3ac7d748fabf008adabac27375",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1258.000000000003,
-        "Y": 233.99999999999997
+        "X": 913.369278068583,
+        "Y": 118.017768136031
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "86e66cba645b41a195de0dd4a0c548c9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 171.369278068583,
+        "Y": 144.017768136031
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5445afc61f3c4d71824825ab27252a13",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 171.369278068583,
+        "Y": 227.017768136032
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "6f90ee4b4ecc4eaa9b4511d83eec8b01",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 689.369278068583,
+        "Y": 118.017768136031
       }
     ],
     "Annotations": [],
-    "X": -366.0,
-    "Y": 23.0,
-    "Zoom": 1.0
+    "X": 279.999203582438,
+    "Y": 228.199941080411,
+    "Zoom": 1.00501799482924
   }
 }
