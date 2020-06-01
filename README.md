@@ -1,4 +1,4 @@
-[![Current 1.x version](https://img.shields.io/badge/current%201.x%20version-1.34.0-brightgreen.svg)](http://dynamopackages.com/) [![Current 2.x version](https://img.shields.io/badge/current%202.x%20version-2.3.0-brightgreen.svg)](http://dynamopackages.com/) ![Node count](https://img.shields.io/badge/node%20count-437%20%2F%20435-brightgreen.svg)
+![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen.svg) [![Current 1.x version](https://img.shields.io/badge/current%201.x%20version-1.34.0-brightgreen.svg)](http://dynamopackages.com/) [![Current 2.x version](https://img.shields.io/badge/current%202.x%20version-2.3.0-brightgreen.svg)](http://dynamopackages.com/) ![Node count](https://img.shields.io/badge/node%20count-437%20%2F%20435-brightgreen.svg)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/andydandy74/ClockworkForDynamo/blob/master/.github/CONTRIBUTING.md) [![Follow me on Twitter for updates](https://img.shields.io/twitter/follow/a_dieckmann.svg?label=Follow&style=social)](https://twitter.com/a_dieckmann) 
 
 ![Clockwork logo](clockwork-logo.png)
