@@ -121,7 +121,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementsByType(etype, doc):\r\n\t# Special cases where we need to pull FamilyInstances first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbol\", \"Autodesk.Revit.DB.Mullion\", \"Autodesk.Revit.DB.Panel\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilyInstance)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull FamilySymbols first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbolType\", \"Autodesk.Revit.DB.AreaTagType\", \"Autodesk.Revit.DB.Architecture.RoomTagType\", \"Autodesk.Revit.DB.Mechanical.SpaceTagType\", \"Autodesk.Revit.DB.Structure.TrussType\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilySymbol)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.Room\", \"Autodesk.Revit.DB.Mechanical.Space\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElement)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElementTags first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AreaTag\", \"Autodesk.Revit.DB.Architecture.RoomTag\", \"Autodesk.Revit.DB.Mechanical.SpaceTag\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElementTag)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull CurveElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Structure.AreaReinforcementCurve\", \"Autodesk.Revit.DB.CurveByPoints\", \"Autodesk.Revit.DB.DetailArc\", \"Autodesk.Revit.DB.DetailCurve\", \"Autodesk.Revit.DB.DetailEllipse\", \"Autodesk.Revit.DB.DetailLine\", \"Autodesk.Revit.DB.DetailNurbSpline\", \"Autodesk.Revit.DB.ModelArc\", \"Autodesk.Revit.DB.ModelCurve\", \"Autodesk.Revit.DB.ModelEllipse\", \"Autodesk.Revit.DB.ModelHermiteSpline\", \"Autodesk.Revit.DB.ModelLine\", \"Autodesk.Revit.DB.ModelNurbSpline\", \"Autodesk.Revit.DB.SymbolicCurve\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.CurveElement)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull HostedSweep first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.Architecture.Fascia\", \"Autodesk.Revit.DB.Architecture.Gutter\", \"Autodesk.Revit.DB.SlabEdge\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.HostedSweep)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\telse:\r\n\t\ttry:\r\n\t\t\tcollector = FilteredElementCollector(doc).OfClass(etype)\r\n\t\t\treturn collector.ToElements()\r\n\t\texcept: return None\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [ElementsByType(x, doc) for x in IN[0]]\r\nelse: OUT = ElementsByType(IN[0], doc)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementsByType(etype, doc, schemaGUID):\r\n\tesFilter = None\r\n\tif schemaGUID: esFilter = ExtensibleStorage.ExtensibleStorageFilter(schemaGUID)\r\n\t# Special cases where we need to pull FamilyInstances first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbol\", \"Autodesk.Revit.DB.Mullion\", \"Autodesk.Revit.DB.Panel\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilyInstance)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull FamilySymbols first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbolType\", \"Autodesk.Revit.DB.AreaTagType\", \"Autodesk.Revit.DB.Architecture.RoomTagType\", \"Autodesk.Revit.DB.Mechanical.SpaceTagType\", \"Autodesk.Revit.DB.Structure.TrussType\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilySymbol)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.Room\", \"Autodesk.Revit.DB.Mechanical.Space\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElement)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElementTags first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AreaTag\", \"Autodesk.Revit.DB.Architecture.RoomTag\", \"Autodesk.Revit.DB.Mechanical.SpaceTag\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElementTag)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull CurveElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Structure.AreaReinforcementCurve\", \"Autodesk.Revit.DB.CurveByPoints\", \"Autodesk.Revit.DB.DetailArc\", \"Autodesk.Revit.DB.DetailCurve\", \"Autodesk.Revit.DB.DetailEllipse\", \"Autodesk.Revit.DB.DetailLine\", \"Autodesk.Revit.DB.DetailNurbSpline\", \"Autodesk.Revit.DB.ModelArc\", \"Autodesk.Revit.DB.ModelCurve\", \"Autodesk.Revit.DB.ModelEllipse\", \"Autodesk.Revit.DB.ModelHermiteSpline\", \"Autodesk.Revit.DB.ModelLine\", \"Autodesk.Revit.DB.ModelNurbSpline\", \"Autodesk.Revit.DB.SymbolicCurve\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.CurveElement)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull HostedSweep first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.Architecture.Fascia\", \"Autodesk.Revit.DB.Architecture.Gutter\", \"Autodesk.Revit.DB.SlabEdge\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.HostedSweep)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\telse:\r\n\t\ttry:\r\n\t\t\tcollector = FilteredElementCollector(doc).OfClass(etype)\r\n\t\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\t\treturn collector.ToElements()\r\n\t\texcept: return None\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\nschemaGUID = IN[3]\r\n\r\nif isinstance(IN[0], list): OUT = [ElementsByType(x, doc, schemaGUID) for x in IN[0]]\r\nelse: OUT = ElementsByType(IN[0], doc, schemaGUID)",
       "VariableInputPorts": true,
       "Id": "6f90ee4b4ecc4eaa9b4511d83eec8b01",
       "Inputs": [
@@ -151,6 +151,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "895f02c9eb724b32aa3c176377df0cb3",
+          "Name": "IN[3]",
+          "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -166,6 +175,32 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes IronPython-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "schemaGUID",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "null",
+        "Description": " Use only if you want to filter by a SchemaGUID"
+      },
+      "Id": "4532824d9cdf44f5a12f7f0c04e6011c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7663f50cbb504929a8ae1c0bc6f36436",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -188,6 +223,11 @@
       "Start": "28f921d1908046219c646a71295854cf",
       "End": "79bee0896b30452a8351f463dfb9eba5",
       "Id": "e9ec4fdebade4c269ae33a962da471b8"
+    },
+    {
+      "Start": "7663f50cbb504929a8ae1c0bc6f36436",
+      "End": "895f02c9eb724b32aa3c176377df0cb3",
+      "Id": "de54f05241974ce08db7f24cfab0c170"
     }
   ],
   "Dependencies": [],
@@ -197,7 +237,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.0.4.12684",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -263,6 +303,16 @@
         "Excluded": false,
         "X": 689.369278068583,
         "Y": 118.017768136031
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4532824d9cdf44f5a12f7f0c04e6011c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 172.64106589631444,
+        "Y": 329.60335409273159
       }
     ],
     "Annotations": [],
