@@ -2,7 +2,7 @@
   "Uuid": "9266cc47-e982-46fc-9fd4-59bd7fb19a53",
   "IsCustomNode": true,
   "Category": "Clockwork.Revit.Elements.Query",
-  "Description": "Gets an element's name. Unlike the OOTB node, this node should work for all Revit elements that have names and will also return the localized names of system parameters, parameter groups, display unit types, parameter types, unit symbol types and unit types.",
+  "Description": "Gets an element's name. Unlike the OOTB node, this node should work for *all* Revit elements that have names and will also return the localized names of system parameters, parameter groups, display unit types, parameter types, unit symbol types, unit types and ForgeTypeIds.",
   "Name": "Element.Name+",
   "ElementResolver": {
     "ResolutionMap": {}
@@ -60,7 +60,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetName(item):\r\n\tunwrapped = UnwrapElement(item)\r\n\tif not unwrapped: return None\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.BuiltInParameter\", \"Autodesk.Revit.DB.BuiltInParameterGroup\", \"Autodesk.Revit.DB.DisplayUnitType\", \"Autodesk.Revit.DB.ParameterType\", \"Autodesk.Revit.DB.UnitSymbolType\", \"Autodesk.Revit.DB.UnitType\"): return LabelUtils.GetLabelFor(unwrapped)\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Parameter\", \"Autodesk.Revit.DB.FamilyParameter\"): return unwrapped.Definition.Name\r\n\telif unwrapped.GetType().ToString() == (\"Autodesk.Revit.DB.ForgeTypeId\"): return unwrapped.TypeId\r\n\telif hasattr(unwrapped, \"GetName\"): return unwrapped.GetName()\r\n\telif hasattr(unwrapped, \"Name\"): return unwrapped.Name\r\n\telif hasattr(item, \"Name\"): return item.Name\r\n\telse: return None\r\n\r\nitems = IN[0]\r\n\r\nif isinstance(IN[0], list): OUT = [GetName(x) for x in IN[0]]\r\nelse: OUT = GetName(IN[0])",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetName(item):\r\n\tunwrapped = UnwrapElement(item)\r\n\tif not unwrapped: return None\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.BuiltInParameter\", \"Autodesk.Revit.DB.BuiltInParameterGroup\", \"Autodesk.Revit.DB.DisplayUnitType\", \"Autodesk.Revit.DB.ParameterType\", \"Autodesk.Revit.DB.UnitSymbolType\", \"Autodesk.Revit.DB.UnitType\"): return LabelUtils.GetLabelFor(unwrapped)\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Parameter\", \"Autodesk.Revit.DB.FamilyParameter\"): return unwrapped.Definition.Name\r\n\telif unwrapped.GetType().ToString() == (\"Autodesk.Revit.DB.ForgeTypeId\"): \r\n\t\ttry: return LabelUtils.GetLabelForSpec(unwrapped)\r\n\t\texcept: \r\n\t\t\ttry: return LabelUtils.GetLabelForSymbol(unwrapped)\r\n\t\t\texcept: \r\n\t\t\t\ttry: return LabelUtils.GetLabelForUnit(unwrapped)\r\n\t\t\t\texcept: \r\n\t\t\t\t\ttry: return LabelUtils.GetLabelForGroup(unwrapped)\r\n\t\t\t\t\texcept: \r\n\t\t\t\t\t\ttry: return LabelUtils.GetLabelForBuiltinParameter(unwrapped)\r\n\t\t\t\t\t\texcept: \r\n\t\t\t\t\t\t\ttry: return LabelUtils.GetLabelForDiscipline(unwrapped)\r\n\t\t\t\t\t\t\texcept: return unwrapped.TypeId\t\t\t\r\n\telif hasattr(unwrapped, \"GetName\"): return unwrapped.GetName()\r\n\telif hasattr(unwrapped, \"Name\"): return unwrapped.Name\r\n\telif hasattr(item, \"Name\"): return item.Name\r\n\telse: return None\r\n#LabelUtils.GetLabelForSpec(iterator.Key.GetDataType())\r\nitems = IN[0]\r\n\r\nif isinstance(IN[0], list): OUT = [GetName(x) for x in IN[0]]\r\nelse: OUT = GetName(IN[0])",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "fe1345c4af284ad48eee6a5bbea61e11",
       "Inputs": [
@@ -103,18 +104,19 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.0.5650",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,

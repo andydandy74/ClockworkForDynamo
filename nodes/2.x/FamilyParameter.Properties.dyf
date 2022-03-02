@@ -40,7 +40,7 @@
         {
           "Id": "b311be21ac7f423786cc3b6561c2c25e",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -53,7 +53,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nparams = UnwrapElement(IN[0])\r\npname = list()\r\nguid = list()\r\npgroup = list()\r\nptype = list()\r\nutype = list()\r\ndutype = list()\r\nstype = list()\r\nisinstance = list()\r\nisreporting = list()\r\nisshared = list()\r\nisreadonly = list()\r\nusermodifiable = list()\r\nformula = list()\r\ndeterminedbyformula = list()\r\nassociatedparams = list()\r\nassociatedelements = list()\r\ncanassignformula = list()\r\nfor param in params:\r\n\tpname.append(param.Definition.Name)\r\n\ttry:guid.append(param.GUID.ToString())\r\n\texcept: guid.append(None)\r\n\tpgroup.append(param.Definition.ParameterGroup)\r\n\tptype.append(param.Definition.ParameterType)\r\n\tutype.append(param.Definition.UnitType)\r\n\ttry: dutype.append(param.DisplayUnitType)\r\n\texcept: dutype.append(None)\r\n\tstype.append(param.StorageType)\r\n\tisinstance.append(param.IsInstance)\r\n\tisreporting.append(param.IsReporting)\r\n\tisshared.append(param.IsShared)\r\n\tisreadonly.append(param.IsReadOnly)\r\n\tusermodifiable.append(param.UserModifiable)\r\n\tformula.append(param.Formula)\r\n\tdeterminedbyformula.append(param.IsDeterminedByFormula)\r\n\tassocparams = param.AssociatedParameters\r\n\tassociatedparams.append(assocparams)\r\n\tassocelems = list()\r\n\tfor assoc in assocparams:\r\n\t\tassocelems.append(assoc.Element)\r\n\tassociatedelements.append(assocelems)\r\n\tcanassignformula.append(param.CanAssignFormula)\r\n\t\r\nOUT = (pname,guid,pgroup,ptype,utype,dutype,stype,isinstance,isreporting,isshared,isreadonly,usermodifiable,formula,determinedbyformula,associatedparams,canassignformula,associatedelements)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nparams = UnwrapElement(IN[0])\r\nversion = IN[1]\r\npname = list()\r\nguid = list()\r\npgroup = list()\r\nptype = list()\r\nutype = list()\r\ndutype = list()\r\nstype = list()\r\nisinstance = list()\r\nisreporting = list()\r\nisshared = list()\r\nisreadonly = list()\r\nusermodifiable = list()\r\nformula = list()\r\ndeterminedbyformula = list()\r\nassociatedparams = list()\r\nassociatedelements = list()\r\ncanassignformula = list()\r\nfor param in params:\r\n\tpname.append(param.Definition.Name)\r\n\ttry:guid.append(param.GUID.ToString())\r\n\texcept: guid.append(None)\r\n\tpgroup.append(param.Definition.ParameterGroup)\r\n\tif version > 2021:\r\n\t\tptype.append(param.Definition.GetDataType())\r\n\t\tutype.append(param.Definition.GetSpecTypeId())\r\n\t\ttry: dutype.append(param.GetUnitTypeId())\r\n\t\texcept: dutype.append(None)\r\n\telse:\r\n\t\tptype.append(param.Definition.ParameterType)\r\n\t\tutype.append(param.Definition.UnitType)\r\n\t\ttry: dutype.append(param.DisplayUnitType)\r\n\t\texcept: dutype.append(None)\r\n\tstype.append(param.StorageType)\r\n\tisinstance.append(param.IsInstance)\r\n\tisreporting.append(param.IsReporting)\r\n\tisshared.append(param.IsShared)\r\n\tisreadonly.append(param.IsReadOnly)\r\n\tusermodifiable.append(param.UserModifiable)\r\n\tformula.append(param.Formula)\r\n\tdeterminedbyformula.append(param.IsDeterminedByFormula)\r\n\tassocparams = param.AssociatedParameters\r\n\tassociatedparams.append(assocparams)\r\n\tassocelems = list()\r\n\tfor assoc in assocparams:\r\n\t\tassocelems.append(assoc.Element)\r\n\tassociatedelements.append(assocelems)\r\n\tcanassignformula.append(param.CanAssignFormula)\r\n\t\r\nOUT = (pname,guid,pgroup,ptype,utype,dutype,stype,isinstance,isreporting,isshared,isreadonly,usermodifiable,formula,determinedbyformula,associatedparams,canassignformula,associatedelements)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "1772ae47596c4b868f98079e9a9f6772",
       "Inputs": [
@@ -61,6 +62,15 @@
           "Id": "541ad1108e554287a6d0437d6733d001",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8270bd647ed04f78ba555a7c63b59fdd",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -79,7 +89,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -101,7 +111,7 @@
         {
           "Id": "eac4a1fe5dc44b39abb925109bb692d7",
           "Name": "",
-          "Description": "Value of expression at line 1",
+          "Description": "Wert des Ausdrucks in Zeile 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -110,7 +120,7 @@
         {
           "Id": "7598532a32854d8393f552ab46bcbd3e",
           "Name": "",
-          "Description": "Value of expression at line 2",
+          "Description": "Wert des Ausdrucks in Zeile 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -119,7 +129,7 @@
         {
           "Id": "c1a3b8a00909441a991e62611942d0fb",
           "Name": "",
-          "Description": "Value of expression at line 3",
+          "Description": "Wert des Ausdrucks in Zeile 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -128,7 +138,7 @@
         {
           "Id": "4b7d02d1d63a4f7d801a383d2a98fa5c",
           "Name": "",
-          "Description": "Value of expression at line 4",
+          "Description": "Wert des Ausdrucks in Zeile 4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -137,7 +147,7 @@
         {
           "Id": "f6b649fcd05942f39cb71c6dcc9f7bc0",
           "Name": "",
-          "Description": "Value of expression at line 5",
+          "Description": "Wert des Ausdrucks in Zeile 5",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -146,7 +156,7 @@
         {
           "Id": "7d209730f4e94626a2350e7d385d7124",
           "Name": "",
-          "Description": "Value of expression at line 6",
+          "Description": "Wert des Ausdrucks in Zeile 6",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -155,7 +165,7 @@
         {
           "Id": "1945d71365b64b6db9b835da309188d8",
           "Name": "",
-          "Description": "Value of expression at line 7",
+          "Description": "Wert des Ausdrucks in Zeile 7",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -164,7 +174,7 @@
         {
           "Id": "9e7d91cb0bb6465c8d88a64e64633e20",
           "Name": "",
-          "Description": "Value of expression at line 8",
+          "Description": "Wert des Ausdrucks in Zeile 8",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -173,7 +183,7 @@
         {
           "Id": "1d9904ae30a24dda97fa55f03788888b",
           "Name": "",
-          "Description": "Value of expression at line 9",
+          "Description": "Wert des Ausdrucks in Zeile 9",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -182,7 +192,7 @@
         {
           "Id": "933904e7c0d344f590ab4edc958f8f9a",
           "Name": "",
-          "Description": "Value of expression at line 10",
+          "Description": "Wert des Ausdrucks in Zeile 10",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -191,7 +201,7 @@
         {
           "Id": "2b54af2d8f7e49c4956496544c3db635",
           "Name": "",
-          "Description": "Value of expression at line 11",
+          "Description": "Wert des Ausdrucks in Zeile 11",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -200,7 +210,7 @@
         {
           "Id": "b09bdcb20d334ab69bbac2d020ce071d",
           "Name": "",
-          "Description": "Value of expression at line 12",
+          "Description": "Wert des Ausdrucks in Zeile 12",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -209,7 +219,7 @@
         {
           "Id": "10908235d00d4e3cb2707dec7128e566",
           "Name": "",
-          "Description": "Value of expression at line 13",
+          "Description": "Wert des Ausdrucks in Zeile 13",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -218,7 +228,7 @@
         {
           "Id": "0df023513c3a4d16b2d084131edfbd4b",
           "Name": "",
-          "Description": "Value of expression at line 14",
+          "Description": "Wert des Ausdrucks in Zeile 14",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -227,7 +237,7 @@
         {
           "Id": "432b898672ee42b5adc2b51732d55fc1",
           "Name": "",
-          "Description": "Value of expression at line 15",
+          "Description": "Wert des Ausdrucks in Zeile 15",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -236,7 +246,7 @@
         {
           "Id": "2c8410e6989043ea9b9a2397fc5f5e4c",
           "Name": "",
-          "Description": "Value of expression at line 16",
+          "Description": "Wert des Ausdrucks in Zeile 16",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -245,7 +255,7 @@
         {
           "Id": "79a10b3e076540b28de6d383792bac25",
           "Name": "",
-          "Description": "Value of expression at line 17",
+          "Description": "Wert des Ausdrucks in Zeile 17",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -253,7 +263,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
+      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -276,7 +286,7 @@
         {
           "Id": "9815bce923ac4dcbb5b04221012660d9",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -316,7 +326,7 @@
         {
           "Id": "70f0b0670073419eb3377e4bf2477174",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -356,7 +366,7 @@
         {
           "Id": "6ac2a8b5d4fb4bf1a0a22b30d41f775c",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -396,7 +406,7 @@
         {
           "Id": "60bde6a8a51245b295b05c2883ddc232",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -436,7 +446,7 @@
         {
           "Id": "62bbbc3e416a4aa2865954a8dc45652c",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -476,7 +486,7 @@
         {
           "Id": "442621bda9654909a1b96f7798dba3ee",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -516,7 +526,7 @@
         {
           "Id": "aa8403bc923e46e0923d1cad6b75178d",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -556,7 +566,7 @@
         {
           "Id": "67f36a3659dd4cad9c29c7cdab457017",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -596,7 +606,7 @@
         {
           "Id": "b7ce086fbaf243c88814749df956292c",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -636,7 +646,7 @@
         {
           "Id": "f43f673e34094ccf9014ca1eec9a13fd",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -676,7 +686,7 @@
         {
           "Id": "be93838d09fb46dd97d3ffe3aa81b72c",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -716,7 +726,7 @@
         {
           "Id": "e22f962fecb74a2c852a49782b2cc078",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -756,7 +766,7 @@
         {
           "Id": "757fad604f044f28a1cccf900af65956",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -796,7 +806,7 @@
         {
           "Id": "cff8031df27644f887d4d67d3d5371d9",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -836,7 +846,7 @@
         {
           "Id": "4ee6be595b6445d58041a2dd66e5309f",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -876,7 +886,7 @@
         {
           "Id": "4876f3e0576f4078ba0c583b5887ae72",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -979,7 +989,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "Type",
+      "Symbol": "// In Revit 2022+ will return the ForgeTypeId\r\nType",
       "Id": "c8c82a853fd447d188147ed4111a1a19",
       "Inputs": [
         {
@@ -1000,7 +1010,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "UnitType",
+      "Symbol": "// In Revit 2022+ will return the ForgeTypeId\r\nUnitType",
       "Id": "1fdbb918772c444cbc8dce7f9935ed07",
       "Inputs": [
         {
@@ -1021,7 +1031,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "DisplayUnitType",
+      "Symbol": "// In Revit 2022+ will return the ForgeTypeId\r\nDisplayUnitType",
       "Id": "604f97a717f74b3f91de61c785211854",
       "Inputs": [
         {
@@ -1257,7 +1267,7 @@
         {
           "Id": "74f7b818f3214093991eb409c6d09f8c",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1277,7 +1287,7 @@
         {
           "Id": "53fadab0695a4d9d9dc1dea481e127bf",
           "Name": "",
-          "Description": "Value of expression at line 1",
+          "Description": "Wert des Ausdrucks in Zeile 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1286,7 +1296,7 @@
         {
           "Id": "638b89d7a3a4430a9d0354ff80aa504e",
           "Name": "",
-          "Description": "Value of expression at line 2",
+          "Description": "Wert des Ausdrucks in Zeile 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1295,7 +1305,7 @@
         {
           "Id": "90a285879ff54d37b0fef3ca4a2db9a5",
           "Name": "",
-          "Description": "Value of expression at line 3",
+          "Description": "Wert des Ausdrucks in Zeile 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1304,7 +1314,7 @@
         {
           "Id": "76b611424c134c1090a6c2ea82fe58be",
           "Name": "",
-          "Description": "Value of expression at line 4",
+          "Description": "Wert des Ausdrucks in Zeile 4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1313,7 +1323,7 @@
         {
           "Id": "528aa61ef4af444581bd8c75af0f730b",
           "Name": "",
-          "Description": "Value of expression at line 5",
+          "Description": "Wert des Ausdrucks in Zeile 5",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1322,7 +1332,7 @@
         {
           "Id": "02c0206a8d99467eb8b5f272e1a147e8",
           "Name": "",
-          "Description": "Value of expression at line 6",
+          "Description": "Wert des Ausdrucks in Zeile 6",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1331,7 +1341,7 @@
         {
           "Id": "a24fbc235a184a2184cf49e0cb31f2f5",
           "Name": "",
-          "Description": "Value of expression at line 7",
+          "Description": "Wert des Ausdrucks in Zeile 7",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1340,7 +1350,7 @@
         {
           "Id": "875609a20d2f44e490bd19b0a93f2ca3",
           "Name": "",
-          "Description": "Value of expression at line 8",
+          "Description": "Wert des Ausdrucks in Zeile 8",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1349,7 +1359,7 @@
         {
           "Id": "025cebb17a3f40b58f24a0120ea3711e",
           "Name": "",
-          "Description": "Value of expression at line 9",
+          "Description": "Wert des Ausdrucks in Zeile 9",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1358,7 +1368,7 @@
         {
           "Id": "bd6543ee7ae24f3f9cee4ab5ab0696e4",
           "Name": "",
-          "Description": "Value of expression at line 10",
+          "Description": "Wert des Ausdrucks in Zeile 10",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1367,7 +1377,7 @@
         {
           "Id": "95005c3e1e70463c959ddf01e3b0fb11",
           "Name": "",
-          "Description": "Value of expression at line 11",
+          "Description": "Wert des Ausdrucks in Zeile 11",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1376,7 +1386,7 @@
         {
           "Id": "23c1c9e63f1d4d4b97108c0560926a7e",
           "Name": "",
-          "Description": "Value of expression at line 12",
+          "Description": "Wert des Ausdrucks in Zeile 12",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1385,7 +1395,7 @@
         {
           "Id": "be312924ce3a440c98127a05c9a1da85",
           "Name": "",
-          "Description": "Value of expression at line 13",
+          "Description": "Wert des Ausdrucks in Zeile 13",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1394,7 +1404,7 @@
         {
           "Id": "bf0017fb0b224a23983fdd26dc721cdd",
           "Name": "",
-          "Description": "Value of expression at line 14",
+          "Description": "Wert des Ausdrucks in Zeile 14",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1403,7 +1413,7 @@
         {
           "Id": "08d90be4f6dc4b57b50a6cd8071a5f1a",
           "Name": "",
-          "Description": "Value of expression at line 15",
+          "Description": "Wert des Ausdrucks in Zeile 15",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1412,7 +1422,7 @@
         {
           "Id": "9f52db4e05e7447c82a05915dae9e5d9",
           "Name": "",
-          "Description": "Value of expression at line 16",
+          "Description": "Wert des Ausdrucks in Zeile 16",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1421,7 +1431,7 @@
         {
           "Id": "6d7e3d80b54b4583832ca1b17f685d1c",
           "Name": "",
-          "Description": "Value of expression at line 17",
+          "Description": "Wert des Ausdrucks in Zeile 17",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1430,7 +1440,7 @@
         {
           "Id": "13a789adc66b494fb1de41ef179157b4",
           "Name": "",
-          "Description": "Value of expression at line 18",
+          "Description": "Wert des Ausdrucks in Zeile 18",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1439,7 +1449,7 @@
         {
           "Id": "ff6cd9d29d834e358669c2ff9216ae66",
           "Name": "",
-          "Description": "Value of expression at line 19",
+          "Description": "Wert des Ausdrucks in Zeile 19",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1448,7 +1458,7 @@
         {
           "Id": "1da3e5a067294088963e27d12f77c044",
           "Name": "",
-          "Description": "Value of expression at line 20",
+          "Description": "Wert des Ausdrucks in Zeile 20",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1457,7 +1467,7 @@
         {
           "Id": "7c9c8e61cfee476399f217f822037f18",
           "Name": "",
-          "Description": "Value of expression at line 21",
+          "Description": "Wert des Ausdrucks in Zeile 21",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1466,7 +1476,7 @@
         {
           "Id": "9e57587c253143509f4490ec21ac3485",
           "Name": "",
-          "Description": "Value of expression at line 22",
+          "Description": "Wert des Ausdrucks in Zeile 22",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1475,7 +1485,7 @@
         {
           "Id": "802e711b39c148329c0daedaa8385dfb",
           "Name": "",
-          "Description": "Value of expression at line 23",
+          "Description": "Wert des Ausdrucks in Zeile 23",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1484,7 +1494,7 @@
         {
           "Id": "fc25aed2e3a241f2a4eb06ff89888dd4",
           "Name": "",
-          "Description": "Value of expression at line 24",
+          "Description": "Wert des Ausdrucks in Zeile 24",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1493,7 +1503,7 @@
         {
           "Id": "217c369177bf4373a7aa79387c8d43b6",
           "Name": "",
-          "Description": "Value of expression at line 25",
+          "Description": "Wert des Ausdrucks in Zeile 25",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1502,7 +1512,7 @@
         {
           "Id": "6142e03e91544781a057b57fbbe1138b",
           "Name": "",
-          "Description": "Value of expression at line 26",
+          "Description": "Wert des Ausdrucks in Zeile 26",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1511,7 +1521,7 @@
         {
           "Id": "38669212a26341aa95807c0057972dfa",
           "Name": "",
-          "Description": "Value of expression at line 27",
+          "Description": "Wert des Ausdrucks in Zeile 27",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1520,7 +1530,7 @@
         {
           "Id": "7d6f3275d44c440d99e5cdb35576bcb7",
           "Name": "",
-          "Description": "Value of expression at line 28",
+          "Description": "Wert des Ausdrucks in Zeile 28",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1529,7 +1539,7 @@
         {
           "Id": "88df784d05404989b01eedb5ae896fac",
           "Name": "",
-          "Description": "Value of expression at line 29",
+          "Description": "Wert des Ausdrucks in Zeile 29",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1538,7 +1548,7 @@
         {
           "Id": "29a281434b8342dbbc1e693d781f5651",
           "Name": "",
-          "Description": "Value of expression at line 30",
+          "Description": "Wert des Ausdrucks in Zeile 30",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1546,7 +1556,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
+      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction, DynamoCore",
@@ -1557,8 +1567,8 @@
       "Inputs": [
         {
           "Id": "c18be734f5db4ebd90194db28b276df9",
-          "Name": "str",
-          "Description": "String to split up.\n\nstring",
+          "Name": "string",
+          "Description": "Aufzuteilende Zeichenfolge\n\nstring",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1566,8 +1576,8 @@
         },
         {
           "Id": "1780413cfc7f4cea924bf03bc4d91748",
-          "Name": "separater0",
-          "Description": "Strings that, if present, determine the end and start of a split.\n\nstring[]",
+          "Name": "separator0",
+          "Description": "Zeichenfolgen, die (sofern vorhanden) Ende und Anfang der Teilung markieren.\n\nstring[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1575,7 +1585,7 @@
         },
         {
           "Id": "0739021d7f794a388e6df1c7efd0d403",
-          "Name": "separater1",
+          "Name": "separator1",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1584,7 +1594,7 @@
         },
         {
           "Id": "8bb270f8137f4e9892366eefae8927ab",
-          "Name": "separater2",
+          "Name": "separator2",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1593,7 +1603,7 @@
         },
         {
           "Id": "37c0a08ccb7b4dc998718690c33dbeff",
-          "Name": "separater3",
+          "Name": "separator3",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1602,7 +1612,7 @@
         },
         {
           "Id": "73e7714f50084b3589f3cd47099bde45",
-          "Name": "separater4",
+          "Name": "separator4",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1611,7 +1621,7 @@
         },
         {
           "Id": "56500266d0314cbb85708d39e5f11328",
-          "Name": "separater5",
+          "Name": "separator5",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1620,7 +1630,7 @@
         },
         {
           "Id": "f57ec82871e1465595d61dde489c71a6",
-          "Name": "separater6",
+          "Name": "separator6",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1629,7 +1639,7 @@
         },
         {
           "Id": "26c1fc5a46d24d91a7843dd74db8e87e",
-          "Name": "separater7",
+          "Name": "separator7",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1638,7 +1648,7 @@
         },
         {
           "Id": "bb63a3e5ca114c179d03ee5ef577be6c",
-          "Name": "separater8",
+          "Name": "separator8",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1647,7 +1657,7 @@
         },
         {
           "Id": "c0ec26ec072b4e70bffc56cd658e5b33",
-          "Name": "separater9",
+          "Name": "separator9",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1656,7 +1666,7 @@
         },
         {
           "Id": "36cd7de1286442dbb34e17e469cca78f",
-          "Name": "separater10",
+          "Name": "separator10",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1665,7 +1675,7 @@
         },
         {
           "Id": "a00adefc27d5439f9fc05c2659f33c7b",
-          "Name": "separater11",
+          "Name": "separator11",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1674,7 +1684,7 @@
         },
         {
           "Id": "0298f577fbc14e1f8af3a1f50f1e65a8",
-          "Name": "separater12",
+          "Name": "separator12",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1683,7 +1693,7 @@
         },
         {
           "Id": "e6b836a1e99b45a9b5e46edd1bae725d",
-          "Name": "separater13",
+          "Name": "separator13",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1692,7 +1702,7 @@
         },
         {
           "Id": "caf6080e109e4aae8e0a975b1cc56e6e",
-          "Name": "separater14",
+          "Name": "separator14",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1701,7 +1711,7 @@
         },
         {
           "Id": "1ac5c1b7baf2473db5619d8edf28b33b",
-          "Name": "separater15",
+          "Name": "separator15",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1710,7 +1720,7 @@
         },
         {
           "Id": "ec9634d96e0c463da94d04c3e805dcdf",
-          "Name": "separater16",
+          "Name": "separator16",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1719,7 +1729,7 @@
         },
         {
           "Id": "49283a9d84d640c08ee20a1843e79971",
-          "Name": "separater17",
+          "Name": "separator17",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1728,7 +1738,7 @@
         },
         {
           "Id": "e7ce8074625046f98a082850fbc44085",
-          "Name": "separater18",
+          "Name": "separator18",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1737,7 +1747,7 @@
         },
         {
           "Id": "7961f4a4fed74c28a8fb900f1c35237d",
-          "Name": "separater19",
+          "Name": "separator19",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1746,7 +1756,7 @@
         },
         {
           "Id": "8adf0b04d3224627abd2d5735b83eca6",
-          "Name": "separater20",
+          "Name": "separator20",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1755,7 +1765,7 @@
         },
         {
           "Id": "1a10bd5ece0149239870a9b493b5208b",
-          "Name": "separater21",
+          "Name": "separator21",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1764,7 +1774,7 @@
         },
         {
           "Id": "d03242bd647e45c5921301a913bd8780",
-          "Name": "separater22",
+          "Name": "separator22",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1773,7 +1783,7 @@
         },
         {
           "Id": "d9a9a4cc20884c61ad150ef61aaa8491",
-          "Name": "separater23",
+          "Name": "separator23",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1782,7 +1792,7 @@
         },
         {
           "Id": "b90b4d9363c3413f8bafdc1f608e71b0",
-          "Name": "separater24",
+          "Name": "separator24",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1791,7 +1801,7 @@
         },
         {
           "Id": "00064eb86382401db8b42936cf362869",
-          "Name": "separater25",
+          "Name": "separator25",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1800,7 +1810,7 @@
         },
         {
           "Id": "61f01bc792bd4c149513c23dd4b181c3",
-          "Name": "separater26",
+          "Name": "separator26",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1809,7 +1819,7 @@
         },
         {
           "Id": "64858113a3104e02a7b65ece74376ac1",
-          "Name": "separater27",
+          "Name": "separator27",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1818,7 +1828,7 @@
         },
         {
           "Id": "11e3151a4e7a485e92e3a6ef5e908a63",
-          "Name": "separater28",
+          "Name": "separator28",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1827,7 +1837,7 @@
         },
         {
           "Id": "975a18376ee44bf488a07d8b28fb02f1",
-          "Name": "separater29",
+          "Name": "separator29",
           "Description": "string[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -1839,7 +1849,7 @@
         {
           "Id": "24040552621148acad0d2022e2bca0b7",
           "Name": "strings",
-          "Description": "List of strings made from the input string.",
+          "Description": "Liste der aus der Eingabezeichenfolge erstellten Zeichenfolgen",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1847,7 +1857,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Divides a single string into a list of strings, with divisions determined by the given separater strings.\n\nString.Split (str: string, separaters: string[]): string[]"
+      "Description": "Teilt eine einzelne Zeichenfolge in eine Liste von Zeichenfolgen auf, wobei die Unterteilungen durch die angegebenen Trennzeichenfolgen bestimmt werden.\n\nString.Split (string: string, separators: string[]): string[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -1879,7 +1889,7 @@
         {
           "Id": "e8e78dfc2e1647518ea703eeb7261825",
           "Name": "",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1956,6 +1966,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\nOUT = []\nfor chunks in IN[0]:\n\tsublist = []\n\tif chunks: [sublist.append(x) for x in chunks if x in IN[1]]\n\tOUT.append(sublist)\n\t",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "8b345ee160c6445ca05d42ec10e63a03",
       "Inputs": [
@@ -1990,7 +2001,64 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "066a9e1b0a804fa5879bdb683f4a5dca",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b99f8a25991a460ea01b46fc30579986",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3328312369714b5091c04ea69964f599",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "32a992734ed9416da2730dc7d9e77a55",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fa1bfcaa3a3a4cf7ac384969f5b990bf",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c5cf0684120940118d6a293030ae05c5",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -2443,24 +2511,60 @@
       "Start": "7c106c1e2be5409bacae0abf8f7ab2d4",
       "End": "352f086446764ed1aeebcaabb16b348f",
       "Id": "7cbad62d6c4b4182a36184564ccafc20"
+    },
+    {
+      "Start": "3328312369714b5091c04ea69964f599",
+      "End": "8270bd647ed04f78ba555a7c63b59fdd",
+      "Id": "907d1f44944d46acb75e30b93a4c2030"
     }
   ],
   "Dependencies": [
     "44ac4888-4aa4-49a9-9344-23b729c11df9",
-    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+    "cd09ad33-8c34-4850-ac26-24448d92c38f",
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
   ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.3.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "bb0c5a47b3ef471c9a7d72d3e0390d66",
+        "992dfb3af856436cbd3044789cd14dfa",
+        "22d08542d507410da353dd947d522d57",
+        "e2e1d2133b1f48d3acaea886e1c867f7",
+        "a16ea9356c2f44dcae967ec3004bce08",
+        "4e26a9eae520450d8dcb65dd23592f7f",
+        "2f1dfa13ec4849cfbe3eb3ed161cc968",
+        "c2ccdc2581cf4de0a2cbbdd1e2e40b5f",
+        "528f55a88de045fe861d60b66bf40b64",
+        "cecdb02daad3485381327a3520c1023e",
+        "64799d4d95264570b72165c6d8cebab9",
+        "44cb1624b0df43c4866f6e5ead74c9ff",
+        "2dc33e5ef3f74c9abda5da523e67252d",
+        "18928c89646a44a6be9798922a9f9dbb",
+        "243e7b33594f4392b6a2ef2c87e77a2e",
+        "cd4ddf41eb734355afe0b1ee3fd13833",
+        "def3982890f744b781278f0a8a0763e0",
+        "5056790d061e4bcc93450c491beea6f4",
+        "97e33b80547b42138b48c66ecbffdad7",
+        "066a9e1b0a804fa5879bdb683f4a5dca"
+      ]
+    }
+  ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.12.0.5650",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -2489,7 +2593,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -30.2825451569087,
+        "X": -30.282545156908697,
         "Y": 1173.69072584003
       },
       {
@@ -2901,11 +3005,21 @@
         "Excluded": false,
         "X": 849.904670461212,
         "Y": 2375.20635230352
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "066a9e1b0a804fa5879bdb683f4a5dca",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -214.61417139121119,
+        "Y": 1270.1812759501845
       }
     ],
     "Annotations": [],
-    "X": 417.37861528586063,
-    "Y": -913.31908612545055,
+    "X": -305.62138471413937,
+    "Y": -186.31908612545055,
     "Zoom": 1.0827738624131549
   }
 }
