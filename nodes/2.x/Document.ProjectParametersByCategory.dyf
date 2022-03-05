@@ -59,7 +59,6 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nsearch_cats = UnwrapElement(IN[0])\r\nsearch_ids = []\r\nnames = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\n\r\nfor search_cat in search_cats:\r\n\tsearch_ids.append(search_cat.Id.IntegerValue)\r\n\tnames.append(list())\r\n\tvag.append(list())\r\n\tpgs.append(list())\r\n\tpts.append(list())\r\n\tuts.append(list())\r\n\tisvis.append(list())\r\n\telems.append(list())\r\n\tguids.append(list())\r\n\tisinst.append(list())\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\nversion = IN[3]\r\n\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n\tfor cat in iterator.Current.Categories:\r\n\t\ti = 0\r\n\t\tfor search_id in search_ids:\r\n\t\t\tif cat.Id.IntegerValue == search_id:\r\n\t\t\t\tnames[i].append(iterator.Key.Name)\r\n\t\t\t\tvag[i].append(iterator.Key.VariesAcrossGroups)\r\n\t\t\t\tpgs[i].append(iterator.Key.ParameterGroup)\r\n\t\t\t\tif version > 2021: \r\n\t\t\t\t\tpts[i].append(iterator.Key.GetDataType())\r\n\t\t\t\t\tuts[i].append(iterator.Key.GetSpecTypeId())\r\n\t\t\t\telse: \r\n\t\t\t\t\tpts[i].append(iterator.Key.ParameterType)\r\n\t\t\t\t\tuts[i].append(iterator.Key.UnitType)\r\n\t\t\t\tisvis[i].append(iterator.Key.Visible)\r\n\t\t\t\telem = doc.GetElement(iterator.Key.Id)\r\n\t\t\t\telems[i].append(elem)\r\n\t\t\t\tif elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n\t\t\t\t\tguids[i].append(elem.GuidValue)\r\n\t\t\t\telse: guids[i].append(None)\r\n\t\t\t\tif iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n\t\t\t\t\tisinst[i].append(True)\r\n\t\t\t\telse: isinst[i].append(False)\r\n\t\t\ti += 1\r\nOUT = (names, vag, pgs, pts, uts, isvis, elems, guids, isinst)",
-      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "1668f7c6d9374c59bd7d635fb9213ec8",
       "Inputs": [
@@ -1122,14 +1121,13 @@
       ]
     }
   ],
-  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.0.5650",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

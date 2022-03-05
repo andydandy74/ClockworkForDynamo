@@ -139,7 +139,6 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\nversion = IN[2]\r\n\r\nnames = []\r\ncats = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\nbics = []\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n\tvag.append(iterator.Key.VariesAcrossGroups)\r\n\tnames.append(iterator.Key.Name)\r\n\tpgs.append(iterator.Key.ParameterGroup)\r\n\tif version > 2021: \r\n\t\tpts.append(iterator.Key.GetDataType())\r\n\t\tuts.append(iterator.Key.GetSpecTypeId())\r\n\telse: \r\n\t\tpts.append(iterator.Key.ParameterType)\r\n\t\tuts.append(iterator.Key.UnitType)\r\n\tisvis.append(iterator.Key.Visible)\r\n\telem = doc.GetElement(iterator.Key.Id)\r\n\telems.append(elem)\r\n\tif elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n\t\tguids.append(elem.GuidValue)\r\n\telse: guids.append(None)\r\n\tif iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n\t\tisinst.append(True)\r\n\telse:\r\n\t\tisinst.append(False)\r\n\tthesecats = []\r\n\tbuiltincats = []\r\n\tfor cat in iterator.Current.Categories:\r\n\t\ttry:\r\n\t\t\tthesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))\r\n\t\texcept:\r\n\t\t\t# Return null if category is not supported by Dynamo\r\n\t\t\t# This way the user knows there are unsupported categories assigned\r\n\t\t\tthesecats.append(None)\r\n\t\tbuiltincats.append(System.Enum.ToObject(BuiltInCategory, cat.Id.IntegerValue))\r\n\tcats.append(thesecats)\r\n\tbics.append(builtincats)\r\nOUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst, bics)",
-      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "146117d840fa492a9a4c4c722866e3a0",
       "Inputs": [
@@ -616,14 +615,13 @@
       ]
     }
   ],
-  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.0.5650",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
