@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nsubcat = Category.GetCategory(doc,ElementId(IN[1].Id))\r\ngstyletype = IN[2]\r\nif not gstyletype:\r\n\tgstyletype = GraphicsStyleType.Projection\r\nelse:\r\n\tgstyletype = GraphicsStyleType.Cut\r\ngstyle = subcat.GetGraphicsStyle(gstyletype)\r\nsuccess = list()\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor item in items:\r\n\ttry:\r\n\t\titem.Subcategory = subcat\r\n\t\tsuccess.append(True)\r\n\texcept:\r\n\t\ttry:\r\n\t\t\titem.Subcategory = gstyle\r\n\t\t\tsuccess.append(True)\r\n\t\texcept:\r\n\t\t\ttry:\r\n\t\t\t\titem.LineStyle = gstyle\r\n\t\t\t\tsuccess.append(True)\r\n\t\t\texcept:\r\n\t\t\t\tsuccess.append(False)\r\nTransactionManager.Instance.TransactionTaskDone()\r\nOUT = (items,success)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\n# Revit subcategories\r\nif IN[1].GetType().ToString() == 'Autodesk.Revit.DB.Category': subcat = IN[1]\r\n# Dynamo-wrapped subcategories\r\nelse: subcat = Category.GetCategory(doc,ElementId(IN[1].Id))\r\ngstyletype = IN[2]\r\nif not gstyletype:\r\n\tgstyletype = GraphicsStyleType.Projection\r\nelse:\r\n\tgstyletype = GraphicsStyleType.Cut\r\ngstyle = subcat.GetGraphicsStyle(gstyletype)\r\nsuccess = list()\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor item in items:\r\n\ttry:\r\n\t\titem.Subcategory = subcat\r\n\t\tsuccess.append(True)\r\n\texcept:\r\n\t\ttry:\r\n\t\t\titem.Subcategory = gstyle\r\n\t\t\tsuccess.append(True)\r\n\t\texcept:\r\n\t\t\ttry:\r\n\t\t\t\titem.LineStyle = gstyle\r\n\t\t\t\tsuccess.append(True)\r\n\t\t\texcept:\r\n\t\t\t\tsuccess.append(False)\r\nTransactionManager.Instance.TransactionTaskDone()\r\nOUT = (items,success)",
       "VariableInputPorts": true,
       "Id": "e1c0b778675346e48d681f8dfcaab0b7",
       "Inputs": [
@@ -62,7 +62,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -88,7 +88,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -114,7 +114,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -140,7 +140,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -161,7 +161,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -221,7 +221,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -295,13 +295,23 @@
   "Dependencies": [
     "cd09ad33-8c34-4850-ac26-24448d92c38f"
   ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.3.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "822c4c60a8d44ee787786727f086dd9f"
+      ]
+    }
+  ],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.3.1.11775",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -326,7 +336,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 404.0,
-        "Y": 49.2886237215755
+        "Y": 49.288623721575505
       },
       {
         "ShowGeometry": true,
