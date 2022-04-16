@@ -9,6 +9,7 @@ groupnames = []
 visible = []
 description = []
 usermodifiable = []
+hidewhennovalue = []
 for line in IN[0].splitlines():
 	line = re.split(r'\t', line)
 	if line[0] == "GROUP":
@@ -25,4 +26,6 @@ for line in IN[0].splitlines():
 		else: description.append(None)
 		if len(line) > 8: usermodifiable.append(line[8] == "1")
 		else: usermodifiable.append(True)
-OUT = names, guids, datatypes, datacategories, groupnames, description, visible, usermodifiable
+		if len(line) > 9: hidewhennovalue.append(line[9] == "1")
+		else: hidewhennovalue.append(False)
+OUT = names, guids, datatypes, datacategories, groupnames, description, visible, usermodifiable, hidewhennovalue

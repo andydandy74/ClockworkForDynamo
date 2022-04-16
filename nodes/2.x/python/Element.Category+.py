@@ -8,12 +8,14 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 def GetCategory(item):
-	if not item: return None
+	if not item: return None, None
 	objtype = item.GetType().ToString()
 	returnID = None
+	returnIDs = None
 	returnCat = None
 	returnBic = None
-	if objtype == "Autodesk.Revit.DB.ViewSchedule": returnID = item.Definition.CategoryId
+	if objtype == "Autodesk.Revit.DB.ParameterFilterElement": returnIDs = item.GetCategories()
+	elif objtype == "Autodesk.Revit.DB.ViewSchedule": returnID = item.Definition.CategoryId
 	elif objtype == "Autodesk.Revit.DB.Family": returnID = item.FamilyCategoryId
 	elif objtype == "Autodesk.Revit.DB.GraphicsStyle":  returnID = item.GraphicsStyleCategory.Id
 	elif objtype == "Revit.Application.Document":
@@ -29,6 +31,14 @@ def GetCategory(item):
 		returnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)
 		try: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)
 		except: pass
+	elif returnIDs:
+		returnCat = []
+		returnBic = []
+		for returnID in returnIDs:
+			returnBic.append(System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue))
+			try: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))
+			except: returnCat.append(None)
+		returnCat.sort()
 	return returnCat, returnBic
 
 items = UnwrapElement(IN[0])

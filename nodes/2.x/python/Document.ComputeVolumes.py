@@ -20,5 +20,4 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 	doc = inputdoc
 else: doc = None
 
-if IN[2] > 2021: OUT = doc.GetUnits().GetModifiableSpecs()
-else: OUT = doc.GetUnits().GetModifiableUnitTypes()
+OUT = AreaVolumeSettings.GetAreaVolumeSettings(doc).ComputeVolumes

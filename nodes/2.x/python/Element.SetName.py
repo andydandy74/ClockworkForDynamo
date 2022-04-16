@@ -16,21 +16,31 @@ items = UnwrapElement(IN[0])
 names = IN[1]
 
 def SetElementName(item, name):
+	# family parameters
 	if item.GetType().ToString() == "Autodesk.Revit.DB.FamilyParameter":
 		try: 
 			doc.FamilyManager.RenameParameter(item, name)
 			return True
 		except: return False
+	# regular revit worksets
 	elif item.GetType().ToString() =="Autodesk.Revit.DB.Workset":
 		try: 
 			doc.GetWorksetTable().RenameWorkset(doc, item.Id, name)
 			return True
 		except: return False
+	# archilab worksets (dynamo 1.x)
 	elif item.GetType().ToString() == "Archilab.Grimshaw.Elements.Workset":
 		try: 
 			doc.GetWorksetTable().RenameWorkset(doc, WorksetId(item.Id), name)
 			return True
 		except: return False
+	# archilab worksets (dynamo 2.x)
+	elif item.GetType().ToString() == "archilab.Revit.Elements.Workset":
+		try: 
+			doc.GetWorksetTable().RenameWorkset(doc, WorksetId(item.Id), name)
+			return True
+		except: return False
+	# everything else that has a name property
 	else:
 		try: 
 			item.Name = name

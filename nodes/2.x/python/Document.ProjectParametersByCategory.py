@@ -39,6 +39,7 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 	doc = inputdoc
 else: doc = None
+version = IN[3]
 
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
@@ -49,8 +50,12 @@ while iterator.MoveNext():
 				names[i].append(iterator.Key.Name)
 				vag[i].append(iterator.Key.VariesAcrossGroups)
 				pgs[i].append(iterator.Key.ParameterGroup)
-				pts[i].append(iterator.Key.ParameterType)
-				uts[i].append(iterator.Key.UnitType)
+				if version > 2021: 
+					pts[i].append(iterator.Key.GetDataType())
+					uts[i].append(iterator.Key.GetSpecTypeId())
+				else: 
+					pts[i].append(iterator.Key.ParameterType)
+					uts[i].append(iterator.Key.UnitType)
 				isvis[i].append(iterator.Key.Visible)
 				elem = doc.GetElement(iterator.Key.Id)
 				elems[i].append(elem)

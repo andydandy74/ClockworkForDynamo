@@ -41,6 +41,17 @@ def GetLocation(item):
 	# points and text notes
 	if hasattr(item, "Coord"): 
 		return item.Coord.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# base points and reference points
+	if hasattr(item, "Position"): 
+		return item.Position.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# independent tags
+	if hasattr(item, "TagHeadPosition") and hasattr(item, "IsMaterialTag"): 
+		return item.TagHeadPosition.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+	# views
+	if hasattr(item, "ViewType") and hasattr(item, "Origin"): 
+		ori = item.Origin
+		if ori: return ori.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
+		else: return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
 	# stair runs and landings
 	if hasattr(item, "GetFootprintBoundary"):
 		footprint = [x.ToProtoType() for x in item.GetFootprintBoundary()]
@@ -95,9 +106,11 @@ def GetLocation(item):
 				try:
 					sketchloop = []
 					for ref in HostObjectUtils.GetTopFaces(item):
-						boundaryloops = item.GetGeometryObjectFromReference(ref).GetEdgesAsCurveLoops()
-						for loop in boundaryloops:
-							sketchloop.append([x.ToProtoType() for x in loop])
+						geomref = item.GetGeometryObjectFromReference(ref)
+						if geomref: 
+							boundaryloops = geomref.GetEdgesAsCurveLoops()
+							for loop in boundaryloops:
+								sketchloop.append([x.ToProtoType() for x in loop])
 					return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
 				# other elements we can't process
 				# return defaults in these cases

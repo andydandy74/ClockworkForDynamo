@@ -7,6 +7,7 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 params = UnwrapElement(IN[0])
+version = IN[1]
 pname = list()
 guid = list()
 pgroup = list()
@@ -26,13 +27,19 @@ associatedelements = list()
 canassignformula = list()
 for param in params:
 	pname.append(param.Definition.Name)
-	try:guid.append(param.GUID)
+	try:guid.append(param.GUID.ToString())
 	except: guid.append(None)
 	pgroup.append(param.Definition.ParameterGroup)
-	ptype.append(param.Definition.ParameterType)
-	utype.append(param.Definition.UnitType)
-	try: dutype.append(param.DisplayUnitType)
-	except: dutype.append(None)
+	if version > 2021:
+		ptype.append(param.Definition.GetDataType())
+		utype.append(param.Definition.GetSpecTypeId())
+		try: dutype.append(param.GetUnitTypeId())
+		except: dutype.append(None)
+	else:
+		ptype.append(param.Definition.ParameterType)
+		utype.append(param.Definition.UnitType)
+		try: dutype.append(param.DisplayUnitType)
+		except: dutype.append(None)
 	stype.append(param.StorageType)
 	isinstance.append(param.IsInstance)
 	isreporting.append(param.IsReporting)

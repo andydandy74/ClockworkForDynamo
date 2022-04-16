@@ -12,6 +12,9 @@ def GetSubComponents(item):
 	# FamilyInstances
 	if hasattr(item, "GetSubComponentIds"):
 		return [item.Document.GetElement(x) for x in item.GetSubComponentIds()]
+	# Combined geometry
+	if hasattr(item, "AllMembers"):
+		return [x for x in item.AllMembers]
 	# Stairs
 	elif hasattr(item, "GetStairsLandings"):
 		stair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]

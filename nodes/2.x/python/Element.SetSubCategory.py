@@ -13,7 +13,10 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
-subcat = Category.GetCategory(doc,ElementId(IN[1].Id))
+# Revit subcategories
+if IN[1].GetType().ToString() == 'Autodesk.Revit.DB.Category': subcat = IN[1]
+# Dynamo-wrapped subcategories
+else: subcat = Category.GetCategory(doc,ElementId(IN[1].Id))
 gstyletype = IN[2]
 if not gstyletype:
 	gstyletype = GraphicsStyleType.Projection

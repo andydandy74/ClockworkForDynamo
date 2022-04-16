@@ -11,20 +11,21 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def SetRoomTagType(tag,tagtype):
+	if hasattr(tag, "RoomTagType"):
+		tag.RoomTagType = tagtype
+		return True
+	else: return False
+
 doc = DocumentManager.Instance.CurrentDBDocument
-faminsts = UnwrapElement(IN[0])
-famsymb = UnwrapElement(IN[1])
-booleans = list()
-counter = 0
+tags = UnwrapElement(IN[0])
+tagtypes = UnwrapElement(IN[1])
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for item in faminsts:
-	try:
-		item.RoomTagType = famsymb[counter]
-		booleans.append(True)
-	except:
-		booleans.append(False)
-	counter += 1
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): OUT = [SetRoomTagType(x,y) for x,y in zip(tags,tagtypes)]
+	else: OUT = [SetRoomTagType(x,tagtypes) for x in tags]
+else:
+	if isinstance(IN[1], list): OUT = SetRoomTagType(tags,tagtypes[0])
+	else: OUT = SetRoomTagType(tags,tagtypes)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = (faminsts, booleans)

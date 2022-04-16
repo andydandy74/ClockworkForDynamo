@@ -10,5 +10,5 @@ def GetFrameNum(view):
 
 views = UnwrapElement(IN[0])
 
-if isinstance(views, list): OUT = [GetFrameNum(x) for x in views]
+if isinstance(IN[0], list): OUT = [GetFrameNum(x) for x in views]
 else: OUT = GetFrameNum(views)
