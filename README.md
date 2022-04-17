@@ -30,4 +30,11 @@ This repository contains the following:
 - Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. All samples are available for the current versions - sample support for older versions is patchy at best.
 - Directory [workflow_samples](workflow_samples) contains some old sample workflows that I have published online somewhere before. I have also included some of the examples that I used to use for teaching Dynamo as well as some material presented at conferences. Almost all of these are available for Dynamo 0.7.x (as well as 0.6.3). They will not be updated to a current version.
 
+## Sponsoring?
+This is free software. I've created and maintained it on my spare time for a number of years now.
+I don't do Patreon or GitHub Sponsors and I'm not planning to.
+However, if you are using this software or have done so in the past and it has increased your productivity, please consider giving something back nonetheless. If you're smart enough to use Dynamo, you're most probably smart enough to know climate change is real, too. And I'd like to believe you're already doing something to battle it at this point. 
+
+Do more.
+
 [![Bad Monkeys logo](https://www.badmonkeys.net/wp-content/uploads/2016/12/BadMonkey_finalLogo-01.png)](http://www.badmonkeys.net/)
