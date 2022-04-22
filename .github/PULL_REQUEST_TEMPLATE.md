@@ -1,10 +1,8 @@
 ### Purpose
-(Please fill in)
+(Please fill in and add screenshots if applicable)
 
 ### Changes
-(Please fill in)
+(Please fill in and add screenshots if applicable)
 
 ### Housekeeping
-Please **make sure these boxes are checked** before submitting your issue:
-- [ ] I am running a *supported* Clockwork version
 - [ ] I am running the *latest available version* of Clockwork
