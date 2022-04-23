@@ -4,10 +4,13 @@
 
 **Clockwork** is a collection of custom nodes for the [Dynamo](http://www.dynamobim.com) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 400+ nodes of which a large portion was previously published in a number of separate packages.
 
-Clockwork for Dynamo 2.x is currently developed in Dynamo 2.0.4 but also tested in newer 2.x versions which means it's compatible with Revit 2017 and later. It was **not** yet tested against Revit 2023.
+Clockwork for Dynamo 2.x is currently developed in Dynamo 2.0.4 but also tested in newer 2.x versions which means it's compatible with Revit 2017 and later.
+It was **not** yet fully tested against Revit 2023.
 
 ## Installation
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. If you have used some of my previous 0.6.3 packages, please remember to uninstall *all* of them (find a complete list [here](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages)). Also, always make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo.
+
+In **Revit 2023** you will need to install the package **"DynamoIronPython2.7"** (also from the package manager). Dynamo's workspace reference view extension will prompt you to install version 2.1 of that package. **Don't do that!** Instead **install the latest version** of that package.
 
 ## Versions
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
