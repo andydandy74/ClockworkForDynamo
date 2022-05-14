@@ -30,7 +30,12 @@ for param in params:
 	try:guid.append(param.GUID.ToString())
 	except: guid.append(None)
 	pgroup.append(param.Definition.ParameterGroup)
-	if version > 2021:
+	if version > 2022:
+		ptype.append(param.Definition.GetDataType())
+		utype.append(param.Definition.GetDataType())
+		try: dutype.append(param.GetUnitTypeId())
+		except: dutype.append(None)
+	elif version > 2021:
 		ptype.append(param.Definition.GetDataType())
 		utype.append(param.Definition.GetSpecTypeId())
 		try: dutype.append(param.GetUnitTypeId())
