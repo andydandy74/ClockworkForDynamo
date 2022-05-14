@@ -45,7 +45,7 @@
         {
           "Id": "188f0377c86f4f0fba63fee20be19157",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -58,7 +58,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nsearch_cats = UnwrapElement(IN[0])\r\nsearch_ids = []\r\nnames = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\n\r\nfor search_cat in search_cats:\r\n\tsearch_ids.append(search_cat.Id.IntegerValue)\r\n\tnames.append(list())\r\n\tvag.append(list())\r\n\tpgs.append(list())\r\n\tpts.append(list())\r\n\tuts.append(list())\r\n\tisvis.append(list())\r\n\telems.append(list())\r\n\tguids.append(list())\r\n\tisinst.append(list())\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\nversion = IN[3]\r\n\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n\tfor cat in iterator.Current.Categories:\r\n\t\ti = 0\r\n\t\tfor search_id in search_ids:\r\n\t\t\tif cat.Id.IntegerValue == search_id:\r\n\t\t\t\tnames[i].append(iterator.Key.Name)\r\n\t\t\t\tvag[i].append(iterator.Key.VariesAcrossGroups)\r\n\t\t\t\tpgs[i].append(iterator.Key.ParameterGroup)\r\n\t\t\t\tif version > 2021: \r\n\t\t\t\t\tpts[i].append(iterator.Key.GetDataType())\r\n\t\t\t\t\tuts[i].append(iterator.Key.GetSpecTypeId())\r\n\t\t\t\telse: \r\n\t\t\t\t\tpts[i].append(iterator.Key.ParameterType)\r\n\t\t\t\t\tuts[i].append(iterator.Key.UnitType)\r\n\t\t\t\tisvis[i].append(iterator.Key.Visible)\r\n\t\t\t\telem = doc.GetElement(iterator.Key.Id)\r\n\t\t\t\telems[i].append(elem)\r\n\t\t\t\tif elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n\t\t\t\t\tguids[i].append(elem.GuidValue)\r\n\t\t\t\telse: guids[i].append(None)\r\n\t\t\t\tif iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n\t\t\t\t\tisinst[i].append(True)\r\n\t\t\t\telse: isinst[i].append(False)\r\n\t\t\ti += 1\r\nOUT = (names, vag, pgs, pts, uts, isvis, elems, guids, isinst)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nsearch_cats = UnwrapElement(IN[0])\r\nsearch_ids = []\r\nnames = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\n\r\nfor search_cat in search_cats:\r\n\tsearch_ids.append(search_cat.Id.IntegerValue)\r\n\tnames.append(list())\r\n\tvag.append(list())\r\n\tpgs.append(list())\r\n\tpts.append(list())\r\n\tuts.append(list())\r\n\tisvis.append(list())\r\n\telems.append(list())\r\n\tguids.append(list())\r\n\tisinst.append(list())\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\nversion = IN[3]\r\n\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n\tfor cat in iterator.Current.Categories:\r\n\t\ti = 0\r\n\t\tfor search_id in search_ids:\r\n\t\t\tif cat.Id.IntegerValue == search_id:\r\n\t\t\t\tnames[i].append(iterator.Key.Name)\r\n\t\t\t\tvag[i].append(iterator.Key.VariesAcrossGroups)\r\n\t\t\t\tpgs[i].append(iterator.Key.ParameterGroup)\r\n\t\t\t\tif version > 2022: \r\n\t\t\t\t\tpts[i].append(iterator.Key.GetDataType())\r\n\t\t\t\t\tuts[i].append(iterator.Key.GetDataType())\r\n\t\t\t\telif version > 2021:\r\n\t\t\t\t\tpts[i].append(iterator.Key.GetDataType())\r\n\t\t\t\t\tuts[i].append(iterator.Key.GetSpecTypeId())\r\n\t\t\t\telse: \r\n\t\t\t\t\tpts[i].append(iterator.Key.ParameterType)\r\n\t\t\t\t\tuts[i].append(iterator.Key.UnitType)\r\n\t\t\t\tisvis[i].append(iterator.Key.Visible)\r\n\t\t\t\telem = doc.GetElement(iterator.Key.Id)\r\n\t\t\t\telems[i].append(elem)\r\n\t\t\t\tif elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n\t\t\t\t\tguids[i].append(elem.GuidValue)\r\n\t\t\t\telse: guids[i].append(None)\r\n\t\t\t\tif iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n\t\t\t\t\tisinst[i].append(True)\r\n\t\t\t\telse: isinst[i].append(False)\r\n\t\t\ti += 1\r\nOUT = (names, vag, pgs, pts, uts, isvis, elems, guids, isinst)",
       "VariableInputPorts": true,
       "Id": "1668f7c6d9374c59bd7d635fb9213ec8",
       "Inputs": [
@@ -134,7 +134,7 @@
         {
           "Id": "068f095db32a4f8381f742d0d9539c0d",
           "Name": "seq",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -263,7 +263,7 @@
         {
           "Id": "d34c7d86f3d348c8978020d1df3d3ffd",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 1",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -272,7 +272,7 @@
         {
           "Id": "73018ba37561463b8ab05e1327df5a30",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 2",
+          "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -281,7 +281,7 @@
         {
           "Id": "d61192bbe086433ab23eb7de13bdd9e6",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 3",
+          "Description": "Value of expression at line 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -290,7 +290,7 @@
         {
           "Id": "1fe8e140b1f549d4a94dd869a176f305",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 4",
+          "Description": "Value of expression at line 4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -299,7 +299,7 @@
         {
           "Id": "af72cb758bfa4a09ab4bfc0f02de2d5f",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 5",
+          "Description": "Value of expression at line 5",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -308,7 +308,7 @@
         {
           "Id": "3194c4b97684433da6c8a3df23285c6b",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 6",
+          "Description": "Value of expression at line 6",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -317,7 +317,7 @@
         {
           "Id": "a569b7412e1d4e4e930e136f38834d30",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 7",
+          "Description": "Value of expression at line 7",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -326,7 +326,7 @@
         {
           "Id": "84c2ab25543840f9b282bf58b228096e",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 8",
+          "Description": "Value of expression at line 8",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -335,7 +335,7 @@
         {
           "Id": "979ecdec28aa4ec0b8a2fc732bf6f609",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 9",
+          "Description": "Value of expression at line 9",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -343,7 +343,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
+      "Description": "Allows for DesignScript code to be authored directly"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -375,7 +375,7 @@
         {
           "Id": "74ed4e08e81043719a8c5b0df88462ac",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -436,7 +436,7 @@
         {
           "Id": "29906d1e7f2a4d7580ba8d21ff537edf",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -497,7 +497,7 @@
         {
           "Id": "5d09930b40c5496cb32e87bb7acc4aa0",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -558,7 +558,7 @@
         {
           "Id": "9fe595094e294e8b9ec226644b83c59c",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -572,7 +572,7 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "// In Revit 2022+ will return the SpecTypeId\r\nunitTypes",
+      "Symbol": "// In Revit 2022 will return the SpecTypeId, in Revit 2023+ the ForgeTypeId\r\nunitType",
       "Id": "a4be19f50569446288eed1c84be1734b",
       "Inputs": [
         {
@@ -619,7 +619,7 @@
         {
           "Id": "a379ff31235449e380a8fef643f3eeb2",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -680,7 +680,7 @@
         {
           "Id": "d591b8db73af4241ba57e1653558aa52",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -741,7 +741,7 @@
         {
           "Id": "3a0563e9902b42ff965d1912538b4d72",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -802,7 +802,7 @@
         {
           "Id": "4a441e9fb592455ba02c84ae2ddca7f4",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -854,7 +854,7 @@
         {
           "Id": "53e52df572924e0ab44542fbf2cf2b6c",
           "Name": "RevitCategory",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -875,7 +875,7 @@
         {
           "Id": "2cf62b2e76d145bdbd1d6ff2c67615c5",
           "Name": "Name",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -884,7 +884,7 @@
         {
           "Id": "656476082ff9444cb8d7cad91315a7c4",
           "Name": "Version",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -893,7 +893,7 @@
         {
           "Id": "5d40c353c9b1438cbd21615808cdaf74",
           "Name": "Build",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -902,7 +902,7 @@
         {
           "Id": "6bfc9eb4f5974ae99a98b5da15527dfa",
           "Name": "Language",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -911,7 +911,7 @@
         {
           "Id": "3c1e1ad4ae4448d9b5674e931c38566b",
           "Name": "fullVersion",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -1132,7 +1132,7 @@
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -1161,7 +1161,7 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 435.818422414468,
+        "X": 434.24423490963528,
         "Y": 157.0
       },
       {
@@ -1406,8 +1406,8 @@
       }
     ],
     "Annotations": [],
-    "X": 431.86131818923946,
-    "Y": 156.83485163192165,
+    "X": 45.861318189239455,
+    "Y": 183.83485163192165,
     "Zoom": 0.63524834044862044
   }
 }

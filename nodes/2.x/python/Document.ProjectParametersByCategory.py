@@ -50,7 +50,10 @@ while iterator.MoveNext():
 				names[i].append(iterator.Key.Name)
 				vag[i].append(iterator.Key.VariesAcrossGroups)
 				pgs[i].append(iterator.Key.ParameterGroup)
-				if version > 2021: 
+				if version > 2022: 
+					pts[i].append(iterator.Key.GetDataType())
+					uts[i].append(iterator.Key.GetDataType())
+				elif version > 2021:
 					pts[i].append(iterator.Key.GetDataType())
 					uts[i].append(iterator.Key.GetSpecTypeId())
 				else: 
