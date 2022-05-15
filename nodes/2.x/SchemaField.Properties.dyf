@@ -108,37 +108,6 @@
       "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
     },
     {
-      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef FieldProperties(field):\r\n\tif hasattr(field, \"FieldName\"):\r\n\t\treturn field.FieldName, field.Documentation, field.ContainerType, field.UnitType, field.ValueType, field.SubSchema, field.SubSchemaGUID\r\n\telse: return None, None, None, None, None, None, None\r\n\r\nfields = IN[0]\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[FieldProperties(x) for x in fields]))\r\nelse: OUT = FieldProperties(fields)",
-      "VariableInputPorts": true,
-      "Id": "90021836ad4641bbad384952a6012e2c",
-      "Inputs": [
-        {
-          "Id": "7c8123c77faa47f7992ceb66debccab3",
-          "Name": "IN[0]",
-          "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "fa405627a9b3444b80ad8e5c10931477",
-          "Name": "OUT",
-          "Description": "Ergebnis des Python-Skripts",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -310,6 +279,104 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef FieldProperties(field):\r\n\tif hasattr(field, \"FieldName\"):\r\n\t\tif version > 2021: utype = field.GetSpecTypeId()\r\n\t\telse:  utype = field.UnitType\r\n\t\treturn field.FieldName, field.Documentation, field.ContainerType, utype, field.ValueType, field.SubSchema, field.SubSchemaGUID\r\n\telse: return None, None, None, None, None, None, None\r\n\r\nfields = IN[0]\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[FieldProperties(x) for x in fields]))\r\nelse: OUT = FieldProperties(fields)",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "68ef35b06f6b4b7e9e867a74347ff22a",
+      "Inputs": [
+        {
+          "Id": "76e143b67f8545e1937e3410abb83a70",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "de4518d4fc7446fdb6ab52d33e1e0049",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d9460d39c3a448d8968ec4fbdddf9407",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "c64b59fe7abb4b76ad96d61faf35da04",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0cfc4324123c4e5f80b403e35e6c8c18",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "66b448b4a8c5420eaa7e3ebd5d3bc66a",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f5239635dda84fdca4dc06052ccff4f5",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0a8adb57e0b544c2a06f6a5e4d9318b1",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "18953b9101724667a3581c88cf8ecc5a",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -349,25 +416,42 @@
       "Id": "077fc5edc0e948999b312a7ac18b6740"
     },
     {
-      "Start": "fa405627a9b3444b80ad8e5c10931477",
-      "End": "cdccea8e8ec646b1a4a494f6bce74fe9",
-      "Id": "fc34680077a54cc6a82d1fd23d5e969a"
+      "Start": "8be2874263894a42988ee87fd415c4eb",
+      "End": "76e143b67f8545e1937e3410abb83a70",
+      "Id": "d8b998e886e44f87b55b8c04943186c9"
     },
     {
-      "Start": "8be2874263894a42988ee87fd415c4eb",
-      "End": "7c8123c77faa47f7992ceb66debccab3",
-      "Id": "a82a19f230514e8a825f216c44f41008"
+      "Start": "d9460d39c3a448d8968ec4fbdddf9407",
+      "End": "cdccea8e8ec646b1a4a494f6bce74fe9",
+      "Id": "1ade75e9bad6495bbb5898008f519b5c"
+    },
+    {
+      "Start": "66b448b4a8c5420eaa7e3ebd5d3bc66a",
+      "End": "de4518d4fc7446fdb6ab52d33e1e0049",
+      "Id": "4ab2bbfcbee44711ac1a7af462ed72fc"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.4.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "c64b59fe7abb4b76ad96d61faf35da04"
+      ]
+    }
+  ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.0.5885",
+      "Version": "2.12.0.5650",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -391,18 +475,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 482.79664889062565,
-        "Y": 330.9327211087429
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Python Script",
-        "Id": "90021836ad4641bbad384952a6012e2c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 258.79664889062565,
-        "Y": 326.71938777540959
+        "X": 478.29664889062565,
+        "Y": 427.6548215656627
       },
       {
         "ShowGeometry": true,
@@ -411,8 +485,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -61.203351109374353,
-        "Y": 326.71938777540959
+        "X": -77.703351109374353,
+        "Y": 381.44148823232939
       },
       {
         "ShowGeometry": true,
@@ -421,8 +495,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 200.73272110874296
+        "X": 802.29664889062565,
+        "Y": 297.45482156566277
       },
       {
         "ShowGeometry": true,
@@ -431,8 +505,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 283.73272110874296
+        "X": 802.29664889062565,
+        "Y": 380.45482156566277
       },
       {
         "ShowGeometry": true,
@@ -441,8 +515,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 366.73272110874296
+        "X": 802.29664889062565,
+        "Y": 463.45482156566277
       },
       {
         "ShowGeometry": true,
@@ -451,8 +525,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 449.73272110874296
+        "X": 802.29664889062565,
+        "Y": 546.45482156566277
       },
       {
         "ShowGeometry": true,
@@ -461,8 +535,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 532.73272110874291
+        "X": 802.29664889062565,
+        "Y": 629.45482156566277
       },
       {
         "ShowGeometry": true,
@@ -471,8 +545,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 615.73272110874291
+        "X": 802.29664889062565,
+        "Y": 712.45482156566277
       },
       {
         "ShowGeometry": true,
@@ -481,13 +555,33 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 785.79664889062565,
-        "Y": 698.73272110874291
+        "X": 802.29664889062565,
+        "Y": 795.45482156566277
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "68ef35b06f6b4b7e9e867a74347ff22a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 254.29664889062565,
+        "Y": 423.44148823232939
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "c64b59fe7abb4b76ad96d61faf35da04",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -77.703351109374353,
+        "Y": 465.44148823232939
       }
     ],
     "Annotations": [],
-    "X": 128.64686469458104,
-    "Y": -293.08647934803491,
-    "Zoom": 1.6117886178861789
+    "X": 174.99864710416495,
+    "Y": 7.9576064122442176,
+    "Zoom": 0.950167089002468
   }
 }
