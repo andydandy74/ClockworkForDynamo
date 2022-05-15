@@ -20,6 +20,12 @@ def GetRoomBoundaries(item, version):
 	try:
 		for boundarylist in item.GetBoundarySegments(options):
 			for boundary in boundarylist:
+				# fix possibly missing bounding element in previous entry
+				if len(elements) > 2:
+					if elements[-1] == None:
+						if boundary.ElementId == elements[-2].Id: 
+							elements[-1] = doc.GetElement(boundary.ElementId)
+				# add boundary to list
 				elements.append(doc.GetElement(boundary.ElementId))
 				if version > 2016: curves.append(boundary.GetCurve().ToProtoType())
 				else: curves.append(boundary.Curve.ToProtoType())
