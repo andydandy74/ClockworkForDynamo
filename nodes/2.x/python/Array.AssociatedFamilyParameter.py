@@ -6,18 +6,13 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-basearrays = UnwrapElement(IN[0])
-paramlist = list()
-paramnamelist = list()
-for basearray in basearrays:
+def GetAssociatedFamilyParameters(basearray):
 	if basearray.GetType().ToString() in ("Autodesk.Revit.DB.LinearArray", "Autodesk.Revit.DB.RadialArray"):
-		if basearray.Label != None:
-			paramlist.append(basearray.Label)
-			paramnamelist.append(basearray.Label.Definition.Name)
-		else:
-			paramlist.append(None)
-			paramnamelist.append(None)
-	else:
-		paramlist.append(None)
-		paramnamelist.append(None)
-OUT = (paramlist,paramnamelist)
+		if basearray.Label != None: return basearray.Label, basearray.Label.Definition.Name
+		else: return None, None
+	else: return None, None
+
+basearrays = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetAssociatedFamilyParameters(x) for x in basearrays]))
+else: OUT = GetAssociatedFamilyParameters(basearrays)

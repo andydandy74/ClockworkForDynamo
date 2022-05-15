@@ -1,14 +1,8 @@
 import clr
+clr.AddReference('RevitAPI')
+from Autodesk.Revit.DB import *
 
-items = IN[0]
-elementlist = list()
+items = UnwrapElement(IN[0])
 
-try:
-	clr.AddReference('RevitAPI')
-	from Autodesk.Revit.DB import *
-	for item in items:
-		elementlist.append(dir(UnwrapElement(item)))
-except:
-	for item in items:
-		elementlist.append(dir(item))
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [dir(x) for x in items]
+else: OUT = dir(items)

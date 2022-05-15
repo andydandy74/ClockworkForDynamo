@@ -2,16 +2,14 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-sheets = UnwrapElement(IN[0])
-elementlist = list()
-
-for sheet in sheets:
-	try:
+def GetSheetSchedules(sheet):
+	if hasattr(sheet, "SheetNumber"):
 		viewlist = list()
 		collector = FilteredElementCollector(sheet.Document, sheet.Id).OfClass(ScheduleSheetInstance)
-		for item in collector:
-			viewlist.append(sheet.Document.GetElement(item.ScheduleId))
-		elementlist.append(viewlist)
-	except:
-		elementlist.append(list())
-OUT = elementlist
+		return [sheet.Document.GetElement(x.ScheduleId) for x in collector]
+	else: return list()
+	
+sheets = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetSheetSchedules(x) for x in sheets]
+else: OUT = GetSheetSchedules(sheets)

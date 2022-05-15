@@ -2,15 +2,10 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-views = UnwrapElement(IN[0])
-booleans = list()
+def ViewIsPerspective(view):
+	if hasattr(view, "IsPerspective"): return view.IsPerspective
+	else: return False
 
-for view in views:
-	try:
-		if view.IsPerspective:
-			booleans.append(True)
-		else:
-			booleans.append(False)
-	except:
-		booleans.append(False)
-OUT = booleans		
+views = UnwrapElement(IN[0])
+if isinstance(IN[0], list): OUT = [ViewIsPerspective(x) for x in views]
+else: OUT = ViewIsPerspective(views)

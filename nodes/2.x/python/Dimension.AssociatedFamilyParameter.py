@@ -6,18 +6,13 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+def GetAssociatedFamilyParameters(dimension):
+	if hasattr(dimension, "FamilyLabel"):
+		if dimension.FamilyLabel != None: return dimension.FamilyLabel, dimension.FamilyLabel.Definition.Name
+		else: return None, None
+	else: return None, None
+
 dimensions = UnwrapElement(IN[0])
-paramlist = list()
-paramnamelist = list()
-for dimension in dimensions:
-	try:
-		if dimension.FamilyLabel != None:
-			paramlist.append(dimension.FamilyLabel)
-			paramnamelist.append(dimension.FamilyLabel.Definition.Name)
-		else:	
-			paramlist.append(None)
-			paramnamelist.append(None)
-	except:
-		paramlist.append(None)
-		paramnamelist.append(None)
-OUT = (paramlist,paramnamelist)
+
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetAssociatedFamilyParameters(x) for x in dimensions]))
+else: OUT = GetAssociatedFamilyParameters(dimensions)
