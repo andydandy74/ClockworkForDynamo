@@ -1,16 +1,17 @@
+def ReplaceIllegalFilenameChars(str, repl):
+	str = str.replace('/', repl)
+	str = str.replace('?', repl)
+	str = str.replace('<', repl)
+	str = str.replace('>', repl)
+	str = str.replace('\\', repl)
+	str = str.replace(':', repl)
+	str = str.replace('*', repl)
+	str = str.replace('|', repl)
+	str = str.replace('"', repl)
+	str = str.replace('^', repl)
+	return str
+
 strings = IN[0]
-replace = IN[1]
-strlist = []
-for str in strings:
-	str = str.replace('/', replace)
-	str = str.replace('?', replace)
-	str = str.replace('<', replace)
-	str = str.replace('>', replace)
-	str = str.replace('\\', replace)
-	str = str.replace(':', replace)
-	str = str.replace('*', replace)
-	str = str.replace('|', replace)
-	str = str.replace('"', replace)
-	str = str.replace('^', replace)
-	strlist.append(str)
-OUT = strlist
+
+if isinstance(IN[0], list): OUT = [ReplaceIllegalFilenameChars(x, IN[1]) for x in strings]
+else: OUT = ReplaceIllegalFilenameChars(strings, IN[1])

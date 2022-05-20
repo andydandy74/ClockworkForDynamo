@@ -11,28 +11,19 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
+def RoomByTag(tag):
+	room = None
+	if hasattr(tag, "TaggedRoomId"):
+		trID = tag.TaggedRoomId
+		if trID.HostElementId.IntegerValue != -1:
+			room = doc.GetElement(trID.HostElementId)
+		elif trID.LinkedElementId.IntegerValue != -1:
+			linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()
+			room = linkdoc.GetElement(trID.LinkedElementId)
+	return room
+
 doc = DocumentManager.Instance.CurrentDBDocument
-
 roomtags = UnwrapElement(IN[0])
-version = IN[1]
-elementlist = list()
 
-for tag in roomtags:
-	if version > 2016:
-		try:
-			trID = tag.TaggedRoomId
-			if trID.HostElementId.IntegerValue != -1:
-				elementlist.append(doc.GetElement(trID.HostElementId))
-			elif trID.LinkedElementId.IntegerValue != -1:
-				linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()
-				elementlist.append(linkdoc.GetElement(trID.LinkedElementId))
-			else:
-				elementlist.append(None)
-		except:
-			elementlist.append(None)
-	else:
-		try:
-			elementlist.append(tag.Room)
-		except:
-			elementlist.append(None)
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [RoomByTag(x) for x in roomtags]
+else: OUT = RoomByTag(roomtags)

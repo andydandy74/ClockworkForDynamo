@@ -2,15 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
+def IsViewTemplate(view):
+	if hasattr(view, "IsTemplate"): return view.IsTemplate
+	else: return False
+
 views = UnwrapElement(IN[0])
-elementlist = list()
-notaview = list()
-for view in views:
-	try:
-		if view.IsTemplate:
-			elementlist.append(True)
-		else:
-			elementlist.append(False)
-	except:
-		elementlist.append(False)
-OUT = elementlist
+
+if isinstance(IN[0], list): OUT = [IsViewTemplate(x) for x in views]
+else: OUT = IsViewTemplate(views)

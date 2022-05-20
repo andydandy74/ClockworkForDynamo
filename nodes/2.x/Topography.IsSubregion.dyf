@@ -42,40 +42,9 @@
       "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "f6da18fc33274d539baf51ebf53e264a",
-      "Inputs": [
-        {
-          "Id": "961fbe4955194d0eaf9337abb0ae46a9",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "3f136552e44647b984466a2187b875be",
-          "Name": "seq",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Turns an element (or a nested list) into a flat list"
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ntopos = UnwrapElement(IN[0])\r\nbooleans = list()\r\nfor item in topos:\r\n\ttry:\r\n\t\tif item.IsSiteSubRegion:\r\n\t\t\tbooleans.append(True)\r\n\t\telse:\r\n\t\t\tbooleans.append(False)\r\n\texcept:\r\n\t\tbooleans.append(False)\r\nOUT = booleans",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef IsTopoSubregion(topo):\r\n\tif hasattr(topo, \"IsSiteSubRegion\"): return topo.IsSiteSubRegion\r\n\telse: return False\r\n\r\ntopos = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [IsTopoSubregion(x) for x in topos]\r\nelse: OUT = IsTopoSubregion(topos)",
       "VariableInputPorts": true,
       "Id": "9360058e8acd40b38a55a4891ad83340",
       "Inputs": [
@@ -123,86 +92,29 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "ca63cfe3a93f4bda94625c9093cfde42",
-      "Inputs": [
-        {
-          "Id": "9fdddfdd95004ad597d217acc7268cc3",
-          "Name": "unknownItem",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "09950bfd59bc42d388d48f135ea3624c",
-          "Name": "seq",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "33fb69e2bffd4da2b4c8b2e204722fbd",
-          "Name": "",
-          "Description": "Output #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
     }
   ],
   "Connectors": [
     {
       "Start": "8a51667560e4471488f65ae5009f47a1",
-      "End": "961fbe4955194d0eaf9337abb0ae46a9",
-      "Id": "11585d11b07345389fc8319726fc6541"
-    },
-    {
-      "Start": "8a51667560e4471488f65ae5009f47a1",
-      "End": "9fdddfdd95004ad597d217acc7268cc3",
-      "Id": "2ab80bf0fc9144c4930904c7db9e853a"
-    },
-    {
-      "Start": "3f136552e44647b984466a2187b875be",
       "End": "79628aa6446c46cf9a8c7dd947bc1929",
-      "Id": "0e99493365d34db2a678b95e2fdb8b31"
+      "Id": "9406032499b249ce8656e646dda54965"
     },
     {
       "Start": "701c922ade7142f3a274df279a2febc6",
-      "End": "09950bfd59bc42d388d48f135ea3624c",
-      "Id": "6ed62ac7519240d88a54b546fe6e40a1"
-    },
-    {
-      "Start": "33fb69e2bffd4da2b4c8b2e204722fbd",
       "End": "fa357763406c4b36b05c1837c03dd37c",
-      "Id": "583e54d90b8248d89605ee1892376c0a"
+      "Id": "50fc810c785d4aaca2db1a7edf42ae17"
     }
   ],
-  "Dependencies": [
-    "cd09ad33-8c34-4850-ac26-24448d92c38f",
-    "44ac4888-4aa4-49a9-9344-23b729c11df9"
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.6.1.8786",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -220,54 +132,34 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "753cd25379a44c4bab10aee58856bc74",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": -83.173933358268,
-        "Y": 13.7753510140403
+        "X": 80.862331292785029,
+        "Y": 48.575663026520964
       },
       {
-        "Id": "f6da18fc33274d539baf51ebf53e264a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
         "ShowGeometry": true,
-        "Excluded": false,
-        "X": 222.775351014041,
-        "Y": 83.5569422776912
-      },
-      {
+        "Name": "Python Script",
         "Id": "9360058e8acd40b38a55a4891ad83340",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 406.840873634945,
-        "Y": 83.3759750390016
+        "X": 536.862331292785,
+        "Y": 48.575663026520964
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "28098b6d689f4c848a2c02e7596159e0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 924.898595943838,
-        "Y": 15.5070202808113
-      },
-      {
-        "Id": "ca63cfe3a93f4bda94625c9093cfde42",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
-        "ShowGeometry": true,
-        "Excluded": false,
-        "X": 647.898595943838,
-        "Y": 15.5070202808113
+        "X": 760.862331292785,
+        "Y": 48.575663026520949
       }
     ],
     "Annotations": [],
