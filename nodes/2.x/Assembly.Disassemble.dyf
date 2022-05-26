@@ -11,49 +11,9 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "c924c414f4034d8781a46b877ddbdce4",
-      "Inputs": [
-        {
-          "Id": "36e63ec0a1494e1280e74be5e36a32a1",
-          "Name": "unknownItem",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "47e3e5ffea4a46de819d1f5b21220112",
-          "Name": "seq",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "c804dc196b11492084e72970e366507d",
-          "Name": "",
-          "Description": "Output #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nassemblies = UnwrapElement(IN[0])\r\nelementlist = list()\r\n\r\n# disassemble assemblies\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor assinst in assemblies:\r\n\tmemberslist = assinst.Disassemble()\r\n\tmembers = list()\r\n\tfor item in memberslist:\r\n\t\tmembers.append(doc.GetElement(item))\r\n\telementlist.append(members)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef ExplodeAssembly(assembly):\r\n\tif hasattr(assembly, \"Disassemble\"): return [doc.GetElement(x) for x in assembly.Disassemble()]\r\n\telse: return list()\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nassemblies = UnwrapElement(IN[0])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): OUT = [ExplodeAssembly(x) for x in assemblies]\r\nelse: OUT = ExplodeAssembly(assemblies)\r\nTransactionManager.Instance.TransactionTaskDone()",
       "VariableInputPorts": true,
       "Id": "af1de9be86dd40ac84b7fd0e604e4213",
       "Inputs": [
@@ -80,37 +40,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "960e021c1cf843aeba1cf1172d34636e",
-      "Inputs": [
-        {
-          "Id": "4754f4c617d141f19b1d279b56f9af34",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "2cb0074fb2a44d5491177acf38a361a0",
-          "Name": "seq",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Turns an element (or a nested list) into a flat list"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -162,42 +91,25 @@
   ],
   "Connectors": [
     {
-      "Start": "c804dc196b11492084e72970e366507d",
-      "End": "3d579c0d5c034c9ba12970224b079de3",
-      "Id": "1d1eaaac9fa84ca9acd85376500576cf"
-    },
-    {
       "Start": "d5bddc56be9e4fc399a2a5f2b873c1f6",
-      "End": "47e3e5ffea4a46de819d1f5b21220112",
-      "Id": "fc6ba75d840c46b0973897679f6c74eb"
+      "End": "3d579c0d5c034c9ba12970224b079de3",
+      "Id": "28cc85a9c53c4762b8a98449fa06e939"
     },
     {
-      "Start": "2cb0074fb2a44d5491177acf38a361a0",
+      "Start": "12d7c0a3af484d6ea90d2c11443cc37b",
       "End": "ced08dbad78b4d81afaeb6829e14d61f",
-      "Id": "d80c537340894095bd653c56ff080dd4"
-    },
-    {
-      "Start": "12d7c0a3af484d6ea90d2c11443cc37b",
-      "End": "36e63ec0a1494e1280e74be5e36a32a1",
-      "Id": "666c8ce4d3d5462f96c8f0279d6b455e"
-    },
-    {
-      "Start": "12d7c0a3af484d6ea90d2c11443cc37b",
-      "End": "4754f4c617d141f19b1d279b56f9af34",
-      "Id": "65fe8834841a409ca5cfd6c2a6c40c38"
+      "Id": "cb6192ed256b4f649c270964856fb7c8"
     }
   ],
-  "Dependencies": [
-    "44ac4888-4aa4-49a9-9344-23b729c11df9",
-    "cd09ad33-8c34-4850-ac26-24448d92c38f"
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.6.1.8786",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -215,59 +127,39 @@
     },
     "NodeViews": [
       {
-        "Id": "c924c414f4034d8781a46b877ddbdce4",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
         "ShowGeometry": true,
-        "Excluded": false,
-        "X": 660.32631904866,
-        "Y": 0.0
-      },
-      {
+        "Name": "Python Script",
         "Id": "af1de9be86dd40ac84b7fd0e604e4213",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 470.233173876937,
-        "Y": 76.4848271061791
+        "X": 491.16315952433,
+        "Y": 38.242413553089548
       },
       {
-        "Id": "960e021c1cf843aeba1cf1172d34636e",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
         "ShowGeometry": true,
-        "Excluded": false,
-        "X": 250.0,
-        "Y": 79.0475986606874
-      },
-      {
+        "Name": "Input",
         "Id": "84583db1541e4f51a0b10ca5f1a8f7b9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 0.0,
-        "Y": 0.0
+        "X": 183.16315952433,
+        "Y": 38.242413553089555
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "e5c6d555363a43279f1ab40ecca50151",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 898.32631904866,
-        "Y": 0.0
+        "X": 715.16315952433,
+        "Y": 38.242413553089555
       }
     ],
     "Annotations": [],
-    "X": -337.619020006964,
-    "Y": 8.14306450298977,
+    "X": 203.38097999303602,
+    "Y": 340.14306450298977,
     "Zoom": 1.00600419002725
   }
 }
