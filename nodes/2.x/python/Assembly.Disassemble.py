@@ -11,18 +11,14 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def ExplodeAssembly(assembly):
+	if hasattr(assembly, "Disassemble"): return [doc.GetElement(x) for x in assembly.Disassemble()]
+	else: return list()
+
 doc = DocumentManager.Instance.CurrentDBDocument
 assemblies = UnwrapElement(IN[0])
-elementlist = list()
 
-# disassemble assemblies
 TransactionManager.Instance.EnsureInTransaction(doc)
-for assinst in assemblies:
-	memberslist = assinst.Disassemble()
-	members = list()
-	for item in memberslist:
-		members.append(doc.GetElement(item))
-	elementlist.append(members)
+if isinstance(IN[0], list): OUT = [ExplodeAssembly(x) for x in assemblies]
+else: OUT = ExplodeAssembly(assemblies)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = elementlist

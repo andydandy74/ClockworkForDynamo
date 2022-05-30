@@ -2,18 +2,11 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-clr.AddReference("RevitNodes")
-import Revit
-clr.ImportExtensions(Revit.Elements)
+def GetMembers(item):
+	if hasattr(item, "GetMemberIds"): return [item.Document.GetElement(x) for x in item.GetMemberIds()]
+	else: return list()
 
-groups = UnwrapElement(IN[0])
-elementlist = list()
-for item in groups:
-	try:
-		memberlist = list()
-		for member in item.GetMemberIds():
-			memberlist.append(item.Document.GetElement(member))
-		elementlist.append(memberlist)
-	except:
-		elementlist.append(list())
-OUT = elementlist
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetMembers(x) for x in items]
+else: OUT = GetMembers(items)

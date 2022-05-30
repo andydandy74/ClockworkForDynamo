@@ -6,14 +6,12 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-items = UnwrapElement(IN[0])
-elementlist = list()
-for item in items:
-    sourcelist = list()
-    for source in item.GetSourceElementIds():
-        sourcelist.append(item.Document.GetElement(source.HostElementId).ToDSType(True))
-    if len(sourcelist) < 2:
-        elementlist.append(sourcelist[0])
-    else:
-        elementlist.append(sourcelist)
-OUT = elementlist
+def GetPartSource(part):
+	if hasattr(part, "GetSourceElementIds"):
+		return [part.Document.GetElement(x.HostElementId).ToDSType(True) for x in part.GetSourceElementIds()]
+	else: return list()
+
+parts = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetPartSource(x) for x in parts]
+else: OUT = GetPartSource(parts)
