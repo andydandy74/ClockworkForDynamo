@@ -12,15 +12,15 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 def GetCatFromInput(var):	
-	cat = None
 	if var:
 		cattype = var.GetType().ToString()
-		if cattype == "Autodesk.Revit.DB.Category": cat = var
-		elif cattype == "Autodesk.Revit.DB.BuiltInCategory": cat = Category.GetCategory(doc, var)
+		if cattype == "Autodesk.Revit.DB.Category": return var
+		elif cattype == "Autodesk.Revit.DB.BuiltInCategory": return Category.GetCategory(doc, var)
 		elif cattype == "System.String": 
 			found = [x for x in bics if x.ToString() == var]
-			if len(found) > 0: cat = Category.GetCategory(doc, found[0])
-	return cat
+			if len(found) > 0: return Category.GetCategory(doc, found[0])	
+		else: return None			
+	else: return None
 
 doc = DocumentManager.Instance.CurrentDBDocument
 bics = System.Enum.GetValues(BuiltInCategory)

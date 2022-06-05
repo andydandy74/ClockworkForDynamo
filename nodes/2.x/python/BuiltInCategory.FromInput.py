@@ -12,15 +12,15 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 def GetBicFromInput(var):	
-	bic = None
 	if var:
 		cattype = var.GetType().ToString()
-		if cattype == "Revit.Elements.Category": bic = System.Enum.ToObject(BuiltInCategory, var.Id)
-		elif cattype == "Autodesk.Revit.DB.BuiltInCategory": bic = var
+		if cattype == "Revit.Elements.Category": return System.Enum.ToObject(BuiltInCategory, var.Id)
+		elif cattype == "Autodesk.Revit.DB.BuiltInCategory": return var
 		elif cattype == "System.String": 
 			found = [x for x in bics if x.ToString() == var]
-			if len(found) > 0: bic = found[0]
-	return bic
+			if len(found) > 0: return found[0]
+		else: return None
+	else: return None
 
 doc = DocumentManager.Instance.CurrentDBDocument
 bics = System.Enum.GetValues(BuiltInCategory)
