@@ -40,7 +40,7 @@
         {
           "Id": "fe45f38c272d4b91aa35a731394807e2",
           "Name": "RevitBoundingBox",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -53,7 +53,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\nclr.AddReference('ProtoGeometry')\nfrom Autodesk.DesignScript.Geometry import *\n\n# Import ToDSType(bool) extension method\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\n# Import DocumentManager and TransactionManager\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n# Import RevitAPI\nclr.AddReference(\"RevitAPI\")\nimport Autodesk\nfrom Autodesk.Revit.DB import *\n\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nview = UnwrapElement(IN[0])\nbbox = IN[1]\n\nTransactionManager.Instance.EnsureInTransaction(doc)\nview.SetSectionBox(bbox)\nTransactionManager.Instance.TransactionTaskDone()\n\nOUT = view, bbox.Max, bbox.Min",
+      "Code": "import clr\nclr.AddReference('ProtoGeometry')\nfrom Autodesk.DesignScript.Geometry import *\n\n# Import ToDSType(bool) extension method\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\n# Import DocumentManager and TransactionManager\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n# Import RevitAPI\nclr.AddReference(\"RevitAPI\")\nimport Autodesk\nfrom Autodesk.Revit.DB import *\n\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nviews = UnwrapElement(IN[0])\nbboxes = IN[1]\n\nTransactionManager.Instance.EnsureInTransaction(doc)\nif isinstance(IN[0], list):\n\tif isinstance(IN[1], list): OUT = [x.SetSectionBox(y) for x, y in zip(views, bboxes)]\n\telse: OUT = [x.SetSectionBox(bboxes) for x in views]\nelse:\n\tif isinstance(IN[1], list): OUT = views.SetSectionBox(bboxes[0])\n\telse: OUT = views.SetSectionBox(bboxes)\nTransactionManager.Instance.TransactionTaskDone()\n\nOUT = views",
       "VariableInputPorts": true,
       "Id": "fa928cc8e3e7417a97ec8f9bbb0cb7ad",
       "Inputs": [
@@ -88,7 +88,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded IronPython script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -114,7 +114,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -135,7 +135,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -161,7 +161,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
@@ -205,12 +205,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.6.2.15705",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -269,13 +269,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -231.17269995287967,
-        "Y": 138.20681948369293
+        "X": -420.43343672263615,
+        "Y": 147.7379357238965
       }
     ],
     "Annotations": [],
-    "X": 280.3947878945894,
-    "Y": 225.61058707779586,
-    "Zoom": 0.734436536454464
+    "X": -957.16024674222592,
+    "Y": 140.93784064656515,
+    "Zoom": 1.7637449060649011
   }
 }
