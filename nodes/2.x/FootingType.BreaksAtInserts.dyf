@@ -11,40 +11,9 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "0fc79c033f7d4709bdd8ea262655c9ee",
-      "Inputs": [
-        {
-          "Id": "10a28a568def464eb61c6d88841a6d50",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "6a1e63ffc8ad4e5d89f857503160dd10",
-          "Name": "seq",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Turns an element (or a nested list) into a flat list"
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nfootingtypes = UnwrapElement(IN[0])\r\nbooleans = list()\r\nfor item in footingtypes:\r\n\ttry:\r\n\t\tfootingbreaks = item.get_Parameter(BuiltInParameter.CONTINUOUS_FOOTING_BREAK_AT_INSERTS_DISABLE).AsInteger()\r\n\t\tif footingbreaks == 0: booleans.append(True)\r\n\t\telif footingbreaks == 1: booleans.append(False)\r\n\texcept:\r\n\t\tbooleans.append(False)\r\nOUT = booleans",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef FTBreaksAtInsert(ft):\r\n\ttry:\r\n\t\tfootingbreaks = ft.get_Parameter(BuiltInParameter.CONTINUOUS_FOOTING_BREAK_AT_INSERTS_DISABLE).AsInteger()\r\n\t\tif footingbreaks == 0: return True\r\n\t\telse: return False\r\n\texcept: return False\r\n\r\nftypes = UnwrapElement(IN[0])\r\nif isinstance(IN[0], list): OUT = [FTBreaksAtInsert(x) for x in ftypes]\r\nelse: OUT = FTBreaksAtInsert(ftypes)",
       "VariableInputPorts": true,
       "Id": "e9c9099faacd4ddfa12cef301bae5a89",
       "Inputs": [
@@ -70,7 +39,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes IronPython-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -96,7 +65,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -117,92 +86,35 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "1bb1018b94764959a475c80038723f1a",
-      "Inputs": [
-        {
-          "Id": "483e79bfdf7c445b9f85e2b2f18ce36c",
-          "Name": "unknownItem",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d779823acdbd4e5d91d8743e69ab1fc2",
-          "Name": "seq",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "b45975f4cde5442fb85f4fe3cbd7c7d2",
-          "Name": "",
-          "Description": "Output #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
     {
-      "Start": "6a1e63ffc8ad4e5d89f857503160dd10",
-      "End": "9440b71c111840a7abb8e332e3580669",
-      "Id": "211477dc64184a3b9d45ee497b99fe0e"
-    },
-    {
       "Start": "6fc08f0d030b4faca02b6851798e63ca",
-      "End": "d779823acdbd4e5d91d8743e69ab1fc2",
-      "Id": "5206cecbea294d86a3bc5e26a77c2a8e"
-    },
-    {
-      "Start": "ce2dee998e284aa8bcb6c76f4dc274ed",
-      "End": "10a28a568def464eb61c6d88841a6d50",
-      "Id": "38f56610754c48068e489839b316ba51"
-    },
-    {
-      "Start": "ce2dee998e284aa8bcb6c76f4dc274ed",
-      "End": "483e79bfdf7c445b9f85e2b2f18ce36c",
-      "Id": "4a04e92d4bab4593bcaf07321dbd9b69"
-    },
-    {
-      "Start": "b45975f4cde5442fb85f4fe3cbd7c7d2",
       "End": "2d105b567efc4d1f9caa42cf9b281fb6",
-      "Id": "4e64a4734c644413873e04c38f4ff11b"
+      "Id": "9b29576b7611497ba1e313977ae5408b"
+    },
+    {
+      "Start": "ce2dee998e284aa8bcb6c76f4dc274ed",
+      "End": "9440b71c111840a7abb8e332e3580669",
+      "Id": "8f7d92863f3b47f7acff793ed528c603"
     }
   ],
-  "Dependencies": [
-    "cd09ad33-8c34-4850-ac26-24448d92c38f",
-    "44ac4888-4aa4-49a9-9344-23b729c11df9"
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.6.2.15705",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -215,59 +127,39 @@
     },
     "NodeViews": [
       {
-        "Id": "0fc79c033f7d4709bdd8ea262655c9ee",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
         "ShowGeometry": true,
-        "Excluded": false,
-        "X": 225.0,
-        "Y": 13.0
-      },
-      {
+        "Name": "Python Script",
         "Id": "e9c9099faacd4ddfa12cef301bae5a89",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 428.444617784711,
-        "Y": 14.3346333853353
+        "X": 531.56536661466464,
+        "Y": -43.771450858034356
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "ec26387a7a4c46989820b3011eb0da0f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 41.2176287051483,
-        "Y": -101.320592823713
+        "X": 197.96536661466462,
+        "Y": -43.771450858034356
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "f1cb0b483ad24a2ebfd6d7c5cfd974c8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 913.113104524181,
-        "Y": -101.877535101404
-      },
-      {
-        "Id": "1bb1018b94764959a475c80038723f1a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
-        "ShowGeometry": true,
-        "Excluded": false,
-        "X": 636.113104524181,
-        "Y": -101.877535101404
+        "X": 756.36536661466471,
+        "Y": -43.771450858034356
       }
     ],
     "Annotations": [],
-    "X": 30.0,
-    "Y": 328.708625877633,
-    "Zoom": 1.28585757271815
+    "X": 42.581177418609,
+    "Y": 324.34392002297585,
+    "Zoom": 0.77087297351429007
   }
 }
