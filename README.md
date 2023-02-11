@@ -24,7 +24,7 @@ Note that Clockwork version numbering follows the Dynamo version the package is 
 - Clockwork for Dynamo 0.6.3:<br>[[change log](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History#clockwork-for-dynamo-063)] [[documentation](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.6.3-Node-Documentation)] [[repository](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.6.3)] [[deprecated packages](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages)] [[samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/0.6.3)]<br>Last version: 0.63.3 - **not supported any more**
 
 ## Renamed, recategorized and deprecated nodes
-During migration from one Dynamo version to the next, I regularly recategorize, relabel and rename a lot of nodes. These changes are documented in an [excel sheet](https://github.com/andydandy74/ClockworkForDynamo/raw/master/NodeList.xls) that contains a list of all nodes within the package.
+During migration from one Dynamo version to the next, I regularly recategorize, relabel and rename a lot of nodes. These changes are documented in an [excel sheet](https://github.com/andydandy74/ClockworkForDynamo/raw/master/NodeList.xlsx) that contains a list of all nodes within the package.
 
 ## Material on this repository
 This repository contains the following:
