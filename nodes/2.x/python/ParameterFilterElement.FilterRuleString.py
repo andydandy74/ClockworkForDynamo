@@ -26,34 +26,34 @@ def GetFilterRuleStringOld(filter):
 	if hasattr(filter, "GetRules"):
 		for rule in filter.GetRules():
 			# inverted rules
-				ruleInverted = ""
-				if hasattr(rule, "GetInnerRule"): 
-					rule = rule.GetInnerRule()
-					ruleInverted = "Not"
-				# rule parameters
-				paramId = filter.GetRuleParameter(rule)
-				thisparam = doc.GetElement(paramId)
-				if thisparam: thisparam = thisparam.Name
-				else: thisparam = bips[paramId.IntegerValue]
-				# rule evaluators
-				if hasattr(rule, "GetEvaluator"):
-					thiseval = rule.GetEvaluator().ToString().replace("Autodesk.Revit.DB.Filter","")
-					thiseval = thiseval.replace("Numeric","")
-					thiseval = thiseval.replace("String","")
-					thiseval = thiseval + ruleInverted
-					if thiseval == "Equals": thiseval = "=="
-					elif thiseval == "EqualsNot": thiseval = "!="
-					elif thiseval == "Greater": thiseval = ">"
-					elif thiseval == "GreaterOrEqual": thiseval = ">="
-					elif thiseval == "Less": thiseval = "<"
-					elif thiseval == "LessOrEqual": thiseval = "<="
-				elif hasattr(rule, "ParameterName"): thiseval = "Exists"
-				else: thiseval = ""
-				# rule values
-				if hasattr(rule, "RuleString"): thisval = rule.RuleString
-				elif hasattr(rule, "RuleValue"): thisval = rule.RuleValue.ToString()
-				else: thisval = ""
-				rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
+			ruleInverted = ""
+			if hasattr(rule, "GetInnerRule"): 
+				rule = rule.GetInnerRule()
+				ruleInverted = "Not"
+			# rule parameters
+			paramId = filter.GetRuleParameter(rule)
+			thisparam = doc.GetElement(paramId)
+			if thisparam: thisparam = thisparam.Name
+			else: thisparam = bips[paramId.IntegerValue]
+			# rule evaluators
+			if hasattr(rule, "GetEvaluator"):
+				thiseval = rule.GetEvaluator().ToString().replace("Autodesk.Revit.DB.Filter","")
+				thiseval = thiseval.replace("Numeric","")
+				thiseval = thiseval.replace("String","")
+				thiseval = thiseval + ruleInverted
+				if thiseval == "Equals": thiseval = "=="
+				elif thiseval == "EqualsNot": thiseval = "!="
+				elif thiseval == "Greater": thiseval = ">"
+				elif thiseval == "GreaterOrEqual": thiseval = ">="
+				elif thiseval == "Less": thiseval = "<"
+				elif thiseval == "LessOrEqual": thiseval = "<="
+			elif hasattr(rule, "ParameterName"): thiseval = "Exists"
+			else: thiseval = ""
+			# rule values
+			if hasattr(rule, "RuleString"): thisval = rule.RuleString
+			elif hasattr(rule, "RuleValue"): thisval = rule.RuleValue.ToString()
+			else: thisval = ""
+			rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
 	if len(rulestrings) > 0:
 		rulestrings.sort()
 		return sep.join(rulestrings)
@@ -71,6 +71,7 @@ def GetFilterRuleStringNew(efilter, doc):
 	for filter in filters:
 		if hasattr(filter, "GetRules"):
 			for rule in filter.GetRules():
+				useRule = True
 				# inverted rules
 				ruleInverted = ""
 				if hasattr(rule, "GetInnerRule"): 
@@ -80,7 +81,9 @@ def GetFilterRuleStringNew(efilter, doc):
 				paramId = rule.GetRuleParameter()
 				thisparam = doc.GetElement(paramId)
 				if thisparam: thisparam = thisparam.Name
-				else: thisparam = bips[paramId.IntegerValue]
+				elif paramId.IntegerValue != -1: thisparam = bips[paramId.IntegerValue]
+				# discard the rule if the parameter name cannot be resolved
+				else: useRule = False
 				# rule evaluators
 				if hasattr(rule, "GetEvaluator"):
 					thiseval = rule.GetEvaluator().ToString().replace("Autodesk.Revit.DB.Filter","")
@@ -99,7 +102,7 @@ def GetFilterRuleStringNew(efilter, doc):
 				if hasattr(rule, "RuleString"): thisval = rule.RuleString
 				elif hasattr(rule, "RuleValue"): thisval = rule.RuleValue.ToString()
 				else: thisval = ""
-				rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
+				if useRule: rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
 		else: rulestrings.append("(" + GetFilterRuleStringNew(filter, doc)+ ")")
 	rulestrings.sort()
 	return sep.join(rulestrings)

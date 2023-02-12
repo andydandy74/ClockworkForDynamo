@@ -5,6 +5,9 @@ from Autodesk.Revit.DB import *
 def GetName(item):
 	unwrapped = UnwrapElement(item)
 	if not unwrapped: return None
+	elif unwrapped.GetType().ToString() in ("Autodesk.Revit.DB.Area", "Autodesk.Revit.DB.Architecture.TopographySurface"):
+		try: return unwrapped.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()
+		except: return unwrapped.Name
 	elif unwrapped.GetType().ToString() in ("Autodesk.Revit.DB.BuiltInParameter", "Autodesk.Revit.DB.BuiltInParameterGroup", "Autodesk.Revit.DB.DisplayUnitType", "Autodesk.Revit.DB.ParameterType", "Autodesk.Revit.DB.UnitSymbolType", "Autodesk.Revit.DB.UnitType"): 
 		try: return LabelUtils.GetLabelFor(unwrapped)
 		except: return unwrapped.ToString()

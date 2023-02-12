@@ -7,12 +7,13 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
+def IsLinked(item):
+	if item.GetType().ToString() == "Autodesk.Revit.DB.ImportInstance":
+		if item.IsLinked: return True
+		else: return False
+	else: return False
+
 doc = DocumentManager.Instance.CurrentDBDocument
 impinst = UnwrapElement(IN[0])
-booleans = []
-for item in impinst:
-	if item.GetType().ToString() == "Autodesk.Revit.DB.ImportInstance":
-		if item.IsLinked: booleans.append(True)
-		else: booleans.append(False)
-	else: booleans.append(False)
-OUT = (booleans)
+if isinstance(IN[0], list): OUT = [IsLinked(x) for x in impinst]
+else: OUT = IsLinked(impinst)

@@ -13,7 +13,7 @@ def GetSubComponents(item):
 	if hasattr(item, "GetSubComponentIds"):
 		return [item.Document.GetElement(x) for x in item.GetSubComponentIds()]
 	# Combined geometry
-	if hasattr(item, "AllMembers"):
+	elif hasattr(item, "AllMembers"):
 		return [x for x in item.AllMembers]
 	# Stairs
 	elif hasattr(item, "GetStairsLandings"):

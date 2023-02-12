@@ -2,14 +2,14 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-items = UnwrapElement(IN[0])
-booleans = list()
-for item in items:
+def IsRelatedToMass(item):
 	try:
 		if item.get_Parameter(BuiltInParameter.RELATED_TO_MASS).AsInteger() == 1:
-			booleans.append(True)
-		else:
-			booleans.append(False)
-	except:
-		booleans.append(False)
-OUT = booleans
+			return True
+		else: return False
+	except: return False
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [IsRelatedToMass(x) for x in items]
+else: OUT = IsRelatedToMass(items)
