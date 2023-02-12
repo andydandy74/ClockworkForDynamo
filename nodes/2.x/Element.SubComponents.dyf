@@ -2,7 +2,7 @@
   "Uuid": "6434c64b-0da0-48a9-9049-2cb4902db026",
   "IsCustomNode": true,
   "Category": "Clockwork.Revit.Elements.Query",
-  "Description": "Retrieves all subcomponents of a given family instance",
+  "Description": "Retrieves all subcomponents of a given element. Unlike the OOTB node Element.GetChildElements, it also supports combined geometry elements in family.",
   "Name": "Element.SubComponents",
   "ElementResolver": {
     "ResolutionMap": {
@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\ndef GetSubComponents(item):\r\n\t# FamilyInstances\r\n\tif hasattr(item, \"GetSubComponentIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubComponentIds()]\r\n\t# Combined geometry\r\n\tif hasattr(item, \"AllMembers\"):\r\n\t\treturn [x for x in item.AllMembers]\r\n\t# Stairs\r\n\telif hasattr(item, \"GetStairsLandings\"):\r\n\t\tstair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsRuns()])\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsSupports()])\r\n\t\treturn stair_comps\r\n\t# Railings\r\n\telif hasattr(item, \"GetHandRails\"):\r\n\t\trail_comps = [item.Document.GetElement(x) for x in item.GetHandRails()]\r\n\t\trail_comps.append(item.Document.GetElement(item.TopRail))\r\n\t\treturn rail_comps\r\n\t# Beam systems\r\n\telif hasattr(item, \"GetBeamIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetBeamIds()]\r\n\telse: return []\r\n\r\nif isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]\r\nelse: OUT = GetSubComponents(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\ndef GetSubComponents(item):\r\n\t# FamilyInstances\r\n\tif hasattr(item, \"GetSubComponentIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubComponentIds()]\r\n\t# Combined geometry\r\n\telif hasattr(item, \"AllMembers\"):\r\n\t\treturn [x for x in item.AllMembers]\r\n\t# Stairs\r\n\telif hasattr(item, \"GetStairsLandings\"):\r\n\t\tstair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsRuns()])\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsSupports()])\r\n\t\treturn stair_comps\r\n\t# Railings\r\n\telif hasattr(item, \"GetHandRails\"):\r\n\t\trail_comps = [item.Document.GetElement(x) for x in item.GetHandRails()]\r\n\t\trail_comps.append(item.Document.GetElement(item.TopRail))\r\n\t\treturn rail_comps\r\n\t# Beam systems\r\n\telif hasattr(item, \"GetBeamIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetBeamIds()]\r\n\telse: return []\r\n\r\nif isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]\r\nelse: OUT = GetSubComponents(items)",
       "VariableInputPorts": true,
       "Id": "8f79cd06ae5e42d089f6fc950a362127",
       "Inputs": [
