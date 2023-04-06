@@ -65,7 +65,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None, None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnIDs = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n\telif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\telif returnIDs:\r\n\t\treturnCat = []\r\n\t\treturnBic = []\r\n\t\tfor returnID in returnIDs:\r\n\t\t\treturnBic.append(System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue))\r\n\t\t\ttry: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))\r\n\t\t\texcept: returnCat.append(None)\r\n\t\treturnCat.sort()\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\nelse: OUT = GetCategory(items)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None, None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnIDs = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n\telif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): \r\n\t\tif item.Category: returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\telif returnIDs:\r\n\t\treturnCat = []\r\n\t\treturnBic = []\r\n\t\tfor returnID in returnIDs:\r\n\t\t\treturnBic.append(System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue))\r\n\t\t\ttry: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))\r\n\t\t\texcept: returnCat.append(None)\r\n\t\treturnCat.sort()\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\nelse: OUT = GetCategory(items)",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "Inputs": [
@@ -172,7 +172,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
@@ -203,13 +203,14 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.6.2.15705",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -288,8 +289,8 @@
       }
     ],
     "Annotations": [],
-    "X": -132.82123694723,
-    "Y": 274.905717891621,
+    "X": 95.17876305277,
+    "Y": 291.70571789162096,
     "Zoom": 0.931811528498331
   }
 }
