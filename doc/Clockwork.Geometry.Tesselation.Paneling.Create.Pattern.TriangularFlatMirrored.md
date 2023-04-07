@@ -1,6 +1,6 @@
 ## Sample file
 Download sample file:<br>
-[Geometry.Tesselation.Paneling.Grid.TriangularFlatMirrored.dyn](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Geometry.Tesselation.Paneling.Grid.TriangularFlatMirrored.dyn)
+[Geometry.Tesselation.Paneling.Pattern.TriangularFlatMirrored.dyn](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Geometry.Tesselation.Paneling.Pattern.TriangularFlatMirrored.dyn)
 ## Useful links
 - [Clockwork repository on GitHub](https://github.com/andydandy74/ClockworkForDynamo)
 - [Report an issue](https://github.com/andydandy74/ClockworkForDynamo/issues)

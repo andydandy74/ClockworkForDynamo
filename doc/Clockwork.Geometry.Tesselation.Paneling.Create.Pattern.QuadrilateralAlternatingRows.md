@@ -1,6 +1,6 @@
 ## Sample file
 Download sample file:<br>
-[Geometry.Tesselation.Paneling.Grid.QuadrilateralAlternatingRows.dyn](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Geometry.Tesselation.Paneling.Grid.QuadrilateralAlternatingRows.dyn)
+[Geometry.Tesselation.Paneling.Pattern.QuadrilateralAlternatingRows.dyn](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Geometry.Tesselation.Paneling.Pattern.QuadrilateralAlternatingRows.dyn)
 ## Useful links
 - [Clockwork repository on GitHub](https://github.com/andydandy74/ClockworkForDynamo)
 - [Report an issue](https://github.com/andydandy74/ClockworkForDynamo/issues)
