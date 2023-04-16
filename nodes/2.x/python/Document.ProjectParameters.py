@@ -38,12 +38,9 @@ while iterator.MoveNext():
 	vag.append(iterator.Key.VariesAcrossGroups)
 	names.append(iterator.Key.Name)
 	pgs.append(iterator.Key.ParameterGroup)
-	if version > 2022: 
+	if version > 2021: 
 		pts.append(iterator.Key.GetDataType())
 		uts.append(iterator.Key.GetDataType())
-	elif version > 2021: 
-		pts.append(iterator.Key.GetDataType())
-		uts.append(iterator.Key.GetSpecTypeId())
 	else: 
 		pts.append(iterator.Key.ParameterType)
 		uts.append(iterator.Key.UnitType)

@@ -9,6 +9,10 @@ def GetSuperComponent(item):
 		else: return BeamSystem.BeamBelongsTo(item)
 	if hasattr(item, "HostRailingId"): return item.Document.GetElement(item.HostRailingId)
 	elif hasattr(item, "GetStairs"): return item.GetStairs()
+	elif hasattr(item, "IsSiteSubRegion"):
+		if item.IsSiteSubRegion:
+			return item.Document.GetElement(item.AsSiteSubRegion().HostId)
+		else: return None
 	else: return None
 
 items = UnwrapElement(IN[0])

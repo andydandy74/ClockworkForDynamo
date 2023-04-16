@@ -31,11 +31,25 @@ for item in items:
 		for face in results.GetGeometry().Faces:
 			for bface in results.GetBoundaryFaceInfo(face):
 				tlist.append(str(bface.SubfaceType))
-				if bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1:
-					mlist.append(None)
-				else:
-					mlist.append(doc.GetElement(bface.GetBoundingElementFace().MaterialElementId))
-				elist.append(doc.GetElement(bface.SpatialBoundaryElement.HostElementId))
+				eId = bface.SpatialBoundaryElement.HostElementId
+				if eId == ElementId.InvalidElementId:
+					liId = bface.SpatialBoundaryElement.LinkInstanceId
+					if liId == ElementId.InvalidElementId: 
+						elist.append(None)
+						mlist.append(None)
+					else:
+						leId = bface.SpatialBoundaryElement.LinkedElementId
+						if leId == ElementId.InvalidElementId: 
+							elist.append(None)
+							mlist.append(None)
+						else: 
+							elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))
+							if bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)
+							else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(bface.GetBoundingElementFace().MaterialElementId))
+				else: 
+					elist.append(doc.GetElement(eId))
+					if bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)
+					else: mlist.append(doc.GetElement(bface.GetBoundingElementFace().MaterialElementId))
 				alist.append(bface.GetSubface().Area)
 				flist.append(bface.GetBoundingElementFace())
 	except:
