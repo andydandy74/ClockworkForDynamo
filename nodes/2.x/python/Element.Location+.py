@@ -93,7 +93,9 @@ def GetLocation(item):
 		if loc:
 			# line-based elements (e.g. walls)
 			if loc.ToString() == 'Autodesk.Revit.DB.LocationCurve':
-				return point, GetCurvePoints(loc.Curve), loc.Curve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+				try: locCurve = loc.Curve.ToProtoType()
+				except: locCurve = None
+				return point, GetCurvePoints(loc.Curve), locCurve, ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
 			# point-based elements (e.g. most loadable families)
 			elif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':
 				if hasattr(loc, "Rotation"):
