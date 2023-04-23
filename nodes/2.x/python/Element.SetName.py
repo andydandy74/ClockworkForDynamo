@@ -28,14 +28,8 @@ def SetElementName(item, name):
 			doc.GetWorksetTable().RenameWorkset(doc, item.Id, name)
 			return True
 		except: return False
-	# archilab worksets (dynamo 1.x)
-	elif item.GetType().ToString() == "Archilab.Grimshaw.Elements.Workset":
-		try: 
-			doc.GetWorksetTable().RenameWorkset(doc, WorksetId(item.Id), name)
-			return True
-		except: return False
-	# archilab worksets (dynamo 2.x)
-	elif item.GetType().ToString() == "archilab.Revit.Elements.Workset":
+	# non-OOTB implementations (3rd perty e.g. archi-lab)
+	elif "Workset" in item.GetType().ToString():
 		try: 
 			doc.GetWorksetTable().RenameWorkset(doc, WorksetId(item.Id), name)
 			return True
