@@ -34,7 +34,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -55,7 +55,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -76,7 +76,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -89,7 +89,7 @@
         {
           "Id": "702d4575c9b249439a92c9e5b53fc365",
           "Name": "Name",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -98,7 +98,7 @@
         {
           "Id": "ed76015bc43f40d8adf6e440b27eeba4",
           "Name": "Version",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -107,7 +107,7 @@
         {
           "Id": "d606f00b375c4d1faf45b9f2682f2fc2",
           "Name": "Build",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -116,7 +116,7 @@
         {
           "Id": "51c08f5266df4bc7b54615213dc18ebf",
           "Name": "Language",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -125,7 +125,7 @@
         {
           "Id": "0fc700b4ecca41ca8fc124ab044ce736",
           "Name": "fullVersion",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -138,7 +138,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef GetRoomBoundaries(item, version):\r\n\tdoc = item.Document\r\n\tcalculator = SpatialElementGeometryCalculator(doc)\r\n\toptions = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n\t# get boundary location from area computation settings\r\n\tboundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n\toptions.SpatialElementBoundaryLocation = boundloc\r\n\t# get boundary segments\r\n\telements = []\r\n\tcurves = []\r\n\ttry:\r\n\t\tfor boundarylist in item.GetBoundarySegments(options):\r\n\t\t\tfor boundary in boundarylist:\r\n\t\t\t\t# fix possibly missing bounding element in previous entry\r\n\t\t\t\tif len(elements) > 2:\r\n\t\t\t\t\tif elements[-1] == None:\r\n\t\t\t\t\t\tif boundary.ElementId == elements[-2].Id: \r\n\t\t\t\t\t\t\telements[-1] = doc.GetElement(boundary.ElementId)\r\n\t\t\t\t# add boundary to list\r\n\t\t\t\telements.append(doc.GetElement(boundary.ElementId))\r\n\t\t\t\tif version > 2016: curves.append(boundary.GetCurve().ToProtoType())\r\n\t\t\t\telse: curves.append(boundary.Curve.ToProtoType())\r\n\texcept: pass\r\n\treturn elements, curves\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))\r\nelse: OUT = GetRoomBoundaries(items, IN[1])",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"System\")\r\nfrom System.Collections.Generic import List\r\n\r\ndef GetRoomBoundaries(item, version):\r\n\tdoc = item.Document\r\n\tcalculator = SpatialElementGeometryCalculator(doc)\r\n\toptions = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n\t# get boundary location from area computation settings\r\n\tboundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n\toptions.SpatialElementBoundaryLocation = boundloc\r\n\t# get boundary segments\r\n\telements = []\r\n\tcurves = []\r\n\t# 1st pass - low hanging fruit\r\n\ttry:\r\n\t\tfor boundarylist in item.GetBoundarySegments(options):\r\n\t\t\tfor boundary in boundarylist:\r\n\t\t\t\t# fix possibly missing bounding element in previous entry\r\n\t\t\t\tif len(elements) > 2:\r\n\t\t\t\t\tif elements[-1] == None:\r\n\t\t\t\t\t\t# simple case: front face of wall protruding into room\r\n\t\t\t\t\t\tif boundary.ElementId == elements[-2].Id: \r\n\t\t\t\t\t\t\telements[-1] = doc.GetElement(boundary.ElementId)\r\n\t\t\t\t# add boundary to list\r\n\t\t\t\telements.append(doc.GetElement(boundary.ElementId))\r\n\t\t\t\tif version > 2016: curves.append(boundary.GetCurve())\r\n\t\t\t\telse: curves.append(boundary.Curve)\r\n\texcept: pass\r\n\t# 2nd pass - special cases (if any)\r\n\tif None in elements:\r\n\t\telementset = set(elements)\r\n\t\telementset.remove(None)\r\n\t\ti = 0\r\n\t\tfor e, c in zip(elements, curves):\r\n\t\t\tif e == None:\r\n\t\t\t\tp = c.ComputeDerivatives(0.5, True).Origin.Add(XYZ(0,0,1))\r\n\t\t\t\tbbox = BoundingBoxXYZ()\r\n\t\t\t\tbbox.Min = p.Subtract(bboxVec)\r\n\t\t\t\tbbox.Max = p.Add(bboxVec)\r\n\t\t\t\tbboxFilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max))\r\n\t\t\t\tcollector = FilteredElementCollector(doc)\r\n\t\t\t\tresults = collector.WherePasses(bboxFilter).WherePasses(catFilter).ToElements()\r\n\t\t\t\tif len(results) > 0: elements[i] = results[0]\t\t\t\t\r\n\t\t\ti += 1\r\n\trcurves = [x.ToProtoType() for x in curves]\r\n\treturn elements, rcurves\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nbics = [BuiltInCategory.OST_Walls, BuiltInCategory.OST_StructuralColumns, BuiltInCategory.OST_Columns]\r\nbicCol = List[BuiltInCategory](bics)\r\ncatFilter = ElementMulticategoryFilter(bicCol)\r\nbboxVec = XYZ(0.01,0.01,0.01)\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))\r\nelse: OUT = GetRoomBoundaries(items, IN[1])",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "4d32882cfa424ef8b2573b4d70502139",
       "Inputs": [
@@ -173,7 +174,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -184,7 +185,7 @@
         {
           "Id": "fb43efbdf5ee423bbf811fa4747e42e8",
           "Name": "list",
-          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -195,7 +196,7 @@
         {
           "Id": "f6d3613f55544afebf97d1bd7f87cb5b",
           "Name": "item",
-          "Description": "First item in the list.",
+          "Description": "Das erste Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -203,7 +204,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -214,7 +215,7 @@
         {
           "Id": "6f92fa2c542243edb0e4ec34f3ff42e5",
           "Name": "list",
-          "Description": "List to get the last item of.\n\nvar[]..[]",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -224,8 +225,8 @@
       "Outputs": [
         {
           "Id": "5e3979cca74246b082b1cb9b696389c9",
-          "Name": "last",
-          "Description": "Last item in the list.",
+          "Name": "item",
+          "Description": "Das letzte Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -233,7 +234,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     }
   ],
   "Connectors": [
@@ -281,18 +282,19 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.6.1.8786",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
