@@ -1,6 +1,6 @@
 ## Sample file
-Download sample file:<br>
-[Geometry.Surfaces.dyn](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Geometry.Surfaces.dyn)
+There is a sample file available for this node:<br>
+[Download sample file](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Geometry.Surfaces.dyn)
 ## Useful links
 - [Clockwork repository on GitHub](https://github.com/andydandy74/ClockworkForDynamo)
 - [Report an issue](https://github.com/andydandy74/ClockworkForDynamo/issues)

@@ -1,6 +1,6 @@
 ## Sample file
-Download sample file:<br>
-[Revit.Application.Application.dyn](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Revit.Application.Application.dyn)
+There is a sample file available for this node:<br>
+[Download sample file](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/package_samples/2.x/dynamo/Revit.Application.Application.dyn)
 ## Useful links
 - [Clockwork repository on GitHub](https://github.com/andydandy74/ClockworkForDynamo)
 - [Report an issue](https://github.com/andydandy74/ClockworkForDynamo/issues)
