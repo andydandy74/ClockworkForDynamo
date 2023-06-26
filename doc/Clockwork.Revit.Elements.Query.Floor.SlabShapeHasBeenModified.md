@@ -8,4 +8,4 @@ There is a sample file available for this node:<br>
 - [Documentation of all nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/2.x-node-documentation)
 - [Deprecated nodes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages)
 
-![Clockwork logo](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/clockwork-logo.png)
+![Clockwork logo](https://raw.githubusercontent.com/andydandy74/ClockworkForDynamo/master/icons/raw/clockwork-logo-docs.png)
