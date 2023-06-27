@@ -39,7 +39,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -60,12 +60,13 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementsByCategory(bic, doc):\r\n\tcollector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsNotElementType()\r\n\treturn collector.ToElements()\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [ElementsByCategory(x, doc) for x in IN[0]]\r\nelse: OUT = ElementsByCategory(IN[0], doc)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementsByCategory(bic, doc):\r\n\tif bic:\r\n\t\tcollector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsNotElementType()\r\n\t\treturn collector.ToElements()\r\n\telse: return []\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [ElementsByCategory(x, doc) for x in IN[0]]\r\nelse: OUT = ElementsByCategory(IN[0], doc)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "1402905f1a8840d8a4d3627f9c44bca0",
       "Inputs": [
@@ -109,7 +110,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -135,7 +136,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -161,7 +162,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -172,7 +173,7 @@
       "Inputs": [
         {
           "Id": "6a6c92b8902b43828e57a89047290827",
-          "Name": "var[]..[]: var[]..[]",
+          "Name": "input",
           "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -184,7 +185,7 @@
         {
           "Id": "a4d77c44ef024476a2ec85ea3ff5a2b6",
           "Name": "BuiltInCategory",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -225,18 +226,29 @@
   "Dependencies": [
     "7d85bda8-a044-4ba0-82bc-1f55d9e28b9f"
   ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.4.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "4de97684af8541afa175c53cf1e4de68"
+      ]
+    }
+  ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -276,7 +288,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 932.167938702919,
-        "Y": -42.26222248919
+        "Y": -42.262222489190009
       },
       {
         "ShowGeometry": true,
