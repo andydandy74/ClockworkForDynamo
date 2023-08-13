@@ -38,12 +38,13 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[0])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\ncollector = FilteredElementCollector(doc).OfClass(Family)\r\nOUT =  collector.ToElements()",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "5eb9f97a67194ea0b86ef6bb1326c880",
       "Inputs": [
@@ -78,7 +79,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -104,7 +105,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -266,7 +267,7 @@
         {
           "Id": "a1809b9c719c49798627daa9db02e5d6",
           "Name": "int",
-          "Description": "Index des Elements in der Liste",
+          "Description": "Der Index des Elements in der Liste. Der ungültige Index -1 wird zurückgegeben, wenn keine genaue Übereinstimmung gefunden wurde.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -274,7 +275,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Gibt den Index des Elements in der angegebenen Liste zurück.\n\nList.IndexOf (list: var[]..[], element: var): int"
+      "Description": "Gibt den Index des Elements in der angegebenen Liste zurück. Eine Übereinstimmung zwischen der angegebenen Liste und dem Zielelement muss eine genaue Übereinstimmung sein (d. h. int und int, double und double, string und string, object und object usw.).\n\nList.IndexOf (list: var[]..[], element: var): int"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -313,7 +314,7 @@
         },
         {
           "Id": "a0120ccb510a4f0e85f342bba9eb692a",
-          "Name": "unique keys",
+          "Name": "uniqueKeys",
           "Description": "der jeweiligen Gruppe entsprechender Schlüsselwert",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -414,6 +415,37 @@
       ],
       "Replication": "Auto",
       "Description": "Returns a BuiltInCategory from a category, a Dynamo-wrapped category, a BuiltInCategory or a string representing a BuiltInCategory."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "3b636c206ceb449aa49580a6b5da641e",
+      "Inputs": [
+        {
+          "Id": "d62a5c777dc84e59bba971e219c3e115",
+          "Name": "unknownItem",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "92f0802f3cbf4b30ac2560201b58573d",
+          "Name": "seq",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns an element (or a nested list) into a flat list"
     }
   ],
   "Connectors": [
@@ -444,8 +476,8 @@
     },
     {
       "Start": "1cd114e1388348ca8d1129c8bbbaa321",
-      "End": "f86bbf5d16eb4ef1857469d2b693c4c0",
-      "Id": "817612d22bb245dcb06c9d4089d4f976"
+      "End": "d62a5c777dc84e59bba971e219c3e115",
+      "Id": "91b1af4d03f14481956f487b1378c0a5"
     },
     {
       "Start": "4eba9627aa104d008415062f89b9e56d",
@@ -481,34 +513,54 @@
       "Start": "0fadbaea9ce44477befef112991a1404",
       "End": "adb9147b59df4998b53c66bc982d74f7",
       "Id": "f895ae2c7da643b79818acaf181939f7"
+    },
+    {
+      "Start": "92f0802f3cbf4b30ac2560201b58573d",
+      "End": "f86bbf5d16eb4ef1857469d2b693c4c0",
+      "Id": "c0a84e60e444458082f3c49326697fdb"
     }
   ],
   "Dependencies": [
     "2dd1e892-6338-4fba-8345-f7a9f418bb57",
     "59ab539a-8b69-4b1d-9496-839b33050232",
-    "7d85bda8-a044-4ba0-82bc-1f55d9e28b9f"
+    "7d85bda8-a044-4ba0-82bc-1f55d9e28b9f",
+    "cd09ad33-8c34-4850-ac26-24448d92c38f"
   ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.4.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "b4c108340db54599aa7933f034fc08c9",
+        "c4be3784480943188ca22dc57dd5831b",
+        "76a488c09ce04084ab0fa4aa8b340589",
+        "3b636c206ceb449aa49580a6b5da641e"
+      ]
+    }
+  ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.4.12684",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
       "Name": "Hintergrundvorschau",
-      "EyeX": -17.0,
-      "EyeY": 24.0,
-      "EyeZ": 50.0,
-      "LookX": 12.0,
-      "LookY": -13.0,
-      "LookZ": -58.0,
-      "UpX": 0.0,
-      "UpY": 1.0,
-      "UpZ": 0.0
+      "EyeX": 23.517337515289476,
+      "EyeY": 34.786681806568687,
+      "EyeZ": 22.578585297752397,
+      "LookX": 4.6922316717751116,
+      "LookY": -40.052738582925606,
+      "LookZ": -3.2624772923791312,
+      "UpX": 0.76904842823360275,
+      "UpY": 0.35020738125947254,
+      "UpZ": -0.53471422754853448
     },
     "NodeViews": [
       {
@@ -518,8 +570,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 2130.7927378962831,
-        "Y": 565.33555186686772
+        "X": 2397.0439876434425,
+        "Y": 550.1211947384586
       },
       {
         "ShowGeometry": true,
@@ -578,8 +630,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1813.7927378962831,
-        "Y": 565.33555186686772
+        "X": 2080.0439876434425,
+        "Y": 550.1211947384586
       },
       {
         "ShowGeometry": true,
@@ -608,8 +660,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1534.7927378962831,
-        "Y": 646.3355518668676
+        "X": 1917.3251456962839,
+        "Y": 636.55489371289025
       },
       {
         "ShowGeometry": true,
@@ -630,11 +682,21 @@
         "Excluded": false,
         "X": 905.79273789628314,
         "Y": 603.33555186686772
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "TurnIntoList",
+        "Id": "3b636c206ceb449aa49580a6b5da641e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1778.19493413096,
+        "Y": 505.93928879679191
       }
     ],
     "Annotations": [],
-    "X": 582.919454969528,
-    "Y": 320.80153174808447,
-    "Zoom": 0.35316638556692326
+    "X": -1225.1388646445962,
+    "Y": -52.330460633937776,
+    "Zoom": 0.920183474190861
   }
 }
