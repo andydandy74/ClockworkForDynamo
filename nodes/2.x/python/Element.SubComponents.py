@@ -29,6 +29,9 @@ def GetSubComponents(item):
 	# Beam systems
 	elif hasattr(item, "GetBeamIds"):
 		return [item.Document.GetElement(x) for x in item.GetBeamIds()]
+	# Multi segment grids
+	elif hasattr(item, "GetGridIds"):
+		return [item.Document.GetElement(x) for x in item.GetGridIds()]
 	else: return []
 
 if isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]
