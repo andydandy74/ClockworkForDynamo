@@ -20,16 +20,7 @@
       }
     }
   },
-  "Inputs": [
-    {
-      "Id": "7d341b37d961444a9ae524d33a41308b",
-      "Name": "Unit Types",
-      "Type": "dropdownSelection",
-      "Value": "Length",
-      "Description": "Wählen Sie eine Maßeinheit.",
-      "SelectedIndex": 2
-    }
-  ],
+  "Inputs": [],
   "Outputs": [],
   "Nodes": [
     {
@@ -53,7 +44,7 @@
         {
           "Id": "bfac8d258bbb495eb8d7acb749b19b44",
           "Name": "seq",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -66,8 +57,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncutters = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\ntol = IN[2]\r\nfiltercats = List[ElementId]([x.Id for x in IN[3]])\r\ncatfilter = ElementMulticategoryFilter(filtercats)\r\n\r\nintersectorlist = list()\r\nfor cutter in cutters:\r\n\tif cutter is None: intersectorlist.append([])\r\n\telse:\r\n\t\tif view:\r\n\t\t\tbbox = cutter.get_BoundingBox(view)\r\n\t\t\tcollector = FilteredElementCollector(doc, view.Id)\r\n\t\telse:\r\n\t\t\tbbox = cutter.get_BoundingBox(None)\r\n\t\t\tcollector = FilteredElementCollector(doc)\r\n\t\tbboxfilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max),tol)\r\n\t\texcludelist = []\r\n\t\texcludelist.append(cutter.Id)\r\n\t\texcludeIDs = List[ElementId](excludelist)\r\n\t\texcfilter = ExclusionFilter(excludeIDs)\r\n\t\tintersectorlist.append(collector.WherePasses(bboxfilter).WherePasses(excfilter).WherePasses(catfilter).ToElements())\r\n\t\r\nOUT = intersectorlist",
-      "Engine": "IronPython2",
+      "Code": "import clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncutters = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\ntol = IN[2]\r\nfiltercats = List[ElementId]([x.Id for x in IN[3]])\r\ncatfilter = ElementMulticategoryFilter(filtercats)\r\n\r\nintersectorlist = list()\r\nfor cutter in cutters:\r\n\tif cutter is None: intersectorlist.append([])\r\n\telse:\r\n\t\tbbox = cutter.get_BoundingBox(view)\r\n\t\tbboxfilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max),tol)\r\n\t\tcollector = FilteredElementCollector(doc, view.Id)\r\n\t\texcludelist = []\r\n\t\texcludelist.append(cutter.Id)\r\n\t\texcludeIDs = List[ElementId](excludelist)\r\n\t\texcfilter = ExclusionFilter(excludeIDs)\r\n\t\tintersectorlist.append(collector.WherePasses(bboxfilter).WherePasses(excfilter).WherePasses(catfilter).ToElements())\r\n\t\r\nOUT = intersectorlist",
       "VariableInputPorts": true,
       "Id": "03d16685424a4d2181d174548082f152",
       "Inputs": [
@@ -120,7 +110,28 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "e5c5958c-016e-4efc-bb16-b3734d00a855",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "962e151fed364bbba954b6bc7c0ffc9f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b310305a61ee41f39a9de7bccab848d9",
+          "Name": "View",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gets the active view of the current document"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -146,7 +157,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -172,7 +183,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -198,7 +209,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -219,7 +230,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -245,7 +256,84 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Logic.If, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "7471764fe9e64e2091843e09d12f7b9c",
+      "Inputs": [
+        {
+          "Id": "cff0404064c0461cbbd6c35641dc7aff",
+          "Name": "test",
+          "Description": "Test block",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2f06bbc1d99c4a6b8811c643e5e08ab7",
+          "Name": "true",
+          "Description": "True block",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7d77729b110b408b9fb0237c3d392c45",
+          "Name": "false",
+          "Description": "False block",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "082ff34dd5844058a02bcdc8570ccfec",
+          "Name": "result",
+          "Description": "result",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Conditional statement"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.Object.IsNull@var",
+      "Id": "dd476318a43c43278d7b0c6a33f05978",
+      "Inputs": [
+        {
+          "Id": "76311f816b79478ab7fd5ea2d774c36e",
+          "Name": "obj",
+          "Description": "Object to test.\n\nvar",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9b2091674afe4370a5dc49c4854e72d1",
+          "Name": "bool",
+          "Description": "Whether object is null.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Determines the if the given object is null.\n\nObject.IsNull (obj: var): bool"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -277,7 +365,7 @@
         {
           "Id": "61d91e022533451cabfee8c64d514740",
           "Name": "val",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -290,7 +378,6 @@
     {
       "ConcreteType": "UnitsUI.UnitTypes, UnitsUI",
       "SelectedIndex": 2,
-      "SelectedString": "Length",
       "NodeType": "ExtensionNode",
       "Id": "7d341b37d961444a9ae524d33a41308b",
       "Inputs": [],
@@ -306,7 +393,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Wählen Sie eine Maßeinheit."
+      "Description": "Select a unit of measurement."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -317,7 +404,7 @@
       "Inputs": [
         {
           "Id": "b58ac23b418f479a9cbd9c14cc5e3b0c",
-          "Name": "category",
+          "Name": "var[]..[]: var[]..[]",
           "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -329,7 +416,7 @@
         {
           "Id": "d555bebf43ae43e08d524d4e3cc8b88d",
           "Name": "RevitCategory",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -360,7 +447,7 @@
         {
           "Id": "3f2fe4cc9e1049c38b28956d4055498f",
           "Name": "seq",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -400,7 +487,7 @@
         {
           "Id": "de84943fc3394ec288024d9f55e60987",
           "Name": "",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -421,6 +508,11 @@
       "Start": "726b34baaec04394a1ee5716af2d4c68",
       "End": "6ce9705b8143425db9e5af03ea97da96",
       "Id": "4e1e380c983b4fc688cc35186b5a6a9a"
+    },
+    {
+      "Start": "b310305a61ee41f39a9de7bccab848d9",
+      "End": "2f06bbc1d99c4a6b8811c643e5e08ab7",
+      "Id": "6615721a15354bc595fce4b4a07d7cc8"
     },
     {
       "Start": "b68f5e88d72a4e2d86423992308c78b1",
@@ -444,8 +536,23 @@
     },
     {
       "Start": "8170b37998fe4429aa21025c73d702bf",
+      "End": "76311f816b79478ab7fd5ea2d774c36e",
+      "Id": "6a9c0ced2f774fd3ba8732a5ad7adb21"
+    },
+    {
+      "Start": "8170b37998fe4429aa21025c73d702bf",
+      "End": "7d77729b110b408b9fb0237c3d392c45",
+      "Id": "c136eeda7f34472288834f2e5da6c86c"
+    },
+    {
+      "Start": "082ff34dd5844058a02bcdc8570ccfec",
       "End": "9f5f93ffdd59498ab9721cf1e7b8ef24",
-      "Id": "8bb88c8ef4534c7eb5b0ec9ea19ffce2"
+      "Id": "ea24441691c447afbda82b9b87d0dd49"
+    },
+    {
+      "Start": "9b2091674afe4370a5dc49c4854e72d1",
+      "End": "cff0404064c0461cbbd6c35641dc7aff",
+      "Id": "31fc0f057f4f4260a7cc7f0217f6786f"
     },
     {
       "Start": "61d91e022533451cabfee8c64d514740",
@@ -475,46 +582,32 @@
   ],
   "Dependencies": [
     "cd09ad33-8c34-4850-ac26-24448d92c38f",
+    "e5c5958c-016e-4efc-bb16-b3734d00a855",
     "7f19e4a8-c7e0-4041-b57b-0b8d04a99b2c",
     "3fe585a9-94df-4dce-99e1-306888ccb457",
     "44ac4888-4aa4-49a9-9344-23b729c11df9"
   ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.4.0",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "0050aadec2f845129053485981067c56",
-        "ff1cb70410b84008a332b18506ef0d05",
-        "7cdb4912ec324878b91f0300d2ebf93a",
-        "f360f0f3dae54bb6af740f238ca2d30d",
-        "4dca5d4444ef40c4803b222c33480956"
-      ]
-    }
-  ],
-  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.0.3.8810",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
-      "EyeX": 26061.857421875,
-      "EyeY": 35511.859375,
-      "EyeZ": -6639.3681640625,
-      "LookX": 97.018264770507813,
-      "LookY": -114.55371856689453,
-      "LookZ": -221.125244140625,
-      "UpX": 0.090380355715751648,
-      "UpY": 0.97437006235122681,
-      "UpZ": -0.20599603652954102
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
     },
     "NodeViews": [
       {
@@ -536,6 +629,16 @@
         "Excluded": false,
         "X": 654.198838271227,
         "Y": 253.50000000000006
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.ActiveViewFromCurrentDocument",
+        "Id": "962e151fed364bbba954b6bc7c0ffc9f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -74.801161728772968,
+        "Y": 262.50000000000006
       },
       {
         "ShowGeometry": true,
@@ -589,6 +692,26 @@
       },
       {
         "ShowGeometry": true,
+        "Name": "If",
+        "Id": "7471764fe9e64e2091843e09d12f7b9c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 321.19883827122703,
+        "Y": 217.50000000000006
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Object.IsNull",
+        "Id": "dd476318a43c43278d7b0c6a33f05978",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -74.801161728772968,
+        "Y": 154.5
+      },
+      {
+        "ShowGeometry": true,
         "Name": "DisplayUnit.ToInternalUnit",
         "Id": "ff1cb70410b84008a332b18506ef0d05",
         "IsSetAsInput": false,
@@ -639,8 +762,8 @@
       }
     ],
     "Annotations": [],
-    "X": 769.0,
-    "Y": 19.0,
+    "X": 465.0,
+    "Y": 22.0,
     "Zoom": 1.0
   }
 }
