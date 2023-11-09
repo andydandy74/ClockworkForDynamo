@@ -34,7 +34,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -55,12 +55,13 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetLevel(item):\r\n\tval = None\r\n\tif item:\r\n\t\tif hasattr(item, \"LevelId\"): \r\n\t\t\tval = item.Document.GetElement(item.LevelId)\r\n\t\t\tif val: return val\r\n\t\tif hasattr(item, \"Level\"):\r\n\t\t\tval = item.Level\r\n\t\t\tif val: return val\r\n\t\tif hasattr(item, \"GenLevel\"):\r\n\t\t\tval = item.GenLevel\r\n\t\t\tif val: return val\r\n\t\tif (item.GetType().ToString() in (\"Autodesk.Revit.DB.Architecture.StairsRun\", \"Autodesk.Revit.DB.Architecture.StairsLanding\")):\r\n\t\t\titem = item.GetStairs()\r\n\t\tif (item.GetType().ToString() == \"Autodesk.Revit.DB.Architecture.Stairs\"):\r\n\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.STAIRS_BASE_LEVEL_PARAM).AsElementId())\r\n\t\t\texcept: pass\r\n\t\tif (item.GetType().ToString() == \"Autodesk.Revit.DB.ExtrusionRoof\"):\r\n\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.ROOF_CONSTRAINT_LEVEL_PARAM).AsElementId())\r\n\t\t\texcept: pass\r\n\t\tif not val:\r\n\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM).AsElementId())\r\n\t\t\texcept: \r\n\t\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_SCHEDULE_ONLY_LEVEL_PARAM).AsElementId())\r\n\t\t\t\texcept: \r\n\t\t\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.SCHEDULE_LEVEL_PARAM).AsElementId())\r\n\t\t\t\t\texcept: return None\r\n\t\telse: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetLevel(x) for x in items]\r\nelse: OUT = GetLevel(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetLevel(item):\r\n\tval = None\r\n\tif item:\r\n\t\t# some elements have an empty Category property\r\n\t\ttry: catID = item.Category.Id.IntegerValue\r\n\t\texcept: catID = None\r\n\t\t# check all the different types of level properties...\r\n\t\tif hasattr(item, \"LevelId\"): \r\n\t\t\tval = item.Document.GetElement(item.LevelId)\r\n\t\t\tif val: return val\r\n\t\tif hasattr(item, \"Level\"):\r\n\t\t\tval = item.Level\r\n\t\t\tif val: return val\r\n\t\tif hasattr(item, \"GenLevel\"):\r\n\t\t\tval = item.GenLevel\r\n\t\t\tif val: return val\r\n\t\tif (item.GetType().ToString() in (\"Autodesk.Revit.DB.Architecture.StairsRun\", \"Autodesk.Revit.DB.Architecture.StairsLanding\")):\r\n\t\t\titem = item.GetStairs()\r\n\t\tif (item.GetType().ToString() == \"Autodesk.Revit.DB.Architecture.Stairs\" or catID == int(BuiltInCategory.OST_Ramps)):\r\n\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.STAIRS_BASE_LEVEL_PARAM).AsElementId())\r\n\t\t\texcept: pass\r\n\t\tif (item.GetType().ToString() == \"Autodesk.Revit.DB.ExtrusionRoof\"):\r\n\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.ROOF_CONSTRAINT_LEVEL_PARAM).AsElementId())\r\n\t\t\texcept: pass\r\n\t\tif not val:\r\n\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM).AsElementId())\r\n\t\t\texcept: \r\n\t\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_SCHEDULE_ONLY_LEVEL_PARAM).AsElementId())\r\n\t\t\t\texcept: \r\n\t\t\t\t\ttry: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.SCHEDULE_LEVEL_PARAM).AsElementId())\r\n\t\t\t\t\texcept: return None\r\n\t\telse: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetLevel(x) for x in items]\r\nelse: OUT = GetLevel(items)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "d9ae8178d1ff4cd095b3f733ccb20bc8",
       "Inputs": [
@@ -86,7 +87,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     }
   ],
   "Connectors": [
@@ -102,13 +103,15 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -132,8 +135,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 154.390045109355,
-        "Y": 159.981574747691
+        "X": 98.890045109355015,
+        "Y": 159.98157474769152
       },
       {
         "ShowGeometry": true,
@@ -142,8 +145,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 566.390045109355,
-        "Y": 159.981574747691
+        "X": 621.890045109355,
+        "Y": 159.98157474769152
       },
       {
         "ShowGeometry": true,
@@ -152,8 +155,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 342.390045109355,
-        "Y": 159.981574747692
+        "X": 397.890045109355,
+        "Y": 159.98157474769152
       }
     ],
     "Annotations": [],
