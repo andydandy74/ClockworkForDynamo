@@ -9,6 +9,10 @@ clr.ImportExtensions(Revit.Elements)
 def GetLevel(item):
 	val = None
 	if item:
+		# some elements have an empty Category property
+		try: catID = item.Category.Id.IntegerValue
+		except: catID = None
+		# check all the different types of level properties...
 		if hasattr(item, "LevelId"): 
 			val = item.Document.GetElement(item.LevelId)
 			if val: return val
@@ -20,7 +24,7 @@ def GetLevel(item):
 			if val: return val
 		if (item.GetType().ToString() in ("Autodesk.Revit.DB.Architecture.StairsRun", "Autodesk.Revit.DB.Architecture.StairsLanding")):
 			item = item.GetStairs()
-		if (item.GetType().ToString() == "Autodesk.Revit.DB.Architecture.Stairs"):
+		if (item.GetType().ToString() == "Autodesk.Revit.DB.Architecture.Stairs" or catID == int(BuiltInCategory.OST_Ramps)):
 			try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.STAIRS_BASE_LEVEL_PARAM).AsElementId())
 			except: pass
 		if (item.GetType().ToString() == "Autodesk.Revit.DB.ExtrusionRoof"):
