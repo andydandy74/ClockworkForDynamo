@@ -8,8 +8,10 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 def ElementTypesByCategory(bic, doc):
-	collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsElementType()
-	return collector.ToElements()
+	if bic:
+		collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsElementType()
+		return collector.ToElements()
+	else: return []
 
 inputdoc = UnwrapElement(IN[2])
 if not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument
