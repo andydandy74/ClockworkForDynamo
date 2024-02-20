@@ -17,6 +17,18 @@
       "Autodesk.Curve": {
         "Key": "Autodesk.DesignScript.Geometry.Curve",
         "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Curve": {
+        "Key": "Autodesk.DesignScript.Geometry.Curve",
+        "Value": "ProtoGeometry.dll"
+      },
+      "FloorPlanView": {
+        "Key": "Revit.Elements.Views.FloorPlanView",
+        "Value": "RevitNodes.dll"
+      },
+      "AreaPlanView": {
+        "Key": "Revit.Elements.Views.AreaPlanView",
+        "Value": "RevitNodes.dll"
       }
     }
   },
@@ -29,7 +41,7 @@
       "Parameter": {
         "Name": "curve",
         "TypeName": "Autodesk.DesignScript.Geometry.Curve",
-        "TypeRank": 0,
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -47,7 +59,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -68,41 +80,15 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
-        "Name": "sketchPlane",
-        "TypeName": "Revit.Elements.SketchPlane",
+        "Name": "areaPlan",
+        "TypeName": "Revit.Elements.Views.AreaPlanView",
         "TypeRank": 0,
-        "DefaultValue": null,
-        "Description": ""
-      },
-      "Id": "9663d7ec7e8343e8aa70ba9607d8a183",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "90073c39a5ff4c8f90cb0f573361f44b",
-          "Name": "",
-          "Description": "Symbol",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
-      "Parameter": {
-        "Name": "areaPlanView",
-        "TypeName": "var",
-        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -120,12 +106,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nsketchplane = UnwrapElement(IN[1])\r\nview = UnwrapElement(IN[2])\r\nelementlist = list()\r\n\r\nif str(view.ViewType) == \"AreaPlan\":\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tdoccreation = doc.Create\r\n\tfor curve in curves:\r\n\t\tseparator = doccreation.NewAreaBoundaryLine(sketchplane, curve.ToRevitType(), view)\r\n\t\telementlist.append(separator)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\nelse:\r\n\telementlist = list(\"The active view needs to be an area plan...\")\r\nOUT = elementlist",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "786d1079e66a4b07a4fde72dbefe5739",
       "Inputs": [
@@ -169,18 +156,18 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
+      "FunctionSignature": "d6dbde59-f3f7-47b5-9e1e-f30991f58ac1",
       "FunctionType": "Graph",
       "NodeType": "FunctionNode",
-      "Id": "b61b539d193542e8b3bc09685ddeb4d4",
+      "Id": "f88b28916c0a4477a478ed04660b258b",
       "Inputs": [
         {
-          "Id": "22d71a5480f64c8c9827a43274f497ea",
-          "Name": "unknownItem",
+          "Id": "6edb9b0aacf24f33b3f6fab465eb282e",
+          "Name": "view",
           "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
@@ -190,9 +177,9 @@
       ],
       "Outputs": [
         {
-          "Id": "412f72122c2141c9a0b0af89de690105",
-          "Name": "seq",
-          "Description": "return value",
+          "Id": "2b87404274bd43cc8b93cf87c5f7be49",
+          "Name": "plane",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -200,28 +187,27 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Turns an element (or a nested list) into a flat list"
+      "Description": "Retrieves the plane of a given view"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
       "NodeType": "FunctionNode",
-      "Id": "b7bc8792714b4a66ad7b4ec79009a870",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Curve.PullOntoPlane@Autodesk.DesignScript.Geometry.Plane",
+      "Id": "1dae20e5d1164566a19b202e6dcd5ef9",
       "Inputs": [
         {
-          "Id": "ae49221a8fd0492faca5837e26ded932",
-          "Name": "unknownItem",
-          "Description": "Input #1",
+          "Id": "10f3aeb97997416dbe105fb38478d364",
+          "Name": "curve",
+          "Description": "Autodesk.DesignScript.Geometry.Curve",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         },
         {
-          "Id": "a6454a3185f843ecad523a58cf55c241",
-          "Name": "seq",
-          "Description": "Input #2",
+          "Id": "1aa2ec17e9094879b131e7fe09bf429a",
+          "Name": "plane",
+          "Description": "Die Ebene, in die die Kurve gezogen werden soll\n\nPlane",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -230,9 +216,9 @@
       ],
       "Outputs": [
         {
-          "Id": "ab617cb3e6004a9c9e2c9554157e3c1c",
-          "Name": "",
-          "Description": "Output #1",
+          "Id": "483164811b9f4fdf8a6ab82ac2a6d05e",
+          "Name": "Curve",
+          "Description": "Eine Kurve in der Ebene",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -240,24 +226,44 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
+      "Description": "Erstellt eine Kurve durch Ziehen in der Ebene.\n\nCurve.PullOntoPlane (plane: Plane): Curve"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane",
+      "Id": "d2afa6f8f77243d8bb841cc21dc92805",
+      "Inputs": [
+        {
+          "Id": "17c9669e835b452c8237f3073bb46a25",
+          "Name": "plane",
+          "Description": "Plane",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "11a310e178854ccea7c41ba793b199f1",
+          "Name": "SketchPlane",
+          "Description": "SketchPlane",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Erstellt eine Revit-SketchPlane anhand einer gegebenen Ebene.\n\nSketchPlane.ByPlane (plane: Plane): SketchPlane"
     }
   ],
   "Connectors": [
     {
       "Start": "7f21f93e3a8a4d2199b5dd555c4b46c2",
-      "End": "22d71a5480f64c8c9827a43274f497ea",
-      "Id": "a8bac46f43944f4abfac19f83e650b9a"
-    },
-    {
-      "Start": "7f21f93e3a8a4d2199b5dd555c4b46c2",
-      "End": "ae49221a8fd0492faca5837e26ded932",
-      "Id": "991608d69d4e4871a7825aa0f83fd58e"
-    },
-    {
-      "Start": "90073c39a5ff4c8f90cb0f573361f44b",
-      "End": "c9c71176feb648d19634eb3fbbc154c7",
-      "Id": "132e0c5d767a4cc0a5e955cf5f85b726"
+      "End": "10f3aeb97997416dbe105fb38478d364",
+      "Id": "9e7b764d6b5e4d999baa3ddb3a9c1544"
     },
     {
       "Start": "fac01ba5085a43ff80bd5c2a20918c69",
@@ -265,37 +271,62 @@
       "Id": "0f7ff4de77b9443c8cb74a7f6f7cd313"
     },
     {
+      "Start": "fac01ba5085a43ff80bd5c2a20918c69",
+      "End": "6edb9b0aacf24f33b3f6fab465eb282e",
+      "Id": "50e463542bc8492ea7f35410b3e62ada"
+    },
+    {
       "Start": "da655292319c4663812a1638bf0ef08b",
-      "End": "a6454a3185f843ecad523a58cf55c241",
-      "Id": "67f99c01cb854bdca1d2cadc7b98bc2f"
-    },
-    {
-      "Start": "412f72122c2141c9a0b0af89de690105",
-      "End": "2cb62bca067a415ebd662d8a16359f17",
-      "Id": "3345da9535504512a67b093163a24706"
-    },
-    {
-      "Start": "ab617cb3e6004a9c9e2c9554157e3c1c",
       "End": "e6fd3ec83e4249b99f19a52b2d1a8929",
-      "Id": "7b27cea75e41416595f134f82b479203"
+      "Id": "3b396d1b58e94bd38fb7b349b8fc5756"
+    },
+    {
+      "Start": "2b87404274bd43cc8b93cf87c5f7be49",
+      "End": "1aa2ec17e9094879b131e7fe09bf429a",
+      "Id": "2a5b5ce74b9942d9aef3424e12a384b1"
+    },
+    {
+      "Start": "2b87404274bd43cc8b93cf87c5f7be49",
+      "End": "17c9669e835b452c8237f3073bb46a25",
+      "Id": "8aec3483417a41769c4402dc230f29a8"
+    },
+    {
+      "Start": "483164811b9f4fdf8a6ab82ac2a6d05e",
+      "End": "2cb62bca067a415ebd662d8a16359f17",
+      "Id": "4c58019970c24fc9ab7afe3bdb53f1c0"
+    },
+    {
+      "Start": "11a310e178854ccea7c41ba793b199f1",
+      "End": "c9c71176feb648d19634eb3fbbc154c7",
+      "Id": "4abe19f5a78849d891da9a7cdd3a2248"
     }
   ],
   "Dependencies": [
-    "cd09ad33-8c34-4850-ac26-24448d92c38f",
-    "44ac4888-4aa4-49a9-9344-23b729c11df9"
+    "d6dbde59-f3f7-47b5-9e1e-f30991f58ac1"
   ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.6.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "f88b28916c0a4477a478ed04660b258b"
+      ]
+    }
+  ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -308,79 +339,79 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "d233a39acfad4a80b0e8859917c5f97f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": -52.0214566576786,
         "Y": -18.7855260152727
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "1cd26b14cb684c9fb1f275c8db318a86",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 809.079179650833,
-        "Y": -16.0114639401324
+        "X": 947.218705388088,
+        "Y": 158.29944664253389
       },
       {
-        "Id": "9663d7ec7e8343e8aa70ba9607d8a183",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
+        "ShowGeometry": true,
         "Name": "Input",
-        "ShowGeometry": true,
-        "Excluded": false,
-        "X": 83.5871445238048,
-        "Y": 143.691699433958
-      },
-      {
         "Id": "1692d85850384192880f5db8e03012db",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 135.83380349505,
-        "Y": 225.246658971245
+        "X": -145.0659799704348,
+        "Y": 219.89618690523579
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "786d1079e66a4b07a4fde72dbefe5739",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 416.0,
-        "Y": 114.801618508532
+        "X": 741.54461269825265,
+        "Y": 158.42982939423092
       },
       {
-        "Id": "b61b539d193542e8b3bc09685ddeb4d4",
+        "ShowGeometry": true,
+        "Name": "View.Plane",
+        "Id": "f88b28916c0a4477a478ed04660b258b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 159.390427602605,
-        "Y": 48.987164548192
+        "X": 192.54480876849698,
+        "Y": 135.76445237435723
       },
       {
-        "Id": "b7bc8792714b4a66ad7b4ec79009a870",
+        "ShowGeometry": true,
+        "Name": "Curve.PullOntoPlane",
+        "Id": "1dae20e5d1164566a19b202e6dcd5ef9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 543.673182873639,
-        "Y": -16.9254115986197
+        "X": 475.9825032553058,
+        "Y": -8.7641529072147932
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "SketchPlane.ByPlane",
+        "Id": "d2afa6f8f77243d8bb841cc21dc92805",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 457.09319005346487,
+        "Y": 134.75881376718493
       }
     ],
     "Annotations": [],
-    "X": 17.834888623957,
-    "Y": 273.60964579398,
-    "Zoom": 0.804095410896236
+    "X": 226.98227837304967,
+    "Y": 155.77630742130387,
+    "Zoom": 0.68387381298901562
   }
 }
