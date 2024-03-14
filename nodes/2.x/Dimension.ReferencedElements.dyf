@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetDimensionReferences(item):\r\n\tif hasattr(item, \"References\"):\r\n\t\treturn [item.Document.GetElement(x.ElementId) for x in item.References]\r\n\telse: return None\r\n\r\ndimensions = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetDimensionReferences(x) for x in dimensions]\r\nelse: OUT = GetDimensionReferences(dimensions)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetDimensionReferences(item):\r\n\tif hasattr(item, \"References\"):\r\n\t\trefs = []\r\n\t\tlinkInstances = []\r\n\t\tfor r in item.References:\r\n\t\t\tif r.LinkedElementId != ElementId.InvalidElementId: \r\n\t\t\t\trefs.append(item.Document.GetElement(r.ElementId).GetLinkDocument().GetElement(r.LinkedElementId))\r\n\t\t\t\tlinkInstances.append(item.Document.GetElement(r.ElementId))\r\n\t\t\telse: \r\n\t\t\t\trefs.append(item.Document.GetElement(r.ElementId))\r\n\t\t\t\tlinkInstances.append(None)\r\n\t\treturn refs, linkInstances\t\t\r\n\telse: return None\r\n\r\ndimensions = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): \r\n\tif len(IN[0]) > 0: OUT = list(zip(*[GetDimensionReferences(x) for x in dimensions]))\r\n\telse: OUT = [[],[]]\r\nelse: OUT = GetDimensionReferences(dimensions)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "79097b4a5ab74d4c9b96e29dabdad192",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -65,7 +66,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -86,34 +87,132 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "e0c52df023f84d66bd55f405c957175b",
+      "Inputs": [
+        {
+          "Id": "f658cc8cf4864d278c613e2fb63c7ebf",
+          "Name": "list",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "897209b76b83456eb409fb75debc8618",
+          "Name": "item",
+          "Description": "Das erste Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "9490199a0fc44de6928e8cdbbb7d7bf6",
+      "Inputs": [
+        {
+          "Id": "be442b30e54f426492934f86b39013d2",
+          "Name": "list",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5e4e18101227436d8bd8648ad0490d11",
+          "Name": "item",
+          "Description": "Das letzte Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "linkInstance",
+      "Id": "5d988c7cb3a1496699cc97b84b3f4ad7",
+      "Inputs": [
+        {
+          "Id": "c84597d2175b4ee59228a8218f2aef03",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
     {
       "Start": "9f9dbf8412b04ba0bd976b20a800fc0d",
-      "End": "8f665bd0da8a46199fbff76d5570175c",
-      "Id": "c817e1c4112d4884845cbc4104d5263c"
+      "End": "f658cc8cf4864d278c613e2fb63c7ebf",
+      "Id": "f06dbbe7af0f4ef8b41cceaef0631c60"
+    },
+    {
+      "Start": "9f9dbf8412b04ba0bd976b20a800fc0d",
+      "End": "be442b30e54f426492934f86b39013d2",
+      "Id": "6102b9ba46bc436b9f838e5dce567a9d"
     },
     {
       "Start": "72c3964ea276485ab7de9fc2ae57ac75",
       "End": "1f414b2a646945548f7147b5a4ab3734",
       "Id": "4e2f37a07b33414d986f6c3ee58ebd57"
+    },
+    {
+      "Start": "897209b76b83456eb409fb75debc8618",
+      "End": "8f665bd0da8a46199fbff76d5570175c",
+      "Id": "f50eed6a92b84bd1a2923a54ad085f92"
+    },
+    {
+      "Start": "5e4e18101227436d8bd8648ad0490d11",
+      "End": "c84597d2175b4ee59228a8218f2aef03",
+      "Id": "6b611e0002a941e49aa2907dcfbec9c8"
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -132,8 +231,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 214.5,
-        "Y": 0.0
+        "X": 260.5,
+        "Y": 142.0
       },
       {
         "ShowGeometry": true,
@@ -142,8 +241,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 10.5,
-        "Y": 0.0
+        "X": -55.5,
+        "Y": 142.0
       },
       {
         "ShowGeometry": true,
@@ -152,8 +251,38 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 438.5,
-        "Y": 0.0
+        "X": 734.5,
+        "Y": 61.000000000000007
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
+        "Id": "e0c52df023f84d66bd55f405c957175b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 471.5,
+        "Y": 61.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.LastItem",
+        "Id": "9490199a0fc44de6928e8cdbbb7d7bf6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 484.0,
+        "Y": 200.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "5d988c7cb3a1496699cc97b84b3f4ad7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 706.5,
+        "Y": 199.0
       }
     ],
     "Annotations": [],
