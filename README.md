@@ -14,7 +14,7 @@ As of **Revit 2023** you will need to install the package **"DynamoIronPython2.7
 ## Versions
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
 
-Package name | Supported | Last version | Revit versions | Change log | Documentation | Repository | Deprecated nodes | Samples
+Package name | Supported | Last version | Revit versions | Change log | Docs | Repository | Deprecated nodes | Samples
 -- | -- | -- | -- | -- | -- | -- | -- | --
 Clockwork for Dynamo **2.x** | :white_check_mark: | 2.6.0 | 2017+ | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/2.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/2.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-2x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/2.x)
 Clockwork for Dynamo **1.x** | :x: | 1.34.0 | 2015-19 | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-1x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/1.x)
