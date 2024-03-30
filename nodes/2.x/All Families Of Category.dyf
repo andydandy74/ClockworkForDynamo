@@ -21,10 +21,10 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "families",
       "Id": "27647f3ac7d748fabf008adabac27375",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "6f6389f0e25945fd8460c5001a725b9a",
@@ -42,7 +42,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "category",
         "TypeName": "var",
@@ -51,6 +50,7 @@
         "Description": " Works with categories, BuiltInCategories and BuiltInCategories as strings"
       },
       "Id": "7051506d098749068b5b68f643bb6941",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -68,7 +68,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "toggle",
         "TypeName": "bool",
@@ -77,6 +76,7 @@
         "Description": ""
       },
       "Id": "6309d8085e02460286b0a2fc5909e33d",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -94,7 +94,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "docOrRevitLinkInstance",
         "TypeName": "var",
@@ -103,6 +102,7 @@
         "Description": " Use only if you want to query a linked model"
       },
       "Id": "f7a1e07b749d404e8908b90306c5f318",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -120,11 +120,12 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[0])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\ncats = IN[2]\r\n\r\ncollector = FilteredElementCollector(doc).OfClass(Family)\r\nitems = collector.ToElements()\r\n\r\ndef ReturnIfCategory(items, cat):\r\n\treturn [x for x in items if x.FamilyCategory.Id.IntegerValue == cat.Id.IntegerValue]\r\n\t#return [(x.FamilyCategory.Id, cat.Id) for x in items]\r\n\r\nif isinstance(cats, list): OUT = [ReturnIfCategory(items, x) for x in cats]\r\nelse: OUT = ReturnIfCategory(items, cats)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[0])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\ncats = IN[2]\r\n\r\ncollector = FilteredElementCollector(doc).OfClass(Family)\r\nitems = collector.ToElements()\r\n\r\ndef ReturnIfCategory(items, cat):\r\n\tif cat: return [x for x in items if x.FamilyCategory.Id.IntegerValue == cat.Id.IntegerValue]\r\n \telse: return []\r\n\r\nif isinstance(cats, list): OUT = [ReturnIfCategory(items, x) for x in cats]\r\nelse: OUT = ReturnIfCategory(items, cats)",
       "Engine": "IronPython2",
+      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "0def22adc334436da3a8ce4c3b255188",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "77106605392b45e29c6cf1f6776f8273",
@@ -172,8 +173,8 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
       "FunctionSignature": "3fe585a9-94df-4dce-99e1-306888ccb457",
       "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
       "Id": "b9b9cdbee0b044ac807738783304e986",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "2b0a7c8ead1443deb834975b1df782cb",
@@ -204,27 +205,32 @@
     {
       "Start": "9669339359964b4f91df94b6bdaeee65",
       "End": "2b0a7c8ead1443deb834975b1df782cb",
-      "Id": "16e1166e8e6c4d86a07bbd267582c41d"
+      "Id": "16e1166e8e6c4d86a07bbd267582c41d",
+      "IsHidden": "False"
     },
     {
       "Start": "86ec7e29424b4b5f93cddb2fcfe64619",
       "End": "d802ceb5075d4aeda0d1b57ec5380a04",
-      "Id": "b099ed2a1b554bb8a7c14105f482215d"
+      "Id": "b099ed2a1b554bb8a7c14105f482215d",
+      "IsHidden": "False"
     },
     {
       "Start": "947a09b2f68c41e3b750e4d30a899455",
       "End": "77106605392b45e29c6cf1f6776f8273",
-      "Id": "7008aced67d948a39a6123f1198f01ea"
+      "Id": "7008aced67d948a39a6123f1198f01ea",
+      "IsHidden": "False"
     },
     {
       "Start": "024430130b10446cb7488fff4bdc1b5e",
       "End": "6f6389f0e25945fd8460c5001a725b9a",
-      "Id": "862a45d34a84497192d4b4740f4e92b5"
+      "Id": "862a45d34a84497192d4b4740f4e92b5",
+      "IsHidden": "False"
     },
     {
       "Start": "53658a2d68d54be08877098db6c192d6",
       "End": "310d3b199a9b401684ce7d5bf5f881b3",
-      "Id": "20bf00b47c22467bb7525f806808b81d"
+      "Id": "20bf00b47c22467bb7525f806808b81d",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -247,12 +253,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.19.3.6394",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -263,71 +269,72 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "27647f3ac7d748fabf008adabac27375",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1641.5788942738104,
         "Y": 687.39174767995246
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "7051506d098749068b5b68f643bb6941",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 64.778894273810465,
         "Y": 800.39174767995246
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "6309d8085e02460286b0a2fc5909e33d",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 860.77889427381047,
         "Y": 716.39174767995246
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "f7a1e07b749d404e8908b90306c5f318",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 860.77889427381047,
         "Y": 623.39174767995246
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "0def22adc334436da3a8ce4c3b255188",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1416.7788942738105,
         "Y": 687.39174767995246
       },
       {
-        "ShowGeometry": true,
-        "Name": "Category.FromInput",
         "Id": "b9b9cdbee0b044ac807738783304e986",
+        "Name": "Category.FromInput",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 860.77889427381047,
         "Y": 800.39174767995235
       }
     ],
     "Annotations": [],
-    "X": -98.740107742107625,
-    "Y": -11.036782754808883,
-    "Zoom": 0.43178647802441383
+    "X": -228.34937948210086,
+    "Y": -218.21580867759315,
+    "Zoom": 0.68706234378574438
   }
 }
