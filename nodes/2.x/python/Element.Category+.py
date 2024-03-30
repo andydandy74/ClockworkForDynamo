@@ -44,5 +44,7 @@ def GetCategory(item):
 
 items = UnwrapElement(IN[0])
 
-if isinstance(IN[0], list): OUT = map(list, zip(*[GetCategory(x) for x in items]))
+if isinstance(IN[0], list): 
+	if len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))
+	else: OUT = [[],[]]
 else: OUT = GetCategory(items)
