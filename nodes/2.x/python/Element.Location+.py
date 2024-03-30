@@ -7,6 +7,9 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.GeometryConversion)
 
+clr.AddReference('ProtoGeometry')
+from Autodesk.DesignScript.Geometry import *
+
 items = UnwrapElement(IN[0])
 
 def GetCurvePoints(curve):
@@ -75,10 +78,13 @@ def GetLocation(item):
 	# openings
 	elif hasattr(item, "BoundaryCurves"):
 		# rectangular openings
-		# ToDo: find a good way of returning the boundary as a curve loop
-		# for now, return defaults in this case
 		if item.IsRectBoundary:
-			return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+			zVals = [x.Z for x in item.BoundaryRect]
+			p = []
+			for o in item.BoundaryRect:
+				for z in zVals: p.append(XYZ(o.X, o.Y, z).ToPoint())
+			rectloop = Rectangle.ByCornerPoints(p[0], p[1], p[3], p[2]).Explode()
+			return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, rectloop
 		# none-rectangular openings
 		else: 
 			openingloop = [x.ToProtoType() for x in item.BoundaryCurves]
