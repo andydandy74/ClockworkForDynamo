@@ -11,14 +11,15 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def DuplicateMaterial(mat, name):
+	try: return mat.Duplicate(name)
+	except: return None
+
 doc = DocumentManager.Instance.CurrentDBDocument
 mats = UnwrapElement(IN[0])
 newnames = IN[1]
-elementlist, fail = [],[] #better to generate a fail list only once
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for i in xrange(len(mats)):
-	try: elementlist.append(mats[i].Duplicate(newnames[i]))
-	except: elementlist.append(None)
+if isinstance(mats, list): OUT = [DuplicateMaterial(x, y) for x, y in zip(mats, newnames)]
+else: OUT = DuplicateMaterial(mats, newnames)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = elementlist
