@@ -17,11 +17,12 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\ndef GetSubComponents(item):\r\n\t# FamilyInstances\r\n\tif hasattr(item, \"GetSubComponentIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubComponentIds()]\r\n\t# Combined geometry\r\n\telif hasattr(item, \"AllMembers\"):\r\n\t\treturn [x for x in item.AllMembers]\r\n\t# Stairs\r\n\telif hasattr(item, \"GetStairsLandings\"):\r\n\t\tstair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsRuns()])\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsSupports()])\r\n\t\treturn stair_comps\r\n\t# Railings\r\n\telif hasattr(item, \"GetHandRails\"):\r\n\t\trail_comps = [item.Document.GetElement(x) for x in item.GetHandRails()]\r\n\t\trail_comps.append(item.Document.GetElement(item.TopRail))\r\n\t\treturn rail_comps\r\n\t# Beam systems\r\n\telif hasattr(item, \"GetBeamIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetBeamIds()]\r\n\t# Multi segment grids\r\n\telif hasattr(item, \"GetGridIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetGridIds()]\r\n\telse: return []\r\n\r\nif isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]\r\nelse: OUT = GetSubComponents(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\ndef GetSubComponents(item):\r\n\t# FamilyInstances\r\n\tif hasattr(item, \"GetSubComponentIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubComponentIds()]\r\n\t# Combined geometry\r\n\telif hasattr(item, \"AllMembers\"):\r\n\t\treturn [x for x in item.AllMembers]\r\n\t# Stairs\r\n\telif hasattr(item, \"GetStairsLandings\"):\r\n\t\tstair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsRuns()])\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsSupports()])\r\n\t\treturn stair_comps\r\n\t# Railings\r\n\telif hasattr(item, \"GetHandRails\"):\r\n\t\trail_comps = [item.Document.GetElement(x) for x in item.GetHandRails()]\r\n\t\trail_comps.append(item.Document.GetElement(item.TopRail))\r\n\t\treturn rail_comps\r\n\t# Beam systems\r\n\telif hasattr(item, \"GetBeamIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetBeamIds()]\r\n\t# Multi segment grids\r\n\telif hasattr(item, \"GetGridIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetGridIds()]\r\n\t# Toposurfaces\r\n\telif hasattr(item, \"GetHostedSubRegionIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetHostedSubRegionIds()]\r\n\t# Toposolids\r\n\telif hasattr(item, \"GetSubDivisionIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubDivisionIds()]\r\n\telse: return []\r\n\r\nif isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]\r\nelse: OUT = GetSubComponents(items)",
       "Engine": "IronPython2",
+      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "8f79cd06ae5e42d089f6fc950a362127",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "2c3e7855e74049f7a399a2fdc357abdb",
@@ -49,7 +50,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "element",
         "TypeName": "var",
@@ -58,6 +58,7 @@
         "Description": ""
       },
       "Id": "295974ab903c48b9904ce9c1e6defecd",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -75,10 +76,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "subComponents",
       "Id": "3e56ebabc4c74851b0dbbc3f55da4784",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "82d9d3e2cde0422ca0766dc8b3699e26",
@@ -99,12 +100,14 @@
     {
       "Start": "e0ba00da2a0f4519ba04b72dc31fd2fe",
       "End": "82d9d3e2cde0422ca0766dc8b3699e26",
-      "Id": "a0f3acebeb914f2e950501a5934a0ec9"
+      "Id": "a0f3acebeb914f2e950501a5934a0ec9",
+      "IsHidden": "False"
     },
     {
       "Start": "d074eb29b47842699eaa049ac699438c",
       "End": "2c3e7855e74049f7a399a2fdc357abdb",
-      "Id": "ea5716d6aa3f49269f82d477dc4821b2"
+      "Id": "ea5716d6aa3f49269f82d477dc4821b2",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -116,12 +119,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.19.3.6394",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -132,34 +135,35 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "8f79cd06ae5e42d089f6fc950a362127",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 508.94522830011852,
         "Y": 28.188593977572395
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "295974ab903c48b9904ce9c1e6defecd",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 229.94522830011852,
         "Y": 28.188593977572395
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "3e56ebabc4c74851b0dbbc3f55da4784",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 731.94522830011852,
         "Y": 28.188593977572395
       }

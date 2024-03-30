@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetHost(item):\r\n\t# standard\r\n\tif hasattr(item, \"Host\"): return item.Host\r\n\t# Wall sweeps\r\n\telif hasattr(item, \"GetHostIds\"): return [item.Document.GetElement(x) for x in item.GetHostIds()]\r\n\t# Wall foundations\r\n\telif hasattr(item, \"WallId\"): return item.Document.GetElement(item.WallId)\r\n\t# railings, building pads, topo subregions\r\n\telif hasattr(item, \"HostId\"): return item.Document.GetElement(item.HostId)\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetHost(x) for x in items]\r\nelse: OUT = GetHost(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetHost(item):\r\n\t# standard\r\n\tif hasattr(item, \"Host\"): return item.Host\r\n\t# Wall sweeps\r\n\telif hasattr(item, \"GetHostIds\"): return [item.Document.GetElement(x) for x in item.GetHostIds()]\r\n\t# Wall foundations\r\n\telif hasattr(item, \"WallId\"): return item.Document.GetElement(item.WallId)\r\n\t# railings, building pads\r\n\telif hasattr(item, \"HostId\"): return item.Document.GetElement(item.HostId)\r\n\t# topo subregions\r\n\telif hasattr(item, \"AsSiteSubRegion\"): return item.Document.GetElement(item.AsSiteSubRegion().HostId)\t\r\n\t# topo solids\r\n\telif hasattr(item, \"HostTopoId\"): return item.Document.GetElement(item.HostTopoId)\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetHost(x) for x in items]\r\nelse: OUT = GetHost(items)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "fb5310e215e64829a0fe2a0d3031b367",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -65,7 +66,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -86,7 +87,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
@@ -102,18 +103,20 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -126,31 +129,31 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "fb5310e215e64829a0fe2a0d3031b367",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 334.118717039716,
-        "Y": 118.436697046351
+        "Y": 117.37326080268177
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "87f38510c9e94c958119d85d995c924f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 146.118717039716,
-        "Y": 118.436697046351
+        "X": -26.157954434702106,
+        "Y": 116.30982455901254
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "8f1bdb124403406c90d67cefe95d4b2d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 558.118717039716,
         "Y": 118.436697046351
