@@ -13,8 +13,12 @@ def GetHost(item):
 	elif hasattr(item, "GetHostIds"): return [item.Document.GetElement(x) for x in item.GetHostIds()]
 	# Wall foundations
 	elif hasattr(item, "WallId"): return item.Document.GetElement(item.WallId)
-	# railings, building pads, topo subregions
+	# railings, building pads
 	elif hasattr(item, "HostId"): return item.Document.GetElement(item.HostId)
+	# topo subregions
+	elif hasattr(item, "AsSiteSubRegion"): return item.Document.GetElement(item.AsSiteSubRegion().HostId)	
+	# topo solids
+	elif hasattr(item, "HostTopoId"): return item.Document.GetElement(item.HostTopoId)
 	else: return None
 
 items = UnwrapElement(IN[0])

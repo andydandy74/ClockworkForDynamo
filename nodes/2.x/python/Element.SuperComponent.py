@@ -11,10 +11,15 @@ def GetSuperComponent(item):
 	if hasattr(item, "HostRailingId"): return item.Document.GetElement(item.HostRailingId)
 	# stair components
 	elif hasattr(item, "GetStairs"): return item.GetStairs()
-	# site subregions
+	# toposurface subregions
 	elif hasattr(item, "IsSiteSubRegion"):
 		if item.IsSiteSubRegion:
 			return item.Document.GetElement(item.AsSiteSubRegion().HostId)
+		else: return None
+	# toposolid subregions
+	elif hasattr(item, "HostTopoId"):
+		if item.HostTopoId == ElementId.InvalidElementId: return None
+		else: return item.Document.GetElement(item.HostTopoId)
 	# grid segments
 	elif item.GetType().ToString() == 'Autodesk.Revit.DB.Grid': 
 		sc = MultiSegmentGrid.GetMultiSegementGridId(item)

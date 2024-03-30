@@ -32,6 +32,12 @@ def GetSubComponents(item):
 	# Multi segment grids
 	elif hasattr(item, "GetGridIds"):
 		return [item.Document.GetElement(x) for x in item.GetGridIds()]
+	# Toposurfaces
+	elif hasattr(item, "GetHostedSubRegionIds"):
+		return [item.Document.GetElement(x) for x in item.GetHostedSubRegionIds()]
+	# Toposolids
+	elif hasattr(item, "GetSubDivisionIds"):
+		return [item.Document.GetElement(x) for x in item.GetSubDivisionIds()]
 	else: return []
 
 if isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]
