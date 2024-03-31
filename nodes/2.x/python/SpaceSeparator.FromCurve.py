@@ -27,4 +27,5 @@ TransactionManager.Instance.TransactionTaskDone()
 elementlist = list()
 for item in separatorarray:
 	elementlist.append(item)
-OUT = elementlist
+if isinstance(IN[0], list): OUT = elementlist
+else: OUT = elementlist[0]
