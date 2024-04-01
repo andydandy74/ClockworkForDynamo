@@ -93,6 +93,12 @@ def GetLocation(item):
 	elif hasattr(item, "GetProfile"):
 		sketchloop = [x.GeometryCurve.ToProtoType() for x in item.GetProfile()]
 		return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
+	# newer sketch-based elements (except walls)
+	elif hasattr(item, "SketchId") and not hasattr(item, "WallType"):
+		sketchloop = []
+		for loop in item.Document.GetElement(item.SketchId).Profile:
+			sketchloop.append([x.ToProtoType() for x in loop])
+		return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, sketchloop
 	# other elements
 	elif hasattr(item, "Location"):
 		loc = item.Location
@@ -111,7 +117,7 @@ def GetLocation(item):
 				return loc.Point.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
 			# some elements have a location property but don't return curves or points
 			else:
-				# sketch-based elements (e.g. floor slabs)
+				# earlier sketch-based elements (e.g. floor slabs)
 				try:
 					sketchloop = []
 					for ref in HostObjectUtils.GetTopFaces(item):
@@ -131,9 +137,10 @@ def GetLocation(item):
 	# in all other cases return defaults
 	else: return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
 
-locations = [GetLocation(x) for x in items]
-
-# Transpose and remove NoneTypes
-OUT = []
-for prop in map(list, zip(*locations)):
-	OUT.append(filter(lambda x: x!=None, prop))
+if isinstance(IN[0], list):
+	locations = [GetLocation(x) for x in items]
+	# Transpose and remove NoneTypes
+	OUT = []
+	for prop in map(list, zip(*locations)):
+		OUT.append(filter(lambda x: x!=None, prop))
+else: OUT = GetLocation(items)
