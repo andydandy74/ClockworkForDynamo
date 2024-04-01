@@ -111,7 +111,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nsketchplane = UnwrapElement(IN[1])\r\nview = UnwrapElement(IN[2])\r\nelementlist = list()\r\n\r\nif str(view.ViewType) == \"AreaPlan\":\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\tdoccreation = doc.Create\r\n\tfor curve in curves:\r\n\t\tseparator = doccreation.NewAreaBoundaryLine(sketchplane, curve.ToRevitType(), view)\r\n\t\telementlist.append(separator)\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\nelse:\r\n\telementlist = list(\"The active view needs to be an area plan...\")\r\nOUT = elementlist",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\nelementlist = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\no = view.Origin\r\nn = view.ViewDirection\r\nif o and n: \r\n\tsketchplane = SketchPlane.Create(doc, Plane.CreateByNormalAndOrigin(n, o))\r\n\tdoccreation = doc.Create\r\n\tfor curve in curves:\r\n\t\tseparator = doccreation.NewAreaBoundaryLine(sketchplane, curve.ToRevitType(), view)\r\n\t\telementlist.append(separator)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nif isinstance(IN[0], list): OUT = elementlist\r\nelse: OUT = elementlist[0]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "786d1079e66a4b07a4fde72dbefe5739",
@@ -129,15 +129,6 @@
           "Id": "c9c71176feb648d19634eb3fbbc154c7",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "9709aa85540d4d948e69c0324db0b52e",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -227,36 +218,6 @@
       ],
       "Replication": "Auto",
       "Description": "Erstellt eine Kurve durch Ziehen in der Ebene.\n\nCurve.PullOntoPlane (plane: Plane): Curve"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane",
-      "Id": "d2afa6f8f77243d8bb841cc21dc92805",
-      "Inputs": [
-        {
-          "Id": "17c9669e835b452c8237f3073bb46a25",
-          "Name": "plane",
-          "Description": "Plane",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "11a310e178854ccea7c41ba793b199f1",
-          "Name": "SketchPlane",
-          "Description": "SketchPlane",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Erstellt eine Revit-SketchPlane anhand einer gegebenen Ebene.\n\nSketchPlane.ByPlane (plane: Plane): SketchPlane"
     }
   ],
   "Connectors": [
@@ -267,13 +228,13 @@
     },
     {
       "Start": "fac01ba5085a43ff80bd5c2a20918c69",
-      "End": "9709aa85540d4d948e69c0324db0b52e",
-      "Id": "0f7ff4de77b9443c8cb74a7f6f7cd313"
+      "End": "6edb9b0aacf24f33b3f6fab465eb282e",
+      "Id": "50e463542bc8492ea7f35410b3e62ada"
     },
     {
       "Start": "fac01ba5085a43ff80bd5c2a20918c69",
-      "End": "6edb9b0aacf24f33b3f6fab465eb282e",
-      "Id": "50e463542bc8492ea7f35410b3e62ada"
+      "End": "c9c71176feb648d19634eb3fbbc154c7",
+      "Id": "43927a26ec7a4ffb9cdb08ea954691f1"
     },
     {
       "Start": "da655292319c4663812a1638bf0ef08b",
@@ -286,19 +247,9 @@
       "Id": "2a5b5ce74b9942d9aef3424e12a384b1"
     },
     {
-      "Start": "2b87404274bd43cc8b93cf87c5f7be49",
-      "End": "17c9669e835b452c8237f3073bb46a25",
-      "Id": "8aec3483417a41769c4402dc230f29a8"
-    },
-    {
       "Start": "483164811b9f4fdf8a6ab82ac2a6d05e",
       "End": "2cb62bca067a415ebd662d8a16359f17",
       "Id": "4c58019970c24fc9ab7afe3bdb53f1c0"
-    },
-    {
-      "Start": "11a310e178854ccea7c41ba793b199f1",
-      "End": "c9c71176feb648d19634eb3fbbc154c7",
-      "Id": "4abe19f5a78849d891da9a7cdd3a2248"
     }
   ],
   "Dependencies": [
@@ -345,8 +296,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -52.0214566576786,
-        "Y": -18.7855260152727
+        "X": 120.27636270882653,
+        "Y": 46.622151689479111
       },
       {
         "ShowGeometry": true,
@@ -355,8 +306,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 947.218705388088,
-        "Y": 158.29944664253389
+        "X": 1188.2763627088266,
+        "Y": 75.6221516894791
       },
       {
         "ShowGeometry": true,
@@ -365,8 +316,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -145.0659799704348,
-        "Y": 219.89618690523579
+        "X": -386.12363729117345,
+        "Y": 116.12215168947911
       },
       {
         "ShowGeometry": true,
@@ -375,8 +326,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 741.54461269825265,
-        "Y": 158.42982939423092
+        "X": 963.47636270882663,
+        "Y": 75.6221516894791
       },
       {
         "ShowGeometry": true,
@@ -385,8 +336,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 192.54480876849698,
-        "Y": 135.76445237435723
+        "X": 120.27636270882653,
+        "Y": 130.6221516894791
       },
       {
         "ShowGeometry": true,
@@ -395,23 +346,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 475.9825032553058,
-        "Y": -8.7641529072147932
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "SketchPlane.ByPlane",
-        "Id": "d2afa6f8f77243d8bb841cc21dc92805",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 457.09319005346487,
-        "Y": 134.75881376718493
+        "X": 676.27636270882658,
+        "Y": 75.622151689479111
       }
     ],
     "Annotations": [],
-    "X": 226.98227837304967,
-    "Y": 155.77630742130387,
-    "Zoom": 0.68387381298901562
+    "X": 247.80640477834064,
+    "Y": 83.697342032785116,
+    "Zoom": 0.799595248520623
   }
 }

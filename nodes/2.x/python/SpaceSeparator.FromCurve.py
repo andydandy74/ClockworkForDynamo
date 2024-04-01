@@ -13,15 +13,20 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 curves = UnwrapElement(IN[0])
-sketchplane = UnwrapElement(IN[1])
-view = UnwrapElement(IN[2])
+view = UnwrapElement(IN[1])
+
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-curvearray = CurveArray()
-for curve in curves:
-	curvearray.Append(curve.ToRevitType())
-doccreation = doc.Create
-separatorarray = doccreation.NewSpaceBoundaryLines(sketchplane, curvearray, view)
+o = view.Origin
+n = view.ViewDirection
+if o and n: 
+	sketchplane = SketchPlane.Create(doc, Plane.CreateByNormalAndOrigin(n, o))
+	curvearray = CurveArray()
+	for curve in curves:
+		curvearray.Append(curve.ToRevitType())
+	doccreation = doc.Create
+	separatorarray = doccreation.NewSpaceBoundaryLines(sketchplane, curvearray, view)
+else: separatorarray = []
 TransactionManager.Instance.TransactionTaskDone()
 
 elementlist = list()

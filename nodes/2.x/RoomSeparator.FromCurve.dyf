@@ -107,7 +107,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nsketchplane = UnwrapElement(IN[1])\r\nview = UnwrapElement(IN[2])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ncurvearray = CurveArray()\r\nfor curve in curves:\r\n\tcurvearray.Append(curve.ToRevitType())\r\ndoccreation = doc.Create\r\nseparatorarray = doccreation.NewRoomBoundaryLines(sketchplane, curvearray, view)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nelementlist = list()\r\nfor item in separatorarray:\r\n\telementlist.append(item)\r\nif isinstance(IN[0], list): OUT = elementlist\r\nelse: OUT = elementlist[0]",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\no = view.Origin\r\nn = view.ViewDirection\r\nif o and n: \r\n\tsketchplane = SketchPlane.Create(doc, Plane.CreateByNormalAndOrigin(n, o))\r\n\tcurvearray = CurveArray()\r\n\tfor curve in curves:\r\n\t\tcurvearray.Append(curve.ToRevitType())\r\n\tdoccreation = doc.Create\r\n\tseparatorarray = doccreation.NewRoomBoundaryLines(sketchplane, curvearray, view)\r\nelse: separatorarray = []\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nelementlist = list()\r\nfor item in separatorarray:\r\n\telementlist.append(item)\r\nif isinstance(IN[0], list): OUT = elementlist\r\nelse: OUT = elementlist[0]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "786d1079e66a4b07a4fde72dbefe5739",
@@ -129,15 +129,6 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
-        },
-        {
-          "Id": "680d2e3ad0d1481090be4897959480a2",
-          "Name": "IN[2]",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -153,36 +144,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes Python-Skript aus."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane",
-      "Id": "5164e2de76b04d8aaee154178e8059cc",
-      "Inputs": [
-        {
-          "Id": "c3c38f08002c4d4dbc80d3a2b2610a07",
-          "Name": "plane",
-          "Description": "Plane",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "39c5e58b10c843e2989a282538ccce0a",
-          "Name": "SketchPlane",
-          "Description": "SketchPlane",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Erstellt eine Revit-SketchPlane anhand einer gegebenen Ebene.\n\nSketchPlane.ByPlane (plane: Plane): SketchPlane"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -263,28 +224,18 @@
     },
     {
       "Start": "d92426b538f24446b5a0e9fd7997f24c",
-      "End": "680d2e3ad0d1481090be4897959480a2",
-      "Id": "fadd300f11ab4cf58f614578fdf7cb2f"
+      "End": "82b04bbe97474ae58a6e3b933738fcee",
+      "Id": "2186c2971e3247a2b27797836a7073f4"
     },
     {
       "Start": "d92426b538f24446b5a0e9fd7997f24c",
-      "End": "82b04bbe97474ae58a6e3b933738fcee",
-      "Id": "2186c2971e3247a2b27797836a7073f4"
+      "End": "cec85a5f4daa4a6f9209a493e040e117",
+      "Id": "7768de3ff3ba457a9cbdc39340bdd2bc"
     },
     {
       "Start": "7f5cc07c3b1a480fae9cb07e3baba6de",
       "End": "05e1304a9fa04efc8751007047e3350e",
       "Id": "a74e4860278c41c583541c884a279cde"
-    },
-    {
-      "Start": "39c5e58b10c843e2989a282538ccce0a",
-      "End": "cec85a5f4daa4a6f9209a493e040e117",
-      "Id": "d44dc12be18943658d1fc8b237dd6a6f"
-    },
-    {
-      "Start": "b43606c2653b459f8bd17e068e249c83",
-      "End": "c3c38f08002c4d4dbc80d3a2b2610a07",
-      "Id": "682e45728cdc405ab6a72b2379459449"
     },
     {
       "Start": "b43606c2653b459f8bd17e068e249c83",
@@ -341,8 +292,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -388.62347326639383,
-        "Y": -28.740581424434041
+        "X": -191.29949729510076,
+        "Y": 9.9142175995078219
       },
       {
         "ShowGeometry": true,
@@ -351,8 +302,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 614.321419321766,
-        "Y": 94.204129280084942
+        "X": 876.70050270489924,
+        "Y": 38.914217599507815
       },
       {
         "ShowGeometry": true,
@@ -361,8 +312,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -452.9204139119675,
-        "Y": 150.92410234470759
+        "X": -715.29949729510076,
+        "Y": 79.414217599507822
       },
       {
         "ShowGeometry": true,
@@ -371,18 +322,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 423.6152397121042,
-        "Y": 95.329356881049932
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "SketchPlane.ByPlane",
-        "Id": "5164e2de76b04d8aaee154178e8059cc",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 125.64987992039539,
-        "Y": 104.07458395753964
+        "X": 651.90050270489928,
+        "Y": 38.914217599507815
       },
       {
         "ShowGeometry": true,
@@ -391,8 +332,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -154.9810908333161,
-        "Y": 52.559636823929239
+        "X": -191.29949729510076,
+        "Y": 93.914217599507822
       },
       {
         "ShowGeometry": true,
@@ -401,13 +342,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 156.54658200004104,
-        "Y": -29.100921682034283
+        "X": 364.70050270489924,
+        "Y": 38.914217599507822
       }
     ],
     "Annotations": [],
-    "X": 551.46034984830885,
-    "Y": 106.09673037477448,
+    "X": 252.26034984830881,
+    "Y": 119.6967303747745,
     "Zoom": 0.613181641584442
   }
 }

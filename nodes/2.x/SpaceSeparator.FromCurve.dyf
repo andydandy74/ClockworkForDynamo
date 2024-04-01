@@ -107,7 +107,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nsketchplane = UnwrapElement(IN[1])\r\nview = UnwrapElement(IN[2])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ncurvearray = CurveArray()\r\nfor curve in curves:\r\n\tcurvearray.Append(curve.ToRevitType())\r\ndoccreation = doc.Create\r\nseparatorarray = doccreation.NewSpaceBoundaryLines(sketchplane, curvearray, view)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nelementlist = list()\r\nfor item in separatorarray:\r\n\telementlist.append(item)\r\nif isinstance(IN[0], list): OUT = elementlist\r\nelse: OUT = elementlist[0]",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\n\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\no = view.Origin\r\nn = view.ViewDirection\r\nif o and n: \r\n\tsketchplane = SketchPlane.Create(doc, Plane.CreateByNormalAndOrigin(n, o))\r\n\tcurvearray = CurveArray()\r\n\tfor curve in curves:\r\n\t\tcurvearray.Append(curve.ToRevitType())\r\n\tdoccreation = doc.Create\r\n\tseparatorarray = doccreation.NewSpaceBoundaryLines(sketchplane, curvearray, view)\r\nelse: separatorarray = []\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nelementlist = list()\r\nfor item in separatorarray:\r\n\telementlist.append(item)\r\nif isinstance(IN[0], list): OUT = elementlist\r\nelse: OUT = elementlist[0]",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "786d1079e66a4b07a4fde72dbefe5739",
@@ -125,15 +125,6 @@
           "Id": "77b03f79e7a245e090b0570e69b3190d",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "fa2be151d17245ca948eafe02882c73a",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -223,36 +214,6 @@
       ],
       "Replication": "Auto",
       "Description": "Erstellt eine Kurve durch Ziehen in der Ebene.\n\nCurve.PullOntoPlane (plane: Plane): Curve"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "Revit.Elements.SketchPlane.ByPlane@Autodesk.DesignScript.Geometry.Plane",
-      "Id": "7c3983f1d40447508c86b34e7c4bdbf5",
-      "Inputs": [
-        {
-          "Id": "09d343e01887464b8a70d76957f16b04",
-          "Name": "plane",
-          "Description": "Plane",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "3281ce27f5074637b710bd5d3fc6c851",
-          "Name": "SketchPlane",
-          "Description": "SketchPlane",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Erstellt eine Revit-SketchPlane anhand einer gegebenen Ebene.\n\nSketchPlane.ByPlane (plane: Plane): SketchPlane"
     }
   ],
   "Connectors": [
@@ -263,13 +224,13 @@
     },
     {
       "Start": "9db621e58de44dc1bbff5cb667d6556c",
-      "End": "fa2be151d17245ca948eafe02882c73a",
-      "Id": "bf787fd9a0654d989a5df1d8038718d1"
+      "End": "07b58b591cce484dba07902f4562bc10",
+      "Id": "ddd2b4f3450a4851b72bc064bd263abd"
     },
     {
       "Start": "9db621e58de44dc1bbff5cb667d6556c",
-      "End": "07b58b591cce484dba07902f4562bc10",
-      "Id": "ddd2b4f3450a4851b72bc064bd263abd"
+      "End": "77b03f79e7a245e090b0570e69b3190d",
+      "Id": "a85171df847c49ccafca52da2e75b1bd"
     },
     {
       "Start": "02b905038bdd44c39a1a313182a830a3",
@@ -282,19 +243,9 @@
       "Id": "705a965c9ab146868248112eed68ec97"
     },
     {
-      "Start": "3db1d7f2dbc0470598cf4c765240a4c5",
-      "End": "09d343e01887464b8a70d76957f16b04",
-      "Id": "dedca9af6bbe46be9a4896f91961b553"
-    },
-    {
       "Start": "0d79378f6ffb4263b93055c693794b50",
       "End": "363e531992ff45868593e70001ca0785",
       "Id": "6c251aad0f5e437db4ddc20ad4ed7a15"
-    },
-    {
-      "Start": "3281ce27f5074637b710bd5d3fc6c851",
-      "End": "77b03f79e7a245e090b0570e69b3190d",
-      "Id": "1d500d52eb1f4043a40e4d729f96f361"
     }
   ],
   "Dependencies": [
@@ -341,8 +292,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 32.327362695472743,
-        "Y": 31.869233501751367
+        "X": 261.28406137712386,
+        "Y": 91.243340359445668
       },
       {
         "ShowGeometry": true,
@@ -351,8 +302,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1039.5999792775729,
-        "Y": 195.84948108677651
+        "X": 1329.2840613771239,
+        "Y": 120.24334035944567
       },
       {
         "ShowGeometry": true,
@@ -361,8 +312,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 26.968143476674811,
-        "Y": 251.90400297212136
+        "X": -262.71593862287614,
+        "Y": 160.74334035944568
       },
       {
         "ShowGeometry": true,
@@ -371,8 +322,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 840.33300576736,
-        "Y": 197.01744721714
+        "X": 1103.2102281149546,
+        "Y": 117.69567383510748
       },
       {
         "ShowGeometry": true,
@@ -381,8 +332,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 322.901490406859,
-        "Y": 152.4962243897412
+        "X": 261.28406137712386,
+        "Y": 175.24334035944565
       },
       {
         "ShowGeometry": true,
@@ -391,18 +342,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 588.32736269547274,
-        "Y": 60.86923350175136
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "SketchPlane.ByPlane",
-        "Id": "7c3983f1d40447508c86b34e7c4bdbf5",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 552.13420314840278,
-        "Y": 196.68307990117637
+        "X": 817.28406137712386,
+        "Y": 120.24334035944568
       }
     ],
     "Annotations": [],

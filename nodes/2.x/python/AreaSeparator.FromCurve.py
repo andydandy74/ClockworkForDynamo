@@ -13,17 +13,19 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 curves = UnwrapElement(IN[0])
-sketchplane = UnwrapElement(IN[1])
-view = UnwrapElement(IN[2])
-elementlist = list()
+view = UnwrapElement(IN[1])
+elementlist = []
 
-if str(view.ViewType) == "AreaPlan":
-	TransactionManager.Instance.EnsureInTransaction(doc)
+TransactionManager.Instance.EnsureInTransaction(doc)
+o = view.Origin
+n = view.ViewDirection
+if o and n: 
+	sketchplane = SketchPlane.Create(doc, Plane.CreateByNormalAndOrigin(n, o))
 	doccreation = doc.Create
 	for curve in curves:
 		separator = doccreation.NewAreaBoundaryLine(sketchplane, curve.ToRevitType(), view)
 		elementlist.append(separator)
-	TransactionManager.Instance.TransactionTaskDone()
-else:
-	elementlist = list("The active view needs to be an area plan...")
-OUT = elementlist
+TransactionManager.Instance.TransactionTaskDone()
+
+if isinstance(IN[0], list): OUT = elementlist
+else: OUT = elementlist[0]
