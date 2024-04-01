@@ -9,9 +9,11 @@ from RevitServices.Persistence import DocumentManager
 
 def InstancesOfFamilyType(ft, doc):
 	collector = FilteredElementCollector(doc)
-	bic = System.Enum.ToObject(BuiltInCategory, ft.Category.Id.IntegerValue)
-	collector.OfCategory(bic)
-	return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == ft.Id.IntegerValue]
+	try:
+		bic = System.Enum.ToObject(BuiltInCategory, ft.Category.Id.IntegerValue)
+		collector.OfCategory(bic)
+		return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == ft.Id.IntegerValue]
+	except: return []
 
 famtypes = UnwrapElement(IN[0])
 inputdoc = UnwrapElement(IN[2])
