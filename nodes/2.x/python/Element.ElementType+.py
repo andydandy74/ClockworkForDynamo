@@ -1,7 +1,3 @@
-import clr
-clr.AddReference('RevitAPI')
-from Autodesk.Revit.DB import *
-
 def GetElementType(element):
 	try: return element.Document.GetElement(element.GetTypeId())
 	except: return None
