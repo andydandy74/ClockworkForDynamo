@@ -17,7 +17,7 @@ success = []
 
 def SlabShapeReset(slab):
 	sle = None
-	if hasattr(slab, "SlapShapeEditor"): sle = slab.SlabShapeEditor
+	if hasattr(slab, "SlabShapeEditor"): sle = slab.SlabShapeEditor
 	elif hasattr(slab, "GetSlabShapeEditor"): sle = slab.GetSlabShapeEditor()
 	if sle:
 		try:

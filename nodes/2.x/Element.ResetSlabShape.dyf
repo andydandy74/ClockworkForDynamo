@@ -12,8 +12,9 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "Id": "6f21d07906584fbb8ad00e5e3cea879d",
       "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "6f21d07906584fbb8ad00e5e3cea879d",
       "Inputs": [
         {
           "Id": "d79124100d5543099fd2e8764bc3ec7b",
@@ -36,14 +37,14 @@
           "KeepListStructure": false
         }
       ],
-      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Replication": "Auto",
       "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "Id": "b80fb701295a42a0b3da4ee20af77cee",
       "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "b80fb701295a42a0b3da4ee20af77cee",
       "Inputs": [
         {
           "Id": "40df5631adcd4c61a7ee4ddc8c09cc4b",
@@ -66,18 +67,16 @@
           "KeepListStructure": false
         }
       ],
-      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Replication": "Auto",
       "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nslabs = UnwrapElement(IN[0])\r\nsuccess = []\r\n\r\ndef SlabShapeReset(slab):\r\n\tsle = None\r\n\tif hasattr(slab, \"SlapShapeEditor\"): sle = slab.SlabShapeEditor\r\n\telif hasattr(slab, \"GetSlabShapeEditor\"): sle = slab.GetSlabShapeEditor()\r\n\tif sle:\r\n\t\ttry:\r\n\t\t\tsle.ResetSlabShape()\r\n\t\t\treturn slab, True\r\n\t\texcept: return slab, False\r\n\telse: return slab, False\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): \r\n\tresults = [SlabShapeReset(x) for x in slabs]\r\n\tOUT = list(zip(*results))\r\nelse: OUT = SlabShapeReset(slabs)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nslabs = UnwrapElement(IN[0])\r\nsuccess = []\r\n\r\ndef SlabShapeReset(slab):\r\n\tsle = None\r\n\tif hasattr(slab, \"SlabShapeEditor\"): sle = slab.SlabShapeEditor\r\n\telif hasattr(slab, \"GetSlabShapeEditor\"): sle = slab.GetSlabShapeEditor()\r\n\tif sle:\r\n\t\ttry:\r\n\t\t\tsle.ResetSlabShape()\r\n\t\t\treturn slab, True\r\n\t\texcept: return slab, False\r\n\telse: return slab, False\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): \r\n\tresults = [SlabShapeReset(x) for x in slabs]\r\n\tOUT = list(zip(*results))\r\nelse: OUT = SlabShapeReset(slabs)\r\nTransactionManager.Instance.TransactionTaskDone()",
       "Engine": "IronPython2",
-      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "3f6b22e9c8c54dd9a237675ede814374",
-      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "7f7b28a903614b848aeb7939016e0a3b",
@@ -105,6 +104,7 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
       "Parameter": {
         "Name": "element",
         "TypeName": "var",
@@ -113,7 +113,6 @@
         "Description": ""
       },
       "Id": "70f60e859fc74566901fba24a86313c9",
-      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -131,10 +130,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "element",
       "Id": "3e764157e5724b5a8cc7a08497954383",
-      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "fce0d3fbeaa04a7080c0e4e6dccb3bc1",
@@ -152,10 +151,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "success",
       "Id": "177f02dcbe0f4ad5af2b9c801ee971bb",
-      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "8c44b5d56ddc472d84fa0ce021ddfc09",
@@ -176,32 +175,27 @@
     {
       "Start": "2331f203eba34629bb56910dc0eb9b37",
       "End": "8c44b5d56ddc472d84fa0ce021ddfc09",
-      "Id": "ada4d8788b2d4bacb746fae03ebd81da",
-      "IsHidden": "False"
+      "Id": "ada4d8788b2d4bacb746fae03ebd81da"
     },
     {
       "Start": "c64b2fe213e94b34986186e42fc50323",
       "End": "fce0d3fbeaa04a7080c0e4e6dccb3bc1",
-      "Id": "7ca80edf822b438699c90839cab9b705",
-      "IsHidden": "False"
+      "Id": "7ca80edf822b438699c90839cab9b705"
     },
     {
       "Start": "8508bbf887c640b78e11210051bd658b",
       "End": "40df5631adcd4c61a7ee4ddc8c09cc4b",
-      "Id": "32c47d96dac7417c8c12cc0ba5a7f36d",
-      "IsHidden": "False"
+      "Id": "32c47d96dac7417c8c12cc0ba5a7f36d"
     },
     {
       "Start": "8508bbf887c640b78e11210051bd658b",
       "End": "d79124100d5543099fd2e8764bc3ec7b",
-      "Id": "48b9c5f1442b4903b7eee3884163ccb4",
-      "IsHidden": "False"
+      "Id": "48b9c5f1442b4903b7eee3884163ccb4"
     },
     {
       "Start": "88cea336fa9e4549abb11602524c8521",
       "End": "7f7b28a903614b848aeb7939016e0a3b",
-      "Id": "81871803172f4ce4a3999fc2c2c2e1e9",
-      "IsHidden": "False"
+      "Id": "81871803172f4ce4a3999fc2c2c2e1e9"
     }
   ],
   "Dependencies": [],
@@ -213,12 +207,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.19.3.6394",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "_Hintergrundvorschau",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -229,65 +223,64 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
-    "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "6f21d07906584fbb8ad00e5e3cea879d",
+        "ShowGeometry": true,
         "Name": "List.LastItem",
+        "Id": "6f21d07906584fbb8ad00e5e3cea879d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
         "X": 831.42225519287911,
         "Y": 466.66478050573608
       },
       {
-        "Id": "b80fb701295a42a0b3da4ee20af77cee",
+        "ShowGeometry": true,
         "Name": "List.FirstItem",
+        "Id": "b80fb701295a42a0b3da4ee20af77cee",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
         "X": 831.42225519287911,
         "Y": 318.664780505736
       },
       {
-        "Id": "3f6b22e9c8c54dd9a237675ede814374",
+        "ShowGeometry": true,
         "Name": "Python Script",
+        "Id": "3f6b22e9c8c54dd9a237675ede814374",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
         "X": 557.02225519287913,
         "Y": 392.664780505736
       },
       {
-        "Id": "70f60e859fc74566901fba24a86313c9",
+        "ShowGeometry": true,
         "Name": "Input",
+        "Id": "70f60e859fc74566901fba24a86313c9",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
         "X": 222.62225519287915,
         "Y": 392.664780505736
       },
       {
-        "Id": "3e764157e5724b5a8cc7a08497954383",
+        "ShowGeometry": true,
         "Name": "Output",
+        "Id": "3e764157e5724b5a8cc7a08497954383",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
         "X": 1107.4222551928792,
         "Y": 318.664780505736
       },
       {
-        "Id": "177f02dcbe0f4ad5af2b9c801ee971bb",
+        "ShowGeometry": true,
         "Name": "Output",
+        "Id": "177f02dcbe0f4ad5af2b9c801ee971bb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
         "X": 1107.4222551928792,
         "Y": 466.664780505736
       }
