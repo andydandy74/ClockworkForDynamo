@@ -7,13 +7,11 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 grouptypes = UnwrapElement(IN[0])
-elementlist = list()
-for gt in grouptypes:
+
+def GroupTypeInstances(gt):
 	if gt.GetType().ToString() == "Autodesk.Revit.DB.GroupType":
-		groups = gt.Groups
-		glist = []
-		for group in groups:
-			glist.append(group.ToDSType(True))
-		elementlist.append(glist)
-	else: elementlist.append(List())
-OUT = elementlist
+		return [x.ToDSType(True) for x in gt.Groups]
+	else: return []
+
+if isinstance(IN[0], list): OUT = [GroupTypeInstances(x) for x in grouptypes]
+else: OUT = GroupTypeInstances(grouptypes)
