@@ -12,9 +12,12 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 def AddPointToSlabShape(item, point):
-	if hasattr(item, "SlabShapeEditor") and hasattr(point, "ToXyz"):
+	if hasattr(item, "SlabShapeEditor"): sle = item.SlabShapeEditor
+	elif hasattr(item, "GetSlabShapeEditor"): sle = item.GetSlabShapeEditor()
+	else: return False
+	if hasattr(point, "ToXyz"):
 		try:
-			item.SlabShapeEditor.DrawPoint(point.ToXyz())
+			sle.DrawPoint(point.ToXyz())
 			return True
 		except: return False
 	else: return False

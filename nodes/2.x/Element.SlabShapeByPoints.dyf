@@ -2,8 +2,8 @@
   "Uuid": "d145e1db-d069-452f-b46d-7ad9b0fd906d",
   "IsCustomNode": true,
   "Category": "Clockwork.Revit.Elements.Actions",
-  "Description": "Transform a slab shape based on a list of Points.",
-  "Name": "Roof.SlabShapeByPoints",
+  "Description": "Transform the slab shape of a roof, floor slab or toposolid based on a list of Points.",
+  "Name": "Element.SlabShapeByPoints",
   "ElementResolver": {
     "ResolutionMap": {
       "Autodesk.Point": {
@@ -39,7 +39,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -60,7 +60,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -86,7 +86,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -97,7 +97,7 @@
         {
           "Id": "60f2d7b73e404b019602d18a6cd57f43",
           "Name": "list",
-          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -108,7 +108,7 @@
         {
           "Id": "cbbb50514f5d4f838a741ffbae911388",
           "Name": "item",
-          "Description": "First item in the list.",
+          "Description": "Das erste Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -116,7 +116,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -127,7 +127,7 @@
         {
           "Id": "7a9eba769b514a38a83752485d524920",
           "Name": "list",
-          "Description": "List to get the last item of.\n\nvar[]..[]",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -137,8 +137,8 @@
       "Outputs": [
         {
           "Id": "ef7d5f1226d64812aed0b49b122e9d29",
-          "Name": "last",
-          "Description": "Last item in the list.",
+          "Name": "item",
+          "Description": "Das letzte Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -146,7 +146,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -167,12 +167,13 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef AddPointToSlabShape(item, point):\r\n\tif hasattr(item, \"SlabShapeEditor\") and hasattr(point, \"ToXyz\"):\r\n\t\ttry:\r\n\t\t\titem.SlabShapeEditor.DrawPoint(point.ToXyz())\r\n\t\t\treturn True\r\n\t\texcept: return False\r\n\telse: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[1])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[1], list):\r\n\tif isinstance(IN[0], list):\r\n\t\tOUT = []\r\n\t\tfor item, points in zip(items, IN[0]):\r\n\t\t\tif isinstance(points, list): OUT.append((item, [AddPointToSlabShape(item, x) for x in points]))\r\n\t\t\telse: OUT.append((item, AddPointToSlabShape(item, points)))\r\n\telse: OUT = [(x, AddPointToSlabShape(x, IN[0])) for x in items]\r\n\tOUT = map(list, zip(*OUT))\r\nelse:\r\n\tif isinstance(IN[0], list): OUT = items, [AddPointToSlabShape(items, x) for x in IN[0]]\r\n\telse: OUT = items, AddPointToSlabShape(items, IN[0])\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef AddPointToSlabShape(item, point):\r\n\tif hasattr(item, \"SlabShapeEditor\"): sle = item.SlabShapeEditor\r\n\telif hasattr(item, \"GetSlabShapeEditor\"): sle = item.GetSlabShapeEditor()\r\n\telse: return False\r\n\tif hasattr(point, \"ToXyz\"):\r\n\t\ttry:\r\n\t\t\tsle.DrawPoint(point.ToXyz())\r\n\t\t\treturn True\r\n\t\texcept: return False\r\n\telse: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[1])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[1], list):\r\n\tif isinstance(IN[0], list):\r\n\t\tOUT = []\r\n\t\tfor item, points in zip(items, IN[0]):\r\n\t\t\tif isinstance(points, list): OUT.append((item, [AddPointToSlabShape(item, x) for x in points]))\r\n\t\t\telse: OUT.append((item, AddPointToSlabShape(item, points)))\r\n\telse: OUT = [(x, AddPointToSlabShape(x, IN[0])) for x in items]\r\n\tOUT = map(list, zip(*OUT))\r\nelse:\r\n\tif isinstance(IN[0], list): OUT = items, [AddPointToSlabShape(items, x) for x in IN[0]]\r\n\telse: OUT = items, AddPointToSlabShape(items, IN[0])\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "c7afee10e85146dda85d7ec0c9fb92f5",
       "Inputs": [
@@ -207,7 +208,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     }
   ],
   "Connectors": [
@@ -243,18 +244,20 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -273,8 +276,8 @@
         "Name": "Input",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": -69.7757259220978,
-        "Y": -38.4598453845157
+        "X": -311.38076517119947,
+        "Y": -52.871374041479626
       },
       {
         "Id": "8391a372b1134e1ab6eaaa1f0875826c",
@@ -334,12 +337,12 @@
         "ShowGeometry": true,
         "Excluded": false,
         "X": 266.224274077902,
-        "Y": -9.45984538451572
+        "Y": -9.4598453845157167
       }
     ],
     "Annotations": [],
-    "X": 391.3392333766,
-    "Y": 234.946805101146,
-    "Zoom": 0.943688925978591
+    "X": 181.65083339914645,
+    "Y": 256.39195273264011,
+    "Zoom": 0.8736912533723532
   }
 }
