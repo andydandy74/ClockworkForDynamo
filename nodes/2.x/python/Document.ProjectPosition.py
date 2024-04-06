@@ -24,4 +24,14 @@ if version > 2017:
 else:
 	position_data = projloc.ProjectPosition[XYZ.Zero]
 	location_data = projloc.SiteLocation
-OUT = (position_data.Angle,position_data.Elevation,position_data.EastWest,position_data.NorthSouth)
+if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
+else: unittype = UnitType.UT_Length
+
+def InternalUnitToDisplayUnit(val, unittype):
+	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
+	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
+	else: dispunits = formatoptions.DisplayUnits
+	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
+	except: return None
+
+OUT = (position_data.Angle, InternalUnitToDisplayUnit(position_data.Elevation, unittype), InternalUnitToDisplayUnit(position_data.EastWest, unittype), InternalUnitToDisplayUnit(position_data.NorthSouth, unittype))
