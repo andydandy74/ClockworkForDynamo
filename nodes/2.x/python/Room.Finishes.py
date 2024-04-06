@@ -7,14 +7,24 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.GeometryConversion)
 
-items = UnwrapElement(IN[0])
-facetypes = []
-facemats = []
-faceelements = []
-faceareas = []
-faces = []
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
 
-for item in items:
+items = UnwrapElement(IN[0])
+version = IN[1]
+if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
+else: unittype = UnitType.UT_Area
+
+def InternalUnitToDisplayUnit(val, unittype):
+	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
+	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
+	else: dispunits = formatoptions.DisplayUnits
+	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
+	except: return None
+
+def RoomFinishes(item):
 	doc = item.Document
 	calculator = SpatialElementGeometryCalculator(doc)
 	options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()
@@ -50,13 +60,12 @@ for item in items:
 					elist.append(doc.GetElement(eId))
 					if bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)
 					else: mlist.append(doc.GetElement(bface.GetBoundingElementFace().MaterialElementId))
-				alist.append(bface.GetSubface().Area)
+				alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))
 				flist.append(bface.GetBoundingElementFace())
-	except:
-		pass	
-	facetypes.append(tlist)
-	facemats.append(mlist)
-	faceelements.append(elist)
-	faceareas.append(alist)
-	faces.append(flist)
-OUT = (facetypes,facemats,faceareas,faces,faceelements)
+		return tlist, mlist, alist, flist, elist
+	except: return [],[],[],[],[]
+
+if isinstance(IN[0], list): 
+	results = [RoomFinishes(x) for x in items]
+	OUT = list(zip(*results))
+else: OUT = RoomFinishes(items)
