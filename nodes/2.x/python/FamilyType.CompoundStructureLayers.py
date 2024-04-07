@@ -6,7 +6,22 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+clr.AddReference("RevitServices")
+import RevitServices
+from RevitServices.Persistence import DocumentManager
+doc = DocumentManager.Instance.CurrentDBDocument
+
 items = UnwrapElement(IN[0])
+version = IN[1]
+if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
+else: unittype = UnitType.UT_Length
+
+def InternalUnitToDisplayUnit(val, unittype):
+	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
+	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
+	else: dispunits = formatoptions.DisplayUnits
+	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
+	except: return None
 
 def GetCompoundStructureLayers(item):
 	layers = []
@@ -28,7 +43,7 @@ def GetCompoundStructureLayers(item):
 				layers.append(compstruc.GetLayers()[counter])
 				layermat.append(item.Document.GetElement(compstruc.GetMaterialId(counter)))
 				layerfunc.append(compstruc.GetLayerFunction(counter))
-				layerwidth.append(compstruc.GetLayerWidth(counter))
+				layerwidth.append(InternalUnitToDisplayUnit(compstruc.GetLayerWidth(counter), unittype))
 				layercore.append(compstruc.IsCoreLayer(counter))
 				if compstruc.IsCoreLayer(counter): layerwraps.append(False)
 				else: layerwraps.append(compstruc.ParticipatesInWrapping(counter))
