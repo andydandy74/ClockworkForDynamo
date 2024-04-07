@@ -14,18 +14,21 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 sheetnums = IN[0]
 sheetnames = IN[1]
-elementlist = list()
-counter = 0
 
-TransactionManager.Instance.EnsureInTransaction(doc)
-for num in sheetnums:
+def MakePlaceholderSheet(num, name):
 	try:
 		newsheet = ViewSheet.CreatePlaceholder(doc)
 		newsheet.SheetNumber = num
-		newsheet.Name = sheetnames[counter]
-		elementlist.append(newsheet.ToDSType(False))
+		newsheet.Name = name
+		return newsheet.ToDSType(False)
 	except:
-		elementlist.append(None)
-	counter += 1
+		return None
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): OUT = [MakePlaceholderSheet(x,y) for x,y in zip(sheetnums, sheetnames)]
+	else: OUT = MakePlaceholderSheet(sheetnums[0],sheetnames)
+else:
+	if isinstance(IN[1], list): OUT = MakePlaceholderSheet(sheetnums,sheetnames[0])
+	else: OUT = MakePlaceholderSheet(sheetnums,sheetnames)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = elementlist
