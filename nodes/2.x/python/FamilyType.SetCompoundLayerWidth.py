@@ -7,10 +7,17 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def DisplayUnitToInternalUnit(val, unittype):
+	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
+	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
+	else: dispunits = formatoptions.DisplayUnits
+	try: return UnitUtils.ConvertToInternalUnits(val,dispunits)
+	except: return None
+
 def SetCompoundLayerWidth(famtype, index, width):
 	try:
 		cs = famtype.GetCompoundStructure()
-		cs.SetLayerWidth(index,width)
+		cs.SetLayerWidth(index, DisplayUnitToInternalUnit(width, unittype))
 		famtype.SetCompoundStructure(cs)
 		return True
 	except: return False
@@ -19,6 +26,9 @@ doc = DocumentManager.Instance.CurrentDBDocument
 famtypes = UnwrapElement(IN[0])
 indices = IN[1]
 widths = IN[2]
+version = IN[3]
+if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
+else: unittype = UnitType.UT_Length
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 if isinstance(IN[0], list):
