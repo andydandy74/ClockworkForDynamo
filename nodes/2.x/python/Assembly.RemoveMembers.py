@@ -13,19 +13,25 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-assembly = UnwrapElement(IN[0])
-element_array = UnwrapElement(IN[1])
+assemblies = UnwrapElement(IN[0])
+elements = UnwrapElement(IN[1])
 
-# add items to assembly
+def RemoveAssemblyMembers(assembly, members):
+	if isinstance(members, list): items = members
+	else: items = [members]
+	# create a Revit-compatible list of IDs
+	ids = list()
+	[ids.append(x.Id) for x in items]	
+	idlist = List[ElementId](ids)
+	try:
+		assembly.RemoveMemberIds(idlist)
+		return assembly, True
+	except: return assembly, False
+
 TransactionManager.Instance.EnsureInTransaction(doc)
-# create a Revit-compatible list of IDs
-ids = list()
-for elem in element_array:
-	ids.append(elem.Id)	
-idlist = List[ElementId](ids)
-try:
-	assembly.RemoveMemberIds(idlist)
-	OUT = assembly
-except:
-	OUT = None
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): results = [RemoveAssemblyMembers(x, y) for x,y in zip(assemblies, elements)]
+	else: results = [RemoveAssemblyMembers(x, elements) for x in assemblies]
+	OUT = list(zip(*results))
+else: OUT = RemoveAssemblyMembers(assemblies, elements)
 TransactionManager.Instance.TransactionTaskDone()
