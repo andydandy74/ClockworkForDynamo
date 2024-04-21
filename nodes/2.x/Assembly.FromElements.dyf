@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nelement_array = UnwrapElement(IN[0])\r\nassembly_names = IN[1]\r\nassembly_list = list()\r\n\r\n# create assemblies\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor arr in element_array:\r\n\t# create a Revit-compatible list of IDs\r\n\tids = list()\r\n\tfor elem in arr:\r\n\t\tids.append(elem.Id)\t\r\n\tidlist = List[ElementId](ids)\r\n\tassembly_list.append(AssemblyInstance.Create(doc, idlist, arr[0].Category.Id))\r\nTransactionManager.Instance.TransactionTaskDone()\r\nTransactionManager.Instance.ForceCloseTransaction()\r\n# rename assembly types\r\ni = 0\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor assinst in assembly_list:\r\n\tassinst.AssemblyTypeName = assembly_names[i]\r\n\ti += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = assembly_list",
+      "Code": "import clr\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nelement_array = UnwrapElement(IN[0])\r\nnames = IN[1]\r\n\r\ndef MakeAssembly(items):\r\n\ttry: \r\n\t\tidlist = List[ElementId]([x.Id for x in items])\r\n\t\treturn AssemblyInstance.Create(doc, idlist, items[0].Category.Id)\r\n\texcept: return None\r\n\r\n# create assemblies\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(names, list): OUT = [MakeAssembly(x) for x in element_array]\r\nelse: OUT = MakeAssembly(element_array)\r\nTransactionManager.Instance.TransactionTaskDone()\r\nTransactionManager.Instance.ForceCloseTransaction()\r\n# rename assembly types after assemblies have been committed\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(names, list): \r\n\tfor x,y in zip(OUT, names):\r\n\t\tif x:\r\n\t\t\ttry: x.AssemblyTypeName = y\r\n\t\t\texcept: pass\r\nelif OUT: \r\n\ttry: OUT.AssemblyTypeName = names\r\n\texcept: pass\r\nTransactionManager.Instance.TransactionTaskDone()",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "7f91abb39b2a43cd92187bc0625ee27f",
@@ -83,7 +83,7 @@
       "Parameter": {
         "Name": "assemblyName",
         "TypeName": "string",
-        "TypeRank": 0,
+        "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
@@ -123,77 +123,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "a9b3428224da47ec98ecf8ed1a1f8276",
-      "Inputs": [
-        {
-          "Id": "5aeeed55f33140a9a26af0edb10f6b15",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "8110a6c835c84d9e99cc43d8a9934c03",
-          "Name": "seq",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Turns an element (or a nested list) into a flat list"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "c3ea815dc203491f9badafc09b057882",
-      "Inputs": [
-        {
-          "Id": "2ffae30b124545f48c36f482cbb3a77c",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e785343907534564bc321669580bb9cf",
-          "Name": "seq",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "76665600f4a74805b08d49a0f187f768",
-          "Name": "",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -265,8 +194,8 @@
   "Connectors": [
     {
       "Start": "91fd884f46da4b8a97c227923c0fefc0",
-      "End": "e785343907534564bc321669580bb9cf",
-      "Id": "2711f7dd3d1a4a09877760511e3c3f4a"
+      "End": "55d0d361b5f548909ab57a9f83d622db",
+      "Id": "a8b7506f747d45a28bae0ac2498cac0f"
     },
     {
       "Start": "6be39f147c78485cbf4267793cdb92d6",
@@ -275,23 +204,8 @@
     },
     {
       "Start": "22dd2ab1d45c4c50be54ef580b03de70",
-      "End": "5aeeed55f33140a9a26af0edb10f6b15",
-      "Id": "c4d81eba53ab4e65bff16f0b65d243c4"
-    },
-    {
-      "Start": "22dd2ab1d45c4c50be54ef580b03de70",
-      "End": "2ffae30b124545f48c36f482cbb3a77c",
-      "Id": "2018b2f9e48542fe9b26715d213764f8"
-    },
-    {
-      "Start": "8110a6c835c84d9e99cc43d8a9934c03",
       "End": "b075dcbd1ded4324b16060b46ea1d95d",
-      "Id": "19eab318d9cb4aefb0319bc75563682a"
-    },
-    {
-      "Start": "76665600f4a74805b08d49a0f187f768",
-      "End": "55d0d361b5f548909ab57a9f83d622db",
-      "Id": "548136bd81e64bd0bc53b7f2634f7b8a"
+      "Id": "cc4f074a73ca4b178c8fb6c46d0aca80"
     },
     {
       "Start": "9336f9f6ff314d1887435cbec3c7f709",
@@ -305,8 +219,6 @@
     }
   ],
   "Dependencies": [
-    "cd09ad33-8c34-4850-ac26-24448d92c38f",
-    "44ac4888-4aa4-49a9-9344-23b729c11df9",
     "9e586fb6-2570-4445-8556-aa20d337fb98"
   ],
   "NodeLibraryDependencies": [
@@ -315,8 +227,6 @@
       "Version": "2.6.0",
       "ReferenceType": "Package",
       "Nodes": [
-        "a9b3428224da47ec98ecf8ed1a1f8276",
-        "c3ea815dc203491f9badafc09b057882",
         "cac04b6d497d45ad86a935b8a95d38a1"
       ]
     }
@@ -372,8 +282,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -408.40221111471737,
-        "Y": 72.694934113689527
+        "X": 48.18806156273979,
+        "Y": 87.999635991146391
       },
       {
         "ShowGeometry": true,
@@ -382,28 +292,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1267.5977888852824,
-        "Y": 52.69493411368952
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "TurnIntoList",
-        "Id": "a9b3428224da47ec98ecf8ed1a1f8276",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -90.802211114717352,
-        "Y": 92.694934113689527
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "ReturnListOrSingleValue",
-        "Id": "c3ea815dc203491f9badafc09b057882",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 957.99778888528249,
-        "Y": 52.69493411368952
+        "X": 923.891716791263,
+        "Y": 78.244766021563549
       },
       {
         "ShowGeometry": true,
@@ -427,8 +317,8 @@
       }
     ],
     "Annotations": [],
-    "X": 175.1096225632424,
-    "Y": 273.51699896429932,
-    "Zoom": 0.62725821625708977
+    "X": 166.01255908388623,
+    "Y": 409.83220788084191,
+    "Zoom": 0.55486841572155776
   }
 }

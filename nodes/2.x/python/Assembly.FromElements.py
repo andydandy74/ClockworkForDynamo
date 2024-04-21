@@ -14,26 +14,28 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 element_array = UnwrapElement(IN[0])
-assembly_names = IN[1]
-assembly_list = list()
+names = IN[1]
+
+def MakeAssembly(items):
+	try: 
+		idlist = List[ElementId]([x.Id for x in items])
+		return AssemblyInstance.Create(doc, idlist, items[0].Category.Id)
+	except: return None
 
 # create assemblies
 TransactionManager.Instance.EnsureInTransaction(doc)
-for arr in element_array:
-	# create a Revit-compatible list of IDs
-	ids = list()
-	for elem in arr:
-		ids.append(elem.Id)	
-	idlist = List[ElementId](ids)
-	assembly_list.append(AssemblyInstance.Create(doc, idlist, arr[0].Category.Id))
+if isinstance(names, list): OUT = [MakeAssembly(x) for x in element_array]
+else: OUT = MakeAssembly(element_array)
 TransactionManager.Instance.TransactionTaskDone()
 TransactionManager.Instance.ForceCloseTransaction()
-# rename assembly types
-i = 0
+# rename assembly types after assemblies have been committed
 TransactionManager.Instance.EnsureInTransaction(doc)
-for assinst in assembly_list:
-	assinst.AssemblyTypeName = assembly_names[i]
-	i += 1
+if isinstance(names, list): 
+	for x,y in zip(OUT, names):
+		if x:
+			try: x.AssemblyTypeName = y
+			except: pass
+elif OUT: 
+	try: OUT.AssemblyTypeName = names
+	except: pass
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = assembly_list
