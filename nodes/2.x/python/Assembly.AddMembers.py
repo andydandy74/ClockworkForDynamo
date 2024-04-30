@@ -13,19 +13,19 @@ from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
-assembly = UnwrapElement(IN[0])
+assemblies = UnwrapElement(IN[0])
 element_array = UnwrapElement(IN[1])
 
-# add items to assembly
+def AddAssemblyMembers(assembly, items):
+	if not hasattr(items, "__iter__"): items = [items]
+	ids = [x.Id for x in items]
+	idlist = List[ElementId](ids)
+	try:
+		assembly.AddMemberIds(idlist)
+		return assembly
+	except: return None
+
 TransactionManager.Instance.EnsureInTransaction(doc)
-# create a Revit-compatible list of IDs
-ids = list()
-for elem in element_array:
-	ids.append(elem.Id)	
-idlist = List[ElementId](ids)
-try:
-	assembly.AddMemberIds(idlist)
-	OUT = assembly
-except:
-	OUT = None
+if isinstance(assemblies, list): OUT = [AddAssemblyMembers(x,y) for x, y in zip(assemblies, element_array)]
+else: OUT = AddAssemblyMembers(assemblies, element_array)
 TransactionManager.Instance.TransactionTaskDone()
