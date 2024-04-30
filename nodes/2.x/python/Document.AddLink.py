@@ -14,18 +14,16 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 linkpaths = IN[0]
 relative = IN[1]
-elementlist = list()
-booleans = list()
 
-TransactionManager.Instance.EnsureInTransaction(doc)
-for path in linkpaths:
+def AddLink(path):
 	try:
 		linkpath = ModelPathUtils.ConvertUserVisiblePathToModelPath(path)
 		linkoptions = RevitLinkOptions(relative)
 		linkloadresult = RevitLinkType.Create(doc, linkpath, linkoptions)
-		elementlist.append(RevitLinkInstance.Create(doc, linkloadresult.ElementId).ToDSType(False))
-		booleans.append(True)
-	except:
-		booleans.append(False)
+		return RevitLinkInstance.Create(doc, linkloadresult.ElementId).ToDSType(False)
+	except: return None
+
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(linkpaths, list): OUT = [AddLink(x) for x in linkpaths]
+else: OUT = AddLink(linkpaths)
 TransactionManager.Instance.TransactionTaskDone()
-OUT = (elementlist, booleans)
