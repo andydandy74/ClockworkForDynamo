@@ -3,15 +3,11 @@ import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-fams = UnwrapElement(IN[0])
-elementlist = list()
+items = UnwrapElement(IN[0])
 
-for fam in fams:
-	try:
-		copinglist = list()
-		for id in fam.GetCopingIds():
-			copinglist.append(fam.Document.GetElement(id))
-		elementlist.append(copinglist)
-	except:	elementlist.append(list())
+def GetCopingElements(item):
+	if hasattr(item, "GetCopingIds"): return [item.Document.GetElement(x) for x in item.GetCopingIds()]
+	else: return []
 
-OUT = elementlist
+if isinstance(IN[0], list): OUT = [GetCopingElements(x) for x in items]
+else: OUT = GetCopingElements(items) 
