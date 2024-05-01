@@ -13,16 +13,19 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 views = UnwrapElement(IN[0])
-phase = UnwrapElement(IN[1])
-booleans = list()
+phases = UnwrapElement(IN[1])
 
-TransactionManager.Instance.EnsureInTransaction(doc)
-for view in views:
+def SetViewPhase(view, phase):
 	try:
 		view.get_Parameter(BuiltInParameter.VIEW_PHASE).Set(phase.Id)
-		booleans.append(True)
-	except:
-		booleans.append(False)
-TransactionManager.Instance.TransactionTaskDone()
+		return True
+	except: return False
 
-OUT = (views,booleans)
+TransactionManager.Instance.EnsureInTransaction(doc)
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): OUT = [SetViewPhase(x, y) for x, y in zip(views, phases)]
+	else: OUT = [SetViewPhase(x, phases) for x in views]
+else:
+	if isinstance(IN[1], list): OUT = SetViewPhase(views, phases[0])
+	else: OUT = SetViewPhase(views, phases)
+TransactionManager.Instance.TransactionTaskDone()
