@@ -11,37 +11,6 @@
   "Outputs": [],
   "Nodes": [
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "6eaa085b17a4441e964cb7dd23aa07f0",
-      "Inputs": [
-        {
-          "Id": "b25b7f3ebd0949f2adc4f9561850c818",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "39d90027fbd2492ba2ce7309874b3355",
-          "Name": "seq",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "Turns an element (or a nested list) into a flat list"
-    },
-    {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
       "NodeType": "InputNode",
       "Parameter": {
@@ -65,7 +34,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -86,12 +55,13 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nobjinstances = UnwrapElement(IN[0])\r\nvectorlist = list()\r\nfor item in objinstances:\r\n\ttry:\r\n\t\tvectorlist.append(item.HandOrientation.ToVector())\r\n\texcept:\r\n\t\tvectorlist.append(list())\r\nOUT = vectorlist",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef GetHandOrientation(item):\r\n\tif hasattr(item, \"HandOrientation\"): return item.HandOrientation.ToVector()\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetHandOrientation(x) for x in items]\r\nelse: OUT = GetHandOrientation(items)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "f27486d907024b2884ec72a775b5e9eb",
       "Inputs": [
@@ -117,92 +87,36 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "aeb01ea11f414739910435fcfe3c67f2",
-      "Inputs": [
-        {
-          "Id": "c2a881eb8c5a41e0bd5b3e27f05a9a8c",
-          "Name": "unknownItem",
-          "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "0644e12dbbb34c3c8402dbf852d2db78",
-          "Name": "seq",
-          "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "d8977b1fc2ab40af8d9c9b134dca4791",
-          "Name": "",
-          "Description": "Output #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Disabled",
-      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     }
   ],
   "Connectors": [
     {
-      "Start": "39d90027fbd2492ba2ce7309874b3355",
+      "Start": "35dde1dbb70247fc954bdd11584f1e52",
       "End": "7737161a37c94a58a708c3dea67c0b6f",
-      "Id": "7cb9144c5457472d96aab960c9eb5f15"
-    },
-    {
-      "Start": "35dde1dbb70247fc954bdd11584f1e52",
-      "End": "b25b7f3ebd0949f2adc4f9561850c818",
-      "Id": "93b44ee79dca4ce2a7d77827db9de8b9"
-    },
-    {
-      "Start": "35dde1dbb70247fc954bdd11584f1e52",
-      "End": "c2a881eb8c5a41e0bd5b3e27f05a9a8c",
-      "Id": "e4310658f7de4ba6a6d8cac7fd98a6c9"
+      "Id": "bc100d93dec34cdcb8b741f965971ad8"
     },
     {
       "Start": "1667c9934f674d779b1b3aaefd660f1c",
-      "End": "0644e12dbbb34c3c8402dbf852d2db78",
-      "Id": "a109c591b587467d81f04c90aa6cfb6f"
-    },
-    {
-      "Start": "d8977b1fc2ab40af8d9c9b134dca4791",
       "End": "43d556b229e44194853ab1c7175cf43e",
-      "Id": "b5098c24604a47789e4438e4ac09d450"
+      "Id": "0d261469b17548f7b2988ce388e012a7"
     }
   ],
-  "Dependencies": [
-    "cd09ad33-8c34-4850-ac26-24448d92c38f",
-    "44ac4888-4aa4-49a9-9344-23b729c11df9"
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -215,24 +129,14 @@
     },
     "NodeViews": [
       {
-        "Id": "6eaa085b17a4441e964cb7dd23aa07f0",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
-        "ShowGeometry": true,
-        "Excluded": false,
-        "X": 231.42728661399,
-        "Y": 27.0518241993955
-      },
-      {
         "Id": "7d675e6fff054b4b89ebbe20b050e79e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Name": "Input",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": 27.0227388449914,
-        "Y": -72.3918547501727
+        "X": 153.44357711364415,
+        "Y": -23.210470052288443
       },
       {
         "Id": "4fc294fde0ca43078144597c5fd12d37",
@@ -241,8 +145,8 @@
         "Name": "Output",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": 862.264415382297,
-        "Y": -72.4209401045769
+        "X": 735.84357711364419,
+        "Y": -23.210470052288443
       },
       {
         "Id": "f27486d907024b2884ec72a775b5e9eb",
@@ -251,23 +155,13 @@
         "Name": "Python Script",
         "ShowGeometry": true,
         "Excluded": false,
-        "X": 404.0,
-        "Y": 26.0
-      },
-      {
-        "Id": "aeb01ea11f414739910435fcfe3c67f2",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
-        "ShowGeometry": true,
-        "Excluded": false,
-        "X": 585.264415382297,
-        "Y": -72.4209401045769
+        "X": 511.04357711364418,
+        "Y": -23.21047005228845
       }
     ],
     "Annotations": [],
-    "X": 49.2218668689248,
-    "Y": 145.867260575314,
-    "Zoom": 0.925146786319689
+    "X": -52.881775239671612,
+    "Y": 301.33486001129882,
+    "Zoom": 0.7246319600322858
   }
 }

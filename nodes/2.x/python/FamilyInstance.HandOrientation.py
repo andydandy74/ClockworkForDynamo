@@ -7,11 +7,11 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 clr.ImportExtensions(Revit.GeometryConversion)
 
-objinstances = UnwrapElement(IN[0])
-vectorlist = list()
-for item in objinstances:
-	try:
-		vectorlist.append(item.HandOrientation.ToVector())
-	except:
-		vectorlist.append(list())
-OUT = vectorlist
+def GetHandOrientation(item):
+	if hasattr(item, "HandOrientation"): return item.HandOrientation.ToVector()
+	else: return None
+
+items = UnwrapElement(IN[0])
+
+if isinstance(IN[0], list): OUT = [GetHandOrientation(x) for x in items]
+else: OUT = GetHandOrientation(items)
