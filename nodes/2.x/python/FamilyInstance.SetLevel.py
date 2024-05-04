@@ -14,17 +14,18 @@ from RevitServices.Transactions import TransactionManager
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
 lvls = UnwrapElement(IN[1])
-booleans = list()
-i = 0
+
+def SetFamilyInstanceLevel(item, lvl):
+	try:
+		item.get_Parameter(BuiltInParameter.FAMILY_LEVEL_PARAM).Set(lvl.Id)
+		return True
+	except: return False
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for item in items:
-	try:
-		item.get_Parameter(BuiltInParameter.FAMILY_LEVEL_PARAM).Set(lvls[i].Id)
-		booleans.append(True)
-	except:
-		booleans.append(False)
-	i += 1
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): OUT = [SetFamilyInstanceLevel(x, y) for x,y in zip(items, lvls)]
+	else: OUT = [SetFamilyInstanceLevel(x, lvls) for x in items]
+else:
+	if isinstance(IN[1], list): OUT = SetFamilyInstanceLevel(items, lvls[0])
+	else: OUT = SetFamilyInstanceLevel(items, lvls)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = (items,booleans)
