@@ -19,6 +19,7 @@ elems = []
 guids = []
 isinst = []
 
+if not isinstance(IN[0], list): search_cats = [search_cats]
 for search_cat in search_cats:
 	search_ids.append(search_cat.Id.IntegerValue)
 	names.append(list())
@@ -66,4 +67,5 @@ while iterator.MoveNext():
 					isinst[i].append(True)
 				else: isinst[i].append(False)
 			i += 1
-OUT = (names, vag, pgs, pts, uts, isvis, elems, guids, isinst)
+if isinstance(IN[0], list): OUT = (names, vag, pgs, pts, uts, isvis, elems, guids, isinst)
+else: OUT = (names[0], vag[0], pgs[0], pts[0], uts[0], isvis[0], elems[0], guids[0], isinst[0])
