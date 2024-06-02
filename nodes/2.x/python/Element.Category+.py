@@ -17,6 +17,7 @@ def GetCategory(item):
 	if objtype == "Autodesk.Revit.DB.ParameterFilterElement": returnIDs = item.GetCategories()
 	elif objtype == "Autodesk.Revit.DB.ViewSchedule": returnID = item.Definition.CategoryId
 	elif objtype == "Autodesk.Revit.DB.Family": returnID = item.FamilyCategoryId
+	elif objtype == "Autodesk.Revit.DB.ColorFillScheme": returnID = item.CategoryId
 	elif objtype == "Autodesk.Revit.DB.GraphicsStyle":  returnID = item.GraphicsStyleCategory.Id
 	elif objtype == "Revit.Application.Document":
 		if item.IsFamilyDocument: 
