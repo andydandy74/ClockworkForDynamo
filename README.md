@@ -12,14 +12,19 @@
 
 **Clockwork** is a collection of custom nodes for the [Dynamo](http://www.dynamobim.com) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 450+ nodes of which a large portion was originally published in a number of separate packages.
 
-Clockwork for Dynamo 2.x is currently developed in Dynamo 2.6.0 but also tested in newer 2.x versions which means it's compatible with Revit 2021 and later (and probably still working in Revit 2017-2020 as well).
+Clockwork for Dynamo 2.x is currently developed in Dynamo 2.12.0 but also tested in newer 2.x versions which means it's compatible with Revit 2021 and later (and probably still working in Revit 2017-2021 as well).
 
-## Installation
+# Installation
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. Make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo (most likely 2.x). 
-As of **Revit 2023** you will need to install the package **"DynamoIronPython2.7"** (also from the package manager). Dynamo's workspace reference view extension will prompt you to install version 2.1 of that package. **Don't do that!** Instead **install the latest version** of that package.
 
-## Versions
+As of **Revit 2023** you will also need to install the package **"DynamoIronPython2.7"** (also from the package manager):
+- Revit **2023/24**: Install version **2.5** of that package
+- Revit **2025**: Install version **3.2** of that package
+
+# Versions
 The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
+
+**There is a 3.x package planned but until then the 2.x package should also run in Revit 2025.**
 
 Package name | Supported | Last version | Revit versions | Change log | Docs | Repository | Deprecated nodes | Samples
 -- | -- | -- | -- | -- | -- | -- | -- | --
@@ -32,17 +37,17 @@ Clockwork for Dynamo **0.6.3** | :x: | 0.63.3 | 2013-14 |   | [Docs](https://git
 
 Note that Clockwork version numbering follows the Dynamo version the package is currently maintained for, e.g. Clockwork for Dynamo 2.x v**2.0**.XXX is maintained in Dynamo **2.0**.0 while Clockwork for Dynamo 2.x v**2.3**.XXX would be maintained in Dynamo **2.0.3** and Clockwork for Dynamo 2.x v**2.30**.XXX would be maintained in Dynamo **2.3.0**...
 
-## Renamed, recategorized and deprecated nodes
+# Renamed, recategorized and deprecated nodes
 During migration from one Dynamo version to the next, I regularly recategorize, relabel and rename a lot of nodes. These changes are documented in an [excel sheet](https://github.com/andydandy74/ClockworkForDynamo/raw/master/NodeList.xlsx) that contains a list of all nodes within the package.
 
-## Material on this repository
+# Material on this repository
 This repository contains the following:
 - Directory [maintenance](maintenance) contains scripts that I use to keep Clockwork in shape, e.g. for creating the node documentation on the wiki, extracting Python scripts from custom nodes etc.
 - Directory [nodes](nodes) is the actual repository of the custom nodes that I use for versioning nodes in between publishing package updates to Dynamo's package manager - which means you will sometimes find nodes in here that haven't made it onto the package manager yet.
 - Directory [package_samples](package_samples) contains simple examples for most of the nodes in Clockwork. I use them for occasional testing, but they should also help explain how to use each node. All samples are available for the current versions - sample support for older versions is patchy at best.
 - Directory [workflow_samples](workflow_samples) contains some old sample workflows that I have published online somewhere before. I have also included some of the examples that I used to use for teaching Dynamo as well as some material presented at conferences. Almost all of these are available for Dynamo 0.7.x (as well as 0.6.3). They will not be updated to a current version.
 
-## Sponsoring?
+# Sponsoring?
 This is free software. I've created and maintained it on my spare time for a number of years now.
 I don't do Patreon or GitHub Sponsors and I'm not planning to.
 However, if you are using this software or have done so in the past and it has increased your productivity, please consider giving something back nonetheless. If you're smart enough to use Dynamo, you're most probably smart enough to know climate change is real, too. And I'd like to believe you're already doing something to battle it at this point. 
