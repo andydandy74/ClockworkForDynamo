@@ -50,13 +50,14 @@ while iterator.MoveNext():
 			if cat.Id.IntegerValue == search_id:
 				names[i].append(iterator.Key.Name)
 				vag[i].append(iterator.Key.VariesAcrossGroups)
-				pgs[i].append(iterator.Key.ParameterGroup)
 				if version > 2021: 
 					pts[i].append(iterator.Key.GetDataType())
 					uts[i].append(iterator.Key.GetDataType())
+					pgs[i].append(iterator.Key.GetGroupTypeId())
 				else: 
 					pts[i].append(iterator.Key.ParameterType)
 					uts[i].append(iterator.Key.UnitType)
+					pgs[i].append(iterator.Key.ParameterGroup)
 				isvis[i].append(iterator.Key.Visible)
 				elem = doc.GetElement(iterator.Key.Id)
 				elems[i].append(elem)

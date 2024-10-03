@@ -37,13 +37,14 @@ iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
 	vag.append(iterator.Key.VariesAcrossGroups)
 	names.append(iterator.Key.Name)
-	pgs.append(iterator.Key.ParameterGroup)
 	if version > 2021: 
 		pts.append(iterator.Key.GetDataType())
 		uts.append(iterator.Key.GetDataType())
+		pgs.append(iterator.Key.GetGroupTypeId())
 	else: 
 		pts.append(iterator.Key.ParameterType)
 		uts.append(iterator.Key.UnitType)
+		pgs.append(iterator.Key.ParameterGroup)
 	isvis.append(iterator.Key.Visible)
 	elem = doc.GetElement(iterator.Key.Id)
 	elems.append(elem)

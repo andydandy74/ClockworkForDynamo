@@ -138,7 +138,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\nversion = IN[2]\r\n\r\nnames = []\r\ncats = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\nbics = []\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n\tvag.append(iterator.Key.VariesAcrossGroups)\r\n\tnames.append(iterator.Key.Name)\r\n\tpgs.append(iterator.Key.ParameterGroup)\r\n\tif version > 2021: \r\n\t\tpts.append(iterator.Key.GetDataType())\r\n\t\tuts.append(iterator.Key.GetDataType())\r\n\telse: \r\n\t\tpts.append(iterator.Key.ParameterType)\r\n\t\tuts.append(iterator.Key.UnitType)\r\n\tisvis.append(iterator.Key.Visible)\r\n\telem = doc.GetElement(iterator.Key.Id)\r\n\telems.append(elem)\r\n\tif elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n\t\tguids.append(elem.GuidValue)\r\n\telse: guids.append(None)\r\n\tif iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n\t\tisinst.append(True)\r\n\telse:\r\n\t\tisinst.append(False)\r\n\tthesecats = []\r\n\tbuiltincats = []\r\n\tfor cat in iterator.Current.Categories:\r\n\t\ttry:\r\n\t\t\tthesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))\r\n\t\texcept:\r\n\t\t\t# Return null if category is not supported by Dynamo\r\n\t\t\t# This way the user knows there are unsupported categories assigned\r\n\t\t\tthesecats.append(None)\r\n\t\tbuiltincats.append(System.Enum.ToObject(BuiltInCategory, cat.Id.IntegerValue))\r\n\tcats.append(thesecats)\r\n\tbics.append(builtincats)\r\nOUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst, bics)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\nversion = IN[2]\r\n\r\nnames = []\r\ncats = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\nbics = []\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n\tvag.append(iterator.Key.VariesAcrossGroups)\r\n\tnames.append(iterator.Key.Name)\r\n\tif version > 2021: \r\n\t\tpts.append(iterator.Key.GetDataType())\r\n\t\tuts.append(iterator.Key.GetDataType())\r\n\t\tpgs.append(iterator.Key.GetGroupTypeId())\r\n\telse: \r\n\t\tpts.append(iterator.Key.ParameterType)\r\n\t\tuts.append(iterator.Key.UnitType)\r\n\t\tpgs.append(iterator.Key.ParameterGroup)\r\n\tisvis.append(iterator.Key.Visible)\r\n\telem = doc.GetElement(iterator.Key.Id)\r\n\telems.append(elem)\r\n\tif elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n\t\tguids.append(elem.GuidValue)\r\n\telse: guids.append(None)\r\n\tif iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n\t\tisinst.append(True)\r\n\telse:\r\n\t\tisinst.append(False)\r\n\tthesecats = []\r\n\tbuiltincats = []\r\n\tfor cat in iterator.Current.Categories:\r\n\t\ttry:\r\n\t\t\tthesecats.append(Revit.Elements.Category.ById(cat.Id.IntegerValue))\r\n\t\texcept:\r\n\t\t\t# Return null if category is not supported by Dynamo\r\n\t\t\t# This way the user knows there are unsupported categories assigned\r\n\t\t\tthesecats.append(None)\r\n\t\tbuiltincats.append(System.Enum.ToObject(BuiltInCategory, cat.Id.IntegerValue))\r\n\tcats.append(thesecats)\r\n\tbics.append(builtincats)\r\nOUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst, bics)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "146117d840fa492a9a4c4c722866e3a0",
       "Inputs": [
@@ -182,7 +183,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -615,13 +616,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.6.2.15705",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -645,8 +647,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 487.182624049574,
-        "Y": 50.6589962713291
+        "X": 491.08262404957389,
+        "Y": 124.18494592998678
       },
       {
         "ShowGeometry": true,
@@ -655,8 +657,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 263.182624049574,
-        "Y": 46.445662937995792
+        "X": 266.28262404957394,
+        "Y": 119.97161259665342
       },
       {
         "ShowGeometry": true,
@@ -665,8 +667,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -254.817375950426,
-        "Y": 17.4456629379958
+        "X": -289.71737595042606,
+        "Y": 50.971612596653415
       },
       {
         "ShowGeometry": true,
@@ -675,8 +677,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": -215.261003728671
+        "X": 743.082624049574,
+        "Y": -217.16172073667991
       },
       {
         "ShowGeometry": true,
@@ -685,8 +687,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": -132.261003728671
+        "X": 743.082624049574,
+        "Y": -134.16172073667991
       },
       {
         "ShowGeometry": true,
@@ -695,8 +697,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -254.817375950426,
-        "Y": 101.445662937996
+        "X": -289.71737595042606,
+        "Y": 133.97161259665342
       },
       {
         "ShowGeometry": true,
@@ -705,8 +707,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": -49.2610037286709
+        "X": 743.082624049574,
+        "Y": -51.161720736679911
       },
       {
         "ShowGeometry": true,
@@ -715,8 +717,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": 33.7389962713291
+        "X": 743.082624049574,
+        "Y": 31.838279263320089
       },
       {
         "ShowGeometry": true,
@@ -725,8 +727,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": 116.738996271329
+        "X": 743.082624049574,
+        "Y": 114.83827926332009
       },
       {
         "ShowGeometry": true,
@@ -735,8 +737,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 711.06922949247235,
-        "Y": 191.80083130335854
+        "X": 743.082624049574,
+        "Y": 207.83827926332009
       },
       {
         "ShowGeometry": true,
@@ -745,8 +747,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": 282.738996271329
+        "X": 743.082624049574,
+        "Y": 300.83827926332009
       },
       {
         "ShowGeometry": true,
@@ -755,8 +757,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": 365.738996271329
+        "X": 743.082624049574,
+        "Y": 383.83827926332009
       },
       {
         "ShowGeometry": true,
@@ -765,8 +767,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 708.182624049574,
-        "Y": 448.738996271329
+        "X": 743.082624049574,
+        "Y": 466.83827926332009
       },
       {
         "ShowGeometry": true,
@@ -775,8 +777,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 701.470926093767,
-        "Y": 530.415788615946
+        "X": 743.082624049574,
+        "Y": 549.83827926332015
       },
       {
         "ShowGeometry": true,
@@ -785,8 +787,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 680.32590078223245,
-        "Y": 630.93756225531115
+        "X": 743.082624049574,
+        "Y": 632.83827926332015
       },
       {
         "ShowGeometry": true,
@@ -795,13 +797,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 68.00651445859512,
-        "Y": 199.42294936583576
+        "X": -289.71737595042606,
+        "Y": 226.97161259665342
       }
     ],
     "Annotations": [],
-    "X": 362.42243353522736,
-    "Y": 188.06684385980356,
-    "Zoom": 1.2299395571190197
+    "X": 183.87025196801159,
+    "Y": 82.09090397340168,
+    "Zoom": 0.65248940168757075
   }
 }
