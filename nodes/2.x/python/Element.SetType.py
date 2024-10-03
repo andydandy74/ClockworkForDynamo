@@ -26,7 +26,7 @@ types = UnwrapElement(IN[1])
 TransactionManager.Instance.EnsureInTransaction(doc)
 if isinstance(IN[0], list):
 	if isinstance(IN[1], list): OUT = [SetElementType(x,y) for x,y in zip(items,types)]
-	else: OUT = [SetElementType(x,tagtypes) for x in items]
+	else: OUT = [SetElementType(x,types) for x in items]
 else:
 	if isinstance(IN[1], list): OUT = SetElementType(items,types[0])
 	else: OUT = SetElementType(items,types)
