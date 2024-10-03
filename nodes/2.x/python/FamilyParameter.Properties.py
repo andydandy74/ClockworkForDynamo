@@ -29,15 +29,16 @@ for param in params:
 	pname.append(param.Definition.Name)
 	try:guid.append(param.GUID.ToString())
 	except: guid.append(None)
-	pgroup.append(param.Definition.ParameterGroup)
 	if version > 2021:
 		ptype.append(param.Definition.GetDataType())
 		utype.append(param.Definition.GetDataType())
+		pgroup.append(param.Definition.GetGroupTypeId())
 		try: dutype.append(param.GetUnitTypeId())
 		except: dutype.append(None)
 	else:
 		ptype.append(param.Definition.ParameterType)
 		utype.append(param.Definition.UnitType)
+		pgroup.append(param.Definition.ParameterGroup)
 		try: dutype.append(param.DisplayUnitType)
 		except: dutype.append(None)
 	stype.append(param.StorageType)
