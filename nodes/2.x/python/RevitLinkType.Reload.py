@@ -1,7 +1,6 @@
 import clr
 import sys
-sys.path.append("C:\Program Files (x86)\IronPython 2.7\Lib")
-import os.path
+import System.IO
 
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -18,7 +17,7 @@ from RevitServices.Transactions import TransactionManager
 def ReloadLink(doc, link, path):
 	try:
 		if path:
-			if os.path.isfile(path):
+			if System.IO.Path.Exists(path):
 				bfi = BasicFileInfo.Extract(path)
 				if not bfi.IsSavedInLaterVersion:
 					if path == doc.PathName:
