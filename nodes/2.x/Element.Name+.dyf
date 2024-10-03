@@ -60,7 +60,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nimport os\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetName(item):\r\n\tunwrapped = UnwrapElement(item)\r\n\tif not unwrapped: return None\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.TopographySurface\"):\r\n\t\ttry: return unwrapped.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()\r\n\t\texcept: return unwrapped.Name\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.BuiltInParameter\", \"Autodesk.Revit.DB.BuiltInParameterGroup\", \"Autodesk.Revit.DB.DisplayUnitType\", \"Autodesk.Revit.DB.ParameterType\", \"Autodesk.Revit.DB.UnitSymbolType\", \"Autodesk.Revit.DB.UnitType\"): \r\n\t\ttry: return LabelUtils.GetLabelFor(unwrapped)\r\n\t\texcept: return unwrapped.ToString()\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Parameter\", \"Autodesk.Revit.DB.FamilyParameter\"): return unwrapped.Definition.Name\r\n\telif unwrapped.GetType().ToString() == \"Revit.Application.Document\": \r\n\t\tif unwrapped.FilePath: return os.path.basename(unwrapped.FilePath)\r\n\t\telse: return None\r\n\telif unwrapped.GetType().ToString() == (\"Autodesk.Revit.DB.ForgeTypeId\"): \r\n\t\ttry: return LabelUtils.GetLabelForSpec(unwrapped)\r\n\t\texcept: \r\n\t\t\ttry: return LabelUtils.GetLabelForSymbol(unwrapped)\r\n\t\t\texcept: \r\n\t\t\t\ttry: return LabelUtils.GetLabelForUnit(unwrapped)\r\n\t\t\t\texcept: \r\n\t\t\t\t\ttry: return LabelUtils.GetLabelForGroup(unwrapped)\r\n\t\t\t\t\texcept: \r\n\t\t\t\t\t\ttry: return LabelUtils.GetLabelForBuiltinParameter(unwrapped)\r\n\t\t\t\t\t\texcept: \r\n\t\t\t\t\t\t\ttry: return LabelUtils.GetLabelForDiscipline(unwrapped)\r\n\t\t\t\t\t\t\texcept: return unwrapped.TypeId\t\t\t\r\n\telif hasattr(unwrapped, \"GetName\"): return unwrapped.GetName()\r\n\telif hasattr(unwrapped, \"Name\"): return unwrapped.Name\r\n\telif hasattr(item, \"Name\"): return item.Name\r\n\telse: return None\r\n\r\nitems = IN[0]\r\nif isinstance(IN[0], list): OUT = [GetName(x) for x in IN[0]]\r\nelse: OUT = GetName(IN[0])",
+      "Code": "import clr\r\nimport System.IO\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetName(item):\r\n\tunwrapped = UnwrapElement(item)\r\n\tif not unwrapped: return None\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.TopographySurface\"):\r\n\t\ttry: return unwrapped.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()\r\n\t\texcept: return unwrapped.Name\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.BuiltInParameter\", \"Autodesk.Revit.DB.BuiltInParameterGroup\", \"Autodesk.Revit.DB.DisplayUnitType\", \"Autodesk.Revit.DB.ParameterType\", \"Autodesk.Revit.DB.UnitSymbolType\", \"Autodesk.Revit.DB.UnitType\"): \r\n\t\ttry: return LabelUtils.GetLabelFor(unwrapped)\r\n\t\texcept: return unwrapped.ToString()\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Parameter\", \"Autodesk.Revit.DB.FamilyParameter\"): return unwrapped.Definition.Name\r\n\telif unwrapped.GetType().ToString() == \"Revit.Application.Document\": \r\n\t\tif unwrapped.FilePath: return System.IO.Path.GetFileName(unwrapped.FilePath)\r\n\t\telse: return None\r\n\telif unwrapped.GetType().ToString() == (\"Autodesk.Revit.DB.ForgeTypeId\"): \r\n\t\ttry: return LabelUtils.GetLabelForSpec(unwrapped)\r\n\t\texcept: \r\n\t\t\ttry: return LabelUtils.GetLabelForSymbol(unwrapped)\r\n\t\t\texcept: \r\n\t\t\t\ttry: return LabelUtils.GetLabelForUnit(unwrapped)\r\n\t\t\t\texcept: \r\n\t\t\t\t\ttry: return LabelUtils.GetLabelForGroup(unwrapped)\r\n\t\t\t\t\texcept: \r\n\t\t\t\t\t\ttry: return LabelUtils.GetLabelForBuiltinParameter(unwrapped)\r\n\t\t\t\t\t\texcept: \r\n\t\t\t\t\t\t\ttry: return LabelUtils.GetLabelForDiscipline(unwrapped)\r\n\t\t\t\t\t\t\texcept: return unwrapped.TypeId\t\t\t\r\n\telif hasattr(unwrapped, \"GetName\"): return unwrapped.GetName()\r\n\telif hasattr(unwrapped, \"Name\"): return unwrapped.Name\r\n\telif hasattr(item, \"Name\"): return item.Name\r\n\telse: return None\r\n\r\nitems = IN[0]\r\nif isinstance(IN[0], list): OUT = [GetName(x) for x in IN[0]]\r\nelse: OUT = GetName(IN[0])",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "fe1345c4af284ad48eee6a5bbea61e11",
@@ -135,8 +135,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 351.41596757146,
-        "Y": 264.501720867205
+        "X": 295.01596757146,
+        "Y": 138.37285610201076
       },
       {
         "ShowGeometry": true,
@@ -145,8 +145,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 763.41596757146,
-        "Y": 264.501720867205
+        "X": 819.81596757146,
+        "Y": 138.37285610201076
       },
       {
         "ShowGeometry": true,
@@ -155,13 +155,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 577.83421630738462,
-        "Y": 264.501720867205
+        "X": 595.01596757146,
+        "Y": 138.37285610201076
       }
     ],
     "Annotations": [],
-    "X": 195.389962425175,
-    "Y": 157.311437901972,
+    "X": -287.01003757482488,
+    "Y": 100.51143790197193,
     "Zoom": 1.17131835730765
   }
 }

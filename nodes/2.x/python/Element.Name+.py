@@ -1,5 +1,5 @@
 import clr
-import os
+import System.IO
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
@@ -14,7 +14,7 @@ def GetName(item):
 		except: return unwrapped.ToString()
 	elif unwrapped.GetType().ToString() in ("Autodesk.Revit.DB.Parameter", "Autodesk.Revit.DB.FamilyParameter"): return unwrapped.Definition.Name
 	elif unwrapped.GetType().ToString() == "Revit.Application.Document": 
-		if unwrapped.FilePath: return os.path.basename(unwrapped.FilePath)
+		if unwrapped.FilePath: return System.IO.Path.GetFileName(unwrapped.FilePath)
 		else: return None
 	elif unwrapped.GetType().ToString() == ("Autodesk.Revit.DB.ForgeTypeId"): 
 		try: return LabelUtils.GetLabelForSpec(unwrapped)
