@@ -1,7 +1,4 @@
 import clr
-import sys
-pyt_path = r'C:\Program Files (x86)\IronPython 2.7\Lib'
-sys.path.append(pyt_path)
 import xml.etree.ElementTree as ET
 import json
 
