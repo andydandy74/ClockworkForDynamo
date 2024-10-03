@@ -1,7 +1,7 @@
 import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
-import os
+import System.IO
 
 clr.AddReference("RevitServices")
 import RevitServices
@@ -33,7 +33,7 @@ try:
 	doc.SaveAs(path, opt)
 	if doc.IsFamilyDocument and astemplate: 
 		newpath = path.replace(".rfa", ".rft")
-		os.rename(path, newpath)
+		System.IO.File.Move(path, newpath)
 	OUT = True
 except:
 	try:
