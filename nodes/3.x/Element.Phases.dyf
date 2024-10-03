@@ -1,0 +1,254 @@
+{
+  "Uuid": "48ac7d7c-8035-45e6-8a63-8c9206be35b6",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets the created and demolished phases of an element",
+  "Name": "Element.Phases",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "2b5dff1011be4d46a935cfee1f76d8e7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "92a4ea24a9244501a0f4f990369756be",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "Created",
+      "Id": "b76d35433fa24e9880f222200acf5987",
+      "Inputs": [
+        {
+          "Id": "11a53c2b85dd49718f6fec9351828939",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "Demolished",
+      "Id": "017e298c114f4f90a67fe6285fa68b0d",
+      "Inputs": [
+        {
+          "Id": "8870cc6ab6874dbc92f25a10be0f27ee",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "seq[0];\nseq[1];",
+      "Id": "5884466b48c44df29a28686b2d5fba60",
+      "Inputs": [
+        {
+          "Id": "8077e3f11dd34b7eacb413d21eb47a00",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "492e71a276264b069a3523afd993244c",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "97e1ceaa60ea400590c9ffef052ee2d6",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetPhases(item):\r\n\tif hasattr(item, \"CreatedPhaseId\"):\r\n\t\treturn item.Document.GetElement(item.CreatedPhaseId), item.Document.GetElement(item.DemolishedPhaseId)\r\n\telse: return None, None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetPhases(x) for x in items]))\r\nelse: OUT = GetPhases(items)",
+      "VariableInputPorts": true,
+      "Id": "32bb649a083845ccb2d324a3ba8cca87",
+      "Inputs": [
+        {
+          "Id": "3d8235ae3c28410d89c4f01afbaf22f5",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d2685b42a7534a4fb7e219ebb8a1bdeb",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "92a4ea24a9244501a0f4f990369756be",
+      "End": "3d8235ae3c28410d89c4f01afbaf22f5",
+      "Id": "0dc830aeb7394a94809f1700195fb16e"
+    },
+    {
+      "Start": "492e71a276264b069a3523afd993244c",
+      "End": "11a53c2b85dd49718f6fec9351828939",
+      "Id": "6acf1830f1074a61ba77b10ad93af124"
+    },
+    {
+      "Start": "97e1ceaa60ea400590c9ffef052ee2d6",
+      "End": "8870cc6ab6874dbc92f25a10be0f27ee",
+      "Id": "cbae52ce3504465cb2cd5dda77de343c"
+    },
+    {
+      "Start": "d2685b42a7534a4fb7e219ebb8a1bdeb",
+      "End": "8077e3f11dd34b7eacb413d21eb47a00",
+      "Id": "1531040a4e9742edbe4d513d7016021b"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "2b5dff1011be4d46a935cfee1f76d8e7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 260.436817472697,
+        "Y": 15.8547608162038
+      },
+      {
+        "Id": "b76d35433fa24e9880f222200acf5987",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 893.436817472697,
+        "Y": -17.3585725171295
+      },
+      {
+        "Id": "017e298c114f4f90a67fe6285fa68b0d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 893.436817472697,
+        "Y": 66.6414274828705
+      },
+      {
+        "Id": "5884466b48c44df29a28686b2d5fba60",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 672.436817472697,
+        "Y": 20.0680941495371
+      },
+      {
+        "Id": "32bb649a083845ccb2d324a3ba8cca87",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 448.436817472697,
+        "Y": 15.8547608162038
+      }
+    ],
+    "Annotations": [],
+    "X": 30.0,
+    "Y": 302.966932270916,
+    "Zoom": 1.02151394422311
+  }
+}

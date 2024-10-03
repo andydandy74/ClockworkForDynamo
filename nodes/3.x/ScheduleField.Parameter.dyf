@@ -1,0 +1,165 @@
+{
+  "Uuid": "05ec4ec7-f127-49dc-b35e-8a4e19c5eb22",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Query",
+  "Description": "Retrieves the parameter associated with a given schedule field",
+  "Name": "ScheduleField.Parameter",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetScheduleFieldParam(schedulefield):\r\n\tif hasattr(schedulefield, \"ParameterId\"): \r\n\t\tpId = schedulefield.ParameterId\r\n\t\tif pId != ElementId.InvalidElementId: \r\n\t\t\t# BuiltInParameters\r\n\t\t\tif pId.IntegerValue < 0: \r\n\t\t\t\ttry: return bips[bipIds.index(pId.IntegerValue)]\r\n\t\t\t\texcept: return None\r\n\t\t\t# Project/Family/Shared Parameters\r\n\t\t\telse: return schedulefield.Schedule.Document.GetElement(schedulefield.ParameterId)\r\n\t\telse: return None\r\n\telse: return None\r\n\r\nschedulefields = UnwrapElement(IN[0])\r\nbipsAll = System.Enum.GetValues(BuiltInParameter)\r\nbips = []\r\nbipIds = []\r\nfor bip in bipsAll:\r\n\ttry:\r\n\t\tbips.append(bip)\r\n\t\tbipIds.append(ElementId(bip).IntegerValue)\r\n\texcept: pass\r\n\r\nif isinstance(IN[0], list): OUT = [GetScheduleFieldParam(x) for x in schedulefields]\r\nelse: OUT = GetScheduleFieldParam(schedulefields)",
+      "VariableInputPorts": true,
+      "Id": "60996b9b798b4578bb9ea58e72ddfceb",
+      "Inputs": [
+        {
+          "Id": "9945fe733188446fa98d7f0d695cbdbf",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0c55dad8461f4ea9b1f56cd9b6f4b4ea",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "scheduleField",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "53973593a1be4de5b49ec1e658e0ed1c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "855d7b8cfdae43e38c84cf4325669dee",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "param",
+      "Id": "2ee1a95d29cb4fbe83a14235106b9b20",
+      "Inputs": [
+        {
+          "Id": "d4160ff997c846649fb72e63470ee5d9",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "0c55dad8461f4ea9b1f56cd9b6f4b4ea",
+      "End": "d4160ff997c846649fb72e63470ee5d9",
+      "Id": "d61afcbf980140e095c275ab0b841aaa"
+    },
+    {
+      "Start": "855d7b8cfdae43e38c84cf4325669dee",
+      "End": "9945fe733188446fa98d7f0d695cbdbf",
+      "Id": "7b1880a8861447c8ab0f8cfde597824f"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.6.2.15705",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "60996b9b798b4578bb9ea58e72ddfceb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 287.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "53973593a1be4de5b49ec1e658e0ed1c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -62.0,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "2ee1a95d29cb4fbe83a14235106b9b20",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 511.0,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 752.0,
+    "Y": 304.0,
+    "Zoom": 1.0
+  }
+}

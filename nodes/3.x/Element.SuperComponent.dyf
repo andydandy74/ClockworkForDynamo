@@ -1,0 +1,171 @@
+{
+  "Uuid": "27a35be1-7b94-48e9-8972-022c3767bbb9",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves the supercomponent of a given family instance, hand rail, top rail, stair component, toposurface subregion, toposolid subdivision or beam in a beam system.",
+  "Name": "Element.SuperComponent",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "89c41088f7794eadb1a226ecfb16eda2",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "03bb17d6d3554b35a953c0e088473bce",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "superComponent",
+      "Id": "74748e7a8c4b4d0f85959a63a6c890c9",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "eba34bc878154c94ae69fed933e4f48c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetSuperComponent(item):\r\n\t# nested families\r\n\tif hasattr(item, \"SuperComponent\"): return item.SuperComponent\r\n\t# beam systems\r\n\tif hasattr(item, \"BeamBelongsTo\"): return BeamSystem.BeamBelongsTo(item)\r\n\t# handrails\r\n\tif hasattr(item, \"HostRailingId\"): return item.Document.GetElement(item.HostRailingId)\r\n\t# stair components\r\n\telif hasattr(item, \"GetStairs\"): return item.GetStairs()\r\n\t# toposurface subregions\r\n\telif hasattr(item, \"IsSiteSubRegion\"):\r\n\t\tif item.IsSiteSubRegion:\r\n\t\t\treturn item.Document.GetElement(item.AsSiteSubRegion().HostId)\r\n\t\telse: return None\r\n\t# toposolid subregions\r\n\telif hasattr(item, \"HostTopoId\"):\r\n\t\tif item.HostTopoId == ElementId.InvalidElementId: return None\r\n\t\telse: return item.Document.GetElement(item.HostTopoId)\r\n\t# grid segments\r\n\telif item.GetType().ToString() == 'Autodesk.Revit.DB.Grid': \r\n\t\tsc = MultiSegmentGrid.GetMultiSegementGridId(item)\r\n\t\tif sc: return item.Document.GetElement(sc)\r\n\t\telse: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetSuperComponent(x) for x in items]\r\nelse: OUT = GetSuperComponent(items)",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "e3c35b2105004cd2bc7b62c5c797f69e",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "20efcd92ef3b4b94a9cc18391ed4c404",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d19d71059e3448a7b683e12507845426",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "03bb17d6d3554b35a953c0e088473bce",
+      "End": "20efcd92ef3b4b94a9cc18391ed4c404",
+      "Id": "084de9084e454d6e81101143f8030052",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d19d71059e3448a7b683e12507845426",
+      "End": "eba34bc878154c94ae69fed933e4f48c",
+      "Id": "1e6d0f7f58034152a20f73158ebc9c36",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.19.3.6394",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "89c41088f7794eadb1a226ecfb16eda2",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 236.445228300119,
+        "Y": -15.640799377513
+      },
+      {
+        "Id": "74748e7a8c4b4d0f85959a63a6c890c9",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 705.445228300119,
+        "Y": -15.640799377513
+      },
+      {
+        "Id": "e3c35b2105004cd2bc7b62c5c797f69e",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 481.445228300119,
+        "Y": -15.640799377513005
+      }
+    ],
+    "Annotations": [],
+    "X": 21.0,
+    "Y": 266.0,
+    "Zoom": 1.0
+  }
+}

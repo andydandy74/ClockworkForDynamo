@@ -1,0 +1,164 @@
+{
+  "Uuid": "4d3d6106-8c84-4d80-aa4c-4ef91744e3c4",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves the roof kind (Basic, Glazed, Other). PLEASE NOTE: Roofs that were created by face will be identified as 'Other'",
+  "Name": "Roof.Kind",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "roof",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4d7090a555aa4d07aa913d027092bbd0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6ab55336e1e745918abd3a8f31c24f22",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "kind",
+      "Id": "2724754f5a114d34922f0d3f831e9f6d",
+      "Inputs": [
+        {
+          "Id": "c1d2add6be6447fe8782a7a1b99dd460",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetRoofKind(item):\r\n\tif hasattr(item, \"CurtainGrids\"):\r\n\t\tif item.CurtainGrids: return \"Glazed\"\r\n\t\telse: return \"Basic\"\r\n\telse: \r\n\t\tif not item: return None\r\n\t\telif item.GetType().Name == 'RoofBase': \r\n\t\t\tif item.Document.GetElement(item.GetTypeId()).GetCompoundStructure(): return \"Basic\"\r\n\t\t\telse: return \"Glazed\"\r\n\t\telif item.GetType().Name == 'FamilyInstance': return 'In-Place'\r\n\t\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetRoofKind(x) for x in items]\r\nelse: OUT = GetRoofKind(items)",
+      "VariableInputPorts": true,
+      "Id": "20291e612b6f45eeb789a8cc6b2ea2fa",
+      "Inputs": [
+        {
+          "Id": "711f565181734622ae86dfac534154d1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "21779af450a940ac87fdcf950733675b",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "6ab55336e1e745918abd3a8f31c24f22",
+      "End": "711f565181734622ae86dfac534154d1",
+      "Id": "a8fbeacf84a04a0d9831b253b1b22ca0"
+    },
+    {
+      "Start": "21779af450a940ac87fdcf950733675b",
+      "End": "c1d2add6be6447fe8782a7a1b99dd460",
+      "Id": "c687f9d9ee244ed4b64ac65fd2dca8db"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "4d7090a555aa4d07aa913d027092bbd0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 270.486349453978,
+        "Y": 69.7219188767553
+      },
+      {
+        "Id": "2724754f5a114d34922f0d3f831e9f6d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 657.486349453978,
+        "Y": 69.7219188767553
+      },
+      {
+        "Id": "20291e612b6f45eeb789a8cc6b2ea2fa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 433.486349453978,
+        "Y": 69.7219188767553
+      }
+    ],
+    "Annotations": [],
+    "X": 30.0,
+    "Y": 304.411588411588,
+    "Zoom": 1.28071928071928
+  }
+}

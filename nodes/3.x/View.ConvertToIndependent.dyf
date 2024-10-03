@@ -1,0 +1,205 @@
+{
+  "Uuid": "e1f11598-fe0f-4bd9-8ac8-b8bd24efcb67",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Actions",
+  "Description": "Converts a given dependent view to an independent view",
+  "Name": "View.ConvertToIndependent",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DependentToIndependent(view):\r\n\ttry:\r\n\t\tview.ConvertToIndependent()\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): OUT = [DependentToIndependent(x) for x in views]\r\nelse: OUT = DependentToIndependent(views)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "VariableInputPorts": true,
+      "Id": "8581da1db17d423a88443ef54b4c47f4",
+      "Inputs": [
+        {
+          "Id": "130115b656364d10a2ae386acacf2043",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "df6481a4302a4f84940ecd4fe1be7d60",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "8d954a1f39eb4b81affa2a9a64c5e5d4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a72da0a21185424fbda3a97c9522ad95",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "view",
+      "Id": "050c9f11ff4e441aad4bd38bdc60ab68",
+      "Inputs": [
+        {
+          "Id": "f2c04f54103d4135b6b5936b16ebbb8c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "94727108b9ac4021b00c06d2d9a435cb",
+      "Inputs": [
+        {
+          "Id": "68b1ef4e42ec44089a05f72921c7e71e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "df6481a4302a4f84940ecd4fe1be7d60",
+      "End": "68b1ef4e42ec44089a05f72921c7e71e",
+      "Id": "85078fd2b0f34db7bfc8fcaa6cd5b842"
+    },
+    {
+      "Start": "a72da0a21185424fbda3a97c9522ad95",
+      "End": "130115b656364d10a2ae386acacf2043",
+      "Id": "ad47e72a421346d3957021ce51acf071"
+    },
+    {
+      "Start": "a72da0a21185424fbda3a97c9522ad95",
+      "End": "f2c04f54103d4135b6b5936b16ebbb8c",
+      "Id": "cf3a8d423f8f498d9ab83d8841760366"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "8581da1db17d423a88443ef54b4c47f4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 255.0,
+        "Y": 53.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "8d954a1f39eb4b81affa2a9a64c5e5d4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1.0,
+        "Y": 11.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "050c9f11ff4e441aad4bd38bdc60ab68",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 479.0,
+        "Y": -31.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "94727108b9ac4021b00c06d2d9a435cb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 479.0,
+        "Y": 53.0
+      }
+    ],
+    "Annotations": [],
+    "X": 173.0,
+    "Y": 96.0,
+    "Zoom": 1.0
+  }
+}

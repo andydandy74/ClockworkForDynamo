@@ -12,6 +12,7 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
       "Parameter": {
         "Name": "element",
         "TypeName": "var",
@@ -20,7 +21,6 @@
         "Description": ""
       },
       "Id": "87f38510c9e94c958119d85d995c924f",
-      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -34,14 +34,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "name",
       "Id": "8f1bdb124403406c90d67cefe95d4b2d",
-      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "d4435d44a874460591b308734765747e",
@@ -55,15 +55,15 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nimport System.IO\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetName(item):\r\n\tunwrapped = UnwrapElement(item)\r\n\tif not unwrapped: return None\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.TopographySurface\"):\r\n\t\ttry: return unwrapped.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()\r\n\t\texcept: return unwrapped.Name\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.BuiltInParameter\", \"Autodesk.Revit.DB.BuiltInParameterGroup\", \"Autodesk.Revit.DB.DisplayUnitType\", \"Autodesk.Revit.DB.ParameterType\", \"Autodesk.Revit.DB.UnitSymbolType\", \"Autodesk.Revit.DB.UnitType\"): \r\n\t\ttry: return LabelUtils.GetLabelFor(unwrapped)\r\n\t\texcept: return unwrapped.ToString()\r\n\telif unwrapped.GetType().ToString() in (\"Autodesk.Revit.DB.Parameter\", \"Autodesk.Revit.DB.FamilyParameter\"): return unwrapped.Definition.Name\r\n\telif unwrapped.GetType().ToString() == \"Revit.Application.Document\": \r\n\t\tif unwrapped.FilePath: return System.IO.Path.GetFileName(unwrapped.FilePath)\r\n\t\telse: return None\r\n\telif unwrapped.GetType().ToString() == (\"Autodesk.Revit.DB.ForgeTypeId\"): \r\n\t\ttry: return LabelUtils.GetLabelForSpec(unwrapped)\r\n\t\texcept: \r\n\t\t\ttry: return LabelUtils.GetLabelForSymbol(unwrapped)\r\n\t\t\texcept: \r\n\t\t\t\ttry: return LabelUtils.GetLabelForUnit(unwrapped)\r\n\t\t\t\texcept: \r\n\t\t\t\t\ttry: return LabelUtils.GetLabelForGroup(unwrapped)\r\n\t\t\t\t\texcept: \r\n\t\t\t\t\t\ttry: return LabelUtils.GetLabelForBuiltinParameter(unwrapped)\r\n\t\t\t\t\t\texcept: \r\n\t\t\t\t\t\t\ttry: return LabelUtils.GetLabelForDiscipline(unwrapped)\r\n\t\t\t\t\t\t\texcept: return unwrapped.TypeId\t\t\t\r\n\telif hasattr(unwrapped, \"GetName\"): return unwrapped.GetName()\r\n\telif hasattr(unwrapped, \"Name\"): return unwrapped.Name\r\n\telif hasattr(item, \"Name\"): return item.Name\r\n\telse: return None\r\n\r\nitems = IN[0]\r\nif isinstance(IN[0], list): OUT = [GetName(x) for x in IN[0]]\r\nelse: OUT = GetName(IN[0])",
       "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "fe1345c4af284ad48eee6a5bbea61e11",
-      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "a107bd83a9494493b39350f2efb8c8a7",
@@ -87,21 +87,19 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded Python script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     }
   ],
   "Connectors": [
     {
       "Start": "d06c16cc87214d6091c7c8e933b4ee70",
       "End": "a107bd83a9494493b39350f2efb8c8a7",
-      "Id": "0a79e25a7b5c4b0fa25093f4290057e7",
-      "IsHidden": "False"
+      "Id": "0a79e25a7b5c4b0fa25093f4290057e7"
     },
     {
       "Start": "816331c8c1164322b5a06633c1b7c08b",
       "End": "d4435d44a874460591b308734765747e",
-      "Id": "bd65b8a3d35749e68a566566e4aa71c7",
-      "IsHidden": "False"
+      "Id": "bd65b8a3d35749e68a566566e4aa71c7"
     }
   ],
   "Dependencies": [],
@@ -113,12 +111,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.2.1.5366",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "_Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -129,42 +127,41 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
-    "ConnectorPins": [],
     "NodeViews": [
       {
-        "Id": "87f38510c9e94c958119d85d995c924f",
+        "ShowGeometry": true,
         "Name": "Input",
+        "Id": "87f38510c9e94c958119d85d995c924f",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
-        "X": 253.01596757146,
-        "Y": 138.3728561020108
+        "X": 295.01596757146,
+        "Y": 138.37285610201076
       },
       {
-        "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+        "ShowGeometry": true,
         "Name": "Output",
+        "Id": "8f1bdb124403406c90d67cefe95d4b2d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
-        "X": 861.81596757146,
-        "Y": 138.3728561020108
+        "X": 819.81596757146,
+        "Y": 138.37285610201076
       },
       {
-        "Id": "fe1345c4af284ad48eee6a5bbea61e11",
+        "ShowGeometry": true,
         "Name": "Python Script",
+        "Id": "fe1345c4af284ad48eee6a5bbea61e11",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "ShowGeometry": true,
-        "X": 587.41596757146,
+        "X": 595.01596757146,
         "Y": 138.37285610201076
       }
     ],
     "Annotations": [],
-    "X": 195.389962425175,
-    "Y": 157.311437901972,
+    "X": -287.01003757482488,
+    "Y": 100.51143790197193,
     "Zoom": 1.17131835730765
   }
 }

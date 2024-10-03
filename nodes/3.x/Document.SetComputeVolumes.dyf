@@ -1,0 +1,230 @@
+{
+  "Uuid": "f20adbc6-41e9-4118-a55c-70b2ff8861fb",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Application.Actions",
+  "Description": "Toggle the area and volume setting to compute volumes on (true) or off (false).",
+  "Name": "Document.SetComputeVolumes",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncompvol = IN[0]\r\ncompvolstate = IN[1]\r\n\r\nif compvol != compvolstate:\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\ttry:\r\n\t\tAreaVolumeSettings.GetAreaVolumeSettings(doc).ComputeVolumes = compvol\r\n\t\tOUT = True\r\n\texcept: OUT = False\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\nelse: OUT = True",
+      "VariableInputPorts": true,
+      "Id": "3f8ba9edbaa847489ba2059f87273c3d",
+      "Inputs": [
+        {
+          "Id": "1f024602c6474c7fa7f489c3fc6cff04",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f9e0d7e6efe749b9ae4c04d3afefb6c0",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3e04db267e724a069ee346b601871dc0",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "computeVolumes",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4466fbf4d425491b9357306bc0ba7381",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "50b78b64d952471abea106427582c78b",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "bool",
+      "Id": "0abb6bddcae944398afa8e6bfcf803b4",
+      "Inputs": [
+        {
+          "Id": "64d293830bb84101a249a6b38f56d0ab",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "13f3b4fb-56da-4788-892f-b64fc4baec17",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "4148adaaa8704caa88a6727a060b5934",
+      "Inputs": [
+        {
+          "Id": "11494461f4fa4c048c55e2a8b11c8bc8",
+          "Name": "toggle",
+          "Description": "bool\nVorgabewert : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "cd27e927c0e74954a5ef00ce1af1b69c",
+          "Name": "docOrRevitLinkInstance",
+          "Description": " Use only if you want to query a linked model\n\nvar\nVorgabewert : null",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9232aa8675a14e57a2ac62c5424a52a1",
+          "Name": "bool",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns whether or not the area and volume settings are set to compute volumes."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3e04db267e724a069ee346b601871dc0",
+      "End": "64d293830bb84101a249a6b38f56d0ab",
+      "Id": "8432643d22a247eb89ae88b9f196a840"
+    },
+    {
+      "Start": "50b78b64d952471abea106427582c78b",
+      "End": "1f024602c6474c7fa7f489c3fc6cff04",
+      "Id": "7845403fc2f4428d8caf0e1a91035c8a"
+    },
+    {
+      "Start": "9232aa8675a14e57a2ac62c5424a52a1",
+      "End": "f9e0d7e6efe749b9ae4c04d3afefb6c0",
+      "Id": "40b9b60ad8fa4c0dbc7f7a4445b384e1"
+    }
+  ],
+  "Dependencies": [
+    "13f3b4fb-56da-4788-892f-b64fc4baec17"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "3f8ba9edbaa847489ba2059f87273c3d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 539.047330888091,
+        "Y": 120.653555291286
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4466fbf4d425491b9357306bc0ba7381",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 150.047330888091,
+        "Y": 91.6535552912862
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "0abb6bddcae944398afa8e6bfcf803b4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 763.047330888091,
+        "Y": 120.653555291286
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.ComputeVolumes",
+        "Id": "4148adaaa8704caa88a6727a060b5934",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 150.047330888091,
+        "Y": 175.653555291286
+      }
+    ],
+    "Annotations": [],
+    "X": 96.0,
+    "Y": 70.0,
+    "Zoom": 1.0
+  }
+}

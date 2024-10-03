@@ -1,0 +1,247 @@
+{
+  "Uuid": "a1f13bd7-3de3-49bc-ac68-8641e9601273",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns all elements that, from a logical point of view, are the children of this element. ",
+  "Name": "Element.DependentElements",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\ndef GetDependentOld(item):\r\n\t# We will need a transaction in order to \r\n\t# temporarily delete the elements and see what dependes on them.\r\n\t# Although the new method already exists in 2018.1\r\n\t# it requires an element filter up to 2019.0 which to me doesn't make a whole lot of sense\r\n\t# (which is probably why they changed that for 2019...).\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\ttrans = SubTransaction(doc)\r\n\ttrans.Start()\r\n\ttry: dependents = doc.Delete(item.Id)\r\n\texcept: dependents = []\r\n\ttrans.RollBack()\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn [doc.GetElement(x) for x in dependents if x != item.Id]\r\n\r\ndef GetDependentNew(item):\r\n\tif hasattr(item, \"GetDependentElements\"): \r\n\t\treturn [doc.GetElement(x) for x in item.GetDependentElements(None) if x != item.Id]\r\n\telse: return []\r\n\t\r\nif version < 2019:\t\r\n\tif isinstance(IN[0], list): OUT = [GetDependentOld(x) for x in items]\r\n\telse: OUT = GetDependentOld(items)\t\r\nelse:\r\n\tif isinstance(IN[0], list): OUT = [GetDependentNew(x) for x in items]\r\n\telse: OUT = GetDependentNew(items)",
+      "VariableInputPorts": true,
+      "Id": "938694e90470453e8ff70b45c4507878",
+      "Inputs": [
+        {
+          "Id": "bd44af89b4d242228eadf54710fc7193",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b6465185a84f4f2e997bc44bbedadd80",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "2c5a3f2c3b05430e929163e94c7de2d9",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "29bd15fdf046484284fa86d4c3c2a70e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d253ce0050f14493ab325f71acdba913",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d366b5f90248401f95582590aeb40ee6",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "dcdbe0f214324cdb917d665a0111e223",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ba8685788494482d9b3ee6ffd5b79349",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3f8b1681b1e74e2088d115a1fb1da33c",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "da3a6cd0314f45ff8703832b38c1cae8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7abbfa93d9ce4db3af89d5876ffb81a5",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "dependents",
+      "Id": "e3275256e9d8409fb4b617c024c8f717",
+      "Inputs": [
+        {
+          "Id": "73c5f9ddca904cbe8f09a1ff6d82ff16",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "2c5a3f2c3b05430e929163e94c7de2d9",
+      "End": "73c5f9ddca904cbe8f09a1ff6d82ff16",
+      "Id": "ea8820f717c1482abad3ac11adf34c83"
+    },
+    {
+      "Start": "d366b5f90248401f95582590aeb40ee6",
+      "End": "b6465185a84f4f2e997bc44bbedadd80",
+      "Id": "6bad4cac67f4458a865aaf680531e12a"
+    },
+    {
+      "Start": "7abbfa93d9ce4db3af89d5876ffb81a5",
+      "End": "bd44af89b4d242228eadf54710fc7193",
+      "Id": "78a22a5fc21a4643be239d1f7f708239"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "938694e90470453e8ff70b45c4507878",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 366.75,
+        "Y": 13.196666666666502
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "29bd15fdf046484284fa86d4c3c2a70e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 88.75,
+        "Y": 55.1966666666665
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "da3a6cd0314f45ff8703832b38c1cae8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 88.75,
+        "Y": -28.8033333333335
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e3275256e9d8409fb4b617c024c8f717",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 590.75,
+        "Y": 13.1966666666665
+      }
+    ],
+    "Annotations": [],
+    "X": 127.755805100148,
+    "Y": 60.9744190281899,
+    "Zoom": 0.70823125
+  }
+}

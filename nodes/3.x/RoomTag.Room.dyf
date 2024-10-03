@@ -1,0 +1,165 @@
+{
+  "Uuid": "6367a8db-eab0-4473-8672-df51384ed1f8",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns the room of a given room tag",
+  "Name": "RoomTag.Room",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "roomTag",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5b87204ce826415a91e9ed26096bf6fe",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "960b37660c9a45ddb0e7b612963c3917",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "room",
+      "Id": "ea33ea057e4745dba59671e0aa31f4de",
+      "Inputs": [
+        {
+          "Id": "e55f29f5a92e484caf4f6519c80a57f4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef RoomByTag(tag):\r\n\troom = None\r\n\tif hasattr(tag, \"TaggedRoomId\"):\r\n\t\ttrID = tag.TaggedRoomId\r\n\t\tif trID.HostElementId.IntegerValue != -1:\r\n\t\t\troom = doc.GetElement(trID.HostElementId)\r\n\t\telif trID.LinkedElementId.IntegerValue != -1:\r\n\t\t\tlinkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()\r\n\t\t\troom = linkdoc.GetElement(trID.LinkedElementId)\r\n\treturn room\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nroomtags = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [RoomByTag(x) for x in roomtags]\r\nelse: OUT = RoomByTag(roomtags)",
+      "VariableInputPorts": true,
+      "Id": "448bb06f125d4ee7902f907d64f55279",
+      "Inputs": [
+        {
+          "Id": "8ad2a518096b4ded8e96a4a107b023ae",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f05e8b2a491f4895a60c6df7306cb1a4",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "960b37660c9a45ddb0e7b612963c3917",
+      "End": "8ad2a518096b4ded8e96a4a107b023ae",
+      "Id": "97d2ecedc8424d028826ecf7acc4307f"
+    },
+    {
+      "Start": "f05e8b2a491f4895a60c6df7306cb1a4",
+      "End": "e55f29f5a92e484caf4f6519c80a57f4",
+      "Id": "4419efbe18b84ad1a9c30384a897f1a5"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.6.1.8786",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5b87204ce826415a91e9ed26096bf6fe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 168.5,
+        "Y": 61.471273568496507
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "ea33ea057e4745dba59671e0aa31f4de",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 691.5,
+        "Y": 61.471273568496507
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "448bb06f125d4ee7902f907d64f55279",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 467.5,
+        "Y": 61.4712735684965
+      }
+    ],
+    "Annotations": [],
+    "X": 229.776480044444,
+    "Y": 277.791613757917,
+    "Zoom": 0.847618571998227
+  }
+}

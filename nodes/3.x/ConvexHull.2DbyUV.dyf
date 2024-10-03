@@ -1,0 +1,525 @@
+{
+  "Uuid": "134846f2-02c9-40ce-8852-8d3146d8cc20",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Geometry.Tesselation.Create",
+  "Description": "Computes the convex hull of a given set of UV coordinates based on the monotone chain algorithm",
+  "Name": "ConvexHull.2DbyUV",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "UV": {
+        "Key": "Autodesk.DesignScript.Geometry.UV",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "UVs",
+        "TypeName": "Autodesk.DesignScript.Geometry.UV",
+        "TypeRank": 1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "dfdada040316432dbfd5d4555a03acd4",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f5c96e7c289d4bf1a221c15c9b4f9c9d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "UVs",
+      "Id": "87a8db178fc74a9c86aa308f432fbbec",
+      "Inputs": [
+        {
+          "Id": "58a694909615425fb1bbe36036febdf5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\n\r\n# based on a script found here:\r\n# http://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain#Python\r\n\r\npoints = IN[0]\r\n#reformat points list\r\nnewpoints = list()\r\nfor pair in points:\r\n\tnewpoint = (pair[0],pair[1])\r\n\tnewpoints.append(newpoint)\r\npoints = sorted(set(newpoints))\r\n\r\ndef cross(o, a, b):\r\n\treturn (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])\r\n \r\nif len(points) <= 1:\r\n\tOUT = points\r\nelse:\r\n\tlower = []\r\n\tfor p in points:\r\n\t\twhile len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:\r\n\t\t\tlower.pop()\r\n\t\tlower.append(p)\r\n\tupper = []\r\n\tfor p in reversed(points):\r\n\t\twhile len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:\r\n\t\t\tupper.pop()\r\n\t\tupper.append(p)\r\n\tOUT = lower[:-1] + upper[:-1]",
+      "VariableInputPorts": true,
+      "Id": "e8716f2242744547b2a7f0d33c141058",
+      "Inputs": [
+        {
+          "Id": "6ebffe4430c44e79b79f6303c3da7adf",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5881501986a84094ac3d51e15e733e20",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.UV.U",
+      "Id": "379c666b52174e03bbbeb8316ce2520e",
+      "Inputs": [
+        {
+          "Id": "6625d887cfc34c3f9b719b69e1b31e1b",
+          "Name": "uV",
+          "Description": "Autodesk.DesignScript.Geometry.UV",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "91cd030ac6964e119df05af319a6ec49",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the U component of a UV\n\nUV.U: double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.UV.V",
+      "Id": "cd28c132dcff451ab4f4b4ceede2c41a",
+      "Inputs": [
+        {
+          "Id": "c10751b84d394d7baddec77ae7994272",
+          "Name": "uV",
+          "Description": "Autodesk.DesignScript.Geometry.UV",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "64dcdb48733b41b79c64ff6a0fc74528",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Get the V component of a V\n\nUV.V: double"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "4978ee8f4b2a44bc823a48664866a17a",
+      "Inputs": [
+        {
+          "Id": "ef2889efa3a14c99ad99bc25c8fc3f63",
+          "Name": "item0",
+          "Description": "Item Index #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "93e5cbe4c76f49ebbba1beb4a2101bc9",
+          "Name": "item1",
+          "Description": "Item Index #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "09a713c49f524daba3b2744598a998f0",
+          "Name": "list",
+          "Description": "A list",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Makes a new list out of the given inputs"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
+      "Id": "f284ebed6f3b4c9585955e8981f23a2a",
+      "Inputs": [
+        {
+          "Id": "75d2446663a54a0bb74475fd6606d60f",
+          "Name": "lists",
+          "Description": "A list of lists to be transposed.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f3439d26138f41cbb3ba02e30b7d95be",
+          "Name": "lists",
+          "Description": "A list of transposed lists.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Swaps rows and columns in a list of lists. If there are some rows that are shorter than others, null values are inserted as place holders in the resultant array such that it is always rectangular.\n\nList.Transpose (lists: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
+      "Id": "c327953c08a84208a28606ef32dff5b4",
+      "Inputs": [
+        {
+          "Id": "806e1b0528f24c08a1d4d38a6236436b",
+          "Name": "lists",
+          "Description": "A list of lists to be transposed.\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b4d49042eb9d400a926eee0727fbda3f",
+          "Name": "lists",
+          "Description": "A list of transposed lists.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Swaps rows and columns in a list of lists. If there are some rows that are shorter than others, null values are inserted as place holders in the resultant array such that it is always rectangular.\n\nList.Transpose (lists: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "seq[0];\nseq[1];",
+      "Id": "7aff5fd3e58e4139aefbf94fc7f9bc35",
+      "Inputs": [
+        {
+          "Id": "a18aa6fb5ae24a00b7cee68224ed85eb",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5d27d1b8170647708420f12bfa982f22",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "92e3be21a5f64aa691329522c01ca7fb",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.UV.ByCoordinates@double,double",
+      "Id": "855125c5cd454e65b6ef72380bb79ae7",
+      "Inputs": [
+        {
+          "Id": "7b8fe922a8124aab86324281d9423828",
+          "Name": "u",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7bd99695f9eb427fa5b66e17525a7347",
+          "Name": "v",
+          "Description": "double\nDefault value : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "aec44ace1a1f4e76a32f9cc85c7eb9bb",
+          "Name": "UV",
+          "Description": "UV",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Create a UV from two doubles.\n\nUV.ByCoordinates (u: double = 0, v: double = 0): UV"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f5c96e7c289d4bf1a221c15c9b4f9c9d",
+      "End": "6625d887cfc34c3f9b719b69e1b31e1b",
+      "Id": "14fce3a622644e069fd50b6345d1186f"
+    },
+    {
+      "Start": "f5c96e7c289d4bf1a221c15c9b4f9c9d",
+      "End": "c10751b84d394d7baddec77ae7994272",
+      "Id": "ae7d80e033fe4da2bd1a4eafa1e6bedb"
+    },
+    {
+      "Start": "5881501986a84094ac3d51e15e733e20",
+      "End": "806e1b0528f24c08a1d4d38a6236436b",
+      "Id": "3423a22347d94d6d8f662379abfa3481"
+    },
+    {
+      "Start": "91cd030ac6964e119df05af319a6ec49",
+      "End": "ef2889efa3a14c99ad99bc25c8fc3f63",
+      "Id": "54e1c765c37b48318c3e49c4cb65c5d8"
+    },
+    {
+      "Start": "64dcdb48733b41b79c64ff6a0fc74528",
+      "End": "93e5cbe4c76f49ebbba1beb4a2101bc9",
+      "Id": "7c9105b8a1574d6c930db4fc44f52d35"
+    },
+    {
+      "Start": "09a713c49f524daba3b2744598a998f0",
+      "End": "75d2446663a54a0bb74475fd6606d60f",
+      "Id": "d4adab934c4b476e955a0496c85b55f2"
+    },
+    {
+      "Start": "f3439d26138f41cbb3ba02e30b7d95be",
+      "End": "6ebffe4430c44e79b79f6303c3da7adf",
+      "Id": "7cdfd384b98f45128af2e948d60619a8"
+    },
+    {
+      "Start": "b4d49042eb9d400a926eee0727fbda3f",
+      "End": "a18aa6fb5ae24a00b7cee68224ed85eb",
+      "Id": "d167e1d3c24441a086ea52133692e27f"
+    },
+    {
+      "Start": "5d27d1b8170647708420f12bfa982f22",
+      "End": "7b8fe922a8124aab86324281d9423828",
+      "Id": "0d1bd5ca890c4786833301ff471bde41"
+    },
+    {
+      "Start": "92e3be21a5f64aa691329522c01ca7fb",
+      "End": "7bd99695f9eb427fa5b66e17525a7347",
+      "Id": "4cd7f24dcb8d46fd9f0deb42baec5daf"
+    },
+    {
+      "Start": "aec44ace1a1f4e76a32f9cc85c7eb9bb",
+      "End": "58a694909615425fb1bbe36036febdf5",
+      "Id": "f71116dacb864904859ce162d115a979"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "dfdada040316432dbfd5d4555a03acd4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": -103.598540225951,
+        "Y": 292.920197633587
+      },
+      {
+        "Id": "87a8db178fc74a9c86aa308f432fbbec",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1828.40145977405,
+        "Y": 275.706864300254
+      },
+      {
+        "Id": "e8716f2242744547b2a7f0d33c141058",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 872.401459774049,
+        "Y": 279.920197633587
+      },
+      {
+        "Id": "379c666b52174e03bbbeb8316ce2520e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "UV.U",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 108.401459774049,
+        "Y": 238.920197633587
+      },
+      {
+        "Id": "cd28c132dcff451ab4f4b4ceede2c41a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "UV.V",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 108.401459774049,
+        "Y": 346.920197633587
+      },
+      {
+        "Id": "4978ee8f4b2a44bc823a48664866a17a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Create",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 385.401459774049,
+        "Y": 279.920197633587
+      },
+      {
+        "Id": "f284ebed6f3b4c9585955e8981f23a2a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Transpose",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 605.401459774049,
+        "Y": 279.920197633587
+      },
+      {
+        "Id": "c327953c08a84208a28606ef32dff5b4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "List.Transpose",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1096.40145977405,
+        "Y": 279.920197633587
+      },
+      {
+        "Id": "7aff5fd3e58e4139aefbf94fc7f9bc35",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1363.40145977405,
+        "Y": 284.133530966921
+      },
+      {
+        "Id": "855125c5cd454e65b6ef72380bb79ae7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "UV.ByCoordinates",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1584.40145977405,
+        "Y": 275.706864300254
+      }
+    ],
+    "Annotations": [],
+    "X": 104.667958425033,
+    "Y": 264.770726467003,
+    "Zoom": 0.720743345052737
+  }
+}

@@ -1,0 +1,307 @@
+{
+  "Uuid": "96ca187b-c37d-41e2-a863-b7b67b6307f0",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns the value of a family parameter for a given family type",
+  "Name": "FamilyParameter.GetValueByFamilyType",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\ndef GetFamParamVal(ft, fp):\r\n\tif fp.StorageType == StorageType.Integer: return ft.AsInteger(fp)\r\n\telif fp.StorageType == StorageType.Double: \r\n\t\tif version > 2021:\r\n\t\t\tif fp.GetUnitTypeId() and ft.HasValue(fp): return UnitUtils.ConvertFromInternalUnits(ft.AsDouble(fp),fp.GetUnitTypeId())\r\n\t\t\telse: return ft.AsDouble(fp)\r\n\t\telse:\r\n\t\t\tif fp.DisplayUnitType and ft.HasValue(fp): return UnitUtils.ConvertFromInternalUnits(ft.AsDouble(fp),fp.DisplayUnitType)\r\n\t\t\telse: return ft.AsDouble(fp)\r\n\telif fp.StorageType == StorageType.String: return ft.AsString(fp)\r\n\telif fp.StorageType == StorageType.ElementId: return doc.GetElement(ft.AsElementId(fp))\r\n\telse: return None\r\n\r\nversion = IN[2]\r\nif isinstance(IN[0], list): \r\n\tif isinstance(IN[1], list): \r\n\t\tOUT = []\r\n\t\tOUT = [[GetFamParamVal(y, x) for x in IN[1]] for y in IN[0]]\r\n\telse: OUT = [GetFamParamVal(x, IN[1]) for x in IN[0]]\r\nelse:\r\n\tif isinstance(IN[1], list): OUT = [GetFamParamVal(IN[0], x) for x in IN[1]]\r\n\telse: OUT = GetFamParamVal(IN[0], IN[1])",
+      "VariableInputPorts": true,
+      "Id": "f31aa909b9be44e5a0ebb7e39237fed9",
+      "Inputs": [
+        {
+          "Id": "f51804b017e54d0a8f31e089f4feeaf9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "00c6a0ca2a3040e9b6356e8785fc62af",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "63d3271328894687b23565c52075450c",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "3b9214175d8843688eccde047b6c3c6c",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "familyParameter",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4fb50eb630674345b707adec9ff3e460",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a3a3d28c76dc4f3db23e6a129295d5ff",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "val",
+      "Id": "071cb1ae8fed498eabd0ecf3e0dbdd08",
+      "Inputs": [
+        {
+          "Id": "74fe1b26eea74bcda3e60b0ab8351e15",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "familyType",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "d94e58b2ef094a2b8d0ace92f13fa78e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b35cb6956f9843a19d3d0badd033d7c9",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "22f40bb96b6848ba8378e5345d1dcbfe",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "ef8063c4cbbe453b827fc76a62ddafb5",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d4871030ec6149cbbb4d8668cb5c324b",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ae803451dffa4395982b0c0c75c6f2d3",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "18c360cb87614e15beccf6965a0616b2",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a9fa9327699e4c2d8107a343e5543179",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "3b9214175d8843688eccde047b6c3c6c",
+      "End": "74fe1b26eea74bcda3e60b0ab8351e15",
+      "Id": "542a3695200646c0a3c6f2ccd5b69ffc"
+    },
+    {
+      "Start": "a3a3d28c76dc4f3db23e6a129295d5ff",
+      "End": "00c6a0ca2a3040e9b6356e8785fc62af",
+      "Id": "a458f8f36f584aa08509982bb5ab041b"
+    },
+    {
+      "Start": "b35cb6956f9843a19d3d0badd033d7c9",
+      "End": "f51804b017e54d0a8f31e089f4feeaf9",
+      "Id": "90351b5efeb64b0aa9587c6ef9d3cc3b"
+    },
+    {
+      "Start": "d4871030ec6149cbbb4d8668cb5c324b",
+      "End": "63d3271328894687b23565c52075450c",
+      "Id": "ce5728c25e9146b6bce27a39d4550e96"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.3.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "22f40bb96b6848ba8378e5345d1dcbfe"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "f31aa909b9be44e5a0ebb7e39237fed9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 279.99999999999994,
+        "Y": 98.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4fb50eb630674345b707adec9ff3e460",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -64.000000000000057,
+        "Y": 153.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "071cb1ae8fed498eabd0ecf3e0dbdd08",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 503.99999999999994,
+        "Y": 98.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d94e58b2ef094a2b8d0ace92f13fa78e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -64.000000000000057,
+        "Y": 69.000000000000014
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "22f40bb96b6848ba8378e5345d1dcbfe",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 66.0,
+        "Y": 242.0
+      }
+    ],
+    "Annotations": [],
+    "X": 441.0,
+    "Y": 421.0,
+    "Zoom": 1.0
+  }
+}

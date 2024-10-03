@@ -1,0 +1,213 @@
+{
+  "Uuid": "e4c1f6b1-1a30-446d-bccb-e23a973c1a08",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Checks if a list of group instances have been mirrored. The reference group should usually be the first placed instance of the group (since that one has likely not been mirrored).  The node will return null for group instances of other group types than the reference group as well as for group instances with excluded members. Furthermore, it will return null for *all* groups if the reference group itself has excluded members or if it doesn't contain any loadable families (since they are the only way of determining if the group instance has been mirrored). The node will likely report null for group instances where members have been excluded but subsequently been restored.",
+  "Name": "Group.IsMirrored",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nrefGroupType = refgroup.GroupType.Id.IntegerValue\r\nfor member in refGroupMembers:\r\n\telem = refgroup.Document.GetElement(member)\r\n\tif elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n\t\tstate = elem.Mirrored\r\n\t\tmembernum = counter\r\n\t\tfamtype = elem.GetTypeId().IntegerValue\r\n\t\tbreak\r\n\tcounter += 1\r\n\t\r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n\tbools = []\r\n\t# Compare Mirrored state with corresponding members of other group instances\r\n\tfor group in groups:\r\n\t\t# Get number of group members\r\n\t\ttheseMembers = group.GetMemberIds()\r\n\t\ttheseMembersNum = len(theseMembers)\r\n\t\t# Set a flag if any group instance has more members than the reference group instance\r\n\t\t# (only if both are of the same group type)\r\n\t\tif theseMembersNum > numMembers and refGroupType == group.GroupType.Id.IntegerValue:\r\n\t\t\trefGroupIntact = False\r\n\t\t\tbreak\r\n\t\t# Return null if group is of another group type\r\n\t\telif refGroupType != group.GroupType.Id.IntegerValue: bools.append(None)\r\n\t\t# Return null for group instances with excluded members\r\n\t\telif theseMembersNum < numMembers: bools.append(None)\r\n\t\t# Return null if family instance to compare if of a diffent type\r\n\t\telif group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue != famtype: bools.append(None)\r\n\t\t# Otherwise compare Mirrored state\r\n\t\telse: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n\t\t\t\r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n\t\r\nOUT = bools",
+      "VariableInputPorts": true,
+      "Id": "8ea9b94c81574310a87ff9d3e02a3649",
+      "Inputs": [
+        {
+          "Id": "9faa31f755cf4d828f2ec88acb3c7304",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f2538c8d09f347e08caa760dd67b6149",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "0108eb44d35044a9ba0a2614fe6c44a7",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "referenceGroup",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "3f0ac3ecd63f4f40971bcfcaf7ebba5e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5902668f1e3d416e8cbad59a21d92a01",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "groupsToCheck",
+        "TypeName": "var",
+        "TypeRank": 1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "eb6d1c779dac4bd28a9e9f35500bf40c",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "57bc1aef79bf41dea42862cd58614c78",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "bool",
+      "Id": "a8c846c2b30c46cba1887d3198bfd6fb",
+      "Inputs": [
+        {
+          "Id": "83437c1518074158b3665f0ba09fddc0",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "0108eb44d35044a9ba0a2614fe6c44a7",
+      "End": "83437c1518074158b3665f0ba09fddc0",
+      "Id": "8586f312966344fcbb4419a32e3c68bc"
+    },
+    {
+      "Start": "5902668f1e3d416e8cbad59a21d92a01",
+      "End": "9faa31f755cf4d828f2ec88acb3c7304",
+      "Id": "e88f3bf990ca45598bf8bbf2e5d9e250"
+    },
+    {
+      "Start": "57bc1aef79bf41dea42862cd58614c78",
+      "End": "f2538c8d09f347e08caa760dd67b6149",
+      "Id": "5db8c33eb1924480b087d849ba63498e"
+    }
+  ],
+  "Dependencies": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "8ea9b94c81574310a87ff9d3e02a3649",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 358.58468337958686,
+        "Y": 49.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "3f0ac3ecd63f4f40971bcfcaf7ebba5e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 63.584683379586863,
+        "Y": 20.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "eb6d1c779dac4bd28a9e9f35500bf40c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 63.584683379586863,
+        "Y": 104.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "a8c846c2b30c46cba1887d3198bfd6fb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 582.58468337958686,
+        "Y": 49.5
+      }
+    ],
+    "Annotations": [],
+    "X": -172.77177380156922,
+    "Y": 220.17869415807559,
+    "Zoom": 3.1890034364261171
+  }
+}

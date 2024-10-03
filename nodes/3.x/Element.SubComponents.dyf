@@ -1,0 +1,176 @@
+{
+  "Uuid": "6434c64b-0da0-48a9-9049-2cb4902db026",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves all subcomponents of a given element. Unlike the OOTB node Element.GetChildElements, it also supports combined geometry elements in family.",
+  "Name": "Element.SubComponents",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "FamilyInstance": {
+        "Key": "Revit.Elements.FamilyInstance",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\ndef GetSubComponents(item):\r\n\t# FamilyInstances\r\n\tif hasattr(item, \"GetSubComponentIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubComponentIds()]\r\n\t# Combined geometry\r\n\telif hasattr(item, \"AllMembers\"):\r\n\t\treturn [x for x in item.AllMembers]\r\n\t# Stairs\r\n\telif hasattr(item, \"GetStairsLandings\"):\r\n\t\tstair_comps = [item.Document.GetElement(x) for x in item.GetStairsLandings()]\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsRuns()])\r\n\t\tstair_comps.extend([item.Document.GetElement(x) for x in item.GetStairsSupports()])\r\n\t\treturn stair_comps\r\n\t# Railings\r\n\telif hasattr(item, \"GetHandRails\"):\r\n\t\trail_comps = [item.Document.GetElement(x) for x in item.GetHandRails()]\r\n\t\trail_comps.append(item.Document.GetElement(item.TopRail))\r\n\t\treturn rail_comps\r\n\t# Beam systems\r\n\telif hasattr(item, \"GetBeamIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetBeamIds()]\r\n\t# Multi segment grids\r\n\telif hasattr(item, \"GetGridIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetGridIds()]\r\n\t# Toposurfaces\r\n\telif hasattr(item, \"GetHostedSubRegionIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetHostedSubRegionIds()]\r\n\t# Toposolids\r\n\telif hasattr(item, \"GetSubDivisionIds\"):\r\n\t\treturn [item.Document.GetElement(x) for x in item.GetSubDivisionIds()]\r\n\telse: return []\r\n\r\nif isinstance(IN[0], list): OUT = [GetSubComponents(x) for x in items]\r\nelse: OUT = GetSubComponents(items)",
+      "Engine": "IronPython2",
+      "EngineName": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "8f79cd06ae5e42d089f6fc950a362127",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "2c3e7855e74049f7a399a2fdc357abdb",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e0ba00da2a0f4519ba04b72dc31fd2fe",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "295974ab903c48b9904ce9c1e6defecd",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d074eb29b47842699eaa049ac699438c",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "subComponents",
+      "Id": "3e56ebabc4c74851b0dbbc3f55da4784",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "82d9d3e2cde0422ca0766dc8b3699e26",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e0ba00da2a0f4519ba04b72dc31fd2fe",
+      "End": "82d9d3e2cde0422ca0766dc8b3699e26",
+      "Id": "a0f3acebeb914f2e950501a5934a0ec9",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "d074eb29b47842699eaa049ac699438c",
+      "End": "2c3e7855e74049f7a399a2fdc357abdb",
+      "Id": "ea5716d6aa3f49269f82d477dc4821b2",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.19.3.6394",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "8f79cd06ae5e42d089f6fc950a362127",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 508.94522830011852,
+        "Y": 28.188593977572395
+      },
+      {
+        "Id": "295974ab903c48b9904ce9c1e6defecd",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 229.94522830011852,
+        "Y": 28.188593977572395
+      },
+      {
+        "Id": "3e56ebabc4c74851b0dbbc3f55da4784",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 731.94522830011852,
+        "Y": 28.188593977572395
+      }
+    ],
+    "Annotations": [],
+    "X": 25.0,
+    "Y": 278.0,
+    "Zoom": 1.0
+  }
+}

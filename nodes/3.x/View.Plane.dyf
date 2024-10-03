@@ -1,0 +1,173 @@
+{
+  "Uuid": "d6dbde59-f3f7-47b5-9e1e-f30991f58ac1",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Query",
+  "Description": "Retrieves the plane of a given view",
+  "Name": "View.Plane",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Plane": {
+        "Key": "Autodesk.DesignScript.Geometry.Plane",
+        "Value": "ProtoGeometry.dll"
+      },
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "cb979199b15642bd951822cbb842016e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d2d06dabb3064f088de1b705914f0165",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "plane",
+      "Id": "8ec2dc08f0fd4ab286d85778b6252a1e",
+      "Inputs": [
+        {
+          "Id": "ba3a7c88d053450a9d51bd70c53267a8",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\ndef ViewPlane(view):\r\n\tif hasattr(view, \"ViewDirection\") and hasattr(view, \"Origin\"):\r\n\t\to = view.Origin\r\n\t\tn = view.ViewDirection\r\n\t\tif o and n: return Plane.ByOriginNormal(o.ToPoint(), n.ToVector())\r\n\t\telse: return None\r\n\telse: return None\r\n\r\nviews = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [ViewPlane(x) for x in views]\r\nelse: OUT = ViewPlane(views)",
+      "VariableInputPorts": true,
+      "Id": "373dbd10e66f4085be25c8b9dc16217e",
+      "Inputs": [
+        {
+          "Id": "6e30dad93d244ff9820f596a532b471c",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c28fe32e598b49d5859599458548a3bc",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d2d06dabb3064f088de1b705914f0165",
+      "End": "6e30dad93d244ff9820f596a532b471c",
+      "Id": "52d3bae0a82d466689a0df92167341e0"
+    },
+    {
+      "Start": "c28fe32e598b49d5859599458548a3bc",
+      "End": "ba3a7c88d053450a9d51bd70c53267a8",
+      "Id": "5f2e108342534e60ab0e70b6086b2cbd"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "cb979199b15642bd951822cbb842016e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 565.913407166084,
+        "Y": 169.01554025655
+      },
+      {
+        "Id": "8ec2dc08f0fd4ab286d85778b6252a1e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 952.913407166084,
+        "Y": 169.01554025655
+      },
+      {
+        "Id": "373dbd10e66f4085be25c8b9dc16217e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 728.913407166084,
+        "Y": 169.01554025655
+      }
+    ],
+    "Annotations": [],
+    "X": -131.914687263666,
+    "Y": 232.931738169567,
+    "Zoom": 0.798825425049555
+  }
+}

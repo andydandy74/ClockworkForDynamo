@@ -1,0 +1,293 @@
+{
+  "Uuid": "c941b087-f465-4de9-997c-dab9199bd4b1",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Environment.Query",
+  "Description": "Returns information on number of processors and CPU speed (GHz).",
+  "Name": "System.CPUs",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "// Physical processors\nseq[0];\n// Logical processors\nseq[1];\n// Cores\nseq[2];\n// CPU speed\nseq[3];",
+      "Id": "6963448dab18498c95f60a3a4ec66762",
+      "Inputs": [
+        {
+          "Id": "704db709453147caab2f45d9f4553a96",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6535a522b1824f1581a61156dfd5dea3",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4ca7e3d23af245fb89d7acb596377256",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8ce54a18f7f64b16815f7c7cb93d4c0d",
+          "Name": "",
+          "Description": "Value of expression at line 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d8ab0e3af54e4fd7a02aa7009d90591c",
+          "Name": "",
+          "Description": "Value of expression at line 8",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"System.Management\")\r\nfrom System.Management import ManagementObject, ManagementObjectSearcher\r\nsysinfo = ManagementObjectSearcher(\"Select NumberOfProcessors, NumberOfLogicalProcessors from Win32_ComputerSystem\").Get()\r\nfor sysdata in sysinfo:\r\n\tphysicalProcessors = sysdata.Item[\"NumberOfProcessors\"]\r\n\tlogicalProcessors = sysdata.Item[\"NumberOfLogicalProcessors\"]\r\nsysinfo = ManagementObjectSearcher(\"Select NumberOfCores, MaxClockSpeed from Win32_Processor\").Get()\r\ncores = 0\r\nfor sysdata in sysinfo:\r\n\tcores += sysdata.Item[\"NumberOfCores\"]\r\n\tcpuspeed = sysdata.Item[\"MaxClockSpeed\"]\r\nOUT = (physicalProcessors, logicalProcessors, cores, float(cpuspeed)/1000)",
+      "VariableInputPorts": true,
+      "Id": "4771e6f8d50a4975a03210de7d791145",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7e273b32916f49cda62d7d4a646ea450",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "physicalProcessors",
+      "Id": "6eb00fa9036545fe88b1b734cd5ba97d",
+      "Inputs": [
+        {
+          "Id": "adeb278d3eb44adc9e0dbc1ac4f5f50d",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "logicalProcesssors",
+      "Id": "94fa92566fc44bcd9f93c721375df38f",
+      "Inputs": [
+        {
+          "Id": "fd8e1119e1814da1814880ccf892ceb7",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "cores",
+      "Id": "33ec400c48d54e84a7fe02659da002e0",
+      "Inputs": [
+        {
+          "Id": "d4094e10616b4e18b0bea32a83b3c4b3",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "CPUspeed",
+      "Id": "90c904e0b88c4b8aab4e7c3162b2532e",
+      "Inputs": [
+        {
+          "Id": "9b941979d02d4c7785b21e2e3ba3c02a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "6535a522b1824f1581a61156dfd5dea3",
+      "End": "adeb278d3eb44adc9e0dbc1ac4f5f50d",
+      "Id": "10eefc7e28664820acef3c256de0639a"
+    },
+    {
+      "Start": "4ca7e3d23af245fb89d7acb596377256",
+      "End": "fd8e1119e1814da1814880ccf892ceb7",
+      "Id": "ba97bd03b170431e9d4de1247f4273e5"
+    },
+    {
+      "Start": "8ce54a18f7f64b16815f7c7cb93d4c0d",
+      "End": "d4094e10616b4e18b0bea32a83b3c4b3",
+      "Id": "ced647483e0b43668bf7720ff5bcca82"
+    },
+    {
+      "Start": "d8ab0e3af54e4fd7a02aa7009d90591c",
+      "End": "9b941979d02d4c7785b21e2e3ba3c02a",
+      "Id": "61ce3f0905a645af925904b65d99a633"
+    },
+    {
+      "Start": "7e273b32916f49cda62d7d4a646ea450",
+      "End": "704db709453147caab2f45d9f4553a96",
+      "Id": "10af7dc5c6fa41cb9ae0f61f339657bf"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "6963448dab18498c95f60a3a4ec66762",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 430.784989246227,
+        "Y": 158.92
+      },
+      {
+        "Id": "4771e6f8d50a4975a03210de7d791145",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 236.784989246227,
+        "Y": 154.706666666667
+      },
+      {
+        "Id": "6eb00fa9036545fe88b1b734cd5ba97d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 774.784989246227,
+        "Y": 100.0
+      },
+      {
+        "Id": "94fa92566fc44bcd9f93c721375df38f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 774.784989246227,
+        "Y": 183.0
+      },
+      {
+        "Id": "33ec400c48d54e84a7fe02659da002e0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 774.784989246227,
+        "Y": 267.0
+      },
+      {
+        "Id": "90c904e0b88c4b8aab4e7c3162b2532e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 774.784989246227,
+        "Y": 350.0
+      }
+    ],
+    "Annotations": [],
+    "X": 0.0,
+    "Y": 0.0,
+    "Zoom": 1.0
+  }
+}

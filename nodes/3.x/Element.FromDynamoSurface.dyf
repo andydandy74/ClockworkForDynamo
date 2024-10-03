@@ -1,0 +1,173 @@
+{
+  "Uuid": "0b4bb7ab-9433-4f3c-8abe-d26de134cc8c",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Selection.ByFace.Query",
+  "Description": "Returns the underlying Revit element of a given face",
+  "Name": "Element.FromDynamoSurface",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "List": {
+        "Key": "DSCore.List",
+        "Value": "DSCoreNodes.dll"
+      },
+      "Surface": {
+        "Key": "Autodesk.DesignScript.Geometry.Surface",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "DynamoSurface",
+        "TypeName": "Autodesk.DesignScript.Geometry.Surface",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "eda74bfc0b6e4bc192cce97715efcc88",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c523ca99aa2a4e5faef5caca6b53628e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "element",
+      "Id": "d5e9bf9e2e1042a3b3e645d8495ab233",
+      "Inputs": [
+        {
+          "Id": "b55b80e8dc034589baf33043055ed630",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementByFace(face, doc):\r\n\ttry: return doc.GetElement(face.Tags.LookupTag(\"RevitFaceReference\"))\r\n\texcept: return None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfaces = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [ElementByFace(x, doc) for x in faces]\r\nelse: OUT = ElementByFace(faces, doc)",
+      "VariableInputPorts": true,
+      "Id": "8bab27a71bfd4158a5ca7101205e29a9",
+      "Inputs": [
+        {
+          "Id": "5a84da1621ee40d5828323596b9964e3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4e2ec0cc6cf24ff1b48e8a382d5db06c",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "c523ca99aa2a4e5faef5caca6b53628e",
+      "End": "5a84da1621ee40d5828323596b9964e3",
+      "Id": "a7b7caf444ec4e5dbe24c297651aef2d"
+    },
+    {
+      "Start": "4e2ec0cc6cf24ff1b48e8a382d5db06c",
+      "End": "b55b80e8dc034589baf33043055ed630",
+      "Id": "d53f883f919640a1a4584ea7e37daadd"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "eda74bfc0b6e4bc192cce97715efcc88",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 282.55616224649,
+        "Y": -92.0655226209048
+      },
+      {
+        "Id": "d5e9bf9e2e1042a3b3e645d8495ab233",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 826.55616224649,
+        "Y": -92.0655226209048
+      },
+      {
+        "Id": "8bab27a71bfd4158a5ca7101205e29a9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 602.55616224649,
+        "Y": -92.0655226209048
+      }
+    ],
+    "Annotations": [],
+    "X": 128.0,
+    "Y": 374.41875,
+    "Zoom": 1.0015625
+  }
+}

@@ -1,0 +1,347 @@
+{
+  "Uuid": "896ba009-854c-4290-bd05-42c87ddcdb7c",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Units.Query",
+  "Description": "Retrieves the display unit type for a given unit type. ",
+  "Name": "UnitType.DisplayUnitType",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "displayUnitType",
+      "Id": "0b8b9d6eeb6e48a482ca100cf22959c2",
+      "Inputs": [
+        {
+          "Id": "633e1c2b9bbd494aabaee3ee897a41ec",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "unitSymbol",
+      "Id": "82ef5a2b909a4de6b9a3032388240f02",
+      "Inputs": [
+        {
+          "Id": "b5dd0080caef457a8ed5e667ce6c50d6",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "seq[0];\nseq[1];",
+      "Id": "9f543a2460504acf8008cd1d6c618f42",
+      "Inputs": [
+        {
+          "Id": "0ba38e38ef314b8d83a57f8837cc2e79",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e66b4c6544e14ad99f169835f29e85a3",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4dbf0c90dc6a43b0b73813036719fca5",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "unitType",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "8b667420e63c4ba08039cdc15097c99d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d8be9e704da4485f92455f0a8f0d14df",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\ndynunittype = IN[0]\r\nif IN[1] > 2021:\r\n\tif str(dynunittype.GetType()) == \"Autodesk.Revit.DB.ForgeTypeId\":\r\n\t\tunittype = dynunittype\r\n\telif str(dynunittype) == 'DynamoUnits.Area':\r\n\t\tunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\telif str(dynunittype) == 'DynamoUnits.Length':\r\n\t\tunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\telif str(dynunittype) == 'DynamoUnits.Volume':\r\n\t\tunittype = ForgeTypeId('autodesk.spec.aec:volume-2.0.0')\r\n\telse:\r\n\t\tunittype = None\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\tsymtype = formatoptions.GetSymbolTypeId()\r\n\tif symtype.TypeId == '': dispsym = None\r\n\telse: dispsym = LabelUtils.GetLabelForSymbol(symtype)\r\nelse:\r\n\tif str(dynunittype.GetType()) == \"Autodesk.Revit.DB.UnitType\":\r\n\t\tunittype = dynunittype\r\n\telif str(dynunittype) == 'DynamoUnits.Area':\r\n\t\tunittype = UnitType.UT_Area\r\n\telif str(dynunittype) == 'DynamoUnits.Length':\r\n\t\tunittype = UnitType.UT_Length\r\n\telif str(dynunittype) == 'DynamoUnits.Volume':\r\n\t\tunittype = UnitType.UT_Volume\r\n\telse:\r\n\t\tunittype = None\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.DisplayUnits\r\n\tsymtype = formatoptions.UnitSymbol\r\n\tif symtype == UnitSymbolType.UST_NONE: dispsym = None\r\n\telse: dispsym = LabelUtils.GetLabelFor(symtype)\r\nOUT = (dispunits,dispsym)",
+      "VariableInputPorts": true,
+      "Id": "57bb0fbf3e474778b1f4447a8a12f32b",
+      "Inputs": [
+        {
+          "Id": "2564f2160eb240eeb73b45e8cc7ee504",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "99af609de8124d07877a21c7fdec3886",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "b02a1f8f4e354cf0ab6f46f8bf1d62fb",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "2e56a1b1202a4012a3b8b05c1e8ff8cf",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "a6b11c3e191046a18b58ddba135bee48",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e28fb7242d2d44ae91301177d90f004b",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "309705dfdf094db19505775a58477a6b",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "15f233f43c6b4b8c80939c049be10fe8",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d7eeda4bff864c16a46a96d9dbe55462",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e66b4c6544e14ad99f169835f29e85a3",
+      "End": "633e1c2b9bbd494aabaee3ee897a41ec",
+      "Id": "a6f5c3a2d9eb4c34a89fa5c7de572f2a"
+    },
+    {
+      "Start": "4dbf0c90dc6a43b0b73813036719fca5",
+      "End": "b5dd0080caef457a8ed5e667ce6c50d6",
+      "Id": "b00d9425236e4e5abfdf3c2ce180fb12"
+    },
+    {
+      "Start": "d8be9e704da4485f92455f0a8f0d14df",
+      "End": "2564f2160eb240eeb73b45e8cc7ee504",
+      "Id": "536f88c46f6049c79f91556188b061a3"
+    },
+    {
+      "Start": "b02a1f8f4e354cf0ab6f46f8bf1d62fb",
+      "End": "0ba38e38ef314b8d83a57f8837cc2e79",
+      "Id": "f5cc5347781549feb15bf88df7a0da8e"
+    },
+    {
+      "Start": "e28fb7242d2d44ae91301177d90f004b",
+      "End": "99af609de8124d07877a21c7fdec3886",
+      "Id": "d14d43d7c7fc488d981859a1ce89736c"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.3.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "2e56a1b1202a4012a3b8b05c1e8ff8cf"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.3.1.11775",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "0b8b9d6eeb6e48a482ca100cf22959c2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1081.009600017218,
+        "Y": 146.87643266989326
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "82ef5a2b909a4de6b9a3032388240f02",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1081.009600017218,
+        "Y": 230.87643266989326
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "9f543a2460504acf8008cd1d6c618f42",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 839.009600017218,
+        "Y": 184.30309933655997
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "8b667420e63c4ba08039cdc15097c99d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 307.00960001721796,
+        "Y": 138.0897660032266
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "57bb0fbf3e474778b1f4447a8a12f32b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 615.009600017218,
+        "Y": 180.08976600322663
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "2e56a1b1202a4012a3b8b05c1e8ff8cf",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 307.00960001721796,
+        "Y": 222.08976600322663
+      }
+    ],
+    "Annotations": [],
+    "X": 85.357646068172016,
+    "Y": 336.242626406377,
+    "Zoom": 0.939154117974764
+  }
+}

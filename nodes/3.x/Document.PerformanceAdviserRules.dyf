@@ -1,0 +1,209 @@
+{
+  "Uuid": "5aadb7c5-e2cc-4405-b937-e46149a59ed0",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Application.Query",
+  "Description": "Retrieves all Performance Adviser Rules from the current document",
+  "Name": "Document.PerformanceAdviserRules",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.PerformanceAdviserRule.ById@string",
+      "Id": "525253c05461498abfb9795d985b6b5f",
+      "Inputs": [
+        {
+          "Id": "50b191670f004d2baffb6f420a096ba0",
+          "Name": "guid",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4e21587e83bb4fc1a70ff3af6fe8aa89",
+          "Name": "PerformanceAdviserRule",
+          "Description": "PerformanceAdviserRule",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Create Performance Adviser Rule by Id\n\nPerformanceAdviserRule.ById (guid: string): PerformanceAdviserRule"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[0])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\n\r\nelementlist = []\r\nfor rule in PerformanceAdviser.GetPerformanceAdviser().GetAllRuleIds():\r\n\telementlist.append(rule.Guid.ToString())\r\nOUT = elementlist",
+      "VariableInputPorts": true,
+      "Id": "2eb0eddef62e4e1c8d1be006c2122486",
+      "Inputs": [
+        {
+          "Id": "8a8bd088744b4874b6a1885160a3d2cc",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a73efb6075bb43b1ad34697884848daa",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "performanceAdviserRules",
+      "Id": "e284c7398e194edfa237123f4d7f1e0c",
+      "Inputs": [
+        {
+          "Id": "f9d2ab7fbcb54012897a00dcc4b5308f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "docOrRevitLinkInstance",
+        "TypeName": "var",
+        "TypeRank": 0,
+        "DefaultValue": "null",
+        "Description": " Use only if you want to query a linked model"
+      },
+      "Id": "cc3dac092b7a4d77b10638513326759e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "052f48b1f56240589f0ba0ff68f8079f",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "4e21587e83bb4fc1a70ff3af6fe8aa89",
+      "End": "f9d2ab7fbcb54012897a00dcc4b5308f",
+      "Id": "a925f06afbd24f16a354804871fd5103"
+    },
+    {
+      "Start": "a73efb6075bb43b1ad34697884848daa",
+      "End": "50b191670f004d2baffb6f420a096ba0",
+      "Id": "86f8324fa9804587aa294a1dcaa2c677"
+    },
+    {
+      "Start": "052f48b1f56240589f0ba0ff68f8079f",
+      "End": "8a8bd088744b4874b6a1885160a3d2cc",
+      "Id": "af986fe2e8e543f2a3e2506e5eb5d01b"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "525253c05461498abfb9795d985b6b5f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "PerformanceAdviserRule.ById",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 796.5,
+        "Y": 74.5
+      },
+      {
+        "Id": "2eb0eddef62e4e1c8d1be006c2122486",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 572.5,
+        "Y": 74.5
+      },
+      {
+        "Id": "e284c7398e194edfa237123f4d7f1e0c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1191.5,
+        "Y": 74.5
+      },
+      {
+        "Id": "cc3dac092b7a4d77b10638513326759e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 94.5,
+        "Y": 78.0
+      }
+    ],
+    "Annotations": [],
+    "X": -205.0,
+    "Y": 11.0,
+    "Zoom": 1.0
+  }
+}

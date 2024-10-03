@@ -1,0 +1,169 @@
+{
+  "Uuid": "8cfc6f31-34cf-4c99-be21-5af290dbe7b7",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets the orientation of a given wall instance (normal of the exterior face of the wall). Will *not* work for walls hosted on mass faces or in-place walls.",
+  "Name": "Wall.Orientation",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Wall": {
+        "Key": "Revit.Elements.Wall",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "wall",
+        "TypeName": "Revit.Elements.Wall",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "7d675e6fff054b4b89ebbe20b050e79e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "78c55ff8e6a04f5ca0c727212e92306a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "Normal",
+      "Id": "4fc294fde0ca43078144597c5fd12d37",
+      "Inputs": [
+        {
+          "Id": "0e8196962256484cb11cd89f90e1bee4",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\ndef WallOrientation(wall):\r\n\tloc = wall.Location\r\n\tflipped = False\r\n\tif hasattr(loc, \"Curve\"):\r\n\t\tlcurve = loc.Curve\r\n\t\tif hasattr(wall, \"Flipped\"): flipped = wall.Flipped\r\n\t\tif str(type(lcurve)) == \"Autodesk.Revit.DB.Line\":\r\n\t\t\tif flipped: return wall.Orientation.ToVector().Reverse()\r\n\t\t\telse: return wall.Orientation.ToVector()\r\n\t\telse:\r\n\t\t\tdirection = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()\r\n\t\t\tif flipped: return XYZ.BasisZ.CrossProduct(direction).ToVector().Reverse()\r\n\t\t\telse: return XYZ.BasisZ.CrossProduct(direction).ToVector()\r\n\telse: return None\r\n\r\nwalls = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [WallOrientation(x) for x in walls]\r\nelse: OUT = WallOrientation(walls)",
+      "VariableInputPorts": true,
+      "Id": "9822dc6d46664600887144414d2727a2",
+      "Inputs": [
+        {
+          "Id": "43c0a28b21cd46de91fc88724af7cfdf",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "274d7fdf0f3f44609a42f187e7aebe98",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "78c55ff8e6a04f5ca0c727212e92306a",
+      "End": "43c0a28b21cd46de91fc88724af7cfdf",
+      "Id": "08b2efd16acd4cd8abdde971bb9d5bb0"
+    },
+    {
+      "Start": "274d7fdf0f3f44609a42f187e7aebe98",
+      "End": "0e8196962256484cb11cd89f90e1bee4",
+      "Id": "bcd711e7ae904c4ea73dfa6d185a4cb4"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "7d675e6fff054b4b89ebbe20b050e79e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 244.703555809089,
+        "Y": 56.8670406525547
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4fc294fde0ca43078144597c5fd12d37",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 689.703555809089,
+        "Y": 56.8670406525547
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "9822dc6d46664600887144414d2727a2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 465.703555809089,
+        "Y": 56.8670406525547
+      }
+    ],
+    "Annotations": [],
+    "X": 59.5869001487624,
+    "Y": 283.484019237933,
+    "Zoom": 0.787053582575142
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "Uuid": "a2b7f203-d18a-4cb6-8736-f3a881d3f4bc",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Query",
+  "Description": "Returns the underlay(s) of a given plan view",
+  "Name": "PlanView.Underlay",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "planView",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4d7090a555aa4d07aa913d027092bbd0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "99a5998fd9e049d09c2552a789868a7d",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "baseUnderlay",
+      "Id": "7a99c4dad79e4fa49b6a640fdaf8a4a1",
+      "Inputs": [
+        {
+          "Id": "1d9ec2f158524ca9ab0f82b11628ce8a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "seq[0];\nseq[1];\nseq[2];",
+      "Id": "69cdec1f6379406390ee98cf1cb75f50",
+      "Inputs": [
+        {
+          "Id": "2973e7ec49304bf194da3b4e9ce26671",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f0c3fdbc63dc40a8b45e7c4d5393a631",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e5c58d8685de40c1a6dc96379563cc41",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "eb56d02fb5224b478d38c364df11d325",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "topUnderlay",
+      "Id": "2a2a506ca40c450d89a6e242daa651cb",
+      "Inputs": [
+        {
+          "Id": "0c46b87aed1c4910bcbe95957f0566e8",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "underlayOrientation",
+      "Id": "e81758f174e3408cab770b44e87e3822",
+      "Inputs": [
+        {
+          "Id": "718cd946cc364bc1821f61d50e8445dc",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetUnderlays(view):\r\n\tbaselvl = None\r\n\ttoplvl = None\r\n\tulOrientation = None\r\n\t# Revit 2016 R2 and later\r\n\tif hasattr(view, \"GetUnderlayBaseLevel\"):\t\r\n\t\tif view.GetUnderlayBaseLevel().IntegerValue > 0: baselvl = view.Document.GetElement(view.GetUnderlayBaseLevel())\r\n\t\tif view.GetUnderlayTopLevel().IntegerValue > 0: toplvl = view.Document.GetElement(view.GetUnderlayTopLevel())\r\n\t\tulOrientation = str(view.GetUnderlayOrientation())\r\n\t# anything before\r\n\telse:\r\n\t\ttry: \r\n\t\t\tif view.get_Parameter(BuiltInParameter.VIEW_UNDERLAY_ID).AsElementId().IntegerValue > 0: baselvl = view.Document.GetElement(view.get_Parameter(BuiltInParameter.VIEW_UNDERLAY_ID).AsElementId())\r\n\t\texcept: pass\r\n\treturn baselvl, toplvl, ulOrientation\r\n\r\nviews = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetUnderlays(x) for x in views]))\r\nelse: OUT = GetUnderlays(views)",
+      "VariableInputPorts": true,
+      "Id": "130afc77bdd747bab995c4753ab6e1b6",
+      "Inputs": [
+        {
+          "Id": "c419075ba0c74676b7c2d835c2fa93b6",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "799f9a68a9464343b2d94c1580974aed",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "99a5998fd9e049d09c2552a789868a7d",
+      "End": "c419075ba0c74676b7c2d835c2fa93b6",
+      "Id": "5feb2fb52e2640e5b4c44edb9cfae4ba"
+    },
+    {
+      "Start": "f0c3fdbc63dc40a8b45e7c4d5393a631",
+      "End": "1d9ec2f158524ca9ab0f82b11628ce8a",
+      "Id": "9b31693ef53c47768238e5651d7dd6fe"
+    },
+    {
+      "Start": "e5c58d8685de40c1a6dc96379563cc41",
+      "End": "0c46b87aed1c4910bcbe95957f0566e8",
+      "Id": "073db4d09cd14ae29d2f691b1d590b72"
+    },
+    {
+      "Start": "eb56d02fb5224b478d38c364df11d325",
+      "End": "718cd946cc364bc1821f61d50e8445dc",
+      "Id": "3e972f7407964e7381141cb97562f8da"
+    },
+    {
+      "Start": "799f9a68a9464343b2d94c1580974aed",
+      "End": "2973e7ec49304bf194da3b4e9ce26671",
+      "Id": "95f05b938ed04987b511074e8822f631"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "4d7090a555aa4d07aa913d027092bbd0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 260.792559366559,
+        "Y": 39.017589490327
+      },
+      {
+        "Id": "7a99c4dad79e4fa49b6a640fdaf8a4a1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 901.792559366559,
+        "Y": -26.4090771763397
+      },
+      {
+        "Id": "69cdec1f6379406390ee98cf1cb75f50",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 680.792559366559,
+        "Y": 43.2309228236604
+      },
+      {
+        "Id": "2a2a506ca40c450d89a6e242daa651cb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 901.792559366559,
+        "Y": 56.5909228236603
+      },
+      {
+        "Id": "e81758f174e3408cab770b44e87e3822",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 901.792559366559,
+        "Y": 139.59092282366
+      },
+      {
+        "Id": "130afc77bdd747bab995c4753ab6e1b6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 456.792559366559,
+        "Y": 39.017589490327
+      }
+    ],
+    "Annotations": [],
+    "X": 45.9284867536907,
+    "Y": 426.495606913926,
+    "Zoom": 0.770834945636078
+  }
+}

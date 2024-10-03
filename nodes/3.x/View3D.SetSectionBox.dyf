@@ -1,0 +1,281 @@
+{
+  "Uuid": "4e63332a-2ae2-4266-9541-d16664b9ec3b",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Actions",
+  "Description": "Sets the section box of a given 3D view to the extents of a given bounding box",
+  "Name": "View3D.SetSectionBox",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      },
+      "View3D": {
+        "Key": "Revit.Elements.Views.View3D",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "de89b4c8-ede5-4ecb-bb7f-25a5605b2e6f",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "5fdcc660a2e94183a05377d304ce4b1c",
+      "Inputs": [
+        {
+          "Id": "dcf0e57d44ee4e3984e48189694ef45d",
+          "Name": "DynamoBoundingBox",
+          "Description": "BoundingBox",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fe45f38c272d4b91aa35a731394807e2",
+          "Name": "RevitBoundingBox",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Turns a Dynamo bounding box into a Revit bounding box."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\nclr.AddReference('ProtoGeometry')\nfrom Autodesk.DesignScript.Geometry import *\n\n# Import ToDSType(bool) extension method\nclr.AddReference(\"RevitNodes\")\nimport Revit\nclr.ImportExtensions(Revit.Elements)\n\n# Import DocumentManager and TransactionManager\nclr.AddReference(\"RevitServices\")\nimport RevitServices\nfrom RevitServices.Persistence import DocumentManager\nfrom RevitServices.Transactions import TransactionManager\n\n# Import RevitAPI\nclr.AddReference(\"RevitAPI\")\nimport Autodesk\nfrom Autodesk.Revit.DB import *\n\ndoc = DocumentManager.Instance.CurrentDBDocument\n\nviews = UnwrapElement(IN[0])\nbboxes = IN[1]\n\nTransactionManager.Instance.EnsureInTransaction(doc)\nif isinstance(IN[0], list):\n\tif isinstance(IN[1], list): OUT = [x.SetSectionBox(y) for x, y in zip(views, bboxes)]\n\telse: OUT = [x.SetSectionBox(bboxes) for x in views]\nelse:\n\tif isinstance(IN[1], list): OUT = views.SetSectionBox(bboxes[0])\n\telse: OUT = views.SetSectionBox(bboxes)\nTransactionManager.Instance.TransactionTaskDone()\n\nOUT = views",
+      "VariableInputPorts": true,
+      "Id": "fa928cc8e3e7417a97ec8f9bbb0cb7ad",
+      "Inputs": [
+        {
+          "Id": "9eaa550564694d7886cc2607d4f51179",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a183dab0df5a43d0aaa5d85a99d41c30",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cb4f52d0c3a845639c3621c10d34ee7a",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view3D",
+        "TypeName": "Revit.Elements.Views.View3D",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4d5c19365810482e8fa40b4dafea04a8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "083eaca9f9ba485987527238a892b0c0",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "view3D",
+      "Id": "b07c9c22f33143ac9f6a25c1ba0aaad4",
+      "Inputs": [
+        {
+          "Id": "7ff5751714874e3a928f171984e01fcb",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "boundingBox",
+        "TypeName": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "0b8047d4047842e3941a1f993f6075aa",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7d5895e9078d43a99436cce136e0a9a4",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "fe45f38c272d4b91aa35a731394807e2",
+      "End": "a183dab0df5a43d0aaa5d85a99d41c30",
+      "Id": "f1abdd25322445f0b24c97368cc39f41"
+    },
+    {
+      "Start": "cb4f52d0c3a845639c3621c10d34ee7a",
+      "End": "7ff5751714874e3a928f171984e01fcb",
+      "Id": "42bb8d534afd4b52b4185665469d71d3"
+    },
+    {
+      "Start": "083eaca9f9ba485987527238a892b0c0",
+      "End": "9eaa550564694d7886cc2607d4f51179",
+      "Id": "ab6d8baa3ea345d794ca90bb02659eb0"
+    },
+    {
+      "Start": "7d5895e9078d43a99436cce136e0a9a4",
+      "End": "dcf0e57d44ee4e3984e48189694ef45d",
+      "Id": "79da1445ea0942359ae38dfb4218e5bc"
+    }
+  ],
+  "Dependencies": [
+    "de89b4c8-ede5-4ecb-bb7f-25a5605b2e6f"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.4.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "5fdcc660a2e94183a05377d304ce4b1c"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.6.2.15705",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "BoundingBox.FromDynamoBoundingBox",
+        "Id": "5fdcc660a2e94183a05377d304ce4b1c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 220.82730004712033,
+        "Y": 138.20681948369293
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "fa928cc8e3e7417a97ec8f9bbb0cb7ad",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 683.82730004712039,
+        "Y": 83.206819483692911
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4d5c19365810482e8fa40b4dafea04a8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 220.82730004712033,
+        "Y": 54.206819483692911
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "b07c9c22f33143ac9f6a25c1ba0aaad4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 907.82730004712039,
+        "Y": 83.206819483692925
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "0b8047d4047842e3941a1f993f6075aa",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -420.43343672263615,
+        "Y": 147.7379357238965
+      }
+    ],
+    "Annotations": [],
+    "X": -957.16024674222592,
+    "Y": 140.93784064656515,
+    "Zoom": 1.7637449060649011
+  }
+}

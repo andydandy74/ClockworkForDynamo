@@ -1,0 +1,385 @@
+{
+  "Uuid": "fb07f5d8-94b8-4985-bf2f-a54fe832aa66",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets a list of all boundaries of a given room or area and a corresponding list of the elements that are generating those boundaries.",
+  "Name": "Room.Boundaries",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "room",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "981a0e039fe744f995042ea77ca18745",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f221da32d687489286672dceb3308315",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elements",
+      "Id": "aa6058d62d2c419cadc423f58c7f5767",
+      "Inputs": [
+        {
+          "Id": "f90352758aad4f969e219861a208120a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "curves",
+      "Id": "d71efcb43df8472fb59863d7a11c097e",
+      "Inputs": [
+        {
+          "Id": "54a703b0b64a4a9b96877508c9173e77",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "3a8e8c0723e84c4fa986ae45a639d204",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "702d4575c9b249439a92c9e5b53fc365",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ed76015bc43f40d8adf6e440b27eeba4",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d606f00b375c4d1faf45b9f2682f2fc2",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "51c08f5266df4bc7b54615213dc18ebf",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0fc700b4ecca41ca8fc124ab044ce736",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"System\")\r\nfrom System.Collections.Generic import List\r\n\r\ndef GetRoomBoundaries(item, version):\r\n\tdoc = item.Document\r\n\tcalculator = SpatialElementGeometryCalculator(doc)\r\n\toptions = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n\t# get boundary location from area computation settings\r\n\tboundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n\toptions.SpatialElementBoundaryLocation = boundloc\r\n\t# get boundary segments\r\n\telements = []\r\n\tcurves = []\r\n\t# 1st pass - low hanging fruit\r\n\ttry:\r\n\t\tfor boundarylist in item.GetBoundarySegments(options):\r\n\t\t\tfor boundary in boundarylist:\r\n\t\t\t\t# fix possibly missing bounding element in previous entry\r\n\t\t\t\tif len(elements) > 2:\r\n\t\t\t\t\tif elements[-1] == None:\r\n\t\t\t\t\t\t# simple case: front face of wall protruding into room\r\n\t\t\t\t\t\tif boundary.ElementId == elements[-2].Id: \r\n\t\t\t\t\t\t\telements[-1] = doc.GetElement(boundary.ElementId)\r\n\t\t\t\t# add boundary to list\r\n\t\t\t\telements.append(doc.GetElement(boundary.ElementId))\r\n\t\t\t\tif version > 2016: curves.append(boundary.GetCurve())\r\n\t\t\t\telse: curves.append(boundary.Curve)\r\n\texcept: pass\r\n\t# 2nd pass - special cases (if any)\r\n\tif None in elements:\r\n\t\telementset = set(elements)\r\n\t\telementset.remove(None)\r\n\t\ti = 0\r\n\t\tfor e, c in zip(elements, curves):\r\n\t\t\tif e == None:\r\n\t\t\t\tp = c.ComputeDerivatives(0.5, True).Origin.Add(XYZ(0,0,1))\r\n\t\t\t\tbbox = BoundingBoxXYZ()\r\n\t\t\t\tbbox.Min = p.Subtract(bboxVec)\r\n\t\t\t\tbbox.Max = p.Add(bboxVec)\r\n\t\t\t\tbboxFilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max))\r\n\t\t\t\tcollector = FilteredElementCollector(doc)\r\n\t\t\t\tresults = collector.WherePasses(bboxFilter).WherePasses(catFilter).ToElements()\r\n\t\t\t\tif len(results) > 0: elements[i] = results[0]\t\t\t\t\r\n\t\t\ti += 1\r\n\trcurves = [x.ToProtoType() for x in curves]\r\n\treturn elements, rcurves\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nbics = [BuiltInCategory.OST_Walls, BuiltInCategory.OST_StructuralColumns, BuiltInCategory.OST_Columns]\r\nbicCol = List[BuiltInCategory](bics)\r\ncatFilter = ElementMulticategoryFilter(bicCol)\r\nbboxVec = XYZ(0.01,0.01,0.01)\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))\r\nelse: OUT = GetRoomBoundaries(items, IN[1])",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "4d32882cfa424ef8b2573b4d70502139",
+      "Inputs": [
+        {
+          "Id": "c56e043e8e1b44dc9833b9c0cc6e4202",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ca74620854b14d73a3a22d7fd3f2a995",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c2f46f0b80c8415caebbf665b560280d",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "46e00936fd264b519e18786ea60d3c26",
+      "Inputs": [
+        {
+          "Id": "fb43efbdf5ee423bbf811fa4747e42e8",
+          "Name": "list",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f6d3613f55544afebf97d1bd7f87cb5b",
+          "Name": "item",
+          "Description": "Das erste Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "da75b170e49149d89bafccbaca37459a",
+      "Inputs": [
+        {
+          "Id": "6f92fa2c542243edb0e4ec34f3ff42e5",
+          "Name": "list",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "5e3979cca74246b082b1cb9b696389c9",
+          "Name": "item",
+          "Description": "Das letzte Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "f221da32d687489286672dceb3308315",
+      "End": "c56e043e8e1b44dc9833b9c0cc6e4202",
+      "Id": "e5178c89c7324938b2a8719fcb2274a1"
+    },
+    {
+      "Start": "ed76015bc43f40d8adf6e440b27eeba4",
+      "End": "ca74620854b14d73a3a22d7fd3f2a995",
+      "Id": "04cdaf7e47404efdbad2f790c16a66f6"
+    },
+    {
+      "Start": "c2f46f0b80c8415caebbf665b560280d",
+      "End": "fb43efbdf5ee423bbf811fa4747e42e8",
+      "Id": "5882e1c28143450e8f21100eeceaa512"
+    },
+    {
+      "Start": "c2f46f0b80c8415caebbf665b560280d",
+      "End": "6f92fa2c542243edb0e4ec34f3ff42e5",
+      "Id": "cdcfdf5053a847fc9694474a0ecd74cf"
+    },
+    {
+      "Start": "f6d3613f55544afebf97d1bd7f87cb5b",
+      "End": "f90352758aad4f969e219861a208120a",
+      "Id": "c62bd5b8e7984f8e81bd1914ef874cf5"
+    },
+    {
+      "Start": "5e3979cca74246b082b1cb9b696389c9",
+      "End": "54a703b0b64a4a9b96877508c9173e77",
+      "Id": "cd5677a0efce4557817baf4f173f929a"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.4.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "3a8e8c0723e84c4fa986ae45a639d204"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "981a0e039fe744f995042ea77ca18745",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 202.864994270082,
+        "Y": 500.208648936222
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "aa6058d62d2c419cadc423f58c7f5767",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 921.864994270082,
+        "Y": 500.208648936222
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d71efcb43df8472fb59863d7a11c097e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 921.864994270082,
+        "Y": 584.208648936222
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "3a8e8c0723e84c4fa986ae45a639d204",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 202.864994270082,
+        "Y": 584.208648936222
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "4d32882cfa424ef8b2573b4d70502139",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 434.864994270082,
+        "Y": 542.208648936222
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
+        "Id": "46e00936fd264b519e18786ea60d3c26",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 658.864994270082,
+        "Y": 488.208648936222
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.LastItem",
+        "Id": "da75b170e49149d89bafccbaca37459a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 658.864994270082,
+        "Y": 596.208648936222
+      }
+    ],
+    "Annotations": [],
+    "X": 206.91595982732872,
+    "Y": 54.03187502489294,
+    "Zoom": 0.67034777995406425
+  }
+}

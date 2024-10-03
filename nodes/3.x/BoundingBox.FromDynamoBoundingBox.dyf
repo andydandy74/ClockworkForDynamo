@@ -1,0 +1,273 @@
+{
+  "Uuid": "de89b4c8-ede5-4ecb-bb7f-25a5605b2e6f",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Conversion.Create",
+  "Description": "Turns a Dynamo bounding box into a Revit bounding box.",
+  "Name": "BoundingBox.FromDynamoBoundingBox",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "BoundingBox": {
+        "Key": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "Value": "ProtoGeometry.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "DynamoBoundingBox",
+        "TypeName": "Autodesk.DesignScript.Geometry.BoundingBox",
+        "TypeRank": 0,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "869b2c812a0c4c2fa636de6b0aee396b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "bde31ca312a24abe976c6b39e73d5990",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "RevitBoundingBox",
+      "Id": "fa745a47f3a045dda5fb5a06583a1c80",
+      "Inputs": [
+        {
+          "Id": "86ac989fa82145308446b6318ef147b8",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.BoundingBox.MinPoint",
+      "Id": "8c3c2b23a2dd4b5aa182d533d10bc7ef",
+      "Inputs": [
+        {
+          "Id": "8cf7c6c557be459080a882eac649afed",
+          "Name": "boundingBox",
+          "Description": "Autodesk.DesignScript.Geometry.BoundingBox",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f3e9b93e7c984add8948fe752b06b26e",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "The minimum point\n\nBoundingBox.MinPoint: Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.BoundingBox.MaxPoint",
+      "Id": "5df189c2d56740f3a6407193e11ec783",
+      "Inputs": [
+        {
+          "Id": "9817c7ed9dd941789feb3e21c2a4964b",
+          "Name": "boundingBox",
+          "Description": "Autodesk.DesignScript.Geometry.BoundingBox",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d9ddf006039e433ba6361cca2c5d9b2e",
+          "Name": "Point",
+          "Description": "Point",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "The maximum point\n\nBoundingBox.MaxPoint: Point"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef MakeBoundingBox(min, max):\r\n\ttry:\r\n\t\tnewbox = BoundingBoxXYZ()\r\n\t\tnewbox.Max = max.ToXyz()\r\n\t\tnewbox.Min = min.ToXyz()\r\n\t\treturn newbox\r\n\texcept: return None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): OUT = [MakeBoundingBox(x, y) for x, y in zip(IN[0], IN[1])]\r\nelse: OUT = MakeBoundingBox(IN[0], IN[1])\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "VariableInputPorts": true,
+      "Id": "583480e3c3694a6ab0c1bf5a73ac8606",
+      "Inputs": [
+        {
+          "Id": "ae99ad45b083481fb58a6c59dac5da66",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c1915ad71aa54bfd9fe6fb3e4d7af244",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6cd30d803de141da957c17b7e844b675",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "bde31ca312a24abe976c6b39e73d5990",
+      "End": "8cf7c6c557be459080a882eac649afed",
+      "Id": "4e7ee608b62947a69358426b0e77450e"
+    },
+    {
+      "Start": "bde31ca312a24abe976c6b39e73d5990",
+      "End": "9817c7ed9dd941789feb3e21c2a4964b",
+      "Id": "2b7172e932f04453a16dfae56a98180f"
+    },
+    {
+      "Start": "f3e9b93e7c984add8948fe752b06b26e",
+      "End": "ae99ad45b083481fb58a6c59dac5da66",
+      "Id": "94aaf029308345e0ab00c0e2709f66bd"
+    },
+    {
+      "Start": "d9ddf006039e433ba6361cca2c5d9b2e",
+      "End": "c1915ad71aa54bfd9fe6fb3e4d7af244",
+      "Id": "1ca55e7fa07c40088be2b7d78732be90"
+    },
+    {
+      "Start": "6cd30d803de141da957c17b7e844b675",
+      "End": "86ac989fa82145308446b6318ef147b8",
+      "Id": "73e1a9bb7cb3438ca95f917dc0778b00"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "869b2c812a0c4c2fa636de6b0aee396b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 72.1149545631895,
+        "Y": 202.350974916414
+      },
+      {
+        "Id": "fa745a47f3a045dda5fb5a06583a1c80",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 1014.11495456319,
+        "Y": 189.350974916414
+      },
+      {
+        "Id": "8c3c2b23a2dd4b5aa182d533d10bc7ef",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "BoundingBox.MinPoint",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 458.114954563189,
+        "Y": 148.350974916414
+      },
+      {
+        "Id": "5df189c2d56740f3a6407193e11ec783",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "BoundingBox.MaxPoint",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 458.114954563189,
+        "Y": 256.350974916414
+      },
+      {
+        "Id": "583480e3c3694a6ab0c1bf5a73ac8606",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 790.114954563189,
+        "Y": 189.350974916414
+      }
+    ],
+    "Annotations": [],
+    "X": 333.885045436811,
+    "Y": 63.899025083586,
+    "Zoom": 1.0
+  }
+}

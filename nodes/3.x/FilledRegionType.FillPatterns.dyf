@@ -1,0 +1,295 @@
+{
+  "Uuid": "ebb0b9df-06b5-4bba-9dd6-03576b48c001",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns the fill pattern(s) of a given filled region type. In Revit versions prior to 2019 the background fill pattern will always return Null.",
+  "Name": "FilledRegionType.FillPatterns",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "FilledRegionType": {
+        "Key": "Revit.Elements.FilledRegionType",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetFillPatterns(frt):\r\n\tforeground = None\r\n\tbackground = None\r\n\tif hasattr(frt, \"ForegroundPatternId\"):\r\n\t\tif frt.ForegroundPatternId.IntegerValue > 0:\r\n\t\t\tforeground = frt.Document.GetElement(frt.ForegroundPatternId)\r\n\t\tif frt.BackgroundPatternId.IntegerValue > 0:\r\n\t\t\tbackground = frt.Document.GetElement(frt.BackgroundPatternId)\r\n\telif hasattr(frt, \"FillPatternId\"):\t\r\n\t\tif frt.FillPatternId.IntegerValue > 0:\r\n\t\t\tforeground = frt.Document.GetElement(frt.FillPatternId)\r\n\treturn foreground, background\r\n\r\nfilledregiontypes = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = list(map(list, zip(*[GetFillPatterns(x) for x in filledregiontypes])))\r\nelse: OUT = GetFillPatterns(filledregiontypes)",
+      "VariableInputPorts": true,
+      "Id": "9736b5cda68b48c3a4f65bc0fae39b64",
+      "Inputs": [
+        {
+          "Id": "ad90180768b9430c85e0b744e2d9eba2",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8039474d55174eb790c25e1318b98c9e",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "filledRegionType",
+        "TypeName": "Revit.Elements.FilledRegionType",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "4e0cc0245c8d4cd7b9d02fa8a6e43191",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f8c9a33cbb564c01afae33a8ca0c6574",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "foregroundFillPattern",
+      "Id": "05e31d2309be48f5937de91d2736ac7c",
+      "Inputs": [
+        {
+          "Id": "9b21e4a623a9452a808ce73b39266884",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
+      "Id": "fc2b6832f9cc4f75a1d00ce77272ccbd",
+      "Inputs": [
+        {
+          "Id": "e1d29b5f1b4a494196a5aa8578e16992",
+          "Name": "list",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ab9f22b7890e43199ebe22536838eeef",
+          "Name": "item",
+          "Description": "Das erste Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
+      "Id": "21a3013603bc44cd9d220f318aff56dc",
+      "Inputs": [
+        {
+          "Id": "a15ccd49cbfd42f6a1304c2b2f517463",
+          "Name": "list",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "bed2d5020256457fb2cea11a4a4f048b",
+          "Name": "last",
+          "Description": "Das letzte Element in der Liste",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "backgroundFillPattern",
+      "Id": "d4df1b824b8e488f9fefc41bd65d3260",
+      "Inputs": [
+        {
+          "Id": "df19ddc46bbe468c859c685470336362",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "8039474d55174eb790c25e1318b98c9e",
+      "End": "e1d29b5f1b4a494196a5aa8578e16992",
+      "Id": "d92b9cc7653d45858984d18546394e69"
+    },
+    {
+      "Start": "8039474d55174eb790c25e1318b98c9e",
+      "End": "a15ccd49cbfd42f6a1304c2b2f517463",
+      "Id": "cbf9818e08c84596ad86b0c029b80815"
+    },
+    {
+      "Start": "f8c9a33cbb564c01afae33a8ca0c6574",
+      "End": "ad90180768b9430c85e0b744e2d9eba2",
+      "Id": "e52c244fa38c4f1683acfdbd01a97d10"
+    },
+    {
+      "Start": "ab9f22b7890e43199ebe22536838eeef",
+      "End": "9b21e4a623a9452a808ce73b39266884",
+      "Id": "16d06d124b6a4c83812d42bb9599d564"
+    },
+    {
+      "Start": "bed2d5020256457fb2cea11a4a4f048b",
+      "End": "df19ddc46bbe468c859c685470336362",
+      "Id": "3a32b42fe2724150b4c23f04d312f2ba"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "9736b5cda68b48c3a4f65bc0fae39b64",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 455.0,
+        "Y": 137.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "4e0cc0245c8d4cd7b9d02fa8a6e43191",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 36.0,
+        "Y": 137.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "05e31d2309be48f5937de91d2736ac7c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 942.0,
+        "Y": 95.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
+        "Id": "fc2b6832f9cc4f75a1d00ce77272ccbd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 679.0,
+        "Y": 83.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List.LastItem",
+        "Id": "21a3013603bc44cd9d220f318aff56dc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 679.0,
+        "Y": 191.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "d4df1b824b8e488f9fefc41bd65d3260",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 942.0,
+        "Y": 179.5
+      }
+    ],
+    "Annotations": [],
+    "X": 475.0,
+    "Y": 163.0,
+    "Zoom": 1.0
+  }
+}

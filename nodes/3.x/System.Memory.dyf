@@ -1,0 +1,320 @@
+{
+  "Uuid": "7bff0f47-f7c3-4367-9cb5-78a1c8c68a56",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Environment.Query",
+  "Description": "Returns information on total system memory, free memory and amount of memory used by the application.",
+  "Name": "System.Memory",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "// Installed memory\nseq[0];\n// Free memory\nseq[1];\n// App memory\nseq[2];",
+      "Id": "a724e57c8c684ced87da15f0960673fb",
+      "Inputs": [
+        {
+          "Id": "1352f6a228bb47229a6be3b7d140ce58",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a3c8bef863e2491984c05d7735f73914",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c13f893c76d44883bc12511b431149ba",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "03ea1e42255446dd9dbd9773748ca00b",
+          "Name": "",
+          "Description": "Value of expression at line 6",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference(\"System.Management\")\r\nfrom System.Management import ManagementObject, ManagementObjectSearcher\r\nfrom System.Diagnostics import Process\r\nsysinfo = ManagementObjectSearcher(\"Select Capacity from Win32_PhysicalMemory\").Get()\r\ninstalledMem = 0\r\nfor sysdata in sysinfo:\r\n\tinstalledMem += sysdata.Item[\"Capacity\"]\r\nsysinfo = ManagementObjectSearcher(\"Select FreePhysicalMemory from Win32_OperatingSystem\").Get()\r\nfor sysdata in sysinfo:\r\n\tfreeMem = sysdata.Item[\"FreePhysicalMemory\"]\r\nprocMem = Process.GetCurrentProcess().WorkingSet64\r\nOUT = (float(installedMem)/1073741824, float(freeMem)/1048576, float(procMem)/1073741824)",
+      "VariableInputPorts": true,
+      "Id": "462893be63f24fe8b93e52ef282cea50",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "8daee058d50b42ef9dd0ff9ab2b1935b",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "installedMemory",
+      "Id": "bbbec8d250fc4489988e829b76ee9af2",
+      "Inputs": [
+        {
+          "Id": "e6c1e2eef65b4a5d9f2e46dc9e9b8c0f",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "freeMemory",
+      "Id": "37ebffd457c44b9e8ba7a62adbc14cbb",
+      "Inputs": [
+        {
+          "Id": "d045938cdd2d4b91a4f92c9fce91fb85",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "appMemory",
+      "Id": "72716183a45a4a32bb5657bd96a52464",
+      "Inputs": [
+        {
+          "Id": "90c96775ca084e8eaff0e37c64e51f23",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "passThrough",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": "null",
+        "Description": ""
+      },
+      "Id": "e2f2ffece0bc4150a23b8a72f9426055",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5989dd399b6e485b92a13033dc9b0bbc",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "passThrough",
+      "Id": "a4ce61e54e1c410ea0c6540d92bb415c",
+      "Inputs": [
+        {
+          "Id": "bd0d7035145e4c2fa0dbcf6d7fefa2df",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "a3c8bef863e2491984c05d7735f73914",
+      "End": "e6c1e2eef65b4a5d9f2e46dc9e9b8c0f",
+      "Id": "1e27bb83031e4c9297507957c460509a"
+    },
+    {
+      "Start": "c13f893c76d44883bc12511b431149ba",
+      "End": "d045938cdd2d4b91a4f92c9fce91fb85",
+      "Id": "00f0eb125bf745cfa574820b8d169b35"
+    },
+    {
+      "Start": "03ea1e42255446dd9dbd9773748ca00b",
+      "End": "90c96775ca084e8eaff0e37c64e51f23",
+      "Id": "70e972599f524d98a75f0e2d6f905c2f"
+    },
+    {
+      "Start": "8daee058d50b42ef9dd0ff9ab2b1935b",
+      "End": "1352f6a228bb47229a6be3b7d140ce58",
+      "Id": "48789ca3fc1548e0b6cdcf56d4e083c7"
+    },
+    {
+      "Start": "5989dd399b6e485b92a13033dc9b0bbc",
+      "End": "bd0d7035145e4c2fa0dbcf6d7fefa2df",
+      "Id": "7587731459de45009e4e29df5ee36261"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.1.5055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "Id": "a724e57c8c684ced87da15f0960673fb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Code Block",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 427.672132550274,
+        "Y": 101.493333333333
+      },
+      {
+        "Id": "462893be63f24fe8b93e52ef282cea50",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 233.672132550274,
+        "Y": 97.28
+      },
+      {
+        "Id": "bbbec8d250fc4489988e829b76ee9af2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 747.672132550274,
+        "Y": 67.0
+      },
+      {
+        "Id": "37ebffd457c44b9e8ba7a62adbc14cbb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 747.672132550274,
+        "Y": 150.0
+      },
+      {
+        "Id": "72716183a45a4a32bb5657bd96a52464",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 747.672132550274,
+        "Y": 233.0
+      },
+      {
+        "Id": "e2f2ffece0bc4150a23b8a72f9426055",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 217.0,
+        "Y": 334.0
+      },
+      {
+        "Id": "a4ce61e54e1c410ea0c6540d92bb415c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
+        "Excluded": false,
+        "X": 747.0,
+        "Y": 332.0
+      }
+    ],
+    "Annotations": [],
+    "X": -47.0,
+    "Y": 184.0,
+    "Zoom": 1.0
+  }
+}

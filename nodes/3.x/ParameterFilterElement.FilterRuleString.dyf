@@ -1,0 +1,264 @@
+{
+  "Uuid": "d8678bcb-4e45-44a4-af59-ccd8d92518c1",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Aggregates the filter rules of a given ParameterFilterElement into a human-readable string",
+  "Name": "ParameterFilterElement.FilterRuleString",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "ParameterFilterElement": {
+        "Key": "Revit.Filter.ParameterFilterElement",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nbips = {}\r\nfor bip in System.Enum.GetValues(BuiltInParameter):\r\n\ttry: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n\texcept: pass\r\n\r\ndef GetFilterRuleStringWrapper(item):\r\n\tif version > 2018 and hasattr(item, \"GetElementFilter\"): \r\n\t\treturn GetFilterRuleStringNew(item.GetElementFilter(), item.Document)\t\t\r\n\telif version < 2019 and hasattr(item, \"GetRules\"): \r\n\t\treturn GetFilterRuleStringOld(item)\t\r\n\telse: return None\r\n\t\t\r\ndef GetFilterRuleStringOld(filter):\r\n\trulestrings = []\r\n\tsep = \" AND \"\r\n\tdoc = filter.Document\r\n\tif hasattr(filter, \"GetRules\"):\r\n\t\tfor rule in filter.GetRules():\r\n\t\t\t# inverted rules\r\n\t\t\truleInverted = \"\"\r\n\t\t\tif hasattr(rule, \"GetInnerRule\"): \r\n\t\t\t\trule = rule.GetInnerRule()\r\n\t\t\t\truleInverted = \"Not\"\r\n\t\t\t# rule parameters\r\n\t\t\tparamId = filter.GetRuleParameter(rule)\r\n\t\t\tthisparam = doc.GetElement(paramId)\r\n\t\t\tif thisparam: thisparam = thisparam.Name\r\n\t\t\telse: thisparam = bips[paramId.IntegerValue]\r\n\t\t\t# rule evaluators\r\n\t\t\tif hasattr(rule, \"GetEvaluator\"):\r\n\t\t\t\tthiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n\t\t\t\tthiseval = thiseval.replace(\"Numeric\",\"\")\r\n\t\t\t\tthiseval = thiseval.replace(\"String\",\"\")\r\n\t\t\t\tthiseval = thiseval + ruleInverted\r\n\t\t\t\tif thiseval == \"Equals\": thiseval = \"==\"\r\n\t\t\t\telif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n\t\t\t\telif thiseval == \"Greater\": thiseval = \">\"\r\n\t\t\t\telif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n\t\t\t\telif thiseval == \"Less\": thiseval = \"<\"\r\n\t\t\t\telif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n\t\t\telif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n\t\t\telse: thiseval = \"\"\r\n\t\t\t# rule values\r\n\t\t\tif hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n\t\t\telif hasattr(rule, \"RuleValue\"): thisval = rule.RuleValue.ToString()\r\n\t\t\telse: thisval = \"\"\r\n\t\t\trulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n\tif len(rulestrings) > 0:\r\n\t\trulestrings.sort()\r\n\t\treturn sep.join(rulestrings)\r\n\telse: return '<<<No rules defined>>>'\r\n\t\t\r\ndef GetFilterRuleStringNew(efilter, doc):\r\n\trulestrings = []\r\n\t# Filters without rules will arrive as nulls:\r\n\tif not efilter: return '<<<No rules defined>>>'\r\n\tefilterstr = efilter.ToString()\t\t\r\n\tif \"And\" in efilterstr: sep = \" AND \"\r\n\telif \"Or\" in efilterstr: sep = \" OR \"\r\n\telse: sep = \"\"\r\n\tfilters = efilter.GetFilters()\r\n\tfor filter in filters:\r\n\t\tif hasattr(filter, \"GetRules\"):\r\n\t\t\tfor rule in filter.GetRules():\r\n\t\t\t\tuseRule = True\r\n\t\t\t\t# inverted rules\r\n\t\t\t\truleInverted = \"\"\r\n\t\t\t\tif hasattr(rule, \"GetInnerRule\"): \r\n\t\t\t\t\trule = rule.GetInnerRule()\r\n\t\t\t\t\truleInverted = \"Not\"\r\n\t\t\t\t# rule parameters\r\n\t\t\t\tparamId = rule.GetRuleParameter()\r\n\t\t\t\tthisparam = doc.GetElement(paramId)\r\n\t\t\t\tif thisparam: thisparam = thisparam.Name\r\n\t\t\t\telif paramId.IntegerValue != -1: thisparam = bips[paramId.IntegerValue]\r\n\t\t\t\t# discard the rule if the parameter name cannot be resolved\r\n\t\t\t\telse: useRule = False\r\n\t\t\t\t# rule evaluators\r\n\t\t\t\tif hasattr(rule, \"GetEvaluator\"):\r\n\t\t\t\t\tthiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n\t\t\t\t\tthiseval = thiseval.replace(\"Numeric\",\"\")\r\n\t\t\t\t\tthiseval = thiseval.replace(\"String\",\"\")\r\n\t\t\t\t\tthiseval = thiseval + ruleInverted\r\n\t\t\t\t\tif thiseval == \"Equals\": thiseval = \"==\"\r\n\t\t\t\t\telif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n\t\t\t\t\telif thiseval == \"Greater\": thiseval = \">\"\r\n\t\t\t\t\telif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n\t\t\t\t\telif thiseval == \"Less\": thiseval = \"<\"\r\n\t\t\t\t\telif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n\t\t\t\telif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n\t\t\t\telse: thiseval = \"\"\r\n\t\t\t\t# rule values\r\n\t\t\t\tif hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n\t\t\t\telif hasattr(rule, \"RuleValue\"): thisval = rule.RuleValue.ToString()\r\n\t\t\t\telse: thisval = \"\"\r\n\t\t\t\tif useRule: rulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n\t\telse: rulestrings.append(\"(\" + GetFilterRuleStringNew(filter, doc)+ \")\")\r\n\trulestrings.sort()\r\n\treturn sep.join(rulestrings)\r\n\t\t\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleStringWrapper(x) for x in items]\r\nelse: OUT = GetFilterRuleStringWrapper(items)",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "452c5f22012d48239833da816a48d186",
+      "Inputs": [
+        {
+          "Id": "7a605f7e4f0448ddaef0b4bde604ccf8",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d3132187220c4702bfa345e855ea0692",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7ca90f215e8b464c9ef17e4a6cbecedb",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "0745c91bdf424e7fa09aa5aeb6b1c548",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "23a9e5a0f2dc444a85b3c3e532e6a8b2",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "52b5f0c8432546d3b26576c50eda70b7",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1ffbb7e63d114427be28d1a2ea8bc295",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "00315a41d6c84d01853efe868e1c601a",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5e1d78624a764734977760f077753950",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "parameterFilterElement",
+        "TypeName": "Revit.Filter.ParameterFilterElement",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "5edee556dbc949579a88b4d8b527efb8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "6ed1df190aa44e85acea3ac4d7c0c875",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "str",
+      "Id": "4ac7848f69254375b85ae5c0f3491cc6",
+      "Inputs": [
+        {
+          "Id": "eca0fb4ad1e7472fb27ebf5f635d7c4c",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7ca90f215e8b464c9ef17e4a6cbecedb",
+      "End": "eca0fb4ad1e7472fb27ebf5f635d7c4c",
+      "Id": "1bde1fa934eb4865a0d1e247e97aa038"
+    },
+    {
+      "Start": "52b5f0c8432546d3b26576c50eda70b7",
+      "End": "d3132187220c4702bfa345e855ea0692",
+      "Id": "f0940d4c9ebd41d089f01d0378610a32"
+    },
+    {
+      "Start": "6ed1df190aa44e85acea3ac4d7c0c875",
+      "End": "7a605f7e4f0448ddaef0b4bde604ccf8",
+      "Id": "428b2cb01a914d4f8cd7dbcf191fc648"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.4.0",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "0745c91bdf424e7fa09aa5aeb6b1c548"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "452c5f22012d48239833da816a48d186",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 552.6231812798801,
+        "Y": -73.703612275439454
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "0745c91bdf424e7fa09aa5aeb6b1c548",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -113.3768187201199,
+        "Y": -31.70361227543944
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "5edee556dbc949579a88b4d8b527efb8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -113.3768187201199,
+        "Y": -115.70361227543944
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "4ac7848f69254375b85ae5c0f3491cc6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 776.6231812798801,
+        "Y": -73.703612275439454
+      }
+    ],
+    "Annotations": [],
+    "X": 184.19232693443203,
+    "Y": 267.84874867737142,
+    "Zoom": 1.0298856394709863
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "Uuid": "413a2361-4460-4bd6-90b7-3c137a5595ee",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves the panels nested in a curtain wall, curtain system or glazed roof. \r\nDifferences to OOTB node CurtainPanel.ByElement:\r\n- Will not fail if curtain wall contains doors or windows\r\n- Returns embedded walls\r\n- Panels of curtain systems and glazed roofs are returned in a nested list, with one sublist for each face of the curtain system. \r\nPLEASE NOTE: Will not work for glazed roofs created by RoofByFace method.",
+  "Name": "Element.Panels",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "hostElement",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "1148584615e64e2aa561a0210c07c137",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "80ab2ffe834b46a880d15dc548547302",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "panels",
+      "Id": "e252569113974f18878bed73f3490523",
+      "Inputs": [
+        {
+          "Id": "a4507237ad064b3b876ad18c58cc4c75",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCurtainPanels(host):\r\n\tif hasattr(host, \"CurtainGrid\"):\r\n\t\treturn GetCurtainPanelsByGrid(host.CurtainGrid, host)\r\n\telif hasattr(host, \"CurtainGrids\"):\r\n\t\treturn [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]\r\n\telse: return []\r\n\r\ndef GetCurtainPanelsByGrid(grid, host):\r\n\tif grid:\r\n\t\tif organizeInRows:\r\n\t\t\tuGrids = [ElementId.InvalidElementId]\r\n\t\t\t[uGrids.append(x) for x in grid.GetUGridLineIds()]\r\n\t\t\tvGrids = [ElementId.InvalidElementId]\r\n\t\t\t[vGrids.append(x) for x in grid.GetVGridLineIds()]\r\n\t\t\tpanels = []\r\n\t\t\tfor u in uGrids:\r\n\t\t\t\trow = []\r\n\t\t\t\tfor v in vGrids:\r\n\t\t\t\t\tpanel = grid.GetPanel(u,v)\r\n\t\t\t\t\tif hasattr(panel, \"FindHostPanel\"):\r\n\t\t\t\t\t\thostpanelid = panel.FindHostPanel()\r\n\t\t\t\t\t\tif hostpanelid.IntegerValue != -1: panel = host.Document.GetElement(hostpanelid)\r\n\t\t\t\t\trow.append(panel)\r\n\t\t\t\tpanels.append(row)\r\n\t\t\treturn panels\r\n\t\telse:\r\n\t\t\tpanellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]\r\n\t\t\tfor panel in panellist:\r\n\t\t\t\tif hasattr(panel, \"FindHostPanel\"):\r\n\t\t\t\t\thostpanelid = panel.FindHostPanel()\r\n\t\t\t\t\tif hostpanelid.IntegerValue != -1:\r\n\t\t\t\t\t\tpanellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)\r\n\t\t\treturn [x.ToDSType(True) for x in panellist]\r\n\telse: return list()\r\n\r\nitems = UnwrapElement(IN[0])\r\norganizeInRows = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]\r\nelse: OUT = GetCurtainPanels(items)",
+      "VariableInputPorts": true,
+      "Id": "628c73c0897a40a699145fafa11df794",
+      "Inputs": [
+        {
+          "Id": "edb57ed9ad674ce9923d5c6a6b5534c2",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fb2f5f46ba4c44ee9949c82ede946a16",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f5ec1451a89e4f68b7911e4bac8ca116",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded IronPython script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "organizeInRows",
+        "TypeName": "bool",
+        "TypeRank": 0,
+        "DefaultValue": "false",
+        "Description": ""
+      },
+      "Id": "aebdf271f90a44358f2c6da60d4f6ede",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9d3ab9476cb04ee8a875d6bce1dde941",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "80ab2ffe834b46a880d15dc548547302",
+      "End": "edb57ed9ad674ce9923d5c6a6b5534c2",
+      "Id": "2c3fafe9616f412d87f5751efcfd01e6"
+    },
+    {
+      "Start": "f5ec1451a89e4f68b7911e4bac8ca116",
+      "End": "a4507237ad064b3b876ad18c58cc4c75",
+      "Id": "18c5b6055f604d72afa0a01992f3c819"
+    },
+    {
+      "Start": "9d3ab9476cb04ee8a875d6bce1dde941",
+      "End": "fb2f5f46ba4c44ee9949c82ede946a16",
+      "Id": "0d9fbbb3daea401aa669d21e19229d0c"
+    }
+  ],
+  "Dependencies": [],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.0.3.8810",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "1148584615e64e2aa561a0210c07c137",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 152.956673537624,
+        "Y": 83.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "e252569113974f18878bed73f3490523",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 745.956673537624,
+        "Y": 112.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "628c73c0897a40a699145fafa11df794",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 521.956673537624,
+        "Y": 112.5
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "aebdf271f90a44358f2c6da60d4f6ede",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 152.956673537624,
+        "Y": 167.5
+      }
+    ],
+    "Annotations": [],
+    "X": 61.0,
+    "Y": 209.0,
+    "Zoom": 1.0
+  }
+}
