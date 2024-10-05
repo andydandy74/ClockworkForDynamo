@@ -1,14 +1,13 @@
 ![Maintained](https://img.shields.io/badge/Maintained-yes-brightgreen.svg) 
+[![Current version](https://img.shields.io/github/v/release/andydandy74/ClockworkForDynamo?label=Current%20version&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/releases)
+![2.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F2.x?type=file&label=2.x%20node%20count&color=brightgreen) 
+![3.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F3.x?type=file&label=3.x%20node%20count&color=brightgreen) 
 [![Open issues](https://img.shields.io/github/issues-raw/andydandy74/ClockworkForDynamo?label=Open%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aopen+is%3Aissue)
 [![Closed issues](https://img.shields.io/github/issues-closed-raw/andydandy74/ClockworkForDynamo?label=Closed%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aissue+is%3Aclosed)
 [![Commits since last release](https://img.shields.io/github/commits-since/andydandy74/ClockworkForDynamo/latest?label=Commits%20since%20last%20release&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/commits/master/)
 [![Contributions welcome](https://img.shields.io/badge/Contributions-welcome-brightgreen.svg?style=flat)](https://github.com/andydandy74/ClockworkForDynamo/blob/master/.github/CONTRIBUTING.md) 
 [![CodeQL](https://github.com/andydandy74/ClockworkForDynamo/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/andydandy74/ClockworkForDynamo/actions/workflows/github-code-scanning/codeql) 
 [![Follow me on LinkedIn for updates](https://img.shields.io/badge/LinkedIn-0077B5?style=social&logo=linkedin)](https://www.linkedin.com/in/andreasdieckmann) 
-
-[![Current version](https://img.shields.io/github/v/release/andydandy74/ClockworkForDynamo?label=Current%20version&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/releases)
-![2.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F2.x?type=file&label=2.x%20node%20count&color=brightgreen) 
-![3.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F3.x?type=file&label=3.x%20node%20count&color=brightgreen) 
 
 ![Clockwork logo](clockwork-logo.png)
 
