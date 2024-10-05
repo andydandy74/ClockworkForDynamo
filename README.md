@@ -1,5 +1,5 @@
 ![Maintained](https://img.shields.io/badge/Maintained-yes-brightgreen.svg) 
-[![Current 2.x version](https://img.shields.io/github/v/release/andydandy74/ClockworkForDynamo?label=Current%202.x%20version&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/releases)
+[![Current version](https://img.shields.io/github/v/release/andydandy74/ClockworkForDynamo?label=Current%20version&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/releases)
 ![2.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F2.x?type=file&label=2.x%20node%20count&color=brightgreen) 
 ![3.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F3.x?type=file&label=3.x%20node%20count&color=brightgreen) 
 [![Open issues](https://img.shields.io/github/issues-raw/andydandy74/ClockworkForDynamo?label=Open%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aopen+is%3Aissue)
