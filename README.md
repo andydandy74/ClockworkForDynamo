@@ -1,6 +1,7 @@
 ![Maintained](https://img.shields.io/badge/Maintained-yes-brightgreen.svg) 
 [![Current 2.x version](https://img.shields.io/github/v/release/andydandy74/ClockworkForDynamo?label=Current%202.x%20version&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/releases)
 ![2.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F2.x?type=file&label=2.x%20node%20count&color=brightgreen) 
+![3.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F3.x?type=file&label=3.x%20node%20count&color=brightgreen) 
 [![Open issues](https://img.shields.io/github/issues-raw/andydandy74/ClockworkForDynamo?label=Open%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aopen+is%3Aissue)
 [![Closed issues](https://img.shields.io/github/issues-closed-raw/andydandy74/ClockworkForDynamo?label=Closed%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aissue+is%3Aclosed)
 [![Commits since last release](https://img.shields.io/github/commits-since/andydandy74/ClockworkForDynamo/latest?label=Commits%20since%20last%20release&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/commits/master/)
@@ -10,7 +11,7 @@
 
 ![Clockwork logo](clockwork-logo.png)
 
-**Clockwork** is a collection of custom nodes for the [Dynamo](http://www.dynamobim.com) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 450+ nodes of which a large portion was originally published in a number of separate packages.
+**Clockwork** is a collection of custom nodes for the [Dynamo](http://www.dynamobim.com) visual programming environment. It contains many Revit-related nodes, but also lots of nodes for various other purposes such as list management, mathematical operations, string operations, geometric operations (mainly bounding boxes, meshes, planes, points, surfaces, UVs and vectors) and paneling. Currently it consists of some 400+ nodes of which a large portion was originally published in a number of separate packages.
 
 Clockwork for Dynamo 2.x is currently developed in Dynamo 2.12.0 but also tested in newer 2.x versions which means it's compatible with Revit 2021 and later (and probably still working in Revit 2017-2021 as well).
 
