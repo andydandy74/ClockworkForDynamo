@@ -21,7 +21,7 @@ As of **Revit 2023** you will also need to install the package **"DynamoIronPyth
 - Revit **2025**: Install version **3.2** of that package
 
 # Versions
-The different versions are available as separate packages on the package manager. (So far each new major Dynamo version has introduced changes that prevented downward - and sometimes even upward - compatibility of nodes, hence the separate packages...)
+The different versions are available as separate packages on the Dynamo package manager.
 
 **There is a 3.x package in development but until then the 2.x package should also run in Revit 2025.**
 
@@ -34,8 +34,6 @@ Clockwork for Dynamo **0.9.x** | :x: | 0.90.8 | 2015-17 | [Changes](https://gith
 Clockwork for Dynamo **0.8.2** | :x: | 0.82.8 | 2014-16 | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.8.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.8.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.8.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-082)
 Clockwork for Dynamo **0.7.x** | :x: | 0.75.47 | 2014-16 | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.7.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.7.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.7.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-07x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/0.7.x)
 Clockwork for Dynamo **0.6.3** | :x: | 0.63.3 | 2013-14 |   | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.6.3-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.6.3) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#pre-clockwork-packages) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/0.6.3)
-
-Note that Clockwork version numbering follows the Dynamo version the package is currently maintained for, e.g. Clockwork for Dynamo 2.x v**2.0**.XXX is maintained in Dynamo **2.0**.0 while Clockwork for Dynamo 2.x v**2.3**.XXX would be maintained in Dynamo **2.0.3** and Clockwork for Dynamo 2.x v**2.30**.XXX would be maintained in Dynamo **2.3.0**...
 
 # Renamed, recategorized and deprecated nodes
 During migration from one Dynamo version to the next, I regularly recategorize, relabel and rename a lot of nodes. These changes are documented in an [excel sheet](https://github.com/andydandy74/ClockworkForDynamo/raw/master/NodeList.xlsx) that contains a list of all nodes within the package.
