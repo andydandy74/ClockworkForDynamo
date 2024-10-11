@@ -17,7 +17,7 @@ def WallOrientation(wall):
 			if flipped: return wall.Orientation.ToVector().Reverse()
 			else: return wall.Orientation.ToVector()
 		else:
-			direction = (lcurve.GetEndPoint(1) - lcurve.GetEndPoint(0)).Normalize()
+			direction = (lcurve.GetEndPoint(1).Subtract(lcurve.GetEndPoint(0))).Normalize()
 			if flipped: return XYZ.BasisZ.CrossProduct(direction).ToVector().Reverse()
 			else: return XYZ.BasisZ.CrossProduct(direction).ToVector()
 	else: return None

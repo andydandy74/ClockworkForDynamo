@@ -1,5 +1,5 @@
 import clr
-import System.IO.FileInfo
+import System.IO
 
 def GetFileSize(file):
 	if str(file.GetType()) == "System.IO.FileInfo":

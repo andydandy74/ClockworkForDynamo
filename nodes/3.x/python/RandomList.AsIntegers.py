@@ -1,5 +1,5 @@
 import clr
-import System.Random
+import System
 
 min = IN[0]
 max = IN[1]
