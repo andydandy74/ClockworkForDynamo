@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nrefGroupType = refgroup.GroupType.Id.IntegerValue\r\nfor member in refGroupMembers:\r\n\telem = refgroup.Document.GetElement(member)\r\n\tif elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n\t\tstate = elem.Mirrored\r\n\t\tmembernum = counter\r\n\t\tfamtype = elem.GetTypeId().IntegerValue\r\n\t\tbreak\r\n\tcounter += 1\r\n\t\r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n\tbools = []\r\n\t# Compare Mirrored state with corresponding members of other group instances\r\n\tfor group in groups:\r\n\t\t# Get number of group members\r\n\t\ttheseMembers = group.GetMemberIds()\r\n\t\ttheseMembersNum = len(theseMembers)\r\n\t\t# Set a flag if any group instance has more members than the reference group instance\r\n\t\t# (only if both are of the same group type)\r\n\t\tif theseMembersNum > numMembers and refGroupType == group.GroupType.Id.IntegerValue:\r\n\t\t\trefGroupIntact = False\r\n\t\t\tbreak\r\n\t\t# Return null if group is of another group type\r\n\t\telif refGroupType != group.GroupType.Id.IntegerValue: bools.append(None)\r\n\t\t# Return null for group instances with excluded members\r\n\t\telif theseMembersNum < numMembers: bools.append(None)\r\n\t\t# Return null if family instance to compare if of a diffent type\r\n\t\telif group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue != famtype: bools.append(None)\r\n\t\t# Otherwise compare Mirrored state\r\n\t\telse: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n\t\t\t\r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n\t\r\nOUT = bools",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "8ea9b94c81574310a87ff9d3e02a3649",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -74,7 +75,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -100,7 +101,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -121,7 +122,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
@@ -142,17 +143,20 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -206,8 +210,8 @@
       }
     ],
     "Annotations": [],
-    "X": -172.77177380156922,
-    "Y": 220.17869415807559,
-    "Zoom": 3.1890034364261171
+    "X": 177.11097354159955,
+    "Y": 241.73125888747091,
+    "Zoom": 0.99794472220559149
   }
 }

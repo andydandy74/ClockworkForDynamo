@@ -14,6 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef UngroupGroup(group, extractMembers):\r\n\tsuccess = False\r\n\tmembers = []\r\n\tif hasattr(group, \"UngroupMembers\"):\r\n\t\ttry:\r\n\t\t\tids = group.UngroupMembers()\r\n\t\t\tif extractMembers: members = [group.Document.GetElement(x) for x in ids]\r\n\t\t\tsuccess = True\r\n\t\texcept: pass\r\n\treturn members, success\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ngroups = UnwrapElement(IN[0])\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): \r\n\tif len(groups) > 0: OUT = map(list, zip(*[UngroupGroup(x, IN[1]) for x in groups]))\r\n\telse: OUT = ([], [])\r\nelse: OUT = UngroupGroup(groups, IN[1])\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "f72347c7e09c40b99f3c64cb84e0f34c",
       "Inputs": [
@@ -48,7 +49,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -74,7 +75,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -95,7 +96,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -212,13 +213,15 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
