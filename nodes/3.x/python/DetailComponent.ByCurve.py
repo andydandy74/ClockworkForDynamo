@@ -16,14 +16,12 @@ doc = DocumentManager.Instance.CurrentDBDocument
 curves = UnwrapElement(IN[0])
 famtype = UnwrapElement(IN[1])
 view = UnwrapElement(IN[2])
-version = IN[3]
 elementlist = list()
 counter = 0
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for curve in curves:
-	if version > 2015:
-		if not(famtype.IsActive): famtype.Activate()
+	if not(famtype.IsActive): famtype.Activate()
 	try:
 		newobj = doc.Create.NewFamilyInstance(curve.ToRevitType(),famtype,view)
 		elementlist.append(newobj.ToDSType(False))
