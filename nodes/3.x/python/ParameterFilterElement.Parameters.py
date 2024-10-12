@@ -11,13 +11,6 @@ bips = {}
 for bip in System.Enum.GetValues(BuiltInParameter):
 	try: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)
 	except: pass
-
-def GetFilterRuleParamsWrapper(item):
-	if version > 2018 and hasattr(item, "GetElementFilter"): 
-		efilter = item.GetElementFilter()
-		return GetFilterRuleParams(efilter, item.Document)		
-	elif version < 2019 and hasattr(item, "GetRules"): 
-		return "Versions below Revit 2019 not supported"
 		
 def GetFilterRuleParams(efilter, doc):
 	params = []
@@ -34,7 +27,6 @@ def GetFilterRuleParams(efilter, doc):
 	return params
 		
 items = UnwrapElement(IN[0])
-version = IN[1]
 
-if isinstance(IN[0], list): OUT = [GetFilterRuleParamsWrapper(x) for x in items]
-else: OUT = GetFilterRuleParamsWrapper(items)
+if isinstance(IN[0], list): OUT = [GetFilterRuleParams(x.GetElementFilter(), x.Document) for x in items]
+else: OUT = GetFilterRuleParams(items.GetElementFilter(), items.Document)
