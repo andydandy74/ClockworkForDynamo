@@ -34,7 +34,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -55,7 +55,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
@@ -77,7 +77,7 @@
         {
           "Id": "f0c3fdbc63dc40a8b45e7c4d5393a631",
           "Name": "",
-          "Description": "Value of expression at line 1",
+          "Description": "Wert des Ausdrucks in Zeile 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -86,7 +86,7 @@
         {
           "Id": "e5c58d8685de40c1a6dc96379563cc41",
           "Name": "",
-          "Description": "Value of expression at line 2",
+          "Description": "Wert des Ausdrucks in Zeile 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -95,7 +95,7 @@
         {
           "Id": "eb56d02fb5224b478d38c364df11d325",
           "Name": "",
-          "Description": "Value of expression at line 3",
+          "Description": "Wert des Ausdrucks in Zeile 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -103,7 +103,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
+      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -124,7 +124,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -145,12 +145,13 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetUnderlays(view):\r\n\tbaselvl = None\r\n\ttoplvl = None\r\n\tulOrientation = None\r\n\t# Revit 2016 R2 and later\r\n\tif hasattr(view, \"GetUnderlayBaseLevel\"):\t\r\n\t\tif view.GetUnderlayBaseLevel().IntegerValue > 0: baselvl = view.Document.GetElement(view.GetUnderlayBaseLevel())\r\n\t\tif view.GetUnderlayTopLevel().IntegerValue > 0: toplvl = view.Document.GetElement(view.GetUnderlayTopLevel())\r\n\t\tulOrientation = str(view.GetUnderlayOrientation())\r\n\t# anything before\r\n\telse:\r\n\t\ttry: \r\n\t\t\tif view.get_Parameter(BuiltInParameter.VIEW_UNDERLAY_ID).AsElementId().IntegerValue > 0: baselvl = view.Document.GetElement(view.get_Parameter(BuiltInParameter.VIEW_UNDERLAY_ID).AsElementId())\r\n\t\texcept: pass\r\n\treturn baselvl, toplvl, ulOrientation\r\n\r\nviews = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetUnderlays(x) for x in views]))\r\nelse: OUT = GetUnderlays(views)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport System\r\n\r\ndef GetUnderlays(view):\r\n\tbaselvl = None\r\n\ttoplvl = None\r\n\tulOrientation = None\r\n\tif hasattr(view, \"GetUnderlayBaseLevel\"):\t\r\n\t\tif view.GetUnderlayBaseLevel().IntegerValue > 0: baselvl = view.Document.GetElement(view.GetUnderlayBaseLevel())\r\n\t\tif view.GetUnderlayTopLevel().IntegerValue > 0: toplvl = view.Document.GetElement(view.GetUnderlayTopLevel())\r\n\t\tulOrientation = System.Enum.GetName(UnderlayOrientation, view.GetUnderlayOrientation())\r\n\treturn baselvl, toplvl, ulOrientation\r\n\r\nviews = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetUnderlays(x) for x in views]))\r\nelse: OUT = GetUnderlays(views)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "130afc77bdd747bab995c4753ab6e1b6",
       "Inputs": [
@@ -176,7 +177,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     }
   ],
   "Connectors": [
@@ -207,18 +208,20 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -231,69 +234,69 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "4d7090a555aa4d07aa913d027092bbd0",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 260.792559366559,
-        "Y": 39.017589490327
+        "X": 150.78197865783841,
+        "Y": 37.979753823263479
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "7a99c4dad79e4fa49b6a640fdaf8a4a1",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 901.792559366559,
         "Y": -26.4090771763397
       },
       {
+        "ShowGeometry": true,
+        "Name": "Code Block",
         "Id": "69cdec1f6379406390ee98cf1cb75f50",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Code Block",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 680.792559366559,
         "Y": 43.2309228236604
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "2a2a506ca40c450d89a6e242daa651cb",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 901.792559366559,
         "Y": 56.5909228236603
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "e81758f174e3408cab770b44e87e3822",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 901.792559366559,
         "Y": 139.59092282366
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "130afc77bdd747bab995c4753ab6e1b6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 456.792559366559,
         "Y": 39.017589490327
       }
     ],
     "Annotations": [],
-    "X": 45.9284867536907,
-    "Y": 426.495606913926,
+    "X": -116.47151324630929,
+    "Y": 350.495606913926,
     "Zoom": 0.770834945636078
   }
 }
