@@ -1,6 +1,8 @@
 import clr
+import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
+from Autodesk.Revit.ApplicationServices import *
 import Autodesk
 
 if isinstance(IN[0], list): paths = IN[0]
@@ -9,7 +11,7 @@ APIversion = IN[1]
 
 bfi = [BasicFileInfo.Extract(x) for x in paths]
 username = [x.Username for x in bfi]
-language = [x.LanguageWhenSaved for x in bfi]
+language = [System.Enum.GetName(LanguageType, x.LanguageWhenSaved) for x in bfi]
 if APIversion > 2019: version = [x.Format for x in bfi]
 else: version = [x.SavedInVersion for x in bfi]
 versioncurrent = [x.IsSavedInCurrentVersion for x in bfi]

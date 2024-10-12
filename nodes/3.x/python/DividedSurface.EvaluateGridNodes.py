@@ -31,12 +31,12 @@ while (u < (ds.NumberOfUGridlines-i)):
 	while (v < (ds.NumberOfVGridlines-i)):
 		gn.VIndex = v
 		uv = ds.GetGridNodeUV(gn)
- 		vlist.append(uv)
- 		vnormals.append(face.ComputeNormal(uv).ToVector())
- 		vxyzs.append(face.Evaluate(uv).ToPoint())
- 		v += 1
- 	uvlist.append(vlist)
- 	uvnormals.append(vnormals)
- 	uvxyzs.append(vxyzs)
- 	u += 1
+		vlist.append(uv)
+		vnormals.append(face.ComputeNormal(uv).ToVector())
+		vxyzs.append(face.Evaluate(uv).ToPoint())
+		v += 1
+	uvlist.append(vlist)
+	uvnormals.append(vnormals)
+	uvxyzs.append(vxyzs)
+	u += 1
 OUT = (uvnormals,uvxyzs,face.ToProtoType(),uvlist)

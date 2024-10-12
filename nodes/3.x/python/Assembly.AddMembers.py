@@ -17,7 +17,7 @@ assemblies = UnwrapElement(IN[0])
 element_array = UnwrapElement(IN[1])
 
 def AddAssemblyMembers(assembly, items):
-	if not hasattr(items, "__iter__"): items = [items]
+	if not isinstance(items, list): items = [items]
 	ids = [x.Id for x in items]
 	idlist = List[ElementId](ids)
 	try:
