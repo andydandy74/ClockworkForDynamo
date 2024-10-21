@@ -40,6 +40,7 @@ def RoomFinishes(item):
 		results = calculator.CalculateSpatialElementGeometry(item)
 		for face in results.GetGeometry().Faces:
 			for bface in results.GetBoundaryFaceInfo(face):
+				beface = bface.GetBoundingElementFace()
 				tlist.append(str(bface.SubfaceType))
 				eId = bface.SpatialBoundaryElement.HostElementId
 				if eId == ElementId.InvalidElementId:
@@ -54,12 +55,16 @@ def RoomFinishes(item):
 							mlist.append(None)
 						else: 
 							elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))
-							if bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)
-							else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(bface.GetBoundingElementFace().MaterialElementId))
+							if beface:
+								if beface.MaterialElementId.IntegerValue == -1: mlist.append(None)
+								else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))
+							else: mlist.append(None)
 				else: 
 					elist.append(doc.GetElement(eId))
-					if bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)
-					else: mlist.append(doc.GetElement(bface.GetBoundingElementFace().MaterialElementId))
+					if beface:
+						if beface.MaterialElementId.IntegerValue == -1: mlist.append(None)
+						else: mlist.append(doc.GetElement(beface.MaterialElementId))
+					else: mlist.append(None)
 				alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))
 				flist.append(bface.GetBoundingElementFace())
 		return tlist, mlist, alist, flist, elist
