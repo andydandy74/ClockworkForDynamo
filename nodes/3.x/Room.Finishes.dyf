@@ -17,9 +17,8 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "seq[0];\nseq[1];\nseq[2];\nseq[3];\nseq[4];",
       "Id": "18abd14639e44dbdafa14f759404231a",
+      "NodeType": "CodeBlockNode",
       "Inputs": [
         {
           "Id": "5e6cbea7476e4b3f823893704327c13f",
@@ -79,15 +78,17 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
+      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code.",
+      "Code": "seq[0];\nseq[1];\nseq[2];\nseq[3];\nseq[4];"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\nelse: unittype = UnitType.UT_Area\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef RoomFinishes(item):\r\n\tdoc = item.Document\r\n\tcalculator = SpatialElementGeometryCalculator(doc)\r\n\toptions = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n\t# get boundary location from area computation settings\r\n\tboundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n\toptions.SpatialElementBoundaryLocation = boundloc\r\n\tmlist = []\r\n\ttlist = []\r\n\telist = []\r\n\talist = []\r\n\tflist = []\r\n\ttry:\r\n\t\tresults = calculator.CalculateSpatialElementGeometry(item)\r\n\t\tfor face in results.GetGeometry().Faces:\r\n\t\t\tfor bface in results.GetBoundaryFaceInfo(face):\r\n\t\t\t\ttlist.append(str(bface.SubfaceType))\r\n\t\t\t\teId = bface.SpatialBoundaryElement.HostElementId\r\n\t\t\t\tif eId == ElementId.InvalidElementId:\r\n\t\t\t\t\tliId = bface.SpatialBoundaryElement.LinkInstanceId\r\n\t\t\t\t\tif liId == ElementId.InvalidElementId: \r\n\t\t\t\t\t\telist.append(None)\r\n\t\t\t\t\t\tmlist.append(None)\r\n\t\t\t\t\telse:\r\n\t\t\t\t\t\tleId = bface.SpatialBoundaryElement.LinkedElementId\r\n\t\t\t\t\t\tif leId == ElementId.InvalidElementId: \r\n\t\t\t\t\t\t\telist.append(None)\r\n\t\t\t\t\t\t\tmlist.append(None)\r\n\t\t\t\t\t\telse: \r\n\t\t\t\t\t\t\telist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))\r\n\t\t\t\t\t\t\tif bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)\r\n\t\t\t\t\t\t\telse: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(bface.GetBoundingElementFace().MaterialElementId))\r\n\t\t\t\telse: \r\n\t\t\t\t\telist.append(doc.GetElement(eId))\r\n\t\t\t\t\tif bface.GetBoundingElementFace().MaterialElementId.IntegerValue == -1: mlist.append(None)\r\n\t\t\t\t\telse: mlist.append(doc.GetElement(bface.GetBoundingElementFace().MaterialElementId))\r\n\t\t\t\talist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))\r\n\t\t\t\tflist.append(bface.GetBoundingElementFace())\r\n\t\treturn tlist, mlist, alist, flist, elist\r\n\texcept: return [],[],[],[],[]\r\n\r\nif isinstance(IN[0], list): \r\n\tresults = [RoomFinishes(x) for x in items]\r\n\tOUT = list(zip(*results))\r\nelse: OUT = RoomFinishes(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\nelse: unittype = UnitType.UT_Area\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef RoomFinishes(item):\r\n\tdoc = item.Document\r\n\tcalculator = SpatialElementGeometryCalculator(doc)\r\n\toptions = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n\t# get boundary location from area computation settings\r\n\tboundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n\toptions.SpatialElementBoundaryLocation = boundloc\r\n\tmlist = []\r\n\ttlist = []\r\n\telist = []\r\n\talist = []\r\n\tflist = []\r\n\ttry:\r\n\t\tresults = calculator.CalculateSpatialElementGeometry(item)\r\n\t\tfor face in results.GetGeometry().Faces:\r\n\t\t\tfor bface in results.GetBoundaryFaceInfo(face):\r\n\t\t\t\tbeface = bface.GetBoundingElementFace()\r\n\t\t\t\ttlist.append(str(bface.SubfaceType))\r\n\t\t\t\teId = bface.SpatialBoundaryElement.HostElementId\r\n\t\t\t\tif eId == ElementId.InvalidElementId:\r\n\t\t\t\t\tliId = bface.SpatialBoundaryElement.LinkInstanceId\r\n\t\t\t\t\tif liId == ElementId.InvalidElementId: \r\n\t\t\t\t\t\telist.append(None)\r\n\t\t\t\t\t\tmlist.append(None)\r\n\t\t\t\t\telse:\r\n\t\t\t\t\t\tleId = bface.SpatialBoundaryElement.LinkedElementId\r\n\t\t\t\t\t\tif leId == ElementId.InvalidElementId: \r\n\t\t\t\t\t\t\telist.append(None)\r\n\t\t\t\t\t\t\tmlist.append(None)\r\n\t\t\t\t\t\telse: \r\n\t\t\t\t\t\t\telist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))\r\n\t\t\t\t\t\t\tif beface:\r\n\t\t\t\t\t\t\t\tif beface.MaterialElementId.IntegerValue == -1: mlist.append(None)\r\n\t\t\t\t\t\t\t\telse: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))\r\n\t\t\t\t\t\t\telse: mlist.append(None)\r\n\t\t\t\telse: \r\n\t\t\t\t\telist.append(doc.GetElement(eId))\r\n\t\t\t\t\tif beface:\r\n\t\t\t\t\t\tif beface.MaterialElementId.IntegerValue == -1: mlist.append(None)\r\n\t\t\t\t\t\telse: mlist.append(doc.GetElement(beface.MaterialElementId))\r\n\t\t\t\t\telse: mlist.append(None)\r\n\t\t\t\talist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))\r\n\t\t\t\tflist.append(bface.GetBoundingElementFace())\r\n\t\treturn tlist, mlist, alist, flist, elist\r\n\texcept: return [],[],[],[],[]\r\n\r\nif isinstance(IN[0], list): \r\n\tresults = [RoomFinishes(x) for x in items]\r\n\tOUT = list(zip(*results))\r\nelse: OUT = RoomFinishes(items)",
       "Engine": "IronPython2",
+      "EngineName": "IronPython2",
       "VariableInputPorts": true,
       "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "34ca07f47e0c44b2b2f89e6f6b807e32",
@@ -124,7 +125,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "room",
         "TypeName": "var",
@@ -133,6 +133,7 @@
         "Description": ""
       },
       "Id": "8f049392c9ac4c51a7857e2af3f01dd4",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -150,10 +151,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "finishMaterials",
       "Id": "89066f81334844c492de5952f1a0394b",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "a95f90082b9b4d32b35bcc5529a4de4b",
@@ -171,10 +172,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "areas",
       "Id": "1c352004b7f2429fa3f1bf4a2e67c1d9",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "e27f6e1d07e54b138218109fde962e6b",
@@ -192,10 +193,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "faceTypes",
       "Id": "391a1fff6c904d879181b95a185d53ce",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "c9b057c23c564935ac44a0b27534e173",
@@ -213,10 +214,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "revitFaces",
       "Id": "40f059761d5f4c35be6d0af2667e485a",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "5389b718abee422fac9e3d832faab999",
@@ -234,10 +235,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "elements",
       "Id": "22e4bd1ebd684d1da32d5922ab6ff551",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "7259ca55f04f4c369a5e4eb78c98457e",
@@ -257,8 +258,8 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
       "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
       "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
       "Id": "c052cf223e0f4bfead910d04fcdcdbc1",
+      "NodeType": "FunctionNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -315,42 +316,50 @@
     {
       "Start": "d3ff3b380bfa49e495d8c7e2ed7fd095",
       "End": "c9b057c23c564935ac44a0b27534e173",
-      "Id": "47aaeb4319994fa7a820782cbe73af53"
+      "Id": "47aaeb4319994fa7a820782cbe73af53",
+      "IsHidden": "False"
     },
     {
       "Start": "ca991bb8feb94f5eb76966556f813c88",
       "End": "a95f90082b9b4d32b35bcc5529a4de4b",
-      "Id": "bc157f99598f4990a2648cf902db7a2a"
+      "Id": "bc157f99598f4990a2648cf902db7a2a",
+      "IsHidden": "False"
     },
     {
       "Start": "9d609a1dcd504c42b7530714b5d33276",
       "End": "e27f6e1d07e54b138218109fde962e6b",
-      "Id": "21c1052a208647f9b3a2cf52dc27a9da"
+      "Id": "21c1052a208647f9b3a2cf52dc27a9da",
+      "IsHidden": "False"
     },
     {
       "Start": "7b9561ae8b47484e95da93a00b3b0929",
       "End": "5389b718abee422fac9e3d832faab999",
-      "Id": "4637d7ec96314ae19da46fa17d6e2ecb"
+      "Id": "4637d7ec96314ae19da46fa17d6e2ecb",
+      "IsHidden": "False"
     },
     {
       "Start": "135eac1861f44b34aff98cd5f29217e5",
       "End": "7259ca55f04f4c369a5e4eb78c98457e",
-      "Id": "3ea50ef8beb74d8c95aab447b73ec020"
+      "Id": "3ea50ef8beb74d8c95aab447b73ec020",
+      "IsHidden": "False"
     },
     {
       "Start": "dd97ef1c04e846f98f1a7ef4519a031e",
       "End": "5e6cbea7476e4b3f823893704327c13f",
-      "Id": "201b027304fa44aaa0248f328b9d6505"
+      "Id": "201b027304fa44aaa0248f328b9d6505",
+      "IsHidden": "False"
     },
     {
       "Start": "4670ddcc858f4c1aa8f66ade6f8cdc2a",
       "End": "34ca07f47e0c44b2b2f89e6f6b807e32",
-      "Id": "8073f4514dca49a29e77a52c80673fa0"
+      "Id": "8073f4514dca49a29e77a52c80673fa0",
+      "IsHidden": "False"
     },
     {
       "Start": "b549ae1725f34282a63c1c09c78f72f1",
       "End": "e55b55d57520424facc4f2c39576eb1e",
-      "Id": "e9e21b8f8960432c91928bd7eda664ff"
+      "Id": "e9e21b8f8960432c91928bd7eda664ff",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -373,12 +382,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.19.3.6394",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -389,96 +398,97 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Code Block",
         "Id": "18abd14639e44dbdafa14f759404231a",
+        "Name": "Code Block",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 781.482697822732,
-        "Y": 157.00191230943929
+        "ShowGeometry": true,
+        "X": 804.93448878860181,
+        "Y": 200.59307040671746
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 556.682697822732,
-        "Y": 152.78857897610598
+        "ShowGeometry": true,
+        "X": 530.93448878860181,
+        "Y": 200.59307040671746
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "8f049392c9ac4c51a7857e2af3f01dd4",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 280.68269782273205,
-        "Y": 110.78857897610595
+        "ShowGeometry": true,
+        "X": 212.93448878860181,
+        "Y": 126.59307040671746
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "89066f81334844c492de5952f1a0394b",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1025.482697822732,
-        "Y": 104.93524564277263
+        "ShowGeometry": true,
+        "X": 1086.9344887886018,
+        "Y": 86.45557040671747
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "1c352004b7f2429fa3f1bf4a2e67c1d9",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1025.482697822732,
-        "Y": 187.93524564277263
+        "ShowGeometry": true,
+        "X": 1086.9344887886018,
+        "Y": 233.45557040671747
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "391a1fff6c904d879181b95a185d53ce",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1025.482697822732,
-        "Y": 21.935245642772628
+        "ShowGeometry": true,
+        "X": 1086.9344887886018,
+        "Y": -60.54442959328253
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "40f059761d5f4c35be6d0af2667e485a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 1025.482697822732,
-        "Y": 270.93524564277266
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Output",
-        "Id": "22e4bd1ebd684d1da32d5922ab6ff551",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 1025.482697822732,
-        "Y": 353.93524564277266
+        "ShowGeometry": true,
+        "X": 1086.9344887886018,
+        "Y": 380.45557040671747
       },
       {
-        "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "c052cf223e0f4bfead910d04fcdcdbc1",
+        "Id": "22e4bd1ebd684d1da32d5922ab6ff551",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 280.68269782273205,
-        "Y": 194.78857897610598
+        "ShowGeometry": true,
+        "X": 1086.9344887886018,
+        "Y": 527.45557040671747
+      },
+      {
+        "Id": "c052cf223e0f4bfead910d04fcdcdbc1",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 212.93448878860181,
+        "Y": 274.59307040671752
       }
     ],
     "Annotations": [],
