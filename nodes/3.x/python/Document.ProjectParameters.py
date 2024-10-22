@@ -20,7 +20,6 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 	doc = inputdoc
 else: doc = None
-version = IN[2]
 
 names = []
 cats = []
@@ -37,14 +36,8 @@ iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
 	vag.append(iterator.Key.VariesAcrossGroups)
 	names.append(iterator.Key.Name)
-	if version > 2021: 
-		pts.append(iterator.Key.GetDataType())
-		uts.append(iterator.Key.GetDataType())
-		pgs.append(iterator.Key.GetGroupTypeId())
-	else: 
-		pts.append(iterator.Key.ParameterType)
-		uts.append(iterator.Key.UnitType)
-		pgs.append(iterator.Key.ParameterGroup)
+	pts.append(iterator.Key.GetDataType())
+	pgs.append(iterator.Key.GetGroupTypeId())
 	isvis.append(iterator.Key.Visible)
 	elem = doc.GetElement(iterator.Key.Id)
 	elems.append(elem)
@@ -64,7 +57,7 @@ while iterator.MoveNext():
 			# Return null if category is not supported by Dynamo
 			# This way the user knows there are unsupported categories assigned
 			thesecats.append(None)
-		builtincats.append(System.Enum.ToObject(BuiltInCategory, cat.Id.IntegerValue))
+		builtincats.append(System.Enum.GetName(BuiltInCategory, cat.Id.IntegerValue))
 	cats.append(thesecats)
 	bics.append(builtincats)
-OUT = (names,cats,vag, pgs, pts, uts, isvis, elems, guids, isinst, bics)
+OUT = (names,cats,vag, pgs, pts, isvis, elems, guids, isinst, bics)

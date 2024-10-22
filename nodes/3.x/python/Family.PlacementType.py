@@ -1,9 +1,10 @@
 import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
+import System
 
 def GetPlacementType(item):
-	if hasattr(item, "FamilyPlacementType"): return item.FamilyPlacementType
+	if hasattr(item, "FamilyPlacementType"): return System.Enum.GetName(FamilyPlacementType, item.FamilyPlacementType)
 	else: return None
 
 items = UnwrapElement(IN[0])

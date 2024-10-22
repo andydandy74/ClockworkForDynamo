@@ -6,18 +6,21 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
+import System
+from System.Collections.Generic import *
+
+def GetFirstAndAllViews(lvl):
+	firstView = None
+	try:
+		if lvl.Document.GetElement(lvl.FindAssociatedPlanViewId()): firstView = lvl.Document.GetElement(lvl.FindAssociatedPlanViewId())
+	except: pass
+	if viewlevels.Contains(lvl.Id): allViews = views[viewlevels.IndexOf(lvl.Id)]
+	else: allViews = []
+	return firstView, allViews
+
 levels = UnwrapElement(IN[0])
-version = IN[1]
-elementlist = list()
-for lvl in levels:
-	if version > 2017:
-		try:
-			if lvl.Document.GetElement(lvl.FindAssociatedPlanViewId()) == None:
-				elementlist.append(None)
-			else:
-				elementlist.append(lvl.Document.GetElement(lvl.FindAssociatedPlanViewId()))
-		except:
-			elementlist.append(None)
-	else:
-		elementlist.append(None)
-OUT = elementlist
+views = UnwrapElement(IN[1])
+viewlevels = List[ElementId]([x.Id for x in UnwrapElement(IN[2])])
+
+if isinstance(IN[0], list): OUT = list(zip(*[GetFirstAndAllViews(x) for x in levels]))
+else: OUT = GetFirstAndAllViews(levels)

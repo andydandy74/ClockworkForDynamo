@@ -40,7 +40,6 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 	doc = inputdoc
 else: doc = None
-version = IN[3]
 
 iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
@@ -50,14 +49,8 @@ while iterator.MoveNext():
 			if cat.Id.IntegerValue == search_id:
 				names[i].append(iterator.Key.Name)
 				vag[i].append(iterator.Key.VariesAcrossGroups)
-				if version > 2021: 
-					pts[i].append(iterator.Key.GetDataType())
-					uts[i].append(iterator.Key.GetDataType())
-					pgs[i].append(iterator.Key.GetGroupTypeId())
-				else: 
-					pts[i].append(iterator.Key.ParameterType)
-					uts[i].append(iterator.Key.UnitType)
-					pgs[i].append(iterator.Key.ParameterGroup)
+				pts[i].append(iterator.Key.GetDataType())
+				pgs[i].append(iterator.Key.GetGroupTypeId())
 				isvis[i].append(iterator.Key.Visible)
 				elem = doc.GetElement(iterator.Key.Id)
 				elems[i].append(elem)
@@ -68,5 +61,5 @@ while iterator.MoveNext():
 					isinst[i].append(True)
 				else: isinst[i].append(False)
 			i += 1
-if isinstance(IN[0], list): OUT = (names, vag, pgs, pts, uts, isvis, elems, guids, isinst)
-else: OUT = (names[0], vag[0], pgs[0], pts[0], uts[0], isvis[0], elems[0], guids[0], isinst[0])
+if isinstance(IN[0], list): OUT = (names, vag, pgs, pts, isvis, elems, guids, isinst)
+else: OUT = (names[0], vag[0], pgs[0], pts[0], isvis[0], elems[0], guids[0], isinst[0])
