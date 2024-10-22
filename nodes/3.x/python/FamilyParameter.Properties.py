@@ -1,4 +1,5 @@
 import clr
+import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
@@ -6,58 +7,20 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-params = UnwrapElement(IN[0])
-version = IN[1]
-pname = list()
-guid = list()
-pgroup = list()
-ptype = list()
-utype = list()
-dutype = list()
-stype = list()
-isinstance = list()
-isreporting = list()
-isshared = list()
-isreadonly = list()
-usermodifiable = list()
-formula = list()
-determinedbyformula = list()
-associatedparams = list()
-associatedelements = list()
-canassignformula = list()
-for param in params:
-	pname.append(param.Definition.Name)
-	try:guid.append(param.GUID.ToString())
-	except: guid.append(None)
-	if version > 2021:
-		ptype.append(param.Definition.GetDataType())
-		utype.append(param.Definition.GetDataType())
-		pgroup.append(param.Definition.GetGroupTypeId())
-		try: dutype.append(param.GetUnitTypeId())
-		except: dutype.append(None)
-	else:
-		ptype.append(param.Definition.ParameterType)
-		utype.append(param.Definition.UnitType)
-		pgroup.append(param.Definition.ParameterGroup)
-		try: dutype.append(param.DisplayUnitType)
-		except: dutype.append(None)
-	stype.append(param.StorageType)
-	isinstance.append(param.IsInstance)
-	isreporting.append(param.IsReporting)
-	isshared.append(param.IsShared)
-	isreadonly.append(param.IsReadOnly)
-	usermodifiable.append(param.UserModifiable)
-	formula.append(param.Formula)
-	determinedbyformula.append(param.IsDeterminedByFormula)
+def GetFamParamProperties(param):
+	try: guid = param.GUID.ToString()
+	except: guid = None
+	try: dutype = param.GetUnitTypeId()
+	except: dutype = None
 	assocparams = param.AssociatedParameters
-	associatedparams.append(assocparams)
 	assocelems = list()
 	for assoc in assocparams:
 		assocelems.append(assoc.Element)
-	associatedelements.append(assocelems)
-	canassignformula.append(param.CanAssignFormula)
-	
-OUT = (pname,guid,pgroup,ptype,utype,dutype,stype,isinstance,isreporting,isshared,isreadonly,usermodifiable,formula,determinedbyformula,associatedparams,canassignformula,associatedelements)
+	return param.Definition.Name, guid, param.Definition.GetGroupTypeId(), param.Definition.GetDataType(), dutype, System.Enum.GetName(StorageType, param.StorageType), param.IsInstance, param.IsReporting, param.IsShared, param.IsReadOnly, param.UserModifiable, param.Formula, param.IsDeterminedByFormula, assocparams, param.CanAssignFormula, assocelems
+
+params = UnwrapElement(IN[0])
+if isinstance(IN[0], list): OUT = list(zip(*[GetFamParamProperties(x) for x in params]))
+else: OUT = GetFamParamProperties(params)
 
 ##### NEXT PYTHON NODE #####
 
