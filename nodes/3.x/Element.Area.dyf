@@ -65,8 +65,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nspatialElements = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\nelse: unittype = UnitType.UT_Area\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\t\r\ndef GetArea(spatialElement):\r\n\tif hasattr(spatialElement, \"Area\"): return InternalUnitToDisplayUnit(spatialElement.Area, unittype)\r\n\telse: return None\r\n\r\nif isinstance(IN[0], list): OUT = [GetArea(x) for x in spatialElements]\r\nelse: OUT = GetArea(spatialElements)",
-      "Engine": "IronPython2",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nspatialElements = UnwrapElement(IN[0])\r\nunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\t\r\ndef GetArea(spatialElement):\r\n\tif hasattr(spatialElement, \"Area\"): return InternalUnitToDisplayUnit(spatialElement.Area, unittype)\r\n\telse: return None\r\n\r\nif isinstance(IN[0], list): OUT = [GetArea(x) for x in spatialElements]\r\nelse: OUT = GetArea(spatialElements)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "a23f1c62848c446994852db3824883ab",
       "Inputs": [
@@ -74,15 +74,6 @@
           "Id": "4647ccc5b6894e9182f6823aa4c9bca0",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "5b4cf7b4317c4dba8ac2cb99f229790a",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -102,63 +93,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes Python-Skript aus."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "898ba93dc1b34f869485aadf120fe784",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "90183e9395654605b033bb500e52dc54",
-          "Name": "Name",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "54a8fab092ff44e0b3e8f149f3920748",
-          "Name": "Version",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "264c50fffe0d4cd49d7d8463edd69da6",
-          "Name": "Build",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "9566df7a50754749a94b10e9026fe787",
-          "Name": "Language",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "38f19f6618674b91b109412c91d64877",
-          "Name": "fullVersion",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -171,26 +105,10 @@
       "Start": "5e9977d0f667458f889512b91175a699",
       "End": "a89fc71b3fd848febc6af9ae71697e90",
       "Id": "345959d3007d4db98f2deec583297945"
-    },
-    {
-      "Start": "54a8fab092ff44e0b3e8f149f3920748",
-      "End": "5b4cf7b4317c4dba8ac2cb99f229790a",
-      "Id": "ea07f175b77a4f3e8eaa1f05bd590e05"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.6.0",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "898ba93dc1b34f869485aadf120fe784"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -223,7 +141,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 312.08010205918174,
-        "Y": 10.056263344522108
+        "Y": 31.056263344522115
       },
       {
         "ShowGeometry": true,
@@ -233,7 +151,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 836.8801020591817,
-        "Y": 52.056263344522108
+        "Y": 31.056263344522108
       },
       {
         "ShowGeometry": true,
@@ -243,22 +161,12 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 612.08010205918174,
-        "Y": 52.0562633445221
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "898ba93dc1b34f869485aadf120fe784",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 312.08010205918174,
-        "Y": 94.056263344522137
+        "Y": 31.056263344522108
       }
     ],
     "Annotations": [],
-    "X": 195.095042901716,
-    "Y": 381.661599189602,
+    "X": -13.704957098283955,
+    "Y": 243.261599189602,
     "Zoom": 0.73907813570939
   }
 }
