@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\ndef GetDependentOld(item):\r\n\t# We will need a transaction in order to \r\n\t# temporarily delete the elements and see what dependes on them.\r\n\t# Although the new method already exists in 2018.1\r\n\t# it requires an element filter up to 2019.0 which to me doesn't make a whole lot of sense\r\n\t# (which is probably why they changed that for 2019...).\r\n\tTransactionManager.Instance.EnsureInTransaction(doc)\r\n\ttrans = SubTransaction(doc)\r\n\ttrans.Start()\r\n\ttry: dependents = doc.Delete(item.Id)\r\n\texcept: dependents = []\r\n\ttrans.RollBack()\r\n\tTransactionManager.Instance.TransactionTaskDone()\r\n\treturn [doc.GetElement(x) for x in dependents if x != item.Id]\r\n\r\ndef GetDependentNew(item):\r\n\tif hasattr(item, \"GetDependentElements\"): \r\n\t\treturn [doc.GetElement(x) for x in item.GetDependentElements(None) if x != item.Id]\r\n\telse: return []\r\n\t\r\nif version < 2019:\t\r\n\tif isinstance(IN[0], list): OUT = [GetDependentOld(x) for x in items]\r\n\telse: OUT = GetDependentOld(items)\t\r\nelse:\r\n\tif isinstance(IN[0], list): OUT = [GetDependentNew(x) for x in items]\r\n\telse: OUT = GetDependentNew(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\ndef GetDependent(item):\r\n\tif hasattr(item, \"GetDependentElements\"): \r\n\t\treturn [item.Document.GetElement(x) for x in item.GetDependentElements(None) if x != item.Id]\r\n\telse: return []\r\n\t\r\nif isinstance(IN[0], list): OUT = [GetDependent(x) for x in items]\r\nelse: OUT = GetDependent(items)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "938694e90470453e8ff70b45c4507878",
       "Inputs": [
@@ -21,15 +22,6 @@
           "Id": "bd44af89b4d242228eadf54710fc7193",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b6465185a84f4f2e997bc44bbedadd80",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -48,64 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "29bd15fdf046484284fa86d4c3c2a70e",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "d253ce0050f14493ab325f71acdba913",
-          "Name": "Name",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d366b5f90248401f95582590aeb40ee6",
-          "Name": "Version",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "dcdbe0f214324cdb917d665a0111e223",
-          "Name": "Build",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "ba8685788494482d9b3ee6ffd5b79349",
-          "Name": "Language",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "3f8b1681b1e74e2088d115a1fb1da33c",
-          "Name": "fullVersion",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -162,26 +97,21 @@
       "Id": "ea8820f717c1482abad3ac11adf34c83"
     },
     {
-      "Start": "d366b5f90248401f95582590aeb40ee6",
-      "End": "b6465185a84f4f2e997bc44bbedadd80",
-      "Id": "6bad4cac67f4458a865aaf680531e12a"
-    },
-    {
       "Start": "7abbfa93d9ce4db3af89d5876ffb81a5",
       "End": "bd44af89b4d242228eadf54710fc7193",
       "Id": "78a22a5fc21a4643be239d1f7f708239"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -210,16 +140,6 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "29bd15fdf046484284fa86d4c3c2a70e",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 88.75,
-        "Y": 55.1966666666665
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
         "Id": "da3a6cd0314f45ff8703832b38c1cae8",
         "IsSetAsInput": false,
@@ -240,8 +160,8 @@
       }
     ],
     "Annotations": [],
-    "X": 127.755805100148,
-    "Y": 60.9744190281899,
-    "Zoom": 0.70823125
+    "X": -77.5253440262021,
+    "Y": 38.228481517583134,
+    "Zoom": 1.1047642563030271
   }
 }
