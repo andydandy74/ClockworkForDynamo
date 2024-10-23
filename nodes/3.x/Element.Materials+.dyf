@@ -217,67 +217,10 @@
       "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "00b964f944674b00a90279c7706033c7",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "954f363052114c8d857db92fc41ad4b3",
-          "Name": "Name",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4da075175ab34dfe9e75fef725faa0fb",
-          "Name": "Version",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e27088e0681f48b7a34814ef38db8292",
-          "Name": "Build",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "5c47368d8fa443ebb915712a78d57a23",
-          "Name": "Language",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "0e0a2b9b226a4cf8a3bcc0b12b8be1c9",
-          "Name": "fullVersion",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\npaintedmats = IN[1]\r\nversion = IN[2]\r\nif version > 2021: \r\n\tunittypeA = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\tunittypeV = ForgeTypeId('autodesk.spec.aec:volume-2.0.0')\r\nelse: \r\n\tunittypeA = UnitType.UT_Area\r\n\tunittypeV = UnitType.UT_Volume\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\t\r\ndef ElementMaterials(item, painted):\r\n\tmatlist = list()\r\n\tarealist = list()\r\n\tvollist = list()\r\n\tfor matid in item.GetMaterialIds(painted):\r\n\t\tmatlist.append(item.Document.GetElement(matid))\r\n\t\tarealist.append(InternalUnitToDisplayUnit(item.GetMaterialArea(matid,painted), unittypeA))\r\n\t\tvollist.append(InternalUnitToDisplayUnit(item.GetMaterialVolume(matid), unittypeV))\r\n\treturn matlist, arealist, vollist, len(matlist) > 0\r\n\r\nif isinstance(IN[0], list): \r\n\tresults = [ElementMaterials(x, paintedmats) for x in items]\r\n\tOUT = list(zip(*results))\r\nelse: OUT = ElementMaterials(items, paintedmats)",
-      "Engine": "IronPython2",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\npaintedmats = IN[1]\r\nunittypeA = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\nunittypeV = ForgeTypeId('autodesk.spec.aec:volume-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\t\r\ndef ElementMaterials(item, painted):\r\n\tmatlist = list()\r\n\tarealist = list()\r\n\tvollist = list()\r\n\tfor matid in item.GetMaterialIds(painted):\r\n\t\tmatlist.append(item.Document.GetElement(matid))\r\n\t\tarealist.append(InternalUnitToDisplayUnit(item.GetMaterialArea(matid,painted), unittypeA))\r\n\t\tvollist.append(InternalUnitToDisplayUnit(item.GetMaterialVolume(matid), unittypeV))\r\n\treturn matlist, arealist, vollist, len(matlist) > 0\r\n\r\nif isinstance(IN[0], list): \r\n\tresults = [ElementMaterials(x, paintedmats) for x in items]\r\n\tOUT = list(zip(*results))\r\nelse: OUT = ElementMaterials(items, paintedmats)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "45d3f2e2615f4968976ba7c9bd91d1f1",
       "Inputs": [
@@ -294,15 +237,6 @@
           "Id": "65be054b8bec4f0cbcb0800669434d17",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "09217cfba4e045b9bd16719855036483",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -356,29 +290,13 @@
       "Id": "54d426d1c8024e46a91a1d5cf1591e4f"
     },
     {
-      "Start": "4da075175ab34dfe9e75fef725faa0fb",
-      "End": "09217cfba4e045b9bd16719855036483",
-      "Id": "68fa79dda01d4eb29f9f806ca8937d55"
-    },
-    {
       "Start": "0212efe1afd942aebf05afb2b1b7914d",
       "End": "2a16f38f314a4d629e56a8d4523e1766",
       "Id": "13e1a9acf2cd4610a6b7c31ed68c2df1"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.6.0",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "00b964f944674b00a90279c7706033c7"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -472,16 +390,6 @@
         "Excluded": false,
         "X": 1254.4947026913628,
         "Y": 507.29035608753969
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "00b964f944674b00a90279c7706033c7",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 352.89470269136291,
-        "Y": 456.93035608753962
       },
       {
         "ShowGeometry": true,
