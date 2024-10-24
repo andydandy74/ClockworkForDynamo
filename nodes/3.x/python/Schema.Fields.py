@@ -8,7 +8,8 @@ clr.ImportExtensions(Revit.Elements)
 
 def SchemaFields(schema):
 	if hasattr(schema, "ListFields"):
-		return schema.ListFields()
+		if schema.ReadAccessGranted(): return schema.ListFields()
+		else: return []
 	else: return []
 
 schemas = IN[0]
