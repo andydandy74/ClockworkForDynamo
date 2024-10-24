@@ -8,7 +8,7 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 def GetCategoryType(cat):
-	if hasattr(cat, "CategoryType"): return cat.CategoryType.ToString()
+	if hasattr(cat, "CategoryType"): return System.Enum.GetName(CategoryType, cat.CategoryType)
 	else: return None
 
 cats = UnwrapElement(IN[0])
