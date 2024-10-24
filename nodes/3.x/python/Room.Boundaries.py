@@ -10,7 +10,7 @@ clr.ImportExtensions(Revit.GeometryConversion)
 clr.AddReference("System")
 from System.Collections.Generic import List
 
-def GetRoomBoundaries(item, version):
+def GetRoomBoundaries(item):
 	doc = item.Document
 	calculator = SpatialElementGeometryCalculator(doc)
 	options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()
@@ -32,8 +32,7 @@ def GetRoomBoundaries(item, version):
 							elements[-1] = doc.GetElement(boundary.ElementId)
 				# add boundary to list
 				elements.append(doc.GetElement(boundary.ElementId))
-				if version > 2016: curves.append(boundary.GetCurve())
-				else: curves.append(boundary.Curve)
+				curves.append(boundary.GetCurve())
 	except: pass
 	# 2nd pass - special cases (if any)
 	if None in elements:
@@ -61,5 +60,5 @@ bicCol = List[BuiltInCategory](bics)
 catFilter = ElementMulticategoryFilter(bicCol)
 bboxVec = XYZ(0.01,0.01,0.01)
 
-if isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x, IN[1]) for x in items]))
-else: OUT = GetRoomBoundaries(items, IN[1])
+if isinstance(IN[0], list): OUT = map(list, zip(*[GetRoomBoundaries(x) for x in items]))
+else: OUT = GetRoomBoundaries(items)

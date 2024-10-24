@@ -9,18 +9,12 @@ doc = DocumentManager.Instance.CurrentDBDocument
 
 items = UnwrapElement(IN[0])
 paintedmats = IN[1]
-version = IN[2]
-if version > 2021: 
-	unittypeA = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
-	unittypeV = ForgeTypeId('autodesk.spec.aec:volume-2.0.0')
-else: 
-	unittypeA = UnitType.UT_Area
-	unittypeV = UnitType.UT_Volume
+unittypeA = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
+unittypeV = ForgeTypeId('autodesk.spec.aec:volume-2.0.0')
 
 def InternalUnitToDisplayUnit(val, unittype):
 	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
-	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
-	else: dispunits = formatoptions.DisplayUnits
+	dispunits = formatoptions.GetUnitTypeId()
 	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
 	except: return None
 	

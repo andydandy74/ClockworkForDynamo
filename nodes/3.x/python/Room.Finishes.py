@@ -2,6 +2,7 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 import Autodesk
+import System
 
 clr.AddReference("RevitNodes")
 import Revit
@@ -13,14 +14,11 @@ from RevitServices.Persistence import DocumentManager
 doc = DocumentManager.Instance.CurrentDBDocument
 
 items = UnwrapElement(IN[0])
-version = IN[1]
-if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
-else: unittype = UnitType.UT_Area
+unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
 
 def InternalUnitToDisplayUnit(val, unittype):
 	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
-	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
-	else: dispunits = formatoptions.DisplayUnits
+	dispunits = formatoptions.GetUnitTypeId()
 	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
 	except: return None
 
@@ -41,7 +39,7 @@ def RoomFinishes(item):
 		for face in results.GetGeometry().Faces:
 			for bface in results.GetBoundaryFaceInfo(face):
 				beface = bface.GetBoundingElementFace()
-				tlist.append(str(bface.SubfaceType))
+				tlist.append(System.Enum.GetName(SubfaceType, bface.SubfaceType))
 				eId = bface.SpatialBoundaryElement.HostElementId
 				if eId == ElementId.InvalidElementId:
 					liId = bface.SpatialBoundaryElement.LinkInstanceId
