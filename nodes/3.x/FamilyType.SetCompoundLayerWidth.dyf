@@ -138,8 +138,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DisplayUnitToInternalUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertToInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef SetCompoundLayerWidth(famtype, index, width):\r\n\ttry:\r\n\t\tcs = famtype.GetCompoundStructure()\r\n\t\tcs.SetLayerWidth(index, DisplayUnitToInternalUnit(width, unittype))\r\n\t\tfamtype.SetCompoundStructure(cs)\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfamtypes = UnwrapElement(IN[0])\r\nindices = IN[1]\r\nwidths = IN[2]\r\nversion = IN[3]\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\nelse: unittype = UnitType.UT_Length\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,z) for x,y,z in zip(famtypes, indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,y) for x,y in zip(famtypes, widths)]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,widths) for x,y in zip(famtypes, indices)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,widths) for x in famtypes]\r\nelse:\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,y) for x,y in zip(indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(famtypes,indices,x) for x in widths]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,widths) for x in indices]\r\n\t\telse: OUT = SetCompoundLayerWidth(famtypes,indices,widths)\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "IronPython2",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DisplayUnitToInternalUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertToInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef SetCompoundLayerWidth(famtype, index, width):\r\n\ttry:\r\n\t\tcs = famtype.GetCompoundStructure()\r\n\t\tcs.SetLayerWidth(index, DisplayUnitToInternalUnit(width, unittype))\r\n\t\tfamtype.SetCompoundStructure(cs)\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfamtypes = UnwrapElement(IN[0])\r\nindices = IN[1]\r\nwidths = IN[2]\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,z) for x,y,z in zip(famtypes, indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,y) for x,y in zip(famtypes, widths)]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,widths) for x,y in zip(famtypes, indices)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,widths) for x in famtypes]\r\nelse:\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,y) for x,y in zip(indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(famtypes,indices,x) for x in widths]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,widths) for x in indices]\r\n\t\telse: OUT = SetCompoundLayerWidth(famtypes,indices,widths)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "3e7f8c28575f44b388a40646f9c22474",
       "Inputs": [
@@ -169,15 +169,6 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
-        },
-        {
-          "Id": "a5bdd26460824518a46f5789dcd627f4",
-          "Name": "IN[3]",
-          "Description": "Input #3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -193,63 +184,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes Python-Skript aus."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "a696e27515c0453c935c0365a16c8950",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "5e1262795a3b41dda9ea72bbbb6bf11a",
-          "Name": "Name",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "358fa95ecdff48ac821f0697b527b680",
-          "Name": "Version",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "75d1cc85d30942bf84e8798ff25ccafc",
-          "Name": "Build",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d7544671978e4a3d95ce21ce3257234d",
-          "Name": "Language",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "c600e24fb57d406881a21e2c07a11c81",
-          "Name": "fullVersion",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -277,26 +211,10 @@
       "Start": "6e16b58f7ad54af99c8c330b8db1bfef",
       "End": "22d31a39e4d946999d8bb0819cffb2f5",
       "Id": "1bf92c29b82c49f4919f8e67fb15f311"
-    },
-    {
-      "Start": "358fa95ecdff48ac821f0697b527b680",
-      "End": "a5bdd26460824518a46f5789dcd627f4",
-      "Id": "7d3f7dd9f7df4d39ac156166751054be"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.6.0",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "a696e27515c0453c935c0365a16c8950"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -380,21 +298,11 @@
         "Excluded": false,
         "X": 1115.6133385193743,
         "Y": -204.08994307635209
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "a696e27515c0453c935c0365a16c8950",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 790.0133385193742,
-        "Y": -57.089943076352085
       }
     ],
     "Annotations": [],
-    "X": -650.84908227656661,
-    "Y": 399.5827704369114,
-    "Zoom": 0.92155225706931176
+    "X": -727.31612907172189,
+    "Y": 465.939628112019,
+    "Zoom": 0.83822339756855557
   }
 }
