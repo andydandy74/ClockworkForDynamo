@@ -111,8 +111,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\nelse: unittype = UnitType.UT_Length\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef GetCompoundStructureLayers(item):\r\n\tlayers = []\r\n\tlayermat = []\r\n\tlayerfunc = []\r\n\tlayerwidth = []\r\n\tlayercore = []\r\n\tlayerwraps = []\r\n\tlayervar = []\r\n\tlayerdeck = []\t\r\n\ttry:\r\n\t\tif hasattr(item, \"GetCompoundStructure\"):\r\n\t\t\tcompstruc = item.GetCompoundStructure()\r\n\t\t\tvertcomp = compstruc.IsVerticallyCompound\r\n\t\t\tvarlayer = compstruc.VariableLayerIndex\r\n\t\t\tnum = compstruc.LayerCount\r\n\t\t\tcounter = 0\r\n\t\t\twhile counter < num:\r\n\t\t\t\tlayers.append(compstruc.GetLayers()[counter])\r\n\t\t\t\tlayermat.append(item.Document.GetElement(compstruc.GetMaterialId(counter)))\r\n\t\t\t\tlayerfunc.append(compstruc.GetLayerFunction(counter))\r\n\t\t\t\tlayerwidth.append(InternalUnitToDisplayUnit(compstruc.GetLayerWidth(counter), unittype))\r\n\t\t\t\tlayercore.append(compstruc.IsCoreLayer(counter))\r\n\t\t\t\tif compstruc.IsCoreLayer(counter): layerwraps.append(False)\r\n\t\t\t\telse: layerwraps.append(compstruc.ParticipatesInWrapping(counter))\r\n\t\t\t\tif varlayer == counter: layervar.append(True)\r\n\t\t\t\telse: layervar.append(False)\r\n\t\t\t\tlayerdeck.append(compstruc.IsStructuralDeck(counter))\r\n\t\t\t\tcounter += 1\r\n\texcept: pass\r\n\treturn layers, layermat, layerfunc, layerwidth, layercore, layerwraps, layervar, layerdeck\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCompoundStructureLayers(x) for x in items]))\r\nelse: OUT = GetCompoundStructureLayers(items)",
-      "Engine": "IronPython2",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef GetCompoundStructureLayers(item):\r\n\tlayers = []\r\n\tlayermat = []\r\n\tlayerfunc = []\r\n\tlayerwidth = []\r\n\tlayercore = []\r\n\tlayerwraps = []\r\n\tlayervar = []\r\n\tlayerdeck = []\t\r\n\tif hasattr(item, \"GetCompoundStructure\"):\r\n\t\tcompstruc = item.GetCompoundStructure()\r\n\t\tif compstruc:\r\n\t\t\tvertcomp = compstruc.IsVerticallyCompound\r\n\t\t\tvarlayer = compstruc.VariableLayerIndex\r\n\t\t\tnum = compstruc.LayerCount\r\n\t\t\tcounter = 0\r\n\t\t\twhile counter < num:\r\n\t\t\t\tlayers.append(compstruc.GetLayers()[counter])\r\n\t\t\t\tlayermat.append(item.Document.GetElement(compstruc.GetMaterialId(counter)))\r\n\t\t\t\tlayerfunc.append(System.Enum.GetName(MaterialFunctionAssignment, compstruc.GetLayerFunction(counter)))\r\n\t\t\t\tlayerwidth.append(InternalUnitToDisplayUnit(compstruc.GetLayerWidth(counter), unittype))\r\n\t\t\t\tlayercore.append(compstruc.IsCoreLayer(counter))\r\n\t\t\t\tif compstruc.IsCoreLayer(counter): layerwraps.append(False)\r\n\t\t\t\telse: layerwraps.append(compstruc.ParticipatesInWrapping(counter))\r\n\t\t\t\tif varlayer == counter: layervar.append(True)\r\n\t\t\t\telse: layervar.append(False)\r\n\t\t\t\tlayerdeck.append(compstruc.IsStructuralDeck(counter))\r\n\t\t\t\tcounter += 1\r\n\treturn layers, layermat, layerfunc, layerwidth, layercore, layerwraps, layervar, layerdeck\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCompoundStructureLayers(x) for x in items]))\r\nelse: OUT = GetCompoundStructureLayers(items)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "1bbec7ddd2a840ba842237424bcc784a",
       "Inputs": [
@@ -120,15 +120,6 @@
           "Id": "2728d134fba54fb8b02cbd605a71562e",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "ea2b3f857c2a465ebf5015d297a18cb4",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -342,63 +333,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "245129079f2d4873be6bd853259c3627",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "674ab6155dfb4827a937b49646c7d1ff",
-          "Name": "Name",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "34bce4e4eb9040d894f6945f7cf5f93f",
-          "Name": "Version",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4552ac45bef24b7ea1fa09e5c27f2c1d",
-          "Name": "Build",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b022a8f534114726b1f40caaa8a97284",
-          "Name": "Language",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "f0087fab1d4d40b79eef288f11440ddf",
-          "Name": "fullVersion",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -451,16 +385,9 @@
       "Start": "8fe83d542ce94fb1bb0368ff0c4737c1",
       "End": "2728d134fba54fb8b02cbd605a71562e",
       "Id": "0dd37a566f4f44ee8f2f37a0ca833333"
-    },
-    {
-      "Start": "34bce4e4eb9040d894f6945f7cf5f93f",
-      "End": "ea2b3f857c2a465ebf5015d297a18cb4",
-      "Id": "82bd7466d6544d43813f42d09a7a9e08"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
@@ -503,8 +430,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 614.42182359999049,
-        "Y": -10.604167198274666
+        "X": 615.125215262595,
+        "Y": -9.19738387306549
       },
       {
         "ShowGeometry": true,
@@ -595,21 +522,11 @@
         "Excluded": false,
         "X": 1198.4218235999906,
         "Y": -161.01750053160796
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "245129079f2d4873be6bd853259c3627",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 280.82182359999047,
-        "Y": 31.395832801725334
       }
     ],
     "Annotations": [],
-    "X": -41.765598033999,
-    "Y": 178.762027435756,
-    "Zoom": 0.729794888424253
+    "X": -319.74115338425327,
+    "Y": 159.30687663973578,
+    "Zoom": 1.1373464351819143
   }
 }
