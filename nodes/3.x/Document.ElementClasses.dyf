@@ -32,7 +32,7 @@
         {
           "Id": "53d9c124b1db4acf8ce232ed73af8185",
           "Name": "list",
-          "Description": "list to be sorted\n\nvar[]..[]",
+          "Description": "Zu sortierende Liste\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -41,7 +41,7 @@
         {
           "Id": "bf011c37186344d4b14259eda69c1e35",
           "Name": "keys",
-          "Description": "list of keys\n\nvar[]..[]",
+          "Description": "Liste der Schlüssel, Schlüssel müssen sortiert werden können (z. B. Nummern, Zeichenfolgen)\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -51,8 +51,8 @@
       "Outputs": [
         {
           "Id": "29a17564720f466cac13cc87f7ecb2d4",
-          "Name": "sorted list",
-          "Description": "sorted list",
+          "Name": "sortedList",
+          "Description": "type: var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -60,8 +60,8 @@
         },
         {
           "Id": "ee293e1d9065458bb717a7373cc12778",
-          "Name": "sorted keys",
-          "Description": "sorted keys",
+          "Name": "sortedKeys",
+          "Description": "type: var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -69,7 +69,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Sort list based on its keys\n\nList.SortByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
+      "Description": "Liste anhand ihrer Schlüssel sortieren\n\nList.SortByKey (list: var[]..[], keys: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -92,7 +92,7 @@
         {
           "Id": "084102750f204d54b66d392dbc342d92",
           "Name": "name",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -100,12 +100,13 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Gets an element's name. Unlike the OOTB node, this node should work for all Revit elements that have names and will also return the localized names of system parameters, parameter groups, display unit types, parameter types, unit symbol types and unit types."
+      "Description": "Gets an element's name. Unlike the OOTB node, this node should work for *all* Revit elements that have names and will also return the localized names of system parameters, parameter groups, display unit types, parameter types, unit symbol types, unit types and ForgeTypeIds."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nimport System.Reflection\r\nimport System.AppDomain\r\n\r\nrAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]\r\nrElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]\r\nOUT = [x for x in rAssembly.GetTypes() if x.IsClass and x.IsSubclassOf(rElement)]",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nimport System\r\n\r\nrAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]\r\nrElement = [x for x in rAssembly.GetTypes() if x.Name == 'Element' and x.Namespace == 'Autodesk.Revit.DB'][0]\r\nOUT = [x for x in rAssembly.GetTypes() if x.IsClass and x.IsSubclassOf(rElement)]",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "e1965a80a5ff41c1b2da69aeac4b2314",
       "Inputs": [],
@@ -121,7 +122,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -142,7 +143,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -163,7 +164,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
@@ -196,18 +197,29 @@
   "Dependencies": [
     "9266cc47-e982-46fc-9fd4-59bd7fb19a53"
   ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "80960194b87c4782b74d4ad4aa590693"
+      ]
+    }
+  ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -246,8 +258,8 @@
         "IsSetAsInput": true,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 189.35029568539403,
-        "Y": 51.328064570579656
+        "X": 187.750295685394,
+        "Y": 50.5280645705797
       },
       {
         "ShowGeometry": true,
@@ -271,8 +283,8 @@
       }
     ],
     "Annotations": [],
-    "X": -2.0,
-    "Y": 148.0,
-    "Zoom": 1.0
+    "X": 220.99521611425212,
+    "Y": 288.78976393658922,
+    "Zoom": 0.41299898049384776
   }
 }
