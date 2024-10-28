@@ -11,7 +11,7 @@ dynamoCatsOnly = IN[0]
 biclist = System.Enum.GetValues(BuiltInCategory)
 cdata = []
 for bic in biclist:
-	try: cdata.append((bic, ElementId(bic), Revit.Elements.Category.ById(ElementId(bic).IntegerValue)))
+	try: cdata.append((System.Enum.GetName(BuiltInCategory, bic), ElementId(bic), Revit.Elements.Category.ById(ElementId(bic).IntegerValue)))
 	except:
 		if not dynamoCatsOnly: cdata.append((bic, ElementId(bic), None))
 OUT = map(list, zip(*cdata))

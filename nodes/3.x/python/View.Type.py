@@ -1,9 +1,10 @@
 import clr
+import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
 def GetViewType(view):
-	if hasattr(view, "ViewType"): return str(view.ViewType)
+	if hasattr(view, "ViewType"): return System.Enum.GetName(ViewType, view.ViewType)
 	else: return None
 
 views = UnwrapElement(IN[0])

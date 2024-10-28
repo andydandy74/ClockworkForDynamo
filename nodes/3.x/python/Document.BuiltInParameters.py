@@ -9,7 +9,7 @@ bips = System.Enum.GetValues(BuiltInParameter)
 pdata = list()
 for bip in bips:
 	try:
-		pdata.append((bip,ElementId(bip),LabelUtils.GetLabelFor(bip)))
+		pdata.append((System.Enum.GetName(BuiltInParameter, bip),ElementId(bip),LabelUtils.GetLabelFor(bip)))
 	except:
 		pass
 OUT = pdata

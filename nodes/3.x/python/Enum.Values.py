@@ -7,7 +7,7 @@ import Autodesk
 rAssembly = [x for x in System.AppDomain.CurrentDomain.GetAssemblies() if x.GetName().Name == 'RevitAPI'][0]
 
 def GetEnumValues(typename):
-	foundenums = [x for x in rAssembly.GetTypes() if x.Name == typename and x.BaseType == System.Enum]
+	foundenums = [x for x in rAssembly.GetTypes() if x.Name == typename and str(x.BaseType) == "System.Enum"]
 	try:
 		enumnames = foundenums[0].GetEnumNames()
 		enumvals = [int(System.Enum.Parse(foundenums[0], x)) for x in enumnames]

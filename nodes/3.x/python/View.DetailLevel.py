@@ -1,9 +1,10 @@
 import clr
+import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
 def DetailLevel(view):
-	if hasattr(view, "DetailLevel"): return str(view.DetailLevel)
+	if hasattr(view, "DetailLevel"): return System.Enum.GetName(ViewDetailLevel, view.DetailLevel)
 	else: return None
 
 views = UnwrapElement(IN[0])
