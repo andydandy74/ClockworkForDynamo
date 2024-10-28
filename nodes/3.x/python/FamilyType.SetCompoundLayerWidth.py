@@ -9,8 +9,7 @@ from RevitServices.Transactions import TransactionManager
 
 def DisplayUnitToInternalUnit(val, unittype):
 	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
-	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
-	else: dispunits = formatoptions.DisplayUnits
+	dispunits = formatoptions.GetUnitTypeId()
 	try: return UnitUtils.ConvertToInternalUnits(val,dispunits)
 	except: return None
 
@@ -26,9 +25,7 @@ doc = DocumentManager.Instance.CurrentDBDocument
 famtypes = UnwrapElement(IN[0])
 indices = IN[1]
 widths = IN[2]
-version = IN[3]
-if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
-else: unittype = UnitType.UT_Length
+unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 if isinstance(IN[0], list):

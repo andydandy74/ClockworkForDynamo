@@ -8,7 +8,6 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 inputdoc = UnwrapElement(IN[1])
-version = IN[2]
 if inputdoc == None:
 	doc = DocumentManager.Instance.CurrentDBDocument
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
@@ -18,19 +17,13 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
 else: doc = None
 
 projloc = doc.ActiveProjectLocation
-if version > 2017:
-	position_data = projloc.GetProjectPosition(XYZ.Zero)
-	location_data = projloc.GetSiteLocation()
-else:
-	position_data = projloc.ProjectPosition[XYZ.Zero]
-	location_data = projloc.SiteLocation
-if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
-else: unittype = UnitType.UT_Length
+position_data = projloc.GetProjectPosition(XYZ.Zero)
+location_data = projloc.GetSiteLocation()
+unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
 
 def InternalUnitToDisplayUnit(val, unittype):
 	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
-	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
-	else: dispunits = formatoptions.DisplayUnits
+	dispunits = formatoptions.GetUnitTypeId()
 	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
 	except: return None
 

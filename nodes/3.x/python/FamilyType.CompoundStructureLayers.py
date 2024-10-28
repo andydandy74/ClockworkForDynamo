@@ -1,4 +1,5 @@
 import clr
+import System
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
@@ -12,14 +13,11 @@ from RevitServices.Persistence import DocumentManager
 doc = DocumentManager.Instance.CurrentDBDocument
 
 items = UnwrapElement(IN[0])
-version = IN[1]
-if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
-else: unittype = UnitType.UT_Length
+unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
 
 def InternalUnitToDisplayUnit(val, unittype):
 	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
-	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
-	else: dispunits = formatoptions.DisplayUnits
+	dispunits = formatoptions.GetUnitTypeId()
 	try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)
 	except: return None
 
@@ -32,9 +30,9 @@ def GetCompoundStructureLayers(item):
 	layerwraps = []
 	layervar = []
 	layerdeck = []	
-	try:
-		if hasattr(item, "GetCompoundStructure"):
-			compstruc = item.GetCompoundStructure()
+	if hasattr(item, "GetCompoundStructure"):
+		compstruc = item.GetCompoundStructure()
+		if compstruc:
 			vertcomp = compstruc.IsVerticallyCompound
 			varlayer = compstruc.VariableLayerIndex
 			num = compstruc.LayerCount
@@ -42,7 +40,7 @@ def GetCompoundStructureLayers(item):
 			while counter < num:
 				layers.append(compstruc.GetLayers()[counter])
 				layermat.append(item.Document.GetElement(compstruc.GetMaterialId(counter)))
-				layerfunc.append(compstruc.GetLayerFunction(counter))
+				layerfunc.append(System.Enum.GetName(MaterialFunctionAssignment, compstruc.GetLayerFunction(counter)))
 				layerwidth.append(InternalUnitToDisplayUnit(compstruc.GetLayerWidth(counter), unittype))
 				layercore.append(compstruc.IsCoreLayer(counter))
 				if compstruc.IsCoreLayer(counter): layerwraps.append(False)
@@ -51,7 +49,6 @@ def GetCompoundStructureLayers(item):
 				else: layervar.append(False)
 				layerdeck.append(compstruc.IsStructuralDeck(counter))
 				counter += 1
-	except: pass
 	return layers, layermat, layerfunc, layerwidth, layercore, layerwraps, layervar, layerdeck
 
 if isinstance(IN[0], list): OUT = map(list, zip(*[GetCompoundStructureLayers(x) for x in items]))
