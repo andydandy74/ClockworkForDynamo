@@ -234,67 +234,10 @@
       "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "06327c91288e4b7d92716a9ab83d1853",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "0cfc9d7da9af4330895004b664636fb8",
-          "Name": "Name",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "99b45a344a944f1ca3b4dbbeb5ef2123",
-          "Name": "Version",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "851f2db7e8594408b04b9896b72aac5a",
-          "Name": "Build",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "1b2b6e4748e04d1bb8a03fd85ad76503",
-          "Name": "Language",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "437b8762d6e74863b73d5eec1567e68d",
-          "Name": "fullVersion",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
-    },
-    {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nversion = IN[2]\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\n\r\nprojloc = doc.ActiveProjectLocation\r\nif version > 2017:\r\n\tposition_data = projloc.GetProjectPosition(XYZ.Zero)\r\n\tlocation_data = projloc.GetSiteLocation()\r\nelse:\r\n\tposition_data = projloc.ProjectPosition[XYZ.Zero]\r\n\tlocation_data = projloc.SiteLocation\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\nelse: unittype = UnitType.UT_Length\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\nOUT = (position_data.Angle, InternalUnitToDisplayUnit(position_data.Elevation, unittype), InternalUnitToDisplayUnit(position_data.EastWest, unittype), InternalUnitToDisplayUnit(position_data.NorthSouth, unittype))",
-      "Engine": "IronPython2",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nif inputdoc == None:\r\n\tdoc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n\tdoc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n\tdoc = inputdoc\r\nelse: doc = None\r\n\r\nprojloc = doc.ActiveProjectLocation\r\nposition_data = projloc.GetProjectPosition(XYZ.Zero)\r\nlocation_data = projloc.GetSiteLocation()\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\nOUT = (position_data.Angle, InternalUnitToDisplayUnit(position_data.Elevation, unittype), InternalUnitToDisplayUnit(position_data.EastWest, unittype), InternalUnitToDisplayUnit(position_data.NorthSouth, unittype))",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "8a6dc4bf95bf4699aeca532382e32994",
       "Inputs": [
@@ -311,15 +254,6 @@
           "Id": "750bf41876e0485995a0377b528e04ed",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "cd9596a415aa48a8adcb2d7045e71881",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -378,29 +312,13 @@
       "Id": "968e9f1a63db40a79f3c58295200b749"
     },
     {
-      "Start": "99b45a344a944f1ca3b4dbbeb5ef2123",
-      "End": "cd9596a415aa48a8adcb2d7045e71881",
-      "Id": "c02bf04874984b2399703644633a971f"
-    },
-    {
       "Start": "4ca8c2ff78e24c438b8b8869766cba81",
       "End": "06814adb2e984e4ea6c4a7f4fe4c53f4",
       "Id": "1b466762a5614aef88cee079738f7d6e"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
-  "NodeLibraryDependencies": [
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.6.0",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "06327c91288e4b7d92716a9ab83d1853"
-      ]
-    }
-  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -507,28 +425,18 @@
       },
       {
         "ShowGeometry": true,
-        "Name": "Application.Version",
-        "Id": "06327c91288e4b7d92716a9ab83d1853",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": -660.95143677874466,
-        "Y": 226.80505607498625
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Python Script",
         "Id": "8a6dc4bf95bf4699aeca532382e32994",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -104.95143677874466,
+        "X": -105.59605627930114,
         "Y": 119.80505607498623
       }
     ],
     "Annotations": [],
-    "X": 528.07098707350667,
-    "Y": 230.91844607725835,
-    "Zoom": 0.59004704711287392
+    "X": 506.49081262123616,
+    "Y": 127.33952573199502,
+    "Zoom": 1.2410421951390456
   }
 }
