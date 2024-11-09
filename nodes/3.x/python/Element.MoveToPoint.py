@@ -1,7 +1,7 @@
-# Phython-Standard- und DesignScript-Bibliotheken laden
 import sys
 import clr
-clr.AddReference('RevitNodes', 'RevitServices')
+clr.AddReference('RevitNodes')
+clr.AddReference('RevitServices')
 from RevitServices.Transactions import TransactionManager
 from RevitServices.Persistence import DocumentManager
 import Revit
