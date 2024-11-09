@@ -17,8 +17,7 @@ from RevitServices.Persistence import DocumentManager
 
 def DisplayUnitToInternalUnit(val, unittype):
 	formatoptions = doc.GetUnits().GetFormatOptions(unittype)
-	if version > 2021: dispunits = formatoptions.GetUnitTypeId()
-	else: dispunits = formatoptions.DisplayUnits
+	dispunits = formatoptions.GetUnitTypeId()
 	try: return UnitUtils.ConvertToInternalUnits(val,dispunits)
 	except: return None
 
@@ -41,11 +40,9 @@ def FindIntersects(item):
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
 view = UnwrapElement(IN[1])
-version = IN[4]
 filtercats = List[ElementId]([x.Id for x in IN[3]])
 catfilter = ElementMulticategoryFilter(filtercats)
-if version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
-else: unittype = UnitType.UT_Length
+unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')
 tol = DisplayUnitToInternalUnit(IN[2], unittype)
 
 if isinstance(IN[0], list): OUT = [FindIntersects(x) for x in items]
