@@ -26,8 +26,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef DisplayUnitToInternalUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertToInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef FindIntersects(item):\r\n\tif item is None: return []\r\n\telse:\r\n\t\tif view:\r\n\t\t\tbbox = item.get_BoundingBox(view)\r\n\t\t\tcollector = FilteredElementCollector(doc, view.Id)\r\n\t\telse:\r\n\t\t\tbbox = item.get_BoundingBox(None)\r\n\t\t\tcollector = FilteredElementCollector(doc)\r\n\t\tbboxfilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max),tol)\t\t\r\n\t\texcludelist = []\r\n\t\texcludelist.append(item.Id)\r\n\t\texcludeIDs = List[ElementId](excludelist)\r\n\t\texcfilter = ExclusionFilter(excludeIDs)\r\n\t\treturn collector.WherePasses(bboxfilter).WherePasses(excfilter).WherePasses(catfilter).ToElements()\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\nfiltercats = List[ElementId]([x.Id for x in IN[3]])\r\ncatfilter = ElementMulticategoryFilter(filtercats)\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\ntol = DisplayUnitToInternalUnit(IN[2], unittype)\r\n\r\nif isinstance(IN[0], list): OUT = [FindIntersects(x) for x in items]\r\nelse: OUT = FindIntersects(items)",
-      "Engine": "CPython3",
+      "Code": "import clr\r\n\r\nimport System\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef DisplayUnitToInternalUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tif version > 2021: dispunits = formatoptions.GetUnitTypeId()\r\n\telse: dispunits = formatoptions.DisplayUnits\r\n\ttry: return UnitUtils.ConvertToInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef FindIntersects(item):\r\n\tif item is None: return []\r\n\telse:\r\n\t\tif view:\r\n\t\t\tbbox = item.get_BoundingBox(view)\r\n\t\t\tcollector = FilteredElementCollector(doc, view.Id)\r\n\t\telse:\r\n\t\t\tbbox = item.get_BoundingBox(None)\r\n\t\t\tcollector = FilteredElementCollector(doc)\r\n\t\tbboxfilter = BoundingBoxIntersectsFilter(Outline(bbox.Min,bbox.Max),tol)\t\t\r\n\t\texcludelist = []\r\n\t\texcludelist.append(item.Id)\r\n\t\texcludeIDs = List[ElementId](excludelist)\r\n\t\texcfilter = ExclusionFilter(excludeIDs)\r\n\t\treturn collector.WherePasses(bboxfilter).WherePasses(excfilter).WherePasses(catfilter).ToElements()\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\nversion = IN[4]\r\nfiltercats = List[ElementId]([x.Id for x in IN[3]])\r\ncatfilter = ElementMulticategoryFilter(filtercats)\r\nif version > 2021: unittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\nelse: unittype = UnitType.UT_Length\r\ntol = DisplayUnitToInternalUnit(IN[2], unittype)\r\n\r\nif isinstance(IN[0], list): OUT = [FindIntersects(x) for x in items]\r\nelse: OUT = FindIntersects(items)",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "03d16685424a4d2181d174548082f152",
       "Inputs": [
@@ -62,6 +62,15 @@
           "Id": "8b421f0c29984c1f886202f8acb97a53",
           "Name": "IN[3]",
           "Description": "Input #3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "eedbb33d8eea44be9c3ce9dedab43ff9",
+          "Name": "IN[4]",
+          "Description": "Input #4",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -268,6 +277,63 @@
       ],
       "Replication": "Auto",
       "Description": "Turns an element (or a nested list) into a flat list"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "45138bcb9fd648458a5c8eed5e007282",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "d3ce61989a0248f29d4c56ce7e202612",
+          "Name": "Name",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "82ebd7f036a94431ab23f5de86e28e6b",
+          "Name": "Version",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5d85956c198b45768499b69e8a9f25e1",
+          "Name": "Build",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ba6ef91a83bb432c8eb189d2f9c96cc9",
+          "Name": "Language",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "b7b3d98dcbda4b15acc8d4a661e2675c",
+          "Name": "fullVersion",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -305,11 +371,17 @@
       "Start": "3f2fe4cc9e1049c38b28956d4055498f",
       "End": "8b421f0c29984c1f886202f8acb97a53",
       "Id": "a847d54172e349c18c9976ba630edfae"
+    },
+    {
+      "Start": "82ebd7f036a94431ab23f5de86e28e6b",
+      "End": "eedbb33d8eea44be9c3ce9dedab43ff9",
+      "Id": "0e4511b85b524e34a875ccfd2acca901"
     }
   ],
   "Dependencies": [
     "3fe585a9-94df-4dce-99e1-306888ccb457",
-    "cd09ad33-8c34-4850-ac26-24448d92c38f"
+    "cd09ad33-8c34-4850-ac26-24448d92c38f",
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
   ],
   "NodeLibraryDependencies": [
     {
@@ -318,7 +390,8 @@
       "ReferenceType": "Package",
       "Nodes": [
         "7cdb4912ec324878b91f0300d2ebf93a",
-        "f360f0f3dae54bb6af740f238ca2d30d"
+        "f360f0f3dae54bb6af740f238ca2d30d",
+        "45138bcb9fd648458a5c8eed5e007282"
       ]
     }
   ],
@@ -425,11 +498,21 @@
         "Excluded": false,
         "X": 389.15076657468649,
         "Y": 411.76129417191532
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Application.Version",
+        "Id": "45138bcb9fd648458a5c8eed5e007282",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 482.55349337751682,
+        "Y": 525.84045232112885
       }
     ],
     "Annotations": [],
-    "X": 130.99876526351454,
-    "Y": 175.70412867651075,
-    "Zoom": 0.57968478551249
+    "X": 443.03744863936004,
+    "Y": 86.7946623505488,
+    "Zoom": 0.54257847562073536
   }
 }
