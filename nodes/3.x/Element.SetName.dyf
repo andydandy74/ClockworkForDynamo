@@ -66,6 +66,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nnames = IN[1]\r\n\r\ndef SetElementName(item, name):\r\n\t# family parameters\r\n\tif item.GetType().ToString() == \"Autodesk.Revit.DB.FamilyParameter\":\r\n\t\ttry: \r\n\t\t\tdoc.FamilyManager.RenameParameter(item, name)\r\n\t\t\treturn True\r\n\t\texcept: return False\r\n\t# regular revit worksets\r\n\telif item.GetType().ToString() ==\"Autodesk.Revit.DB.Workset\":\r\n\t\ttry: \r\n\t\t\tdoc.GetWorksetTable().RenameWorkset(doc, item.Id, name)\r\n\t\t\treturn True\r\n\t\texcept: return False\r\n\t# non-OOTB implementations (3rd perty e.g. archi-lab)\r\n\telif \"Workset\" in item.GetType().ToString():\r\n\t\ttry: \r\n\t\t\tdoc.GetWorksetTable().RenameWorkset(doc, WorksetId(item.Id), name)\r\n\t\t\treturn True\r\n\t\texcept: return False\r\n\t# everything else that has a name property\r\n\telse:\r\n\t\ttry: \r\n\t\t\titem.Name = name\r\n\t\t\treturn True\r\n\t\texcept: return False\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(names, list): OUT = [SetElementName(x, y) for x, y in zip(items, names)]\r\n\telse: OUT = [SetElementName(x, names) for x in items]\r\nelse:\r\n\tif isinstance(names, list): OUT = SetElementName(items, names[0])\r\n\telse: OUT = SetElementName(items, names)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "5c36560e67714457ae7b625bcce5d9aa",
       "Inputs": [
@@ -100,7 +101,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -261,13 +262,14 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.6.2.15705",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -312,7 +314,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 927.05998214476153,
-        "Y": 159.16128911708648
+        "Y": 158.30020904259862
       },
       {
         "ShowGeometry": true,
@@ -356,8 +358,8 @@
       }
     ],
     "Annotations": [],
-    "X": -66.678564726188483,
-    "Y": 206.18579194485221,
+    "X": -314.67856472618848,
+    "Y": 203.78579194485224,
     "Zoom": 0.9290657439446367
   }
 }

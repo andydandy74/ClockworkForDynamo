@@ -19,6 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\n# Revit subcategories\r\nif IN[1].GetType().ToString() == 'Autodesk.Revit.DB.Category': subcat = IN[1]\r\n# Dynamo-wrapped subcategories\r\nelse: subcat = Category.GetCategory(doc,ElementId(IN[1].Id))\r\ngstyletype = IN[2]\r\nif not gstyletype:\r\n\tgstyletype = GraphicsStyleType.Projection\r\nelse:\r\n\tgstyletype = GraphicsStyleType.Cut\r\ngstyle = subcat.GetGraphicsStyle(gstyletype)\r\nsuccess = list()\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor item in items:\r\n\ttry:\r\n\t\titem.Subcategory = subcat\r\n\t\tsuccess.append(True)\r\n\texcept:\r\n\t\ttry:\r\n\t\t\titem.Subcategory = gstyle\r\n\t\t\tsuccess.append(True)\r\n\t\texcept:\r\n\t\t\ttry:\r\n\t\t\t\titem.LineStyle = gstyle\r\n\t\t\t\tsuccess.append(True)\r\n\t\t\texcept:\r\n\t\t\t\tsuccess.append(False)\r\nTransactionManager.Instance.TransactionTaskDone()\r\nOUT = (items,success)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "e1c0b778675346e48d681f8dfcaab0b7",
       "Inputs": [
@@ -183,7 +184,7 @@
         {
           "Id": "82a6b4cbbccd4c4c8ec150f7787a885f",
           "Name": "",
-          "Description": "Value of expression at line 1",
+          "Description": "Wert des Ausdrucks in Zeile 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -192,7 +193,7 @@
         {
           "Id": "97fb763025e9454889f4992ae6edfb62",
           "Name": "",
-          "Description": "Value of expression at line 2",
+          "Description": "Wert des Ausdrucks in Zeile 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -200,7 +201,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Allows for DesignScript code to be authored directly"
+      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -244,7 +245,7 @@
         {
           "Id": "d5c8f5a08b0b4cbb885d6c058977283b",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -305,18 +306,19 @@
       ]
     }
   ],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.3.1.11775",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -410,8 +412,8 @@
       }
     ],
     "Annotations": [],
-    "X": 388.0,
-    "Y": 217.0,
+    "X": 128.0,
+    "Y": 189.79999999999995,
     "Zoom": 1.0
   }
 }

@@ -19,6 +19,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef MirrorMirror(doc, items, plane, copymode):\r\n\titemids = List[ElementId]([x.Id for x in items])\r\n\tmirroredids = ElementTransformUtils.MirrorElements(doc, itemids, plane, copymode)\r\n\tif copymode: return [doc.GetElement(x).ToDSType(False) for x in mirroredids]\r\n\telse: return items\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\ncopymode = IN[1]\r\nplanenormal = IN[2].ToRevitType()\r\nplaneorigin = IN[3].ToRevitType()\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nplane = Plane.CreateByNormalAndOrigin(planenormal, planeorigin)\r\nif isinstance(IN[0], list): OUT = MirrorMirror(doc, items, plane, copymode)\r\nelse: OUT = MirrorMirror(doc, [items], plane, copymode)[0]\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "438ffba45e414562ab881fc6f5d4cc44",
       "Inputs": [
@@ -71,7 +72,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes IronPython-Skript aus."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -271,13 +272,15 @@
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -341,8 +344,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 7.13387147378262,
-        "Y": 158.5
+        "X": -212.86612852621744,
+        "Y": 160.89999999999998
       },
       {
         "ShowGeometry": true,

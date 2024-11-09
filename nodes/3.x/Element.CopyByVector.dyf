@@ -31,7 +31,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nif isinstance(IN[1], list): xyz = [UnwrapElement(x).ToXyz() for x in IN[1]]\r\nelse: xyz = UnwrapElement(IN[1]).ToXyz()\r\nrehost = IN[2]\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): \r\n\tif isinstance(IN[1], list):\r\n\t\titemlist = [List[ElementId]([x.Id]) for x in items]\r\n\t\tif rehost: \r\n\t\t\tnewitems2 = [ElementTransformUtils.CopyElements(doc,x,doc,Transform.CreateTranslation(y),None) for x, y in zip(itemlist,xyz)]\r\n\t\t\tnewitems = [x[0] for x in newitems2]\r\n\t\telse:\r\n\t\t\tnewitems2 = [ElementTransformUtils.CopyElements(doc,x,y) for x, y in zip(itemlist,xyz)]\r\n\t\t\tnewitems = [x[0] for x in newitems2]\r\n\telse:\r\n\t\tids = [x.Id for x in items]\r\n\t\titemlist = List[ElementId](ids)\r\n\t\tif rehost: newitems = ElementTransformUtils.CopyElements(doc,itemlist,doc,Transform.CreateTranslation(xyz),None)\r\n\t\telse: newitems = ElementTransformUtils.CopyElements(doc,itemlist,xyz)\r\nelse:\r\n\tif isinstance(IN[1], list):\r\n\t\titemlist1 = List[ElementId]([items.Id]) \r\n\t\titemlist = []\r\n\t\t[itemlist.append(itemlist1) for x in xyz]\r\n\t\tif rehost: \r\n\t\t\tnewitems2 = [ElementTransformUtils.CopyElements(doc,x,doc,Transform.CreateTranslation(y),None) for x, y in zip(itemlist,xyz)]\r\n\t\t\tnewitems = [x[0] for x in newitems2]\r\n\t\telse:\r\n\t\t\tnewitems2 = [ElementTransformUtils.CopyElements(doc,x,y) for x, y in zip(itemlist,xyz)]\r\n\t\t\tnewitems = [x[0] for x in newitems2]\r\n\telse:\r\n\t\titemlist = List[ElementId]([items.Id])\r\n\t\tif rehost: newitems = ElementTransformUtils.CopyElements(doc,itemlist,doc,Transform.CreateTranslation(xyz),None)\r\n\t\telse: newitems = ElementTransformUtils.CopyElements(doc,itemlist,xyz)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nif isinstance(IN[0], list) or isinstance(IN[1], list): OUT = [doc.GetElement(x).ToDSType(False) for x in newitems]\r\nelse: OUT = doc.GetElement(newitems[0]).ToDSType(False)",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "a322c46d7e6d407db51a37c7e0d978fd",
       "Inputs": [
@@ -322,8 +322,8 @@
       }
     ],
     "Annotations": [],
-    "X": 360.64089786647384,
-    "Y": 201.57407624633427,
+    "X": 12.640897866473836,
+    "Y": 198.37407624633423,
     "Zoom": 0.83167155425219952
   }
 }
