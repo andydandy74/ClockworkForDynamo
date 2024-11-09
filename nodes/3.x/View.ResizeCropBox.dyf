@@ -44,7 +44,7 @@
         {
           "Id": "2344c519b1754a62a323cafae20c4984",
           "Name": "seq",
-          "Description": "return value",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -78,7 +78,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -104,7 +104,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -125,7 +125,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -137,7 +137,7 @@
         {
           "Id": "05b61288c0ff4712af8e1b724f8e9d1c",
           "Name": "unknownItem",
-          "Description": "Input #1",
+          "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -146,7 +146,7 @@
         {
           "Id": "aa305ccaa72042379a6ce2a764b727c6",
           "Name": "seq",
-          "Description": "Input #2",
+          "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -157,7 +157,7 @@
         {
           "Id": "53d1b97ebb304d90bf2183ff5e6bc7d8",
           "Name": "",
-          "Description": "Output #1",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -165,12 +165,13 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
+      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\nmargin = IN[1].ToXyz()\r\nbooleans = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor item in views:\r\n\ttry:\r\n\t\tnewmax = item.CropBox.Max.Add(margin)\r\n\t\tnewmin = item.CropBox.Min.Subtract(margin)\r\n\t\tnewbox = BoundingBoxXYZ()\r\n\t\tnewbox.Max = newmax\r\n\t\tnewbox.Min = newmin\r\n\t\titem.CropBox = newbox\r\n\t\tbooleans.append(True)\r\n\texcept:\r\n\t\tbooleans.append(False)\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = (views,booleans)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "80cb025487a94a668f1fe17003055bb6",
       "Inputs": [
@@ -205,7 +206,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -216,7 +217,7 @@
         {
           "Id": "a5af06cba55446fc82bf2ade027fbae8",
           "Name": "x",
-          "Description": "double\nDefault value : 0",
+          "Description": "X coordinate\n\ndouble\nVorgabewert : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -225,7 +226,7 @@
         {
           "Id": "54f28eeccb4148a489bb7acfceff5979",
           "Name": "y",
-          "Description": "double\nDefault value : 0",
+          "Description": "Y coordinate\n\ndouble\nVorgabewert : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -234,7 +235,7 @@
         {
           "Id": "fbeca4cd61d24cdba54179798e1ae978",
           "Name": "z",
-          "Description": "double\nDefault value : 0",
+          "Description": "Z coordinate\n\ndouble\nVorgabewert : 0",
           "UsingDefaultValue": true,
           "Level": 2,
           "UseLevels": false,
@@ -245,7 +246,7 @@
         {
           "Id": "e5749df5faf746528476c31cd0180cc5",
           "Name": "Point",
-          "Description": "Point",
+          "Description": "Point created by coordinates",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -253,7 +254,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Form a Point given 3 cartesian coordinates\n\nPoint.ByCoordinates (x: double = 0, y: double = 0, z: double = 0): Point"
+      "Description": "Legt einen Punkt nach Angabe dreier kartesischer Koordinaten fest.\n\nPoint.ByCoordinates (x: double = 0, y: double = 0, z: double = 0): Point"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -264,7 +265,7 @@
         {
           "Id": "77f94fe465f94dd9ac62e1fb00f6cbcb",
           "Name": "list",
-          "Description": "List to get the first item from.\n\nvar[]..[]",
+          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -275,7 +276,7 @@
         {
           "Id": "8387ff4a8fc2476c8501ebd35e75fb39",
           "Name": "item",
-          "Description": "First item in the list.",
+          "Description": "Das erste Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -283,7 +284,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
@@ -294,7 +295,7 @@
         {
           "Id": "f94cddbd9d9345f9ac3d03d3db9fdd86",
           "Name": "list",
-          "Description": "List to get the last item of.\n\nvar[]..[]",
+          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -304,8 +305,8 @@
       "Outputs": [
         {
           "Id": "058be0fa3da64340a379f5a7239c00f9",
-          "Name": "last",
-          "Description": "Last item in the list.",
+          "Name": "item",
+          "Description": "Das letzte Element in der Liste",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -313,7 +314,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -334,7 +335,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -346,7 +347,7 @@
         {
           "Id": "e36c8a09092c4398b8d099e0fee35b8d",
           "Name": "unknownItem",
-          "Description": "Input #1",
+          "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -355,7 +356,7 @@
         {
           "Id": "9071ef91e54d4e68a6e9417b642c81a8",
           "Name": "seq",
-          "Description": "Input #2",
+          "Description": "var[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -366,7 +367,7 @@
         {
           "Id": "7e3e46c934e5490289feaf4066ceb4c2",
           "Name": "",
-          "Description": "Output #1",
+          "Description": "Rückgabewert",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -374,7 +375,7 @@
         }
       ],
       "Replication": "Auto",
-      "Description": "If the item in input #1 is not a list, only the first item of the list in input #2 will be returned."
+      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
     }
   ],
   "Connectors": [
@@ -453,18 +454,20 @@
     "cd09ad33-8c34-4850-ac26-24448d92c38f",
     "44ac4888-4aa4-49a9-9344-23b729c11df9"
   ],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.1.5055",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -477,119 +480,119 @@
     },
     "NodeViews": [
       {
+        "ShowGeometry": true,
+        "Name": "TurnIntoList",
         "Id": "cf916ebd8d18458abb06d05e6ebc74bf",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "TurnIntoList",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 342.762704844066,
         "Y": 101.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "edaf9b72508f4e35a8cdacefe7bc2c1e",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 113.762704844066,
         "Y": 211.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "Input",
         "Id": "585a7471478d4484973fb2689064144b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 113.762704844066,
         "Y": 101.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "73bac2d8b3194f94b962745484a0821c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1361.76270484407,
         "Y": 62.1097055210469
       },
       {
+        "ShowGeometry": true,
+        "Name": "ReturnListOrSingleValue",
         "Id": "57d53136189049cebbf8a3597d569f51",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1098.76270484407,
         "Y": 49.1097055210469
       },
       {
+        "ShowGeometry": true,
+        "Name": "Python Script",
         "Id": "80cb025487a94a668f1fe17003055bb6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 611.762704844066,
         "Y": 130.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "Point.ByCoordinates",
         "Id": "d5d7f931579644a09a2e7d39ba109288",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Point.ByCoordinates",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 342.762704844066,
         "Y": 185.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "List.FirstItem",
         "Id": "b171fa4f1e3e4f15b5f8afb5e586ee02",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "List.FirstItem",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 835.762704844066,
         "Y": 75.1097055210469
       },
       {
+        "ShowGeometry": true,
+        "Name": "List.LastItem",
         "Id": "2186fdb2a6e84adda14bea267f64b890",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "List.LastItem",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 835.762704844066,
         "Y": 185.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "Output",
         "Id": "dcbdf1405e07482eb71b0852d6b64404",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1361.76270484407,
         "Y": 146.109705521047
       },
       {
+        "ShowGeometry": true,
+        "Name": "ReturnListOrSingleValue",
         "Id": "29bf0e13b3074dbeb3a4320073a7be6b",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "ReturnListOrSingleValue",
-        "ShowGeometry": true,
         "Excluded": false,
         "X": 1098.76270484407,
         "Y": 159.109705521047
       }
     ],
     "Annotations": [],
-    "X": 32.9960101404056,
-    "Y": 406.722237735553,
-    "Zoom": 0.863625099920064
+    "X": -41.675633689386132,
+    "Y": 218.992497291854,
+    "Zoom": 0.69633839166103062
   }
 }
