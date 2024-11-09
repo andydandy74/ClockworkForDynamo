@@ -2,10 +2,10 @@ import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
-def GetViewScale(view):
-	if hasattr(view, "Scale"): return view.Scale
+def GetSheetScale(sheet):
+	if hasattr(sheet, "Scale"): return sheet.get_Parameter(BuiltInParameter.SHEET_SCALE).AsValueString()
 	else: return None
 
-views = UnwrapElement(IN[0])
-if isinstance(IN[0], list): OUT = [GetViewScale(x) for x in views]
-else: OUT = GetViewScale(views)
+sheets = UnwrapElement(IN[0])
+if isinstance(IN[0], list): OUT = [GetSheetScale(x) for x in sheets]
+else: OUT = GetSheetScale(sheets)
