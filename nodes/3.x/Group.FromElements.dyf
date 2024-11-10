@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nids = list()\r\nrejects = list()\r\nfor item in items:\r\n\ttry:\r\n\t\tids.append(item.Id)\r\n\texcept:\r\n\t\trejects.append(item)\r\nitems = List[ElementId](ids)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\ntry:\r\n\tgroup = doc.Create.NewGroup(items);\r\n\tgroup.GroupType.Name = IN[1]\r\nexcept:\r\n\tgroup = list()\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = (group,rejects)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef MakeNewGroup(items, name):\r\n\tids = []\r\n\trejects = []\r\n\ttry:\r\n\t\tfor item in items:\r\n\t\t\tif item.Document.GetElement(item.GroupId): rejects.append(item)\r\n\t\t\ttry: ids.append(item.Id)\r\n\t\t\texcept: rejects.append(item)\r\n\texcept:\r\n\t\tif items.Document.GetElement(items.GroupId): rejects.append(items)\r\n\t\ttry: ids.append(items.Id)\r\n\t\texcept: rejects.append(items)\r\n\titemsNew = List[ElementId](ids)\r\n\ttry:\r\n\t\tgroup = doc.Create.NewGroup(itemsNew)\r\n\t\tgroup.GroupType.Name = name\r\n\texcept: \r\n\t\tgroup = None\r\n\t\trejects = items\r\n\treturn group, rejects\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nnames = IN[1]\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[1], list):\r\n\tif isinstance(IN[0], list): OUT = list(zip(*[MakeNewGroup(x, y) for x, y in zip (items, names)]))\r\n\telse: OUT = MakeNewGroup(items, names[0])\r\nelse: OUT = MakeNewGroup(items, names)\r\nTransactionManager.Instance.TransactionTaskDone()",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "9726f83b6b534928999b4f25bd7e3471",
@@ -89,37 +89,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "638d0816f2704335a037be64e88ca39a",
-      "Inputs": [
-        {
-          "Id": "15ebc907ed3446949910e3702cb4d88b",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "a28eecce24594768a73977eddc221995",
-          "Name": "seq",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Turns an element (or a nested list) into a flat list"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -299,14 +268,9 @@
       "Id": "8b959a49731142538102290cb29d485f"
     },
     {
-      "Start": "a28eecce24594768a73977eddc221995",
-      "End": "164d1c89f4b642929d7732090e3755f8",
-      "Id": "0a03f7d8cbfd43048b0a9b60afc875af"
-    },
-    {
       "Start": "3027ca7d543144c587e2307f614bf4bd",
-      "End": "15ebc907ed3446949910e3702cb4d88b",
-      "Id": "3d2938ee4432491597235fb08253ff00"
+      "End": "164d1c89f4b642929d7732090e3755f8",
+      "Id": "fa9ae6d2acdc4c39a325f76fa2bb3e03"
     },
     {
       "Start": "4260df67a73f45bf8108553d9cb6be49",
@@ -325,7 +289,6 @@
     }
   ],
   "Dependencies": [
-    "cd09ad33-8c34-4850-ac26-24448d92c38f",
     "9e586fb6-2570-4445-8556-aa20d337fb98"
   ],
   "NodeLibraryDependencies": [
@@ -334,7 +297,6 @@
       "Version": "2.6.0",
       "ReferenceType": "Package",
       "Nodes": [
-        "638d0816f2704335a037be64e88ca39a",
         "151379dba19c4130b504aca74207b8d0"
       ]
     }
@@ -371,7 +333,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 601.04486377029048,
-        "Y": 63.420250385469785
+        "Y": 64.526917052136469
       },
       {
         "ShowGeometry": true,
@@ -381,17 +343,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 825.84486377029043,
-        "Y": 67.633583718803123
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "TurnIntoList",
-        "Id": "638d0816f2704335a037be64e88ca39a",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 259.44486377029045,
-        "Y": 22.420250385469785
+        "Y": 68.7402503854698
       },
       {
         "ShowGeometry": true,
@@ -400,8 +352,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -222.95513622970952,
-        "Y": 19.420250385469785
+        "X": 259.44486377029045,
+        "Y": 35.526917052136469
       },
       {
         "ShowGeometry": true,
@@ -411,7 +363,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 1069.8448637702904,
-        "Y": 30.20691705213644
+        "Y": 31.31358371880313
       },
       {
         "ShowGeometry": true,
@@ -421,7 +373,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 1069.8448637702904,
-        "Y": 114.20691705213645
+        "Y": 115.31358371880313
       },
       {
         "ShowGeometry": true,
@@ -431,7 +383,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": -222.95513622970952,
-        "Y": 103.42025038546976
+        "Y": 90.526917052136469
       },
       {
         "ShowGeometry": true,
@@ -441,7 +393,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": 259.44486377029045,
-        "Y": 130.42025038546981
+        "Y": 119.52691705213647
       },
       {
         "ShowGeometry": true,
@@ -451,7 +403,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "X": -222.95513622970952,
-        "Y": 186.42025038546981
+        "Y": 174.52691705213647
       }
     ],
     "Annotations": [],
