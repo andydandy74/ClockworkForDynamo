@@ -8,23 +8,29 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 from RevitServices.Transactions import TransactionManager
 
+def MakeNewGroup(items, name):
+	ids = []
+	rejects = []
+	for item in items:
+		if item.Document.GetElement(item.GroupId): rejects.append(item)
+		else:
+			try: ids.append(item.Id)
+			except: rejects.append(item)
+	itemsNew = List[ElementId](ids)
+	try:
+		group = doc.Create.NewGroup(itemsNew)
+		group.GroupType.Name = name
+	except: 
+		group = None
+		rejects = items
+
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[0])
-ids = list()
-rejects = list()
-for item in items:
-	try:
-		ids.append(item.Id)
-	except:
-		rejects.append(item)
-items = List[ElementId](ids)
+names = IN[1]
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-try:
-	group = doc.Create.NewGroup(items);
-	group.GroupType.Name = IN[1]
-except:
-	group = list()
+if isinstance(IN[1], list):
+	if isinstance(IN[0], list): OUT = list(zip(*[MakeNewGroup(x, y) for x, y in zip (items, names)]))
+	else: OUT = MakeNewGroup(items, names[0])
+else: OUT = MakeNewGroup(items, names)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = (group,rejects)
