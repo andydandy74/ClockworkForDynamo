@@ -3,8 +3,8 @@ clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
 def GetKeyScheduleParamName(schedule):
-	if hasattr(schedule, "KeyScheduleParameterName"): return schedule.KeyScheduleParameterName
-	else: return None
+	try: return schedule.KeyScheduleParameterName
+	except: return None
 
 scheds = UnwrapElement(IN[0])
 

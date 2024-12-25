@@ -9,7 +9,7 @@ def GetScheduleFieldParam(schedulefield):
 		if pId != ElementId.InvalidElementId: 
 			# BuiltInParameters
 			if pId.IntegerValue < 0: 
-				try: return bips[bipIds.index(pId.IntegerValue)]
+				try: return System.Enum.GetName(BuiltInParameter, pId.IntegerValue)
 				except: return None
 			# Project/Family/Shared Parameters
 			else: return schedulefield.Schedule.Document.GetElement(schedulefield.ParameterId)
@@ -17,14 +17,6 @@ def GetScheduleFieldParam(schedulefield):
 	else: return None
 
 schedulefields = UnwrapElement(IN[0])
-bipsAll = System.Enum.GetValues(BuiltInParameter)
-bips = []
-bipIds = []
-for bip in bipsAll:
-	try:
-		bips.append(bip)
-		bipIds.append(ElementId(bip).IntegerValue)
-	except: pass
 
 if isinstance(IN[0], list): OUT = [GetScheduleFieldParam(x) for x in schedulefields]
 else: OUT = GetScheduleFieldParam(schedulefields)
