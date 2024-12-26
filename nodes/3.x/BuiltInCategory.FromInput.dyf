@@ -13,7 +13,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef GetBicFromInput(var):\t\r\n\tif var:\r\n\t\tcattype = var.GetType().ToString()\r\n\t\tif cattype == \"Revit.Elements.Category\": return System.Enum.ToObject(BuiltInCategory, var.Id)\r\n\t\telif cattype == \"Autodesk.Revit.DB.BuiltInCategory\": return var\r\n\t\telif cattype == \"System.String\": \r\n\t\t\tfound = [x for x in bics if x.ToString() == var]\r\n\t\t\tif len(found) > 0: return found[0]\r\n\t\telse: return None\r\n\telse: return None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nbics = System.Enum.GetValues(BuiltInCategory)\r\n\r\nif isinstance(IN[0], list): OUT = [GetBicFromInput(x) for x in IN[0]]\r\nelse: OUT = GetBicFromInput(IN[0])",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef GetBicFromInput(var):\t\r\n\tif var:\r\n\t\tif isinstance(var, str): \r\n\t\t\ttry:\r\n\t\t\t\teval(\"BuiltInCategory.\" + var)\r\n\t\t\t\treturn var\r\n\t\t\texcept: return None\r\n\t\telif isinstance(var, int): return System.Enum.GetName(BuiltInCategory, var)\r\n\t\telse:\r\n\t\t\tcattype = var.GetType().ToString()\r\n\t\t\tif cattype == \"Revit.Elements.Category\": return System.Enum.GetName(BuiltInCategory, var.Id)\r\n\t\t\telif cattype == \"Autodesk.Revit.DB.BuiltInCategory\": return var\r\n\t\t\telse: return None\r\n\telse: return None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nbics = System.Enum.GetValues(BuiltInCategory)\r\n\r\nif isinstance(IN[0], list): OUT = [GetBicFromInput(x) for x in IN[0]]\r\nelse: OUT = GetBicFromInput(IN[0])",
+      "Engine": "IronPython2",
       "VariableInputPorts": true,
       "Id": "ba0f21ce28724fd184e29079fceef7d7",
       "Inputs": [
@@ -39,7 +40,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Führt ein eingebettetes Python-Skript aus."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -65,13 +66,13 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
       "NodeType": "OutputNode",
       "ElementResolver": null,
-      "Symbol": "BuiltInCategory",
+      "Symbol": "str",
       "Id": "d9f4a67bda374744bc8a9564a520528c",
       "Inputs": [
         {
@@ -86,7 +87,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "A function output, use with custom nodes"
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
     }
   ],
   "Connectors": [
@@ -103,18 +104,19 @@
   ],
   "Dependencies": [],
   "NodeLibraryDependencies": [],
+  "Author": "None provided",
   "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": false,
-      "Version": "2.6.1.8786",
+      "Version": "2.12.1.8246",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -127,39 +129,39 @@
     },
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "ba0f21ce28724fd184e29079fceef7d7",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 214.5,
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "ff133d85817d42eab66db19d9f5f06d5",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": -55.751040775466777,
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "d9f4a67bda374744bc8a9564a520528c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 438.5,
         "Y": 0.0
       }
     ],
     "Annotations": [],
-    "X": 249.6992391222885,
-    "Y": 294.34137884665017,
+    "X": 4.8992391222884351,
+    "Y": 262.34137884665017,
     "Zoom": 1.1713183573076464
   }
 }
