@@ -65,8 +65,8 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None, None\r\n\tobjtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnIDs = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n\telif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): \r\n\t\tif item.Category: returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\telif returnIDs:\r\n\t\treturnCat = []\r\n\t\treturnBic = []\r\n\t\tfor returnID in returnIDs:\r\n\t\t\treturnBic.append(System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue))\r\n\t\t\ttry: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))\r\n\t\t\texcept: returnCat.append(None)\r\n\t\treturnCat.sort()\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): \r\n\tif len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n\telse: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
-      "Engine": "IronPython2",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None, None\r\n\tobjtype = None\r\n\tif hasattr(item, \"GetType\"): objtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnIDs = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n\telif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): \r\n\t\tif item.Category: returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.GetName(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\telif returnIDs:\r\n\t\treturnCat = []\r\n\t\treturnBic = []\r\n\t\tfor returnID in returnIDs:\r\n\t\t\treturnBic.append(System.Enum.GetName(BuiltInCategory, returnID.IntegerValue))\r\n\t\t\ttry: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))\r\n\t\t\texcept: returnCat.append(None)\r\n\t\treturnCat.sort()\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): \r\n\tif len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n\telse: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "Inputs": [
@@ -230,64 +230,64 @@
     },
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "2e1acfe9550b4433b0ca485276816750",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Input",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 166.96111159012298,
         "Y": 152.49251352081069
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "4f6ba5ebe7f3472fbca472ef40b1087d",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
         "Excluded": false,
-        "X": 931.961111590123,
-        "Y": 110.4925135208107
+        "X": 928.526940728171,
+        "Y": 96.755830073002372
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "b4b979ee8b544c808efd2356bf9eec69",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Python Script",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 444.961111590123,
         "Y": 152.49251352081069
       },
       {
-        "ShowGeometry": true,
-        "Name": "List.FirstItem",
         "Id": "5cbbb185d77a4c84a31c692f0fcaf9e2",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "List.FirstItem",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 668.961111590123,
         "Y": 97.492513520810718
       },
       {
-        "ShowGeometry": true,
-        "Name": "List.LastItem",
         "Id": "d66964871d4240ccb2b7d68c0ac1f156",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "List.LastItem",
+        "ShowGeometry": true,
         "Excluded": false,
         "X": 668.961111590123,
         "Y": 207.49251352081069
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "7c1dd5750b754dd9b6687157478a53de",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
+        "Name": "Output",
+        "ShowGeometry": true,
         "Excluded": false,
-        "X": 931.961111590123,
-        "Y": 194.49251352081069
+        "X": 919.94151357329065,
+        "Y": 208.22919696861891
       }
     ],
     "Annotations": [],
