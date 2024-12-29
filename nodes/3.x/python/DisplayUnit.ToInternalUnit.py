@@ -3,7 +3,7 @@ clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
 def ToInternalUnits(val, unittype):
-	if str(dispunit.GetType() == "Autodesk.Revit.DB.ForgeTypeId"):
+	if str(dispunit.GetType()) == "Autodesk.Revit.DB.ForgeTypeId":
 		return UnitUtils.ConvertToInternalUnits(val,unittype)
 	else: return None
 
