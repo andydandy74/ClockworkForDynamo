@@ -56,7 +56,7 @@ for item in items:
 	if view == None: geo_options.DetailLevel = detail_lvl
 	geo_options.IncludeNonVisibleObjects = inc_invis
 	if view != None: geo_options.View = view
-	revitGeo = item.Geometry[geo_options]
+	revitGeo = item.get_Geometry(geo_options)
 	try:		
 		revit_geos = convert_geometry_instance(revitGeo, list())
 		revitlist.append(revit_geos)
