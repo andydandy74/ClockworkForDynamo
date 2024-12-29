@@ -9,7 +9,8 @@ clr.ImportExtensions(Revit.Elements)
 
 def GetCategory(item):
 	if not item: return None, None
-	objtype = item.GetType().ToString()
+	objtype = None
+	if hasattr(item, "GetType"): objtype = item.GetType().ToString()
 	returnID = None
 	returnIDs = None
 	returnCat = None
@@ -30,14 +31,14 @@ def GetCategory(item):
 	elif hasattr(item, "Category"): 
 		if item.Category: returnID = item.Category.Id
 	if returnID:
-		returnBic = System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue)
+		returnBic = System.Enum.GetName(BuiltInCategory, returnID.IntegerValue)
 		try: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)
 		except: pass
 	elif returnIDs:
 		returnCat = []
 		returnBic = []
 		for returnID in returnIDs:
-			returnBic.append(System.Enum.ToObject(BuiltInCategory, returnID.IntegerValue))
+			returnBic.append(System.Enum.GetName(BuiltInCategory, returnID.IntegerValue))
 			try: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))
 			except: returnCat.append(None)
 		returnCat.sort()

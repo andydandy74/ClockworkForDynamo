@@ -13,7 +13,7 @@ def find_all_paths(graph, start, end, path=[]):
 	path = path + [start]
 	if start == end:
 		return [path]
-	if not graph.has_key(start):
+	if start not in graph:
 		return []
 	paths = []
 	for node in graph[start]:

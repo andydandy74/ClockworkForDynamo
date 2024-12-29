@@ -15,12 +15,10 @@ def AddPointToSlabShape(item, point):
 	if hasattr(item, "SlabShapeEditor"): sle = item.SlabShapeEditor
 	elif hasattr(item, "GetSlabShapeEditor"): sle = item.GetSlabShapeEditor()
 	else: return False
-	if hasattr(point, "ToXyz"):
-		try:
-			sle.DrawPoint(point.ToXyz())
-			return True
-		except: return False
-	else: return False
+	try:
+		sle.DrawPoint(point.ToXyz())
+		return True
+	except: return False
 
 doc = DocumentManager.Instance.CurrentDBDocument
 items = UnwrapElement(IN[1])

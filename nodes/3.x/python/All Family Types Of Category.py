@@ -9,7 +9,7 @@ from RevitServices.Persistence import DocumentManager
 
 def ElementTypesByCategory(bic, doc):
 	if bic:
-		collector = FilteredElementCollector(doc).OfCategory(bic).WhereElementIsElementType()
+		collector = FilteredElementCollector(doc).OfCategory(eval("BuiltInCategory."+bic)).WhereElementIsElementType()
 		return collector.ToElements()
 	else: return []
 

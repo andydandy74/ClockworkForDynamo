@@ -10,7 +10,7 @@ from RevitServices.Persistence import DocumentManager
 def CollectByView(bic, view):
 	collector = FilteredElementCollector(doc)
 	filter = ElementOwnerViewFilter(view.Id)
-	return collector.WherePasses(filter).OfCategory(bic).ToElements()
+	return collector.WherePasses(filter).OfCategory(eval("BuiltInCategory."+bic)).ToElements()
 
 def GetViewDependentElements(cat, views):
 	if isinstance(views, list): return [CollectByView(cat, x) for x in UnwrapElement(views)]
