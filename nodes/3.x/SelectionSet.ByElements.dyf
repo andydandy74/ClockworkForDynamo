@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nname = IN[1]\r\n\r\n# create itemset\r\nitems = UnwrapElement(IN[0])\r\nids = list()\r\nfor item in items:\r\n\tids.append(item.Id)\r\nitemset = List[ElementId](ids)\r\n\r\n# collect all existing filters from the model \r\nnames = list()\r\ncollector = FilteredElementCollector(doc)\r\nfilters = collector.OfClass(FilterElement).ToElements();\r\n\r\nselset = False\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\n# if a filter of that name already exists, delete its content\r\nfor filter in filters:\r\n\tif filter.Name == name:\r\n\t\tfilter.Clear()\r\n\t\tselset = filter\r\n# create a new selection set if it doesn't already exist\r\nif selset == False:\r\n\tselset = SelectionFilterElement.Create(doc,name)\r\n# add the items to the selection set\r\ntry: \r\n\tselset.AddSet(itemset)\r\n\tOUT = selset.ToDSType(False)\r\nexcept: OUT = None\r\nTransactionManager.Instance.TransactionTaskDone()\r\n",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "497f8c2991da48c6ad82483dce66eca1",
       "Inputs": [
