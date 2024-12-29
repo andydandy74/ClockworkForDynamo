@@ -163,7 +163,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport System.IO\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\npath = IN[0]\r\ncompact = IN[1]\r\nnewcentral = IN[2]\r\nisworkshared = IN[3]\r\nastemplate = IN[4]\r\n\r\nTransactionManager.Instance.ForceCloseTransaction()\r\nif doc.IsFamilyDocument:\r\n\tpath += '.rfa'\r\nelse:\r\n\tif astemplate: path += '.rte'\r\n\telse: path += '.rvt'\r\nopt = SaveAsOptions()\r\nopt.OverwriteExistingFile = True\r\nopt.Compact = compact\r\nif isworkshared and newcentral and not astemplate:\r\n\twsopt = WorksharingSaveAsOptions()\r\n\twsopt.ClearTransmitted = True\r\n\twsopt.SaveAsCentral = True\r\n\topt.SetWorksharingOptions(wsopt)\r\ntry:\r\n\tdoc.SaveAs(path, opt)\r\n\tif doc.IsFamilyDocument and astemplate: \r\n\t\tnewpath = path.replace(\".rfa\", \".rft\")\r\n\t\tSystem.IO.File.Move(path, newpath)\r\n\tOUT = True\r\nexcept:\r\n\ttry:\r\n\t\twsopt.ClearTransmitted = False\r\n\t\topt.SetWorksharingOptions(wsopt)\r\n\t\tdoc.SaveAs(path, opt)\r\n\t\tOUT = True\r\n\texcept:\r\n\t\tOUT = False",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "d67d0a3a6284425a9debb2758ca1546e",
       "Inputs": [
@@ -462,8 +462,8 @@
       }
     ],
     "Annotations": [],
-    "X": 274.79564928648392,
-    "Y": 199.92807880640439,
-    "Zoom": 0.56420936767969465
+    "X": 210.81562564614154,
+    "Y": 138.7604136042408,
+    "Zoom": 0.3621863121916048
   }
 }

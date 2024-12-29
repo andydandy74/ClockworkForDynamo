@@ -14,7 +14,7 @@
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nlinkpaths = IN[0]\r\nrelative = IN[1]\r\n\r\ndef AddLink(path):\r\n\ttry:\r\n\t\tlinkpath = ModelPathUtils.ConvertUserVisiblePathToModelPath(path)\r\n\t\tlinkoptions = RevitLinkOptions(relative)\r\n\t\tlinkloadresult = RevitLinkType.Create(doc, linkpath, linkoptions)\r\n\t\treturn RevitLinkInstance.Create(doc, linkloadresult.ElementId).ToDSType(False)\r\n\texcept: return None\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(linkpaths, list): OUT = [AddLink(x) for x in linkpaths]\r\nelse: OUT = AddLink(linkpaths)\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "IronPython2",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "526eb1ba8be344acbe273ca83d9725f9",
       "Inputs": [
