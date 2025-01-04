@@ -9,15 +9,14 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 faminstances = UnwrapElement(IN[0])
-booleans = []
+
+def FlipRoom(item):
+	try:
+		item.FlipFromToRoom()
+		return True
+	except: return False
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for item in faminstances:
-    try:
-        item.FlipFromToRoom()
-        booleans.append(True)
-    except:
-        booleans.append(False)
+if isinstance(IN[0], list): OUT = [FlipRoom(x) for x in faminstances]
+else: OUT = FlipRoom(faminstances)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = (faminstances,booleans)
