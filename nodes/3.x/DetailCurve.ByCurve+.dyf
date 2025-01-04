@@ -22,7 +22,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncurves = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\nelementlist = []\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif doc.IsFamilyDocument: \r\n\tdoc_create = doc.FamilyCreate\r\nelse: \r\n\tdoc_create = doc.Create\r\nfor curve in curves:\r\n\ttry:\r\n\t\tdetcurve = doc_create.NewDetailCurve(view, curve.ToRevitType())\r\n\t\telementlist.append(detcurve)\r\n\texcept:\r\n\t\telementlist.append(None)\r\nTransactionManager.Instance.TransactionTaskDone()\r\nOUT = elementlist",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nif doc.IsFamilyDocument: doc_create = doc.FamilyCreate\r\nelse: doc_create = doc.Create\r\ncurves = UnwrapElement(IN[0])\r\nviews = UnwrapElement(IN[1])\r\n\r\ndef MakeDetailCurve(curve, view):\r\n\ttry: return doc_create.NewDetailCurve(view, curve.ToRevitType())\r\n\texcept: return None\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[1], list): OUT = [MakeDetailCurve(x, y) for x, y in zip(curves, views)]\r\n\telse: OUT = [MakeDetailCurve(x, views) for x in curves]\r\nelse:\r\n\tif isinstance(IN[1], list): OUT = [MakeDetailCurve(curves, x) for x in views]\r\n\telse: OUT = MakeDetailCurve(curves, views)\r\nTransactionManager.Instance.TransactionTaskDone()",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "a2a77e2cf5ae46cea09aed72d81b63b8",
@@ -59,77 +59,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Führt ein eingebettetes Python-Skript aus."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "44ac4888-4aa4-49a9-9344-23b729c11df9",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "f9bac7fc94ba411f85ddd86dfb5a3746",
-      "Inputs": [
-        {
-          "Id": "1066d5909e1646d6a26dd017ac33f083",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "72a87b2e0b5742dc9d5ee0272f44721d",
-          "Name": "seq",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "b10e72aad774442f80c63072b0dfeffc",
-          "Name": "",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "If the unknown item is not a list but rather a single item, only the first item of the list (input \"seq\") will be returned."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "cd09ad33-8c34-4850-ac26-24448d92c38f",
-      "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
-      "Id": "69851252e2184eaa8dfb4d53b56b47f1",
-      "Inputs": [
-        {
-          "Id": "597c285dd0d4410e83eaf4ee1a62b0e5",
-          "Name": "unknownItem",
-          "Description": "var[]..[]",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Outputs": [
-        {
-          "Id": "99c52e1db40b4cf88c638aea4f207976",
-          "Name": "seq",
-          "Description": "Rückgabewert",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Turns an element (or a nested list) into a flat list"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -208,28 +137,13 @@
   "Connectors": [
     {
       "Start": "0203c347ce844b899ce8e562a46e1318",
-      "End": "72a87b2e0b5742dc9d5ee0272f44721d",
-      "Id": "a21136220139446a91a817b0d60388f8"
-    },
-    {
-      "Start": "b10e72aad774442f80c63072b0dfeffc",
       "End": "7fc28912624a45f1b3df46060a2a0ad3",
-      "Id": "149419a5d91a4cc1ac24c5835b47e084"
+      "Id": "ea59ffdd91c64eb98d79b8ac43acd714"
     },
     {
-      "Start": "99c52e1db40b4cf88c638aea4f207976",
+      "Start": "5714bbea2d774cf199f0d55b313abd25",
       "End": "fd1e8bdc0d974504946b590dd25548d7",
-      "Id": "00154958cbc74b728b07669ea088e07d"
-    },
-    {
-      "Start": "5714bbea2d774cf199f0d55b313abd25",
-      "End": "1066d5909e1646d6a26dd017ac33f083",
-      "Id": "91826b3fa08c4c73b0c9e2b0aee773d5"
-    },
-    {
-      "Start": "5714bbea2d774cf199f0d55b313abd25",
-      "End": "597c285dd0d4410e83eaf4ee1a62b0e5",
-      "Id": "71cb8a29505d4b10927aa42d7960ae86"
+      "Id": "18ae27bac5f940edb5d4427c0ce8b3dd"
     },
     {
       "Start": "1019a0f1b4f14edd93307c8c84d80890",
@@ -237,10 +151,7 @@
       "Id": "0a21aff69c5d4653a1229ca49da1376a"
     }
   ],
-  "Dependencies": [
-    "44ac4888-4aa4-49a9-9344-23b729c11df9",
-    "cd09ad33-8c34-4850-ac26-24448d92c38f"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [],
   "Author": "None provided",
   "Bindings": [],
@@ -273,28 +184,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 486.460507542328,
-        "Y": 98.3648254628767
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "ReturnListOrSingleValue",
-        "Id": "f9bac7fc94ba411f85ddd86dfb5a3746",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 665.377663454322,
-        "Y": 3.3683238144414
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "TurnIntoList",
-        "Id": "69851252e2184eaa8dfb4d53b56b47f1",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 250.0,
-        "Y": 74.9965016484353
+        "X": 590.988831727161,
+        "Y": 64.182412731438347
       },
       {
         "ShowGeometry": true,
@@ -303,8 +194,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -32.0,
-        "Y": 1.0
+        "X": 84.58883172716105,
+        "Y": 35.182412731438347
       },
       {
         "ShowGeometry": true,
@@ -313,8 +204,8 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 932.377663454322,
-        "Y": 3.3683238144414
+        "X": 815.788831727161,
+        "Y": 64.182412731438347
       },
       {
         "ShowGeometry": true,
@@ -323,13 +214,13 @@
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 292.998152474388,
-        "Y": 159.104971443324
+        "X": 84.58883172716105,
+        "Y": 119.18241273143835
       }
     ],
     "Annotations": [],
-    "X": 37.238012826237,
-    "Y": 194.238440606488,
-    "Zoom": 1.24844365397223
+    "X": 232.62294296872358,
+    "Y": 278.61718911608006,
+    "Zoom": 0.50575386622492979
   }
 }
