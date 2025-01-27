@@ -18,8 +18,9 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nbips = {}\r\nfor bip in System.Enum.GetValues(BuiltInParameter):\r\n\ttry: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n\texcept: pass\r\n\t\t\r\ndef GetFilterRuleString(efilter, doc):\r\n\trulestrings = []\r\n\t# Filters without rules will arrive as nulls:\r\n\tif not efilter: return '<<<No rules defined>>>'\r\n\tefilterstr = efilter.ToString()\t\t\r\n\tif \"And\" in efilterstr: sep = \" AND \"\r\n\telif \"Or\" in efilterstr: sep = \" OR \"\r\n\telse: sep = \"\"\r\n\tfilters = efilter.GetFilters()\r\n\tfor filter in filters:\r\n\t\tif hasattr(filter, \"GetRules\"):\r\n\t\t\tfor rule in filter.GetRules():\r\n\t\t\t\tuseRule = True\r\n\t\t\t\t# inverted rules\r\n\t\t\t\truleInverted = \"\"\r\n\t\t\t\tif hasattr(rule, \"GetInnerRule\"): \r\n\t\t\t\t\trule = rule.GetInnerRule()\r\n\t\t\t\t\truleInverted = \"Not\"\r\n\t\t\t\t# rule parameters\r\n\t\t\t\tparamId = rule.GetRuleParameter()\r\n\t\t\t\tthisparam = doc.GetElement(paramId)\r\n\t\t\t\tif thisparam: thisparam = thisparam.Name\r\n\t\t\t\telif paramId.IntegerValue != -1: thisparam = bips[paramId.IntegerValue]\r\n\t\t\t\t# discard the rule if the parameter name cannot be resolved\r\n\t\t\t\telse: useRule = False\r\n\t\t\t\t# rule evaluators\r\n\t\t\t\tif hasattr(rule, \"GetEvaluator\"):\r\n\t\t\t\t\tthiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n\t\t\t\t\tthiseval = thiseval.replace(\"Numeric\",\"\")\r\n\t\t\t\t\tthiseval = thiseval.replace(\"String\",\"\")\r\n\t\t\t\t\tthiseval = thiseval + ruleInverted\r\n\t\t\t\t\tif thiseval == \"Equals\": thiseval = \"==\"\r\n\t\t\t\t\telif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n\t\t\t\t\telif thiseval == \"Greater\": thiseval = \">\"\r\n\t\t\t\t\telif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n\t\t\t\t\telif thiseval == \"Less\": thiseval = \"<\"\r\n\t\t\t\t\telif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n\t\t\t\telif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n\t\t\t\telse: thiseval = \"\"\r\n\t\t\t\t# rule values\r\n\t\t\t\tif hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n\t\t\t\telif hasattr(rule, \"RuleValue\"): thisval = str(rule.RuleValue)\r\n\t\t\t\telse: thisval = \"\"\r\n\t\t\t\tif useRule: rulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n\t\telse: rulestrings.append(\"(\" + GetFilterRuleStringNew(filter, doc)+ \")\")\r\n\trulestrings.sort()\r\n\treturn sep.join(rulestrings)\r\n\t\t\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleString(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)\t",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\n\r\ndef GetFilterRuleString(efilter, doc):\r\n\trulestrings = []\r\n\t# Filters without rules will arrive as nulls:\r\n\tif not efilter: return '<<<No rules defined>>>'\r\n\tefilterstr = efilter.ToString()\t\t\r\n\tif \"And\" in efilterstr: sep = \" AND \"\r\n\telif \"Or\" in efilterstr: sep = \" OR \"\r\n\telse: sep = \"\"\r\n\tfilters = efilter.GetFilters()\r\n\tfor filter in filters:\r\n\t\tif hasattr(filter, \"GetRules\"):\r\n\t\t\tfor rule in filter.GetRules():\r\n\t\t\t\tuseRule = True\r\n\t\t\t\t# inverted rules\r\n\t\t\t\truleInverted = \"\"\r\n\t\t\t\tif hasattr(rule, \"GetInnerRule\"): \r\n\t\t\t\t\trule = rule.GetInnerRule()\r\n\t\t\t\t\truleInverted = \"Not\"\r\n\t\t\t\t# rule parameters\r\n\t\t\t\tparamId = rule.GetRuleParameter()\r\n\t\t\t\tthisparam = doc.GetElement(paramId)\r\n\t\t\t\tif thisparam: thisparam = thisparam.Name\r\n\t\t\t\telif paramId != ElementId.InvalidElementId: thisparam = LabelUtils.GetLabelFor(int((str(paramId))))\r\n\t\t\t\t# discard the rule if the parameter name cannot be resolved\r\n\t\t\t\telse: useRule = False\r\n\t\t\t\t# rule evaluators\r\n\t\t\t\tif hasattr(rule, \"GetEvaluator\"):\r\n\t\t\t\t\tthiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n\t\t\t\t\tthiseval = thiseval.replace(\"Numeric\",\"\")\r\n\t\t\t\t\tthiseval = thiseval.replace(\"String\",\"\")\r\n\t\t\t\t\tthiseval = thiseval + ruleInverted\r\n\t\t\t\t\tif thiseval == \"Equals\": thiseval = \"==\"\r\n\t\t\t\t\telif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n\t\t\t\t\telif thiseval == \"Greater\": thiseval = \">\"\r\n\t\t\t\t\telif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n\t\t\t\t\telif thiseval == \"Less\": thiseval = \"<\"\r\n\t\t\t\t\telif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n\t\t\t\telif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n\t\t\t\telse: thiseval = \"\"\r\n\t\t\t\t# rule values\r\n\t\t\t\tif hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n\t\t\t\telif hasattr(rule, \"RuleValue\"): thisval = str(rule.RuleValue)\r\n\t\t\t\telse: thisval = \"\"\r\n\t\t\t\tif useRule: rulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n\t\telse: rulestrings.append(\"(\" + GetFilterRuleString(filter, doc)+ \")\")\r\n\trulestrings.sort()\r\n\treturn sep.join(rulestrings)\r\n\t\t\r\nitems = UnwrapElement(IN[0])\r\n\r\nif not hasattr(items, \"__iter__\"): items = [items]\r\noutput = []\r\nfor item in items:\r\n\ttry:\r\n\t\trule = GetFilterRuleString(item.GetElementFilter(), item.Document)\r\n\t\toutput.append(rule)\r\n\texcept: output.append(None)\r\n\r\nOUT = output",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "452c5f22012d48239833da816a48d186",
       "Inputs": [
@@ -99,12 +100,14 @@
     {
       "Start": "7ca90f215e8b464c9ef17e4a6cbecedb",
       "End": "eca0fb4ad1e7472fb27ebf5f635d7c4c",
-      "Id": "1bde1fa934eb4865a0d1e247e97aa038"
+      "Id": "1bde1fa934eb4865a0d1e247e97aa038",
+      "IsHidden": "False"
     },
     {
       "Start": "6ed1df190aa44e85acea3ac4d7c0c875",
       "End": "7a605f7e4f0448ddaef0b4bde604ccf8",
-      "Id": "428b2cb01a914d4f8cd7dbcf191fc648"
+      "Id": "428b2cb01a914d4f8cd7dbcf191fc648",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -116,7 +119,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.16.4.10216",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -132,10 +135,11 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
         "Name": "Python Script",
+        "ShowGeometry": true,
         "Id": "452c5f22012d48239833da816a48d186",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -144,8 +148,8 @@
         "Y": -94.70361227543944
       },
       {
-        "ShowGeometry": true,
         "Name": "Input",
+        "ShowGeometry": true,
         "Id": "5edee556dbc949579a88b4d8b527efb8",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -154,8 +158,8 @@
         "Y": -94.70361227543944
       },
       {
-        "ShowGeometry": true,
         "Name": "Output",
+        "ShowGeometry": true,
         "Id": "4ac7848f69254375b85ae5c0f3491cc6",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
@@ -165,8 +169,8 @@
       }
     ],
     "Annotations": [],
-    "X": 184.19232693443203,
-    "Y": 267.84874867737142,
-    "Zoom": 1.0298856394709863
+    "X": -255.48910847508785,
+    "Y": 229.42063611978949,
+    "Zoom": 1.1375820522947404
   }
 }

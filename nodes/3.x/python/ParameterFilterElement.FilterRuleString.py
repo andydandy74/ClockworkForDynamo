@@ -7,11 +7,7 @@ clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
 
-bips = {}
-for bip in System.Enum.GetValues(BuiltInParameter):
-	try: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)
-	except: pass
-		
+
 def GetFilterRuleString(efilter, doc):
 	rulestrings = []
 	# Filters without rules will arrive as nulls:
@@ -34,7 +30,7 @@ def GetFilterRuleString(efilter, doc):
 				paramId = rule.GetRuleParameter()
 				thisparam = doc.GetElement(paramId)
 				if thisparam: thisparam = thisparam.Name
-				elif paramId.IntegerValue != -1: thisparam = bips[paramId.IntegerValue]
+				elif paramId != ElementId.InvalidElementId: thisparam = LabelUtils.GetLabelFor(int((str(paramId))))
 				# discard the rule if the parameter name cannot be resolved
 				else: useRule = False
 				# rule evaluators
@@ -56,11 +52,18 @@ def GetFilterRuleString(efilter, doc):
 				elif hasattr(rule, "RuleValue"): thisval = str(rule.RuleValue)
 				else: thisval = ""
 				if useRule: rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
-		else: rulestrings.append("(" + GetFilterRuleStringNew(filter, doc)+ ")")
+		else: rulestrings.append("(" + GetFilterRuleString(filter, doc)+ ")")
 	rulestrings.sort()
 	return sep.join(rulestrings)
 		
 items = UnwrapElement(IN[0])
 
-if isinstance(IN[0], list): OUT = [GetFilterRuleString(x.GetElementFilter(), x.Document) for x in items]
-else: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)	
+if not hasattr(items, "__iter__"): items = [items]
+output = []
+for item in items:
+	try:
+		rule = GetFilterRuleString(item.GetElementFilter(), item.Document)
+		output.append(rule)
+	except: output.append(None)
+
+OUT = output
