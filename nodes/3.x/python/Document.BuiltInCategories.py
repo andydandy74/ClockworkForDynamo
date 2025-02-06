@@ -8,7 +8,7 @@ clr.AddReference("RevitNodes")
 import Revit
 
 dynamoCatsOnly = IN[0]
-biclist = System.Enum.GetValues(BuiltInCategory)
+biclist = [eval("BuiltInCategory."+x) for x in dir(BuiltInCategory) if x.startswith("OST_")]
 cdata = []
 for bic in biclist:
 	try: cdata.append((System.Enum.GetName(BuiltInCategory, bic), ElementId(bic), Revit.Elements.Category.ById(ElementId(bic).IntegerValue)))
