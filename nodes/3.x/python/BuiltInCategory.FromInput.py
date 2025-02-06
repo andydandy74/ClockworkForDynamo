@@ -27,7 +27,6 @@ def GetBicFromInput(var):
 	else: return None
 
 doc = DocumentManager.Instance.CurrentDBDocument
-bics = System.Enum.GetValues(BuiltInCategory)
 
 if isinstance(IN[0], list): OUT = [GetBicFromInput(x) for x in IN[0]]
 else: OUT = GetBicFromInput(IN[0])
