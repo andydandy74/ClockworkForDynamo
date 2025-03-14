@@ -12,11 +12,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nbips = System.Enum.GetValues(BuiltInParameter)\r\npdata = list()\r\nfor bip in bips:\r\n\ttry:\r\n\t\tpdata.append((System.Enum.GetName(BuiltInParameter, bip),ElementId(bip),LabelUtils.GetLabelFor(bip)))\r\n\texcept:\r\n\t\tpass\r\nOUT = pdata",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nclr.AddReference('RevitAPIUI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nbips = [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]\r\npdata = list()\r\nfor bip in bips:\r\n\ttry:\r\n\t\tpdata.append((System.Enum.GetName(BuiltInParameter, bip),ElementId(bip),LabelUtils.GetLabelFor(bip)))\r\n\texcept:\r\n\t\tpass\r\nOUT = pdata",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "aa76fbcd35544037b00a86e0d094e928",
+      "NodeType": "PythonScriptNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -30,14 +30,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "BuiltInParameters",
       "Id": "216124e00da349c29b29726d2e6b661a",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "43cef1d1488b4073bb2f3c5411fc42e1",
@@ -51,18 +51,17 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
       "Id": "0de29d7be79c4aaa9b70ad15dd3c748e",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "29cc1e3bc14c462eb4e0ea545e4ec1ff",
           "Name": "lists",
-          "Description": "Liste der umzustellenden Listen\n\nvar[]..[]",
+          "Description": "List of lists to be transposed\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -73,21 +72,21 @@
         {
           "Id": "1874f26685684b0696efa33c742653d6",
           "Name": "lists",
-          "Description": "Liste der umgestellten Listen",
+          "Description": "List of transposed lists",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.Transpose@var[]..[]",
       "Replication": "Auto",
-      "Description": "Vertauscht Zeilen und Spalten in einer Liste von Listen. Wenn einige Zeilen kürzer als die übrigen sind, werden Nullwerte als Platzhalter in das resultierende Array eingefügt, sodass dieses immer rechteckig ist.\n\nList.Transpose (lists: var[]..[]): var[]..[]"
+      "Description": "Swaps rows and columns in a list of lists. If there are some rows that are shorter than others, null values are inserted as place holders in the resultant array such that it is always rectangular.\n\nList.Transpose (lists: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "seq[0];\nseq[1];\nseq[2];",
       "Id": "1ec64c75da3f4ff3aefc33918c2d8f98",
+      "NodeType": "CodeBlockNode",
       "Inputs": [
         {
           "Id": "5d09bc3a9ab046fa9e228cd80fef96de",
@@ -103,7 +102,7 @@
         {
           "Id": "9e7f214d76e64571bc6fa18296758e54",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 1",
+          "Description": "Value of expression at line 1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -112,7 +111,7 @@
         {
           "Id": "e2ef29799db74ee2b99a42ca24836948",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 2",
+          "Description": "Value of expression at line 2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -121,7 +120,7 @@
         {
           "Id": "668795cb3cac4c7c90f9ca7c013fd930",
           "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 3",
+          "Description": "Value of expression at line 3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -129,14 +128,15 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
+      "Description": "Allows for DesignScript code to be authored directly",
+      "Code": "seq[0];\nseq[1];\nseq[2];"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "ElementIDs",
       "Id": "ecc7ba2a9045432e8959330893ec169d",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "8b3a381ced754fcdb06ec474ff304dba",
@@ -150,14 +150,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "ParameterNames",
       "Id": "2e7388b8f08b419fba3e41538be7d485",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "b7b6c00a379346b39e46bdecd532c656",
@@ -171,34 +171,39 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "9846c7c154d0425b832976eeafe57088",
       "End": "29cc1e3bc14c462eb4e0ea545e4ec1ff",
-      "Id": "5ea987e06d5e41ffbdc3685f34f772a7"
+      "Id": "5ea987e06d5e41ffbdc3685f34f772a7",
+      "IsHidden": "False"
     },
     {
       "Start": "1874f26685684b0696efa33c742653d6",
       "End": "5d09bc3a9ab046fa9e228cd80fef96de",
-      "Id": "eaa0b9894b0f447a960ef655bb531acc"
+      "Id": "eaa0b9894b0f447a960ef655bb531acc",
+      "IsHidden": "False"
     },
     {
       "Start": "9e7f214d76e64571bc6fa18296758e54",
       "End": "43cef1d1488b4073bb2f3c5411fc42e1",
-      "Id": "a004660e268646dba2d07c17c7d00d8e"
+      "Id": "a004660e268646dba2d07c17c7d00d8e",
+      "IsHidden": "False"
     },
     {
       "Start": "e2ef29799db74ee2b99a42ca24836948",
       "End": "8b3a381ced754fcdb06ec474ff304dba",
-      "Id": "6b7aff9a1ce44dbcade8d4ced7ccd8f7"
+      "Id": "6b7aff9a1ce44dbcade8d4ced7ccd8f7",
+      "IsHidden": "False"
     },
     {
       "Start": "668795cb3cac4c7c90f9ca7c013fd930",
       "End": "b7b6c00a379346b39e46bdecd532c656",
-      "Id": "386a39b0420f4a7e90503b39b39df089"
+      "Id": "386a39b0420f4a7e90503b39b39df089",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -210,12 +215,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.3.0.6316",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -226,64 +231,65 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "aa76fbcd35544037b00a86e0d094e928",
+        "Name": "Python Script",
         "IsSetAsInput": true,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 155.947569398254,
-        "Y": 50.535412246651191
+        "ShowGeometry": true,
+        "X": 156.50778058312832,
+        "Y": 50.53541224665119
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "216124e00da349c29b29726d2e6b661a",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 789.947569398254,
         "Y": -14.8912544200155
       },
       {
-        "ShowGeometry": true,
-        "Name": "List.Transpose",
         "Id": "0de29d7be79c4aaa9b70ad15dd3c748e",
+        "Name": "List.Transpose",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 349.947569398254,
         "Y": 50.5354122466512
       },
       {
-        "ShowGeometry": true,
-        "Name": "Code Block",
         "Id": "1ec64c75da3f4ff3aefc33918c2d8f98",
+        "Name": "Code Block",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 561.947569398254,
         "Y": 54.7487455799845
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "ecc7ba2a9045432e8959330893ec169d",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 789.947569398254,
         "Y": 68.1087455799845
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "2e7388b8f08b419fba3e41538be7d485",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 789.947569398254,
         "Y": 151.108745579984
       }

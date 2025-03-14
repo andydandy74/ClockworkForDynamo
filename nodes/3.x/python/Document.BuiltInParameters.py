@@ -5,7 +5,7 @@ clr.AddReference('RevitAPIUI')
 from Autodesk.Revit.DB import *
 import Autodesk
 
-bips = System.Enum.GetValues(BuiltInParameter)
+bips = [eval("BuiltInParameter."+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]
 pdata = list()
 for bip in bips:
 	try:
