@@ -17,11 +17,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nbips = {}\r\nfor bip in System.Enum.GetValues(BuiltInParameter):\r\n\ttry: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n\texcept: pass\r\n\t\t\r\ndef GetFilterRuleParams(efilter, doc):\r\n\tparams = []\r\n\tif efilter:\r\n\t\tfor filter in efilter.GetFilters():\r\n\t\t\tif hasattr(filter, \"GetRules\"):\r\n\t\t\t\tfor rule in filter.GetRules():\r\n\t\t\t\t\tparamId = rule.GetRuleParameter()\r\n\t\t\t\t\tthisparam = doc.GetElement(paramId)\r\n\t\t\t\t\tif thisparam: thisparam = thisparam.Name\r\n\t\t\t\t\telse: thisparam = bips[paramId.IntegerValue]\r\n\t\t\t\t\tparams.append(thisparam.strip())\r\n\t\t\telse: params.append(GetFilterRuleParams(filter, doc))\r\n\treturn params\r\n\t\t\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleParams(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleParams(items.GetElementFilter(), items.Document)",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n\ttry: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n\texcept: pass\r\n\t\t\r\ndef GetFilterRuleParams(efilter, doc):\r\n\tparams = []\r\n\tif efilter:\r\n\t\tfor filter in efilter.GetFilters():\r\n\t\t\tif hasattr(filter, \"GetRules\"):\r\n\t\t\t\tfor rule in filter.GetRules():\r\n\t\t\t\t\tparamId = rule.GetRuleParameter()\r\n\t\t\t\t\tthisparam = doc.GetElement(paramId)\r\n\t\t\t\t\tif thisparam: thisparam = thisparam.Name\r\n\t\t\t\t\telse: thisparam = bips[paramId.IntegerValue]\r\n\t\t\t\t\tparams.append(thisparam.strip())\r\n\t\t\telse: params.append(GetFilterRuleParams(filter, doc))\r\n\treturn params\r\n\t\t\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleParams(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleParams(items.GetElementFilter(), items.Document)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "5503dea3d84a4f88b56e21229d7eb948",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "45e0a7208d794fb69104cb8a72a91bb3",
@@ -45,11 +45,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "parameterFilterElement",
         "TypeName": "Revit.Filter.ParameterFilterElement",
@@ -58,6 +57,7 @@
         "Description": ""
       },
       "Id": "a829d700be294051958f0892bb2d7aae",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -71,14 +71,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "str",
       "Id": "c78bb9f7da4c4817893ca43c6c2d455c",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "6afc121df2144529ae287c97a4619054",
@@ -92,19 +92,21 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "1337e70c79d149569273e599c221b1d6",
       "End": "6afc121df2144529ae287c97a4619054",
-      "Id": "0c72ea4ca11b42c0bc29a00f7ca0a904"
+      "Id": "0c72ea4ca11b42c0bc29a00f7ca0a904",
+      "IsHidden": "False"
     },
     {
       "Start": "458828bf081542d8af1c1cff91402748",
       "End": "45e0a7208d794fb69104cb8a72a91bb3",
-      "Id": "0e5d74bb08cf448d901673c5f940743f"
+      "Id": "0e5d74bb08cf448d901673c5f940743f",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -116,12 +118,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.3.0.6316",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -132,41 +134,42 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "5503dea3d84a4f88b56e21229d7eb948",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 618.20742276375768,
-        "Y": -70.380498994075367
+        "ShowGeometry": true,
+        "X": 618.2074227637577,
+        "Y": -70.38049899407537
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "a829d700be294051958f0892bb2d7aae",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -70.592577236242278,
-        "Y": -70.380498994075367
+        "ShowGeometry": true,
+        "X": -70.59257723624228,
+        "Y": -70.38049899407537
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "c78bb9f7da4c4817893ca43c6c2d455c",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 843.00742276375763,
-        "Y": -70.380498994075367
+        "ShowGeometry": true,
+        "X": 843.0074227637576,
+        "Y": -70.38049899407537
       }
     ],
     "Annotations": [],
-    "X": 93.407872283280639,
+    "X": 93.40787228328064,
     "Y": 353.376991018911,
-    "Zoom": 0.89822294022617144
+    "Zoom": 0.8982229402261714
   }
 }
