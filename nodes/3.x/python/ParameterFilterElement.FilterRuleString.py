@@ -8,7 +8,7 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 bips = {}
-for bip in System.Enum.GetValues(BuiltInParameter):
+for bip in [eval("BuiltInParameter."+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:
 	try: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)
 	except: pass
 		
@@ -56,7 +56,7 @@ def GetFilterRuleString(efilter, doc):
 				elif hasattr(rule, "RuleValue"): thisval = str(rule.RuleValue)
 				else: thisval = ""
 				if useRule: rulestrings.append((thisparam + " " + thiseval + " " + thisval).strip())
-		else: rulestrings.append("(" + GetFilterRuleStringNew(filter, doc)+ ")")
+		else: rulestrings.append("(" + GetFilterRuleString(filter, doc)+ ")")
 	rulestrings.sort()
 	return sep.join(rulestrings)
 		

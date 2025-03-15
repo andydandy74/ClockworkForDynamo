@@ -8,7 +8,7 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 bips = {}
-for bip in System.Enum.GetValues(BuiltInParameter):
+for bip in [eval("BuiltInParameter."+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:
 	try: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)
 	except: pass
 		
