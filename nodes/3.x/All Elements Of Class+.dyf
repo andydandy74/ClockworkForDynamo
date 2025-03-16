@@ -21,15 +21,15 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
-        "Name": "elementType",
+        "Name": "elementClass",
         "TypeName": "var",
         "TypeRank": -1,
         "DefaultValue": null,
         "Description": ""
       },
       "Id": "7051506d098749068b5b68f643bb6941",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -43,14 +43,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "elements",
       "Id": "27647f3ac7d748fabf008adabac27375",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "79bee0896b30452a8351f463dfb9eba5",
@@ -64,11 +64,10 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "toggle",
         "TypeName": "bool",
@@ -77,6 +76,7 @@
         "Description": ""
       },
       "Id": "86e66cba645b41a195de0dd4a0c548c9",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -90,11 +90,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "docOrRevitLinkInstance",
         "TypeName": "var",
@@ -103,6 +102,7 @@
         "Description": " Use only if you want to query a linked model"
       },
       "Id": "5445afc61f3c4d71824825ab27252a13",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -116,15 +116,15 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nimport Autodesk\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef ElementsByType(etype, doc, schemaGUID):\r\n\tesFilter = None\r\n\tif schemaGUID: esFilter = ExtensibleStorage.ExtensibleStorageFilter(schemaGUID)\r\n\t# Special cases where we need to pull FamilyInstances first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbol\", \"Autodesk.Revit.DB.Mullion\", \"Autodesk.Revit.DB.Panel\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilyInstance)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull FamilySymbols first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AnnotationSymbolType\", \"Autodesk.Revit.DB.AreaTagType\", \"Autodesk.Revit.DB.Architecture.RoomTagType\", \"Autodesk.Revit.DB.Mechanical.SpaceTagType\", \"Autodesk.Revit.DB.Structure.TrussType\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.FamilySymbol)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Area\", \"Autodesk.Revit.DB.Architecture.Room\", \"Autodesk.Revit.DB.Mechanical.Space\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElement)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull SpatialElementTags first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.AreaTag\", \"Autodesk.Revit.DB.Architecture.RoomTag\", \"Autodesk.Revit.DB.Mechanical.SpaceTag\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.SpatialElementTag)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull CurveElements first and then check against the desired type\r\n\telif str(etype) in (\"Autodesk.Revit.DB.Structure.AreaReinforcementCurve\", \"Autodesk.Revit.DB.CurveByPoints\", \"Autodesk.Revit.DB.DetailArc\", \"Autodesk.Revit.DB.DetailCurve\", \"Autodesk.Revit.DB.DetailEllipse\", \"Autodesk.Revit.DB.DetailLine\", \"Autodesk.Revit.DB.DetailNurbSpline\", \"Autodesk.Revit.DB.ModelArc\", \"Autodesk.Revit.DB.ModelCurve\", \"Autodesk.Revit.DB.ModelEllipse\", \"Autodesk.Revit.DB.ModelHermiteSpline\", \"Autodesk.Revit.DB.ModelLine\", \"Autodesk.Revit.DB.ModelNurbSpline\", \"Autodesk.Revit.DB.SymbolicCurve\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.CurveElement)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\t# Special cases where we need to pull HostedSweep first and then check against the desired type\r\n\tif str(etype) in (\"Autodesk.Revit.DB.Architecture.Fascia\", \"Autodesk.Revit.DB.Architecture.Gutter\", \"Autodesk.Revit.DB.SlabEdge\"):\r\n\t\tcollector = FilteredElementCollector(doc).OfClass(Autodesk.Revit.DB.HostedSweep)\r\n\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\treturn [x for x in collector.ToElements() if x.GetType() == etype]\r\n\telse:\r\n\t\ttry:\r\n\t\t\tcollector = FilteredElementCollector(doc).OfClass(etype)\r\n\t\t\tif esFilter: collector = collector.WherePasses(esFilter)\r\n\t\t\treturn collector.ToElements()\r\n\t\texcept: return None\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\nschemaGUID = IN[3]\r\n\r\nif isinstance(IN[0], list): OUT = [ElementsByType(x, doc, schemaGUID) for x in IN[0]]\r\nelse: OUT = ElementsByType(IN[0], doc, schemaGUID)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "6f90ee4b4ecc4eaa9b4511d83eec8b01",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "7e6f283d5e424053a59100c7a02ad514",
@@ -175,11 +175,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "schemaGUID",
         "TypeName": "var",
@@ -188,6 +187,7 @@
         "Description": " Use only if you want to filter by a SchemaGUID"
       },
       "Id": "4532824d9cdf44f5a12f7f0c04e6011c",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -201,34 +201,39 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     }
   ],
   "Connectors": [
     {
       "Start": "b01a8a150d374ef68440268376541ebb",
       "End": "7e6f283d5e424053a59100c7a02ad514",
-      "Id": "364dc77c796947048e62ff7e0ba49b3c"
+      "Id": "364dc77c796947048e62ff7e0ba49b3c",
+      "IsHidden": "False"
     },
     {
       "Start": "a485744308234d9380bd6bc4ae7764e8",
       "End": "dc21ecd3152947a2906351c958fb4342",
-      "Id": "56aabedd6ce24383839e695777309a0a"
+      "Id": "56aabedd6ce24383839e695777309a0a",
+      "IsHidden": "False"
     },
     {
       "Start": "e128ab211b5748fb9421ca110cd9cd64",
       "End": "cc101be925f340a1b236ef264dbc3d6c",
-      "Id": "d6186c7a443f4b74bfdc04bffa1921e8"
+      "Id": "d6186c7a443f4b74bfdc04bffa1921e8",
+      "IsHidden": "False"
     },
     {
       "Start": "28f921d1908046219c646a71295854cf",
       "End": "79bee0896b30452a8351f463dfb9eba5",
-      "Id": "e9ec4fdebade4c269ae33a962da471b8"
+      "Id": "e9ec4fdebade4c269ae33a962da471b8",
+      "IsHidden": "False"
     },
     {
       "Start": "7663f50cbb504929a8ae1c0bc6f36436",
       "End": "895f02c9eb724b32aa3c176377df0cb3",
-      "Id": "de54f05241974ce08db7f24cfab0c170"
+      "Id": "de54f05241974ce08db7f24cfab0c170",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -240,12 +245,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.3.0.6316",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -256,71 +261,72 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "7051506d098749068b5b68f643bb6941",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 171.369278068583,
         "Y": 61.0177681360315
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "27647f3ac7d748fabf008adabac27375",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 913.369278068583,
         "Y": 118.017768136031
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "86e66cba645b41a195de0dd4a0c548c9",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 171.369278068583,
         "Y": 144.017768136031
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "5445afc61f3c4d71824825ab27252a13",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 171.369278068583,
         "Y": 227.017768136032
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "6f90ee4b4ecc4eaa9b4511d83eec8b01",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 689.369278068583,
         "Y": 118.01776813603101
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "4532824d9cdf44f5a12f7f0c04e6011c",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 172.64106589631444,
-        "Y": 329.60335409273159
+        "Y": 329.6033540927316
       }
     ],
     "Annotations": [],
-    "X": -1063.6296215363877,
-    "Y": -150.37821247473579,
-    "Zoom": 2.0576697389515566
+    "X": -79.32036746785457,
+    "Y": 120.97943704602528,
+    "Zoom": 1.0548208283052396
   }
 }
