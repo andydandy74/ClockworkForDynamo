@@ -13,21 +13,23 @@ from RevitServices.Transactions import TransactionManager
 
 doc = DocumentManager.Instance.CurrentDBDocument
 views = UnwrapElement(IN[0])
-margin = IN[1].ToXyz()
-booleans = []
+margins = IN[1]
+
+def ResizeCropbox(view, marginD):
+	try:
+		margin = marginD.ToXyz()
+		newbox = BoundingBoxXYZ()
+		newbox.Max = view.CropBox.Max.Add(margin)
+		newbox.Min = view.CropBox.Min.Subtract(margin)
+		view.CropBox = newbox
+		return True
+	except: return False
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-for item in views:
-	try:
-		newmax = item.CropBox.Max.Add(margin)
-		newmin = item.CropBox.Min.Subtract(margin)
-		newbox = BoundingBoxXYZ()
-		newbox.Max = newmax
-		newbox.Min = newmin
-		item.CropBox = newbox
-		booleans.append(True)
-	except:
-		booleans.append(False)
+if isinstance(IN[0], list):
+	if isinstance(IN[1], list): OUT = [ResizeCropbox(x, y) for x, y in zip(views, margins)]
+	else: OUT = [ResizeCropbox(x, margins) for x in views]
+else:
+	if isinstance(IN[0], list): OUT = ResizeCropbox(views, margins[0])
+	else: OUT = ResizeCropbox(views, margins)
 TransactionManager.Instance.TransactionTaskDone()
-
-OUT = (views,booleans)
