@@ -17,10 +17,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('System.Drawing')\r\nimport System.Drawing\r\n\r\ndef GetColorName(color):\r\n\tif hasattr(color, \"Red\"):\r\n\t\tif color.Red == 0 and color.Green == 0 and color.Blue == 0: return \"Black\"\r\n\t\telse:\r\n\t\t\tlookup = [x for x in knowncols if x.R == color.Red and x.G == color.Green and x.B == color.Blue]\r\n\t\t\tif len(lookup) > 0: return lookup[0].Name\r\n\t\t\telse: return None\r\n\telse: return None\r\n\r\nknowncols = [System.Drawing.Color.FromKnownColor(x) for x in System.Enum.GetValues(System.Drawing.KnownColor)]\r\nif isinstance(IN[0], list): OUT = [GetColorName(x) for x in IN[0]]\r\nelse: OUT = GetColorName(IN[0])",
+      "Code": "import clr\r\nclr.AddReference('System.Drawing')\r\nimport System.Drawing\r\n\r\ndef GetColorName(color):\r\n    if hasattr(color, \"Red\"):\r\n        lookup = [x for x in syscols if (x[1] == color.Red and x[2] == color.Green and x[3] == color.Blue)]\r\n        if len(lookup) > 0: return lookup[0][0]\r\n        else: return None\r\n    else: return None\r\n\r\nsyscols = []\r\nsyscols.append((\"Black\",0,0,0))\r\nsyscols.append((\"White\",255,255,255))\r\npotentialcols = dir(System.Drawing.KnownColor)\r\nfor pc in potentialcols:\r\n    c = System.Drawing.Color.FromName(pc)\r\n    if c.R > 0 or c.G > 0 or c.B > 0: syscols.append((pc,c.R,c.G,c.B))\r\nif isinstance(IN[0], list): OUT = [GetColorName(x) for x in IN[0]]\r\nelse: OUT = GetColorName(IN[0])",
+      "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b07c70eee20f4c32a1bd0f983d4cf239",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "0eb3ae89dba44285a893f4b13d795051",
@@ -44,11 +45,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Runs an embedded IronPython script."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "color",
         "TypeName": "DSCore.Color",
@@ -57,6 +57,7 @@
         "Description": ""
       },
       "Id": "990240a3cbfb4624bd06e24d62d4ca0f",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -74,10 +75,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "name",
       "Id": "8928664d7c9d4cdabcadfffaba582a36",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "24d8df8b6b3f4d8792491316714843c5",
@@ -98,26 +99,31 @@
     {
       "Start": "02549363b022412fae62dde7fbcd25dd",
       "End": "24d8df8b6b3f4d8792491316714843c5",
-      "Id": "3dfbaf48de2549448dd8e52b5b7ccf9a"
+      "Id": "3dfbaf48de2549448dd8e52b5b7ccf9a",
+      "IsHidden": "False"
     },
     {
       "Start": "8bd0debe116147ad9ad2a2d0f268875e",
       "End": "0eb3ae89dba44285a893f4b13d795051",
-      "Id": "c519ac976673468ca060752480dad5c5"
+      "Id": "c519ac976673468ca060752480dad5c5",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
   "View": {
     "Dynamo": {
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.0.3.8810",
+      "Version": "3.3.0.6316",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Background Preview",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -128,34 +134,35 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "b07c70eee20f4c32a1bd0f983d4cf239",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 256.0,
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "990240a3cbfb4624bd06e24d62d4ca0f",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": -31.0,
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "8928664d7c9d4cdabcadfffaba582a36",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 480.0,
         "Y": 0.0
       }
