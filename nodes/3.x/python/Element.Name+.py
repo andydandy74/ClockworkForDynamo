@@ -10,7 +10,7 @@ def GetName(item):
     if not unwrapped: return None
     elif utype in ("Autodesk.Revit.DB.Area", "Autodesk.Revit.DB.Architecture.TopographySurface"):
         try: return unwrapped.get_Parameter(BuiltInParameter.ROOM_NAME).AsString()
-        except: return unwrapped.Name
+        except: return item.Name
     elif utype in ("Autodesk.Revit.DB.BuiltInParameter", "Autodesk.Revit.DB.BuiltInParameterGroup", "Autodesk.Revit.DB.DisplayUnitType", "Autodesk.Revit.DB.ParameterType", "Autodesk.Revit.DB.UnitSymbolType", "Autodesk.Revit.DB.UnitType"): 
         try: return LabelUtils.GetLabelFor(unwrapped)
         except: return unwrapped.ToString()
@@ -31,9 +31,9 @@ def GetName(item):
                         except: 
                             try: return LabelUtils.GetLabelForDiscipline(unwrapped)
                             except: return unwrapped.TypeId            
-    elif hasattr(unwrapped, "GetName"): return unwrapped.GetName()
-    elif hasattr(unwrapped, "Name"): return unwrapped.Name
+    elif hasattr(unwrapped, "GetName"): return unwrapped.GetName()  
     elif hasattr(item, "Name"): return item.Name
+    elif hasattr(unwrapped, "Name"): return unwrapped.Name     
     else: return None
 
 items = IN[0]
