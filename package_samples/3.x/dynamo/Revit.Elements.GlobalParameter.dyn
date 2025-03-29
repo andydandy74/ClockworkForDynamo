@@ -1,0 +1,1108 @@
+{
+  "Uuid": "f62be425-5c8d-4926-8694-7ba53bc88216",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Revit.Elements.GlobalParameter",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "GlobalParameter": {
+        "Key": "Revit.Elements.GlobalParameter",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Elements.GlobalParameter": {
+        "Key": "Revit.Elements.GlobalParameter",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "a6aa132d-ccd7-408f-b2f9-ed67350c8c3a-0003b64a"
+      ],
+      "Id": "47d69e9547154abdb26ca92a0180b414",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1d4ed20b00664456a9b4111d5d7e7d32",
+          "Name": "Element",
+          "Description": "Die ausgewählten Elemente",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Kommentare",
+      "Id": "314eec64de9f4396bcef75e579dfda2e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "532ba2171b30455e857b62abc1a4084a",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Erstellt eine Zeichenfolge."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.GlobalParameter.FindByName@string",
+      "Id": "c695e4a0b133456b946e52704c9f724e",
+      "Inputs": [
+        {
+          "Id": "eba5b0737d754813a25869bb247c4c33",
+          "Name": "name",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4bff258d00fc453ab36d6acdb1a5d8b2",
+          "Name": "GlobalParameter",
+          "Description": "GlobalParameter",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Sucht einen globalen Parameter nach Namen.\n\nGlobalParameter.FindByName (name: string): GlobalParameter"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "test",
+      "Id": "8d4825227f4d47678f2c3585a7c8f52e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "87e5b6f7a9a84504bc706b9ea3bc657a",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Erstellt eine Zeichenfolge."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "\"abcd\"",
+      "Id": "86c0ca8c88844a489278e766f44c72bb",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c40e7e4e1f324ae4a940afb85821a1a6",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Erstellt eine Zeichenfolge."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetAssociatedGlobalParam(item, param):\r\n\trparams = item.GetParameters(param)\r\n\tif len(rparams) > 0: \r\n\t\treturn item.Document.GetElement(rparams[0].GetAssociatedGlobalParameter())\r\n\telse: return \"*\"\r\n\r\nitems = UnwrapElement(IN[0])\r\nparams = IN[1]\r\n\r\nif isinstance(IN[0], list): \r\n\tif isinstance(IN[1], list): OUT = [GetAssociatedGlobalParam(x, y) for x, y in zip(items, params)]\r\n\telse: OUT = [GetAssociatedGlobalParam(x, params) for x in items]\r\nelse: \r\n\tif isinstance(IN[1], list): OUT = [GetAssociatedGlobalParam(items, x) for x in params]\r\n\telse: OUT = GetAssociatedGlobalParam(items, params)",
+      "Engine": "IronPython2",
+      "VariableInputPorts": true,
+      "Id": "5bbeeb5d44b742389facdf6513b8616b",
+      "Inputs": [
+        {
+          "Id": "2032367901d948e1a6cb4925acfe4cb9",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "2e1fe698440f402998a8b2051df45f06",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "64f8e4d53ebc4e8190833318bf640d72",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6608ba70fa474df49ac8595865f1fd5c",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "2349b21b-d9b0-4050-8a49-42831e319776",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "6376976e783a4876adf7d24da341f72b",
+      "Inputs": [
+        {
+          "Id": "c702a6b9b7a640d494b8f48882e88610",
+          "Name": "globalParam",
+          "Description": "GlobalParameter[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "fce995e87623499fab54291a884496df",
+          "Name": "str",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the formula of a global parameter (if any)"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "d33d3ad7e4a245fabcf5bbd596a1d597",
+      "Inputs": [
+        {
+          "Id": "b43dd1f3cc6a43b7b6c7999911f3d9b9",
+          "Name": "",
+          "Description": "Block, dessen Ausgabe angezeigt wird",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "cf4d621434804a5cb217d13456f609a4",
+          "Name": "",
+          "Description": "Blockausgabe",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualisierung der Ausgabe des Blocks"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "7555ae16-60bf-4a62-8393-1b4e9903ddbf",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "5fd12de341d74550a5563b0624b6c7e0",
+      "Inputs": [
+        {
+          "Id": "55261ded4a4047d681afccee66fbc01c",
+          "Name": "globalParam",
+          "Description": "GlobalParameter[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "8d067de1d68c4300aef0fee22064d9bc",
+          "Name": "elements",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the elements that have a parameter driven by the given global parameter"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "4bad65ae797d449a8113091f1f58ed39",
+      "Inputs": [
+        {
+          "Id": "aff171889d324af091b7dd7400ad847d",
+          "Name": "",
+          "Description": "Block, dessen Ausgabe angezeigt wird",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "aac291719c5c4c758765d16bec916398",
+          "Name": "",
+          "Description": "Blockausgabe",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualisierung der Ausgabe des Blocks"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "5b9c978f04a7456ca787586c104647f0",
+      "Inputs": [
+        {
+          "Id": "c0087cd137c0414ca257c3138603bd75",
+          "Name": "",
+          "Description": "Block, dessen Ausgabe angezeigt wird",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "74925d1cae404a21bf08d85ec2424179",
+          "Name": "",
+          "Description": "Blockausgabe",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualisierung der Ausgabe des Blocks"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "ecce77dc-1290-438e-a056-970b256fd553",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "e9016c52ffca4472b09e66da91b418b2",
+      "Inputs": [
+        {
+          "Id": "f44c888c4f244086aaacb0aac04177e8",
+          "Name": "passThrough",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "67ed62d7312d4666b952a20d139721f0",
+          "Name": "waitFor",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "9530aac992114a95b4ffc375a8ef9d37",
+          "Name": "passThrough",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Forces a sequential order of execution. The node wired into the output of the Passthrough node will be executed *after* the node wired into the waitFor input (e.g. important for some Revit operations). The value of the passThrough input will be passed on to the node wired into the output port of the Passthrough node."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "b6d63b1d-f893-41a1-91ca-c8a94b0931ad",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "24025b0e665f410596f3fdc58d606b51",
+      "Inputs": [
+        {
+          "Id": "c18510f2b4df43deacaba61424689a53",
+          "Name": "globalParam",
+          "Description": "GlobalParameter[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1e9e3e6522514aa99c897b94d0ba761e",
+          "Name": "formula",
+          "Description": "string[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "01f223c78e6a4703b112abb951b2721f",
+          "Name": "globalParam",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4eb698d2b8e74bb78d1b9d218aa97b6d",
+          "Name": "success",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Sets the formula of a global parameter"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "488d57d923374d1b86ccb647792d2a28",
+      "Inputs": [
+        {
+          "Id": "1946abe9e8e9408a9b38318adae1ef44",
+          "Name": "",
+          "Description": "Block, dessen Ausgabe angezeigt wird",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6ba75cf815fc49a9a414bb9e10d39be1",
+          "Name": "",
+          "Description": "Blockausgabe",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualisierung der Ausgabe des Blocks"
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "2fc77d67-1af0-4a43-aa66-c544d411df04-000693d8",
+        "2fc77d67-1af0-4a43-aa66-c544d411df04-0006945e",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-00076838",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-00076852",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-0007685a",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-0007685b",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-0007685c",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-0007687c",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-0007687d",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-00076884",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-00076885",
+        "0e567bfb-4f86-412b-af6a-7a1cdb731324-0007692f",
+        "96834e54-f091-4317-9b1a-bbe8b647201d-0007b24c",
+        "96834e54-f091-4317-9b1a-bbe8b647201d-0007b938",
+        "89b7d9e7-00a9-45d9-8498-e33a7de65df7-000a7bb9",
+        "89b7d9e7-00a9-45d9-8498-e33a7de65df7-000a7bbb",
+        "35c4319b-4fde-4c5b-9035-66ab717d35a2-000b5e4b",
+        "98e2f96c-ccbd-4abb-a697-e7e5136106ee-000ce9fc",
+        "98e2f96c-ccbd-4abb-a697-e7e5136106ee-000ce9fd",
+        "98e2f96c-ccbd-4abb-a697-e7e5136106ee-000ce9ff",
+        "98e2f96c-ccbd-4abb-a697-e7e5136106ee-000cea0f",
+        "e6ac360b-aaed-4c3b-a130-36b4c2ac9d13-000d1531",
+        "61899441-b6bc-4178-a60a-6f238edde2f4-000e3812",
+        "61899441-b6bc-4178-a60a-6f238edde2f4-000e3813",
+        "61899441-b6bc-4178-a60a-6f238edde2f4-000e3827",
+        "61899441-b6bc-4178-a60a-6f238edde2f4-000e3828",
+        "61899441-b6bc-4178-a60a-6f238edde2f4-000e382b",
+        "61899441-b6bc-4178-a60a-6f238edde2f4-000e382c",
+        "bac06658-19d8-494b-b87a-559081499f8f-000e5309",
+        "bac06658-19d8-494b-b87a-559081499f8f-000e530a",
+        "bac06658-19d8-494b-b87a-559081499f8f-000e530b",
+        "bac06658-19d8-494b-b87a-559081499f8f-000e58bd",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000ee9fe",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea01",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea03",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea04",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea05",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea06",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea19",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea1a",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea1b",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea1c",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea1d",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea1e",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea20",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea27",
+        "ab343b7e-3705-4b87-bacc-33c06a6cee1d-000eea28"
+      ],
+      "Id": "b0000d3e516d4b5ab254c9eeca1d46c8",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "2ffc2d0725974425ba411f8a05df4452",
+          "Name": "Elements",
+          "Description": "Die ausgewählten Elemente",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.CreateList, CoreNodeModels",
+      "VariableInputPorts": true,
+      "NodeType": "ExtensionNode",
+      "Id": "1f92c513305d4723b0400d239106d4ea",
+      "Inputs": [
+        {
+          "Id": "2c13a2468c024afebfd1f010231a9b5a",
+          "Name": "item0",
+          "Description": "Elementindex #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1b5dc51da4204c0fb0a5b5a21982e26b",
+          "Name": "item1",
+          "Description": "Elementindex #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "aae5cf97f8d24ea6a9cd70485dee2c54",
+          "Name": "item2",
+          "Description": "Elementindex #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "36e89c65605e422aab17d931790fc3bb",
+          "Name": "list",
+          "Description": "Eine Liste (type: var[]..[])",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Erstellt eine neue Liste aus den angegebenen Eingaben."
+    },
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "ef4ad1cb-015c-4bb6-9030-e7bb82f1dd34-0006473c"
+      ],
+      "Id": "d24ba0ac57db43fbafbef1f8f59f6e4e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "72f12f6f1b3b40149ad49a2db3ff06be",
+          "Name": "Element",
+          "Description": "Die ausgewählten Elemente",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "8ee9d383-28d8-4784-b11d-cae1d110d9fb",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "2ba0456361874aff89a7ff83a32d0731",
+      "Inputs": [
+        {
+          "Id": "ba7edb4573074e2095971a4e1543ce08",
+          "Name": "element",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "65dc0f59ab3140f7b0149a453b056344",
+          "Name": "param",
+          "Description": "string[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "308068ce8a5f42258d293a3306b13a34",
+          "Name": "globalParam",
+          "Description": "Rückgabewert",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns the global parameter that drives a given parameter of an element"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "904cba3074614b9ab7e3f94d42f9ea2a",
+      "Inputs": [
+        {
+          "Id": "3a59f7b12b1b44b5b8c3daf956849c42",
+          "Name": "",
+          "Description": "Block, dessen Ausgabe angezeigt wird",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d999223c933b44f58980e19f51b14f5a",
+          "Name": "",
+          "Description": "Blockausgabe",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualisierung der Ausgabe des Blocks"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "1d4ed20b00664456a9b4111d5d7e7d32",
+      "End": "2032367901d948e1a6cb4925acfe4cb9",
+      "Id": "aff223831f2049bd911a31ae654e1049"
+    },
+    {
+      "Start": "1d4ed20b00664456a9b4111d5d7e7d32",
+      "End": "2c13a2468c024afebfd1f010231a9b5a",
+      "Id": "efa27b8512d348399f8e806c2678ad09"
+    },
+    {
+      "Start": "1d4ed20b00664456a9b4111d5d7e7d32",
+      "End": "aae5cf97f8d24ea6a9cd70485dee2c54",
+      "Id": "60f8bc12ee7c48c293ef17ab2ca56d06"
+    },
+    {
+      "Start": "532ba2171b30455e857b62abc1a4084a",
+      "End": "2e1fe698440f402998a8b2051df45f06",
+      "Id": "d4ab0e99379e45b9a85097ccf1df9b18"
+    },
+    {
+      "Start": "532ba2171b30455e857b62abc1a4084a",
+      "End": "65dc0f59ab3140f7b0149a453b056344",
+      "Id": "6f86dde6ee8e495b939e9bf46ed1578f"
+    },
+    {
+      "Start": "4bff258d00fc453ab36d6acdb1a5d8b2",
+      "End": "64f8e4d53ebc4e8190833318bf640d72",
+      "Id": "90a8a03dc86d46b3a217784af9bcc2ea"
+    },
+    {
+      "Start": "4bff258d00fc453ab36d6acdb1a5d8b2",
+      "End": "f44c888c4f244086aaacb0aac04177e8",
+      "Id": "e8996086ccb24920a84a3adab1c4bb72"
+    },
+    {
+      "Start": "4bff258d00fc453ab36d6acdb1a5d8b2",
+      "End": "c18510f2b4df43deacaba61424689a53",
+      "Id": "22434ae247f74c13bee0265e364a44d2"
+    },
+    {
+      "Start": "87e5b6f7a9a84504bc706b9ea3bc657a",
+      "End": "eba5b0737d754813a25869bb247c4c33",
+      "Id": "a459d250158c4d67bd2bac0e047fdca8"
+    },
+    {
+      "Start": "c40e7e4e1f324ae4a940afb85821a1a6",
+      "End": "1e9e3e6522514aa99c897b94d0ba761e",
+      "Id": "63282df51dfc4e1695cbb693e45ac612"
+    },
+    {
+      "Start": "fce995e87623499fab54291a884496df",
+      "End": "b43dd1f3cc6a43b7b6c7999911f3d9b9",
+      "Id": "f5d885dae74d49ceaecea7253952639d"
+    },
+    {
+      "Start": "8d067de1d68c4300aef0fee22064d9bc",
+      "End": "aff171889d324af091b7dd7400ad847d",
+      "Id": "61c2fc3812ca4efdb8bb3ed6bbf17648"
+    },
+    {
+      "Start": "74925d1cae404a21bf08d85ec2424179",
+      "End": "67ed62d7312d4666b952a20d139721f0",
+      "Id": "c7a0b7f6e9364bd69f6480ab69c0e8d1"
+    },
+    {
+      "Start": "9530aac992114a95b4ffc375a8ef9d37",
+      "End": "c702a6b9b7a640d494b8f48882e88610",
+      "Id": "f40854c544914d898a072c790a3c1cc0"
+    },
+    {
+      "Start": "01f223c78e6a4703b112abb951b2721f",
+      "End": "c0087cd137c0414ca257c3138603bd75",
+      "Id": "f6ac0d4e44e14fda8603be7571e70fb6"
+    },
+    {
+      "Start": "4eb698d2b8e74bb78d1b9d218aa97b6d",
+      "End": "1946abe9e8e9408a9b38318adae1ef44",
+      "Id": "c05ad173dbc64aec88962f6900d226fd"
+    },
+    {
+      "Start": "36e89c65605e422aab17d931790fc3bb",
+      "End": "ba7edb4573074e2095971a4e1543ce08",
+      "Id": "60b213a50c9449ba8815f73eb3efd183"
+    },
+    {
+      "Start": "72f12f6f1b3b40149ad49a2db3ff06be",
+      "End": "1b5dc51da4204c0fb0a5b5a21982e26b",
+      "Id": "4cae12a3896041639ff1cf0cd6fe9176"
+    },
+    {
+      "Start": "308068ce8a5f42258d293a3306b13a34",
+      "End": "3a59f7b12b1b44b5b8c3daf956849c42",
+      "Id": "b28f63454b9c407490fc2576c8c089e8"
+    },
+    {
+      "Start": "d999223c933b44f58980e19f51b14f5a",
+      "End": "55261ded4a4047d681afccee66fbc01c",
+      "Id": "d949e4c62f0f4165b305c0f61c2ac548"
+    }
+  ],
+  "Dependencies": [
+    "2349b21b-d9b0-4050-8a49-42831e319776",
+    "7555ae16-60bf-4a62-8393-1b4e9903ddbf",
+    "ecce77dc-1290-438e-a056-970b256fd553",
+    "b6d63b1d-f893-41a1-91ca-c8a94b0931ad",
+    "8ee9d383-28d8-4784-b11d-cae1d110d9fb"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "6376976e783a4876adf7d24da341f72b",
+        "5fd12de341d74550a5563b0624b6c7e0",
+        "e9016c52ffca4472b09e66da91b418b2",
+        "24025b0e665f410596f3fdc58d606b51",
+        "2ba0456361874aff89a7ff83a32d0731"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Eigenschaften",
+      "Version": "2.19",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "6.1",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "Keine",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "47d69e9547154abdb26ca92a0180b414",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -210.32541657573603,
+        "Y": 398.78775955288052
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Instance Parameter Name",
+        "Id": "314eec64de9f4396bcef75e579dfda2e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -9.6486556963417343,
+        "Y": 839.14791539010616
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "GlobalParameter.FindByName",
+        "Id": "c695e4a0b133456b946e52704c9f724e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 313.27134114666933,
+        "Y": 920.9671481656012
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Global Parameter Name",
+        "Id": "8d4825227f4d47678f2c3585a7c8f52e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -7.57745631776163,
+        "Y": 919.66859517252874
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Formula Value",
+        "Id": "86c0ca8c88844a489278e766f44c72bb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -1.1620310104347595,
+        "Y": 1002.1849704167695
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "WIP: Element.AssociateWithGlobalParameter",
+        "Id": "5bbeeb5d44b742389facdf6513b8616b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "X": 719.40100878364933,
+        "Y": 231.89884044609028
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "GlobalParameter.Formula",
+        "Id": "6376976e783a4876adf7d24da341f72b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1676.4896021287891,
+        "Y": 919.14346944620172
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "d33d3ad7e4a245fabcf5bbd596a1d597",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1999.4471648495537,
+        "Y": 920.27937619065312
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "GlobalParameter.AffectedElements",
+        "Id": "5fd12de341d74550a5563b0624b6c7e0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1636.4278708505392,
+        "Y": 535.95701628544
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "4bad65ae797d449a8113091f1f58ed39",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1999.0015148600387,
+        "Y": 533.21974651065329
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "5b9c978f04a7456ca787586c104647f0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1021.7388419674799,
+        "Y": 1053.0053620467497
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Passthrough",
+        "Id": "e9016c52ffca4472b09e66da91b418b2",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1311.8460194522565,
+        "Y": 919.91263695008536
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "GlobalParameter.SetFormula",
+        "Id": "24025b0e665f410596f3fdc58d606b51",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 649.73884196747986,
+        "Y": 1186.2053620467498
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "488d57d923374d1b86ccb647792d2a28",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1021.7388419674799,
+        "Y": 1345.4053620467496
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Elements",
+        "Id": "b0000d3e516d4b5ab254c9eeca1d46c8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -123.67535328484962,
+        "Y": 127.99906735563602
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "List Create",
+        "Id": "1f92c513305d4723b0400d239106d4ea",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 64.35785224654046,
+        "Y": 479.77447218805838
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Select Model Element",
+        "Id": "d24ba0ac57db43fbafbef1f8f59f6e4e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -220.87543513260715,
+        "Y": 541.24675303406457
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.AssociatedGlobalParameterByParameter",
+        "Id": "2ba0456361874aff89a7ff83a32d0731",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 780.24597084278366,
+        "Y": 532.73847891068
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "904cba3074614b9ab7e3f94d42f9ea2a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1232.3741940635039,
+        "Y": 533.59900290432483
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "cdac4569b5494124bebf5bbebdd84828",
+        "Title": "GlobalParameter.Formula",
+        "Nodes": [
+          "6376976e783a4876adf7d24da341f72b",
+          "d33d3ad7e4a245fabcf5bbd596a1d597"
+        ],
+        "Left": 1666.4896021287891,
+        "Top": 865.94346944620168,
+        "Width": 552.55756272076451,
+        "Height": 331.73590674445143,
+        "FontSize": 36.0,
+        "InitialTop": 919.14346944620172,
+        "InitialHeight": 146.1359067444514,
+        "TextblockHeight": 43.2,
+        "Background": "#FF48B9FF"
+      },
+      {
+        "Id": "f4a963ed4af34a0ba9b43c4e63bb292d",
+        "Title": "GlobalParameter.AffectedElements",
+        "Nodes": [
+          "5fd12de341d74550a5563b0624b6c7e0",
+          "4bad65ae797d449a8113091f1f58ed39"
+        ],
+        "Left": 1626.4278708505392,
+        "Top": 480.01974651065331,
+        "Width": 592.17364400949941,
+        "Height": 330.59999999999997,
+        "FontSize": 36.0,
+        "InitialTop": 533.21974651065329,
+        "InitialHeight": 147.73726977478668,
+        "TextblockHeight": 43.2,
+        "Background": "#FF48B9FF"
+      },
+      {
+        "Id": "9a488db441e147068c543a442ea08e22",
+        "Title": "GlobalParameter.SetFormula",
+        "Nodes": [
+          "5b9c978f04a7456ca787586c104647f0",
+          "24025b0e665f410596f3fdc58d606b51",
+          "488d57d923374d1b86ccb647792d2a28"
+        ],
+        "Left": 639.73884196747986,
+        "Top": 999.80536204674968,
+        "Width": 601.59999999999991,
+        "Height": 622.99999999999977,
+        "FontSize": 36.0,
+        "InitialTop": 1053.0053620467497,
+        "InitialHeight": 437.39999999999986,
+        "TextblockHeight": 43.2,
+        "Background": "#FFFF7BAC"
+      },
+      {
+        "Id": "96f7a5fe13804e7d836bfe88003f1336",
+        "Title": "INPUTS",
+        "Nodes": [
+          "8d4825227f4d47678f2c3585a7c8f52e",
+          "86c0ca8c88844a489278e766f44c72bb",
+          "314eec64de9f4396bcef75e579dfda2e"
+        ],
+        "Left": -19.648655696341734,
+        "Top": 785.94791539010612,
+        "Width": 250.4,
+        "Height": 284.03705502666344,
+        "FontSize": 36.0,
+        "InitialTop": 839.14791539010616,
+        "InitialHeight": 221.04849284853833,
+        "TextblockHeight": 43.2,
+        "Background": "#FF848484"
+      },
+      {
+        "Id": "c313c122f3ea4fd7b686fdaecdb5bb35",
+        "Title": "Element.AssociatedGlobalParameterByParameter",
+        "Nodes": [
+          "2ba0456361874aff89a7ff83a32d0731",
+          "904cba3074614b9ab7e3f94d42f9ea2a"
+        ],
+        "Left": 770.24597084278366,
+        "Top": 479.53847891068,
+        "Width": 780.40666666666675,
+        "Height": 331.46052399364481,
+        "FontSize": 36.0,
+        "InitialTop": 532.73847891068,
+        "InitialHeight": 145.86052399364482,
+        "TextblockHeight": 43.2,
+        "Background": "#FF48B9FF"
+      }
+    ],
+    "X": 255.98732668208916,
+    "Y": -40.304905662249041,
+    "Zoom": 0.5492610775585729
+  }
+}

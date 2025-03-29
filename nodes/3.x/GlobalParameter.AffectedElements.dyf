@@ -1,0 +1,176 @@
+{
+  "Uuid": "7555ae16-60bf-4a62-8393-1b4e9903ddbf",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns the elements that have a parameter driven by the given global parameter",
+  "Name": "GlobalParameter.AffectedElements",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "GlobalParameter": {
+        "Key": "Revit.Elements.GlobalParameter",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Elements.GlobalParameter": {
+        "Key": "Revit.Elements.GlobalParameter",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetAffectedElements(gp):\r\n\tif hasattr(gp, \"GetAffectedElements\"): \r\n\t\taffected = []\r\n\t\taffected.extend([gp.Document.GetElement(x) for x in gp.GetAffectedElements()])\r\n\t\taffected.extend([gp.Document.GetElement(x) for x in gp.GetAffectedGlobalParameters()])\r\n\t\taffected.extend([gp.Document.GetElement(x) for x in gp.GetLabeledDimensions()])\r\n\t\treturn affected\r\n\telse: return []\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetAffectedElements(x) for x in items]\r\nelse: OUT = GetAffectedElements(items)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "bc868d4e5e104c919f6374b80af45f6a",
+      "Inputs": [
+        {
+          "Id": "bd524bc7777d4b9cb01188bc8f03b127",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "de3bb226e60a41e68e966abf9ab99579",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "globalParam",
+        "TypeName": "Revit.Elements.GlobalParameter",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "6d589ddd758c4548a54fabb989606fef",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "18bd0d8e2f63434095c6988dee3719fc",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "elements",
+      "Id": "df4c861629064f87b49c98aad0c965b7",
+      "Inputs": [
+        {
+          "Id": "e70d301d9d0640cc96d410416e267fd5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "de3bb226e60a41e68e966abf9ab99579",
+      "End": "e70d301d9d0640cc96d410416e267fd5",
+      "Id": "10a0693184c4461a8378c43ad7510a07"
+    },
+    {
+      "Start": "18bd0d8e2f63434095c6988dee3719fc",
+      "End": "bd524bc7777d4b9cb01188bc8f03b127",
+      "Id": "c1de93da49c44220878e754a2cf29cdc"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "bc868d4e5e104c919f6374b80af45f6a",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 390.5,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "6d589ddd758c4548a54fabb989606fef",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -165.5,
+        "Y": 0.0
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "df4c861629064f87b49c98aad0c965b7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 776.9,
+        "Y": 0.0
+      }
+    ],
+    "Annotations": [],
+    "X": 212.79999999999995,
+    "Y": 95.200000000000017,
+    "Zoom": 1.0
+  }
+}
