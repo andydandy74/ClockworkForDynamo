@@ -3,6 +3,7 @@
 # Thanks Dimitar for doing all the hard work for me... ;-)
 
 import clr
+from System.Collections.Generic import *
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
 
@@ -34,7 +35,8 @@ for geom in geometry:
 	try:
 		# create new DS type
 		newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
-		newDStype.SetShape(geom)
+		geomList = List[GeometryObject]([x for x in geom])
+		newDStype.SetShape(geomList)
 		dsLib.AddDefinitionType(names[counter], newDStype.Id)
 		# create new DS instance
 		newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity)
