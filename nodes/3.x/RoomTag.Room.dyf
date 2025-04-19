@@ -12,7 +12,6 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "roomTag",
         "TypeName": "var",
@@ -21,6 +20,7 @@
         "Description": ""
       },
       "Id": "5b87204ce826415a91e9ed26096bf6fe",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -34,14 +34,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "room",
       "Id": "ea33ea057e4745dba59671e0aa31f4de",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "e55f29f5a92e484caf4f6519c80a57f4",
@@ -55,15 +55,15 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef RoomByTag(tag):\r\n\troom = None\r\n\tif hasattr(tag, \"TaggedRoomId\"):\r\n\t\ttrID = tag.TaggedRoomId\r\n\t\tif trID.HostElementId.IntegerValue != -1:\r\n\t\t\troom = doc.GetElement(trID.HostElementId)\r\n\t\telif trID.LinkedElementId.IntegerValue != -1:\r\n\t\t\tlinkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()\r\n\t\t\troom = linkdoc.GetElement(trID.LinkedElementId)\r\n\treturn room\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nroomtags = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [RoomByTag(x) for x in roomtags]\r\nelse: OUT = RoomByTag(roomtags)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef RoomByTag(tag):\r\n    room = None\r\n    if hasattr(tag, \"TaggedRoomId\"):\r\n        trID = tag.TaggedRoomId\r\n        if trID.HostElementId != ElementId.InvalidElementId:\r\n            room = doc.GetElement(trID.HostElementId)\r\n        elif trID.LinkedElementId != ElementId.InvalidElementId:\r\n            linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()\r\n            room = linkdoc.GetElement(trID.LinkedElementId)\r\n    return room\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nroomtags = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [RoomByTag(x) for x in roomtags]\r\nelse: OUT = RoomByTag(roomtags)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "448bb06f125d4ee7902f907d64f55279",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "8ad2a518096b4ded8e96a4a107b023ae",
@@ -87,19 +87,21 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
       "Start": "960b37660c9a45ddb0e7b612963c3917",
       "End": "8ad2a518096b4ded8e96a4a107b023ae",
-      "Id": "97d2ecedc8424d028826ecf7acc4307f"
+      "Id": "97d2ecedc8424d028826ecf7acc4307f",
+      "IsHidden": "False"
     },
     {
       "Start": "f05e8b2a491f4895a60c6df7306cb1a4",
       "End": "e55f29f5a92e484caf4f6519c80a57f4",
-      "Id": "4419efbe18b84ad1a9c30384a897f1a5"
+      "Id": "4419efbe18b84ad1a9c30384a897f1a5",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
@@ -111,12 +113,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.4.1.7055",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -127,34 +129,35 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "5b87204ce826415a91e9ed26096bf6fe",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 168.5,
-        "Y": 61.471273568496507
+        "Y": 61.47127356849651
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "ea33ea057e4745dba59671e0aa31f4de",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 691.5,
-        "Y": 61.471273568496507
+        "Y": 61.47127356849651
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "448bb06f125d4ee7902f907d64f55279",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 467.5,
         "Y": 61.4712735684965
       }

@@ -12,15 +12,15 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 def RoomByTag(tag):
-	room = None
-	if hasattr(tag, "TaggedRoomId"):
-		trID = tag.TaggedRoomId
-		if trID.HostElementId.IntegerValue != -1:
-			room = doc.GetElement(trID.HostElementId)
-		elif trID.LinkedElementId.IntegerValue != -1:
-			linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()
-			room = linkdoc.GetElement(trID.LinkedElementId)
-	return room
+    room = None
+    if hasattr(tag, "TaggedRoomId"):
+        trID = tag.TaggedRoomId
+        if trID.HostElementId != ElementId.InvalidElementId:
+            room = doc.GetElement(trID.HostElementId)
+        elif trID.LinkedElementId != ElementId.InvalidElementId:
+            linkdoc = doc.GetElement(trID.LinkInstanceId).GetLinkDocument()
+            room = linkdoc.GetElement(trID.LinkedElementId)
+    return room
 
 doc = DocumentManager.Instance.CurrentDBDocument
 roomtags = UnwrapElement(IN[0])
