@@ -17,16 +17,25 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetFillPatterns(frt):\r\n\tforeground = None\r\n\tbackground = None\r\n\tif hasattr(frt, \"ForegroundPatternId\"):\r\n\t\tif frt.ForegroundPatternId.IntegerValue > 0:\r\n\t\t\tforeground = frt.Document.GetElement(frt.ForegroundPatternId)\r\n\t\tif frt.BackgroundPatternId.IntegerValue > 0:\r\n\t\t\tbackground = frt.Document.GetElement(frt.BackgroundPatternId)\r\n\telif hasattr(frt, \"FillPatternId\"):\t\r\n\t\tif frt.FillPatternId.IntegerValue > 0:\r\n\t\t\tforeground = frt.Document.GetElement(frt.FillPatternId)\r\n\treturn foreground, background\r\n\r\nfilledregiontypes = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = list(map(list, zip(*[GetFillPatterns(x) for x in filledregiontypes])))\r\nelse: OUT = GetFillPatterns(filledregiontypes)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetFillPatterns(frt):\r\n    foreground = None\r\n    background = None\r\n    if hasattr(frt, \"ForegroundPatternId\"):\r\n        if version > 2024:\r\n            if frt.ForegroundPatternId.Value > 0:\r\n                foreground = frt.Document.GetElement(frt.ForegroundPatternId)\r\n            if frt.BackgroundPatternId.Value > 0:\r\n                background = frt.Document.GetElement(frt.BackgroundPatternId)\r\n        else:\r\n            if frt.ForegroundPatternId.IntegerValue > 0:\r\n                foreground = frt.Document.GetElement(frt.ForegroundPatternId)\r\n            if frt.BackgroundPatternId.IntegerValue > 0:\r\n                background = frt.Document.GetElement(frt.BackgroundPatternId)\r\n    return foreground, background\r\n\r\nfilledregiontypes = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = list(map(list, zip(*[GetFillPatterns(x) for x in filledregiontypes])))\r\nelse: OUT = GetFillPatterns(filledregiontypes)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "9736b5cda68b48c3a4f65bc0fae39b64",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "ad90180768b9430c85e0b744e2d9eba2",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a0514b4986d4425bbcb663583be14950",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -45,11 +54,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "filledRegionType",
         "TypeName": "Revit.Elements.FilledRegionType",
@@ -58,6 +66,7 @@
         "Description": ""
       },
       "Id": "4e0cc0245c8d4cd7b9d02fa8a6e43191",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -71,14 +80,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "foregroundFillPattern",
       "Id": "05e31d2309be48f5937de91d2736ac7c",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "9b21e4a623a9452a808ce73b39266884",
@@ -92,18 +101,17 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Id": "fc2b6832f9cc4f75a1d00ce77272ccbd",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "e1d29b5f1b4a494196a5aa8578e16992",
           "Name": "list",
-          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "Description": "List to get the first item from.\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -114,26 +122,26 @@
         {
           "Id": "ab9f22b7890e43199ebe22536838eeef",
           "Name": "item",
-          "Description": "Das erste Element in der Liste",
+          "Description": "First item in the list.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Replication": "Auto",
-      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Id": "21a3013603bc44cd9d220f318aff56dc",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "a15ccd49cbfd42f6a1304c2b2f517463",
           "Name": "list",
-          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "Description": "List to get the last item of\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -144,22 +152,23 @@
         {
           "Id": "bed2d5020256457fb2cea11a4a4f048b",
           "Name": "item",
-          "Description": "Das letzte Element in der Liste",
+          "Description": "Last item in the list",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Replication": "Auto",
-      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "backgroundFillPattern",
       "Id": "d4df1b824b8e488f9fefc41bd65d3260",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "df19ddc46bbe468c859c685470336362",
@@ -173,38 +182,117 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "Id": "0d59e0629533470591814f7514b28b30",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "88fa0936b45a46e89f8420f2bd15603e",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "db5d61f77b274d85a481f719c3b34898",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "38118147355548aab8002733f805424e",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fda06747fb16406d9fe8dc992cd0a239",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c7acb537d0224f938de7c98186339696",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
     {
       "Start": "8039474d55174eb790c25e1318b98c9e",
       "End": "e1d29b5f1b4a494196a5aa8578e16992",
-      "Id": "d92b9cc7653d45858984d18546394e69"
+      "Id": "d92b9cc7653d45858984d18546394e69",
+      "IsHidden": "False"
     },
     {
       "Start": "8039474d55174eb790c25e1318b98c9e",
       "End": "a15ccd49cbfd42f6a1304c2b2f517463",
-      "Id": "cbf9818e08c84596ad86b0c029b80815"
+      "Id": "cbf9818e08c84596ad86b0c029b80815",
+      "IsHidden": "False"
     },
     {
       "Start": "f8c9a33cbb564c01afae33a8ca0c6574",
       "End": "ad90180768b9430c85e0b744e2d9eba2",
-      "Id": "e52c244fa38c4f1683acfdbd01a97d10"
+      "Id": "e52c244fa38c4f1683acfdbd01a97d10",
+      "IsHidden": "False"
     },
     {
       "Start": "ab9f22b7890e43199ebe22536838eeef",
       "End": "9b21e4a623a9452a808ce73b39266884",
-      "Id": "16d06d124b6a4c83812d42bb9599d564"
+      "Id": "16d06d124b6a4c83812d42bb9599d564",
+      "IsHidden": "False"
     },
     {
       "Start": "bed2d5020256457fb2cea11a4a4f048b",
       "End": "df19ddc46bbe468c859c685470336362",
-      "Id": "3a32b42fe2724150b4c23f04d312f2ba"
+      "Id": "3a32b42fe2724150b4c23f04d312f2ba",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "db5d61f77b274d85a481f719c3b34898",
+      "End": "a0514b4986d4425bbcb663583be14950",
+      "Id": "7699f0c165ce48949b190384d76c7649",
+      "IsHidden": "False"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "0d59e0629533470591814f7514b28b30"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -212,12 +300,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.4.1.7055",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -228,71 +316,82 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "9736b5cda68b48c3a4f65bc0fae39b64",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 455.0,
-        "Y": 137.5
+        "ShowGeometry": true,
+        "X": 443.79999999999995,
+        "Y": 172.25
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "4e0cc0245c8d4cd7b9d02fa8a6e43191",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": -128.00000000000006,
-        "Y": 138.3
+        "ShowGeometry": true,
+        "X": -180.20000000000005,
+        "Y": 98.25
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "05e31d2309be48f5937de91d2736ac7c",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 942.0,
-        "Y": 95.5
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "List.FirstItem",
-        "Id": "fc2b6832f9cc4f75a1d00ce77272ccbd",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 679.0,
-        "Y": 83.5
-      },
-      {
-        "ShowGeometry": true,
-        "Name": "List.LastItem",
-        "Id": "21a3013603bc44cd9d220f318aff56dc",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 679.0,
-        "Y": 191.5
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Output",
-        "Id": "d4df1b824b8e488f9fefc41bd65d3260",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 942.0,
-        "Y": 179.5
+        "ShowGeometry": true,
+        "X": 994.2,
+        "Y": 98.25
+      },
+      {
+        "Id": "fc2b6832f9cc4f75a1d00ce77272ccbd",
+        "Name": "List.FirstItem",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 718.1999999999999,
+        "Y": 98.25
+      },
+      {
+        "Id": "21a3013603bc44cd9d220f318aff56dc",
+        "Name": "List.LastItem",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 718.1999999999999,
+        "Y": 246.25000000000003
+      },
+      {
+        "Id": "d4df1b824b8e488f9fefc41bd65d3260",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 994.2,
+        "Y": 246.25
+      },
+      {
+        "Id": "0d59e0629533470591814f7514b28b30",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": -180.20000000000005,
+        "Y": 246.25000000000003
       }
     ],
     "Annotations": [],
-    "X": -323.4,
-    "Y": 163.0,
+    "X": 83.80000000000007,
+    "Y": 98.99999999999997,
     "Zoom": 1.0
   }
 }
