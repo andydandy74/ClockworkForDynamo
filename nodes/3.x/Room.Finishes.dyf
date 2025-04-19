@@ -83,7 +83,7 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\nversion = IN[1]\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n    formatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n    dispunits = formatoptions.GetUnitTypeId()\r\n    try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n    except: return None\r\n\r\ndef RoomFinishes(item):\r\n    doc = item.Document\r\n    calculator = SpatialElementGeometryCalculator(doc)\r\n    options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n    # get boundary location from area computation settings\r\n    boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n    options.SpatialElementBoundaryLocation = boundloc\r\n    mlist = []\r\n    tlist = []\r\n    elist = []\r\n    alist = []\r\n    flist = []\r\n    try:\r\n        results = calculator.CalculateSpatialElementGeometry(item)\r\n        for face in results.GetGeometry().Faces:\r\n            for bface in results.GetBoundaryFaceInfo(face):\r\n                beface = bface.GetBoundingElementFace()\r\n                if beface:\r\n                    if version > 2024: befaceMatId = beface.MaterialElementId.Value\r\n                    else: befaceMatId = beface.MaterialElementId.IntegerValue\r\n                tlist.append(System.Enum.GetName(SubfaceType, bface.SubfaceType))\r\n                eId = bface.SpatialBoundaryElement.HostElementId\r\n                if eId == ElementId.InvalidElementId:\r\n                    liId = bface.SpatialBoundaryElement.LinkInstanceId\r\n                    if liId == ElementId.InvalidElementId: \r\n                        elist.append(None)\r\n                        mlist.append(None)\r\n                    else:\r\n                        leId = bface.SpatialBoundaryElement.LinkedElementId\r\n                        if leId == ElementId.InvalidElementId: \r\n                            elist.append(None)\r\n                            mlist.append(None)\r\n                        else: \r\n                            elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))\r\n                            if beface:\r\n                                if befaceMatId == -1: mlist.append(None)\r\n                                else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))\r\n                            else: mlist.append(None)\r\n                else: \r\n                    elist.append(doc.GetElement(eId))\r\n                    if beface:\r\n                        if befaceMatId == -1: mlist.append(None)\r\n                        else: mlist.append(doc.GetElement(beface.MaterialElementId))\r\n                    else: mlist.append(None)\r\n                alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))\r\n                flist.append(bface.GetBoundingElementFace())\r\n        return tlist, mlist, alist, flist, elist\r\n    except: return [],[],[],[],[]\r\n\r\nif isinstance(IN[0], list): \r\n    results = [RoomFinishes(x) for x in items]\r\n    OUT = list(zip(*results))\r\nelse: OUT = RoomFinishes(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n    formatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n    dispunits = formatoptions.GetUnitTypeId()\r\n    try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n    except: return None\r\n\r\ndef RoomFinishes(item):\r\n    doc = item.Document\r\n    calculator = SpatialElementGeometryCalculator(doc)\r\n    options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n    # get boundary location from area computation settings\r\n    boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n    options.SpatialElementBoundaryLocation = boundloc\r\n    mlist = []\r\n    tlist = []\r\n    elist = []\r\n    alist = []\r\n    flist = []\r\n    try:\r\n        results = calculator.CalculateSpatialElementGeometry(item)\r\n        for face in results.GetGeometry().Faces:\r\n            for bface in results.GetBoundaryFaceInfo(face):\r\n                beface = bface.GetBoundingElementFace()\r\n                if beface:\r\n                    if version > 2024: befaceMatId = beface.MaterialElementId.Value\r\n                    else: befaceMatId = beface.MaterialElementId.IntegerValue\r\n                tlist.append(System.Enum.GetName(SubfaceType, bface.SubfaceType))\r\n                eId = bface.SpatialBoundaryElement.HostElementId\r\n                if eId == ElementId.InvalidElementId:\r\n                    liId = bface.SpatialBoundaryElement.LinkInstanceId\r\n                    if liId == ElementId.InvalidElementId: \r\n                        elist.append(None)\r\n                        mlist.append(None)\r\n                    else:\r\n                        leId = bface.SpatialBoundaryElement.LinkedElementId\r\n                        if leId == ElementId.InvalidElementId: \r\n                            elist.append(None)\r\n                            mlist.append(None)\r\n                        else: \r\n                            elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))\r\n                            if beface:\r\n                                if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)\r\n                                else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))\r\n                            else: mlist.append(None)\r\n                else: \r\n                    elist.append(doc.GetElement(eId))\r\n                    if beface:\r\n                        if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)\r\n                        else: mlist.append(doc.GetElement(beface.MaterialElementId))\r\n                    else: mlist.append(None)\r\n                alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))\r\n                flist.append(bface.GetBoundingElementFace())\r\n        return tlist, mlist, alist, flist, elist\r\n    except: return [],[],[],[],[]\r\n\r\nif isinstance(IN[0], list): \r\n    results = [RoomFinishes(x) for x in items]\r\n    OUT = list(zip(*results))\r\nelse: OUT = RoomFinishes(items)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
@@ -99,7 +99,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "3f2e4a433e7c44259431297990923205",
+          "Id": "45ac767389e7449b8943f7a0d6ed5845",
           "Name": "IN[1]",
           "Description": "Input #1",
           "UsingDefaultValue": false,
@@ -257,12 +257,12 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
       "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
       "FunctionType": "Graph",
-      "Id": "ddcd60fc5f914a21aa3a2e1988cdba99",
+      "Id": "6932e7d52a6d4ad39732fbbdf9789b86",
       "NodeType": "FunctionNode",
       "Inputs": [],
       "Outputs": [
         {
-          "Id": "9dcf322d0a9c47c0bed92fdce17c1fca",
+          "Id": "c5d884038f8348ef805d5665aee2590a",
           "Name": "Name",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -271,7 +271,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "4028b65d79724f53915d50cc0eb26909",
+          "Id": "089ddc4ebd194c2ab7cd5c2109a7071c",
           "Name": "Version",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -280,7 +280,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "541ac97c148a4f43ae77ccd3f664be6a",
+          "Id": "c0fb4d1bf44b4f928240e2b3bad5b4d6",
           "Name": "Build",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -289,7 +289,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "443d39c8d0bd4fa1ab2876b9c5ef049c",
+          "Id": "5d0160d34c1d408db37684abc216434b",
           "Name": "Language",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -298,7 +298,7 @@
           "KeepListStructure": false
         },
         {
-          "Id": "3ddb6e410b984203b3e74ef4ab016106",
+          "Id": "32f80d529039415d8cd79b3e6b40e792",
           "Name": "fullVersion",
           "Description": "return value",
           "UsingDefaultValue": false,
@@ -355,9 +355,9 @@
       "IsHidden": "False"
     },
     {
-      "Start": "4028b65d79724f53915d50cc0eb26909",
-      "End": "3f2e4a433e7c44259431297990923205",
-      "Id": "d60eba0f6151427780b30fc08409aa9e",
+      "Start": "089ddc4ebd194c2ab7cd5c2109a7071c",
+      "End": "45ac767389e7449b8943f7a0d6ed5845",
+      "Id": "af0b702179824283a11b7bf2d36776de",
       "IsHidden": "False"
     }
   ],
@@ -366,11 +366,10 @@
   ],
   "NodeLibraryDependencies": [
     {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
+      "Name": "Application.Version.dyf",
+      "ReferenceType": "DYFFile",
       "Nodes": [
-        "ddcd60fc5f914a21aa3a2e1988cdba99"
+        "6932e7d52a6d4ad39732fbbdf9789b86"
       ]
     }
   ],
@@ -406,8 +405,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 804.2810987139208,
-        "Y": 252.5338578688062
+        "X": 804.2810987139206,
+        "Y": 252.53385786880614
       },
       {
         "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
@@ -416,8 +415,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 529.8810987139208,
-        "Y": 252.5338578688062
+        "X": 529.8810987139207,
+        "Y": 252.53385786880614
       },
       {
         "Id": "8f049392c9ac4c51a7857e2af3f01dd4",
@@ -426,8 +425,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 212.28109871392076,
-        "Y": 178.53385786880617
+        "X": 212.28109871392064,
+        "Y": 178.53385786880614
       },
       {
         "Id": "89066f81334844c492de5952f1a0394b",
@@ -480,14 +479,14 @@
         "Y": 579.3963578688061
       },
       {
-        "Id": "ddcd60fc5f914a21aa3a2e1988cdba99",
+        "Id": "6932e7d52a6d4ad39732fbbdf9789b86",
         "Name": "Application.Version",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 212.28109871392076,
-        "Y": 326.5338578688062
+        "X": 212.28109871392064,
+        "Y": 326.53385786880614
       }
     ],
     "Annotations": [],

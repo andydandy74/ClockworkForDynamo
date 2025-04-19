@@ -14,8 +14,8 @@ from RevitServices.Persistence import DocumentManager
 doc = DocumentManager.Instance.CurrentDBDocument
 
 items = UnwrapElement(IN[0])
-unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
 version = IN[1]
+unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
 
 def InternalUnitToDisplayUnit(val, unittype):
     formatoptions = doc.GetUnits().GetFormatOptions(unittype)
@@ -58,13 +58,13 @@ def RoomFinishes(item):
                         else: 
                             elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))
                             if beface:
-                                if befaceMatId == -1: mlist.append(None)
+                                if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)
                                 else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))
                             else: mlist.append(None)
                 else: 
                     elist.append(doc.GetElement(eId))
                     if beface:
-                        if befaceMatId == -1: mlist.append(None)
+                        if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)
                         else: mlist.append(doc.GetElement(beface.MaterialElementId))
                     else: mlist.append(None)
                 alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))
