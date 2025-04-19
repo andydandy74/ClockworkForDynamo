@@ -27,9 +27,7 @@ def GetCurtainPanelsByGrid(grid, host):
                     panel = grid.GetPanel(u,v)
                     if hasattr(panel, "FindHostPanel"):
                         hostpanelid = panel.FindHostPanel()
-                        if version > 2024: hpid = hostpanelid.Value
-                        else: hpid = hostpanelid.IntegerValue
-                        if hpid != -1: panel = host.Document.GetElement(hostpanelid)
+                        if hostpanelid != ElementId.InvalidElementId: panel = host.Document.GetElement(hostpanelid)
                     row.append(panel)
                 panels.append(row)
             return panels
@@ -38,16 +36,13 @@ def GetCurtainPanelsByGrid(grid, host):
             for panel in panellist:
                 if hasattr(panel, "FindHostPanel"):
                     hostpanelid = panel.FindHostPanel()
-                    if version > 2024: hpid = hostpanelid.Value
-                    else: hpid = hostpanelid.IntegerValue
-                    if hpid != -1:
+                    if hostpanelid != ElementId.InvalidElementId:
                         panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)
             return [x.ToDSType(True) for x in panellist]
     else: return list()
 
 items = UnwrapElement(IN[0])
 organizeInRows = IN[1]
-version = IN[2]
 
 if isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]
 else: OUT = GetCurtainPanels(items)
