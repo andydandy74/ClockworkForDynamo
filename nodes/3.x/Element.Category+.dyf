@@ -17,7 +17,6 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "element",
         "TypeName": "var",
@@ -26,6 +25,7 @@
         "Description": ""
       },
       "Id": "2e1acfe9550b4433b0ca485276816750",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -39,14 +39,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "category",
       "Id": "4f6ba5ebe7f3472fbca472ef40b1087d",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "27d4fb67a07f447a9865acb191812cbc",
@@ -60,20 +60,29 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n\tif not item: return None, None\r\n\tobjtype = None\r\n\tif hasattr(item, \"GetType\"): objtype = item.GetType().ToString()\r\n\treturnID = None\r\n\treturnIDs = None\r\n\treturnCat = None\r\n\treturnBic = None\r\n\tif objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n\telif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n\telif objtype == \"Revit.Application.Document\":\r\n\t\tif item.IsFamilyDocument: \r\n\t\t\tclr.AddReference(\"RevitServices\")\r\n\t\t\timport RevitServices\r\n\t\t\tfrom RevitServices.Persistence import DocumentManager\r\n\t\t\treturnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n\telif objtype == \"Autodesk.Revit.DB.Category\": \r\n\t\tif item.Parent: returnID = item.Parent.Id\r\n\telif hasattr(item, \"Category\"): \r\n\t\tif item.Category: returnID = item.Category.Id\r\n\tif returnID:\r\n\t\treturnBic = System.Enum.GetName(BuiltInCategory, returnID.IntegerValue)\r\n\t\ttry: returnCat =  Revit.Elements.Category.ById(returnID.IntegerValue)\r\n\t\texcept: pass\r\n\telif returnIDs:\r\n\t\treturnCat = []\r\n\t\treturnBic = []\r\n\t\tfor returnID in returnIDs:\r\n\t\t\treturnBic.append(System.Enum.GetName(BuiltInCategory, returnID.IntegerValue))\r\n\t\t\ttry: returnCat.append(Revit.Elements.Category.ById(returnID.IntegerValue))\r\n\t\t\texcept: returnCat.append(None)\r\n\t\treturnCat.sort()\r\n\treturn returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): \r\n\tif len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n\telse: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n    if not item: return None, None\r\n    objtype = None\r\n    if hasattr(item, \"GetType\"): objtype = item.GetType().ToString()\r\n    returnID = None\r\n    returnIDs = None\r\n    returnCat = None\r\n    returnBic = None\r\n    if objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n    elif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n    elif objtype == \"Revit.Application.Document\":\r\n        if item.IsFamilyDocument: \r\n            clr.AddReference(\"RevitServices\")\r\n            import RevitServices\r\n            from RevitServices.Persistence import DocumentManager\r\n            returnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Category\": \r\n        if item.Parent: returnID = item.Parent.Id\r\n    elif hasattr(item, \"Category\"): \r\n        if item.Category: returnID = item.Category.Id\r\n    if returnID:\r\n        if version > 2024: returnIDval = returnID.Value\r\n        else: returnIDval = returnID.IntegerValue\r\n        returnBic = System.Enum.GetName(BuiltInCategory, returnIDval)\r\n        try: returnCat =  Revit.Elements.Category.ById(returnIDval)\r\n        except: pass\r\n    elif returnIDs:\r\n        returnCat = []\r\n        returnBic = []\r\n        for returnID in returnIDs:\r\n            if version > 2024: returnIDval = returnID.Value\r\n            else: returnIDval = returnID.IntegerValue\r\n            returnBic.append(System.Enum.GetName(BuiltInCategory, returnIDval))\r\n            try: returnCat.append(Revit.Elements.Category.ById(returnIDval))\r\n            except: returnCat.append(None)\r\n        returnCat.sort()\r\n    return returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): \r\n    if len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n    else: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "594e8fdda69b4a96b94209ae703c2bfd",
           "Name": "IN[0]",
           "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7e5daade273643b98272ada18097c9d8",
+          "Name": "IN[1]",
+          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -92,18 +101,17 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Id": "5cbbb185d77a4c84a31c692f0fcaf9e2",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "2fd91b584183440eb62b0a857d3331e6",
           "Name": "list",
-          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "Description": "List to get the first item from.\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -114,26 +122,26 @@
         {
           "Id": "a625348d25584499b921546d0c279849",
           "Name": "item",
-          "Description": "Das erste Element in der Liste",
+          "Description": "First item in the list.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Replication": "Auto",
-      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Id": "d66964871d4240ccb2b7d68c0ac1f156",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "0a33950b47734ca69cc53024a43869b4",
           "Name": "list",
-          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "Description": "List to get the last item of\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -144,22 +152,23 @@
         {
           "Id": "5aab4c13819741aa9345d2236384900e",
           "Name": "item",
-          "Description": "Das letzte Element in der Liste",
+          "Description": "Last item in the list",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Replication": "Auto",
-      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "builtInCategory",
       "Id": "7c1dd5750b754dd9b6687157478a53de",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "d7ecdd8a1f8946ea9208a3cc9a0127e5",
@@ -173,38 +182,117 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "Id": "abada29cab074b468a0b8b6ebb3bd2e2",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4951dd426f4a4186960451539d985930",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f735726472194b1685f0ae90f8a796d4",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "234cfa0ba10c4a2b93c20b69a6b93731",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "d588cf39925c483a806be12373a6ad1c",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "48565df0a68f43919f6b694f77496c15",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
     {
       "Start": "58d61cc7b9d2439ab054d3919b0a8021",
       "End": "594e8fdda69b4a96b94209ae703c2bfd",
-      "Id": "d4b18b57dfd54fa085bf35536590f76b"
+      "Id": "d4b18b57dfd54fa085bf35536590f76b",
+      "IsHidden": "False"
     },
     {
       "Start": "452f3978bf874032b352c320d87ccbc9",
       "End": "2fd91b584183440eb62b0a857d3331e6",
-      "Id": "fdfc8900cec34a0f80180f35a62b0035"
+      "Id": "fdfc8900cec34a0f80180f35a62b0035",
+      "IsHidden": "False"
     },
     {
       "Start": "452f3978bf874032b352c320d87ccbc9",
       "End": "0a33950b47734ca69cc53024a43869b4",
-      "Id": "d0a1e3f9b8134dbd83268fef2a479f46"
+      "Id": "d0a1e3f9b8134dbd83268fef2a479f46",
+      "IsHidden": "False"
     },
     {
       "Start": "a625348d25584499b921546d0c279849",
       "End": "27d4fb67a07f447a9865acb191812cbc",
-      "Id": "b49bc8a39afc432693b505f76dc38b54"
+      "Id": "b49bc8a39afc432693b505f76dc38b54",
+      "IsHidden": "False"
     },
     {
       "Start": "5aab4c13819741aa9345d2236384900e",
       "End": "d7ecdd8a1f8946ea9208a3cc9a0127e5",
-      "Id": "769973f896894f2db63fb27de5d290c7"
+      "Id": "769973f896894f2db63fb27de5d290c7",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "f735726472194b1685f0ae90f8a796d4",
+      "End": "7e5daade273643b98272ada18097c9d8",
+      "Id": "8798a22bf15a436a86f18204e851171d",
+      "IsHidden": "False"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "abada29cab074b468a0b8b6ebb3bd2e2"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -212,12 +300,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.4.1.7055",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -228,71 +316,82 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
         "Id": "2e1acfe9550b4433b0ca485276816750",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Input",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 166.96111159012298,
-        "Y": 152.49251352081069
+        "ShowGeometry": true,
+        "X": 86.52892165571404,
+        "Y": 127.08264336001923
       },
       {
         "Id": "4f6ba5ebe7f3472fbca472ef40b1087d",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 928.526940728171,
-        "Y": 96.755830073002372
+        "ShowGeometry": true,
+        "X": 971.328921655714,
+        "Y": 127.08264336001926
       },
       {
         "Id": "b4b979ee8b544c808efd2356bf9eec69",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Python Script",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 444.961111590123,
-        "Y": 152.49251352081069
+        "ShowGeometry": true,
+        "X": 420.928921655714,
+        "Y": 201.08264336001923
       },
       {
         "Id": "5cbbb185d77a4c84a31c692f0fcaf9e2",
+        "Name": "List.FirstItem",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "List.FirstItem",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 668.961111590123,
-        "Y": 97.492513520810718
+        "ShowGeometry": true,
+        "X": 695.328921655714,
+        "Y": 127.08264336001925
       },
       {
         "Id": "d66964871d4240ccb2b7d68c0ac1f156",
+        "Name": "List.LastItem",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "List.LastItem",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 668.961111590123,
-        "Y": 207.49251352081069
+        "ShowGeometry": true,
+        "X": 695.328921655714,
+        "Y": 275.08264336001923
       },
       {
         "Id": "7c1dd5750b754dd9b6687157478a53de",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
-        "Name": "Output",
-        "ShowGeometry": true,
         "Excluded": false,
-        "X": 919.94151357329065,
-        "Y": 208.22919696861891
+        "ShowGeometry": true,
+        "X": 971.328921655714,
+        "Y": 275.08264336001923
+      },
+      {
+        "Id": "abada29cab074b468a0b8b6ebb3bd2e2",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 86.52892165571404,
+        "Y": 275.08264336001923
       }
     ],
     "Annotations": [],
-    "X": -132.82123694723,
-    "Y": 274.905717891621,
-    "Zoom": 0.931811528498331
+    "X": -29.777338883111724,
+    "Y": 284.4461897112285,
+    "Zoom": 0.7843693280448272
   }
 }
