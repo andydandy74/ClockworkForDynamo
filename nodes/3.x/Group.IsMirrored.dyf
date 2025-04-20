@@ -12,11 +12,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nrefGroupType = refgroup.GroupType.Id.IntegerValue\r\nfor member in refGroupMembers:\r\n\telem = refgroup.Document.GetElement(member)\r\n\tif elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n\t\tstate = elem.Mirrored\r\n\t\tmembernum = counter\r\n\t\tfamtype = elem.GetTypeId().IntegerValue\r\n\t\tbreak\r\n\tcounter += 1\r\n\t\r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n\tbools = []\r\n\t# Compare Mirrored state with corresponding members of other group instances\r\n\tfor group in groups:\r\n\t\t# Get number of group members\r\n\t\ttheseMembers = group.GetMemberIds()\r\n\t\ttheseMembersNum = len(theseMembers)\r\n\t\t# Set a flag if any group instance has more members than the reference group instance\r\n\t\t# (only if both are of the same group type)\r\n\t\tif theseMembersNum > numMembers and refGroupType == group.GroupType.Id.IntegerValue:\r\n\t\t\trefGroupIntact = False\r\n\t\t\tbreak\r\n\t\t# Return null if group is of another group type\r\n\t\telif refGroupType != group.GroupType.Id.IntegerValue: bools.append(None)\r\n\t\t# Return null for group instances with excluded members\r\n\t\telif theseMembersNum < numMembers: bools.append(None)\r\n\t\t# Return null if family instance to compare if of a diffent type\r\n\t\telif group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue != famtype: bools.append(None)\r\n\t\t# Otherwise compare Mirrored state\r\n\t\telse: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n\t\t\t\r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n\t\r\nOUT = bools",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\nversion = IN[2]\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nif version > 2024: refGroupType = refgroup.GroupType.Id.Value\r\nelse: refGroupType = refgroup.GroupType.Id.IntegerValue\r\nfor member in refGroupMembers:\r\n    elem = refgroup.Document.GetElement(member)\r\n    if elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n        state = elem.Mirrored\r\n        membernum = counter\r\n        if version > 2024: famtype = elem.GetTypeId().Value\r\n        else: famtype = elem.GetTypeId().IntegerValue\r\n        break\r\n    counter += 1\r\n    \r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n    bools = []\r\n    # Compare Mirrored state with corresponding members of other group instances\r\n    for group in groups:\r\n        # Get number of group members\r\n        theseMembers = group.GetMemberIds()\r\n        theseMembersNum = len(theseMembers)\r\n        # get IDs for comparison\r\n        if version > 2024: \r\n            gtid = group.GroupType.Id.Value\r\n            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().Value\r\n        else: \r\n            gtid = group.GroupType.Id.IntegerValue\r\n            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue\r\n        # Set a flag if any group instance has more members than the reference group instance\r\n        # (only if both are of the same group type)\r\n        if theseMembersNum > numMembers and refGroupType == gtid:\r\n            refGroupIntact = False\r\n            break\r\n        # Return null if group is of another group type\r\n        elif refGroupType != gtid: bools.append(None)\r\n        # Return null for group instances with excluded members\r\n        elif theseMembersNum < numMembers: bools.append(None)\r\n        # Return null if family instance to compare if of a diffent type\r\n        elif ftypeid != famtype: bools.append(None)\r\n        # Otherwise compare Mirrored state\r\n        else: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n            \r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n    \r\nOUT = bools",
       "Engine": "CPython3",
       "VariableInputPorts": true,
       "Id": "8ea9b94c81574310a87ff9d3e02a3649",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "9faa31f755cf4d828f2ec88acb3c7304",
@@ -35,6 +35,15 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
+        },
+        {
+          "Id": "d376a02a29554108abe51d3c1329e236",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -49,11 +58,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "referenceGroup",
         "TypeName": "var",
@@ -62,6 +70,7 @@
         "Description": ""
       },
       "Id": "3f0ac3ecd63f4f40971bcfcaf7ebba5e",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -75,11 +84,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "groupsToCheck",
         "TypeName": "var",
@@ -88,6 +96,7 @@
         "Description": ""
       },
       "Id": "eb6d1c779dac4bd28a9e9f35500bf40c",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -101,14 +110,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "bool",
       "Id": "a8c846c2b30c46cba1887d3198bfd6fb",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "83437c1518074158b3665f0ba09fddc0",
@@ -122,28 +131,105 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "Id": "958c95470e2a43ad9df238d724969d16",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b220ab33143944dab33bb5c9d3ed0634",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4caa31b015e1413494b2066ac1bd149b",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4dc6e15dcaa143248db2733c32d954a9",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "00f4f4ef59334f4da653f6d20351f8c4",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "91224a75016f4724a6db852b7439dee4",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
     {
       "Start": "0108eb44d35044a9ba0a2614fe6c44a7",
       "End": "83437c1518074158b3665f0ba09fddc0",
-      "Id": "8586f312966344fcbb4419a32e3c68bc"
+      "Id": "8586f312966344fcbb4419a32e3c68bc",
+      "IsHidden": "False"
     },
     {
       "Start": "5902668f1e3d416e8cbad59a21d92a01",
       "End": "9faa31f755cf4d828f2ec88acb3c7304",
-      "Id": "e88f3bf990ca45598bf8bbf2e5d9e250"
+      "Id": "e88f3bf990ca45598bf8bbf2e5d9e250",
+      "IsHidden": "False"
     },
     {
       "Start": "57bc1aef79bf41dea42862cd58614c78",
       "End": "f2538c8d09f347e08caa760dd67b6149",
-      "Id": "5db8c33eb1924480b087d849ba63498e"
+      "Id": "5db8c33eb1924480b087d849ba63498e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4caa31b015e1413494b2066ac1bd149b",
+      "End": "d376a02a29554108abe51d3c1329e236",
+      "Id": "8ee49959d0e942af881364098e72aa86",
+      "IsHidden": "False"
     }
   ],
-  "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "958c95470e2a43ad9df238d724969d16"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -151,12 +237,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.4.1.7055",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -167,51 +253,62 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "8ea9b94c81574310a87ff9d3e02a3649",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 358.58468337958686,
-        "Y": 49.5
+        "ShowGeometry": true,
+        "X": 361.08468337958686,
+        "Y": 107.53055286677358
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "3f0ac3ecd63f4f40971bcfcaf7ebba5e",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "X": 63.584683379586863,
-        "Y": 20.5
-      },
-      {
-        "ShowGeometry": true,
         "Name": "Input",
-        "Id": "eb6d1c779dac4bd28a9e9f35500bf40c",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 63.584683379586863,
-        "Y": 104.5
+        "ShowGeometry": true,
+        "X": 10.684683379586886,
+        "Y": -17.469447133226424
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
-        "Id": "a8c846c2b30c46cba1887d3198bfd6fb",
+        "Id": "eb6d1c779dac4bd28a9e9f35500bf40c",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 582.58468337958686,
-        "Y": 49.5
+        "ShowGeometry": true,
+        "X": 10.684683379586886,
+        "Y": 130.53055286677358
+      },
+      {
+        "Id": "a8c846c2b30c46cba1887d3198bfd6fb",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 635.4846833795868,
+        "Y": 107.53055286677358
+      },
+      {
+        "Id": "958c95470e2a43ad9df238d724969d16",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 10.684683379586886,
+        "Y": 277.5305528667736
       }
     ],
     "Annotations": [],
     "X": 177.11097354159955,
     "Y": 241.73125888747091,
-    "Zoom": 0.99794472220559149
+    "Zoom": 0.9979447222055915
   }
 }
