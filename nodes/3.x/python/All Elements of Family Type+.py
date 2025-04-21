@@ -8,15 +8,19 @@ import RevitServices
 from RevitServices.Persistence import DocumentManager
 
 def InstancesOfFamilyType(ft, doc):
-	collector = FilteredElementCollector(doc)
-	try:
-		bic = System.Enum.ToObject(BuiltInCategory, ft.Category.Id.IntegerValue)
-		collector.OfCategory(bic)
-		return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == ft.Id.IntegerValue]
-	except: return []
+    collector = FilteredElementCollector(doc)
+    try:
+        if version > 2024: ftCat = ft.Category.Id.Value
+        else: ftCat = ft.Category.Id.IntegerValue
+        bic = System.Enum.ToObject(BuiltInCategory, ftCat)
+        collector.OfCategory(bic)
+        if version > 2024: return [x for x in collector.ToElements() if x.GetTypeId().Value == ft.Id.Value]
+        else: return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == ft.Id.IntegerValue]
+    except: return []
 
 famtypes = UnwrapElement(IN[0])
 inputdoc = UnwrapElement(IN[2])
+version = IN[3]
 if not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance": doc = inputdoc.GetLinkDocument()
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document": doc = inputdoc
