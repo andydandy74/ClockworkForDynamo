@@ -27,23 +27,23 @@ dsLib = DirectShapeLibrary.GetDirectShapeLibrary(doc)
 
 TransactionManager.Instance.EnsureInTransaction(doc)
 for geom in geometry:
-	# delete old DS type if the name already exists
-	if dsLib.ContainsType(names[counter]):
-		old_type = dsLib.FindDefinitionType(names[counter])
-		try: doc.Delete(old_type)
-		except: pass
-	try:
-		# create new DS type
-		newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
-		geomList = List[GeometryObject]([x for x in geom])
-		newDStype.SetShape(geomList)
-		dsLib.AddDefinitionType(names[counter], newDStype.Id)
-		# create new DS instance
-		newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity)
-		newDS.SetTypeId(newDStype.Id)
-		elementlist.append(newDS)
-	except: elementlist.append(None)
-	counter += 1
+        # delete old DS type if the name already exists
+        if dsLib.ContainsType(names[counter]):
+                old_type = dsLib.FindDefinitionType(names[counter])
+                try: doc.Delete(old_type)
+                except: pass
+        try:
+                # create new DS type
+                newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)
+                geomList = List[GeometryObject]([x for x in geom])
+                newDStype.SetShape(geomList)
+                dsLib.AddDefinitionType(names[counter], newDStype.Id)
+                # create new DS instance
+                newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity)
+                newDS.SetTypeId(newDStype.Id)
+                elementlist.append(newDS)
+        except: elementlist.append(None)
+        counter += 1
 TransactionManager.Instance.TransactionTaskDone()
 
 OUT = elementlist
