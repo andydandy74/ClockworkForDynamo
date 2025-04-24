@@ -48,7 +48,7 @@ while iterator.MoveNext():
     for cat in iterator.Current.Categories:
         i = 0
         if version > 2024: catID = cat.Id.Value
-        else: cat.Id.IntegerValue
+        else: catID = cat.Id.IntegerValue
         for search_id in search_ids:
             if catID == search_id:
                 names[i].append(iterator.Key.Name)
