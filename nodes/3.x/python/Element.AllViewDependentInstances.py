@@ -6,7 +6,7 @@ from Autodesk.Revit.DB import *
 def GetAllInstancesInView(item, view):
     collector = FilteredElementCollector(item.Document)
     if version > 2024: catID = item.Category.Id.Value
-    else: item.Category.Id.IntegerValue
+    else: catID = item.Category.Id.IntegerValue
     bic = System.Enum.ToObject(BuiltInCategory, catID)
     viewfilter = ElementOwnerViewFilter(view.Id)
     collector.WherePasses(viewfilter).OfCategory(bic)
