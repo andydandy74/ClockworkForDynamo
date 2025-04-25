@@ -39,6 +39,9 @@ def GetLocation(item):
 	curveloop = None
 	# template for return statements:
 	# return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
+	# FabricationConfiguration objects will produce an error further down if we don't exit here
+	if hasattr(item, "AncillaryExists"):
+		return point, curveendpoints, curve, ispoint, iscurve, haslocation, rotationangle, hasrotation, iscurveloop, curveloop
 	# points and text notes
 	if hasattr(item, "Coord"): 
 		return item.Coord.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
@@ -59,13 +62,19 @@ def GetLocation(item):
 		return point, curveendpoints, curve, ispoint, iscurve, True, rotationangle, hasrotation, True, footprint
 	# grids, dimensions and boundary segments
 	elif hasattr(item, "Curve"): 
-		return point, GetCurvePoints(item.Curve), item.Curve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+		tempcurve = item.Curve
+		if not tempcurve.IsBound: tempcurve.MakeBound(0,1) 
+		return point, GetCurvePoints(tempcurve), tempcurve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop 
 	# curtain grid lines
 	elif hasattr(item, "FullCurve"): 
-		return point, GetCurvePoints(item.FullCurve), item.FullCurve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+		tempcurve = item.FullCurve
+		if not tempcurve.IsBound: tempcurve.MakeBound(0,1) 
+		return point, GetCurvePoints(tempcurve), tempcurve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
 	# curves
 	elif hasattr(item, "GetEndpoint"): 
-		return point, GetCurvePoints(item), item.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+		tempcurve = item
+		if not tempcurve.IsBound: tempcurve.MakeBound(0,1) 
+		return point, GetCurvePoints(tempcurve), tempcurve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
 	# railings and top rails
 	elif hasattr(item, "GetPath"):
 		railpath = []
@@ -111,15 +120,18 @@ def GetLocation(item):
 		if loc:
 			# line-based elements (e.g. walls)
 			if loc.ToString() == 'Autodesk.Revit.DB.LocationCurve':
-				#loc.Curve.ToProtoType()
-				try: return point, GetCurvePoints(loc.Curve), loc.Curve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
+				tempcurve = loc.Curve
+				if not tempcurve.IsBound: tempcurve.MakeBound(0,1) 
+				try: return point, GetCurvePoints(tempcurve), tempcurve.ToProtoType(), ispoint, True, True, rotationangle, hasrotation, iscurveloop, curveloop
 				# return super short curves as startpoint instead
 				except: return GetCurvePoints(loc.Curve)[0], curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
 			# point-based elements (e.g. most loadable families)
 			elif loc.ToString() == 'Autodesk.Revit.DB.LocationPoint':
-				if hasattr(loc, "Rotation"):
-					rotationangle = math.degrees(loc.Rotation)
-					hasrotation = True
+				try:
+					if hasattr(loc, "Rotation"):
+						rotationangle = math.degrees(loc.Rotation)
+						hasrotation = True
+				except: pass
 				return loc.Point.ToPoint(), curveendpoints, curve, True, iscurve, True, rotationangle, hasrotation, iscurveloop, curveloop
 			# some elements have a location property but don't return curves or points
 			else:
