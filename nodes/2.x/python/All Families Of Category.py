@@ -19,7 +19,7 @@ items = collector.ToElements()
 
 def ReturnIfCategory(items, cat):
 	if cat: return [x for x in items if x.FamilyCategory.Id.IntegerValue == cat.Id.IntegerValue]
- 	else: return []
+	else: return []
 
 if isinstance(cats, list): OUT = [ReturnIfCategory(items, x) for x in cats]
 else: OUT = ReturnIfCategory(items, cats)
