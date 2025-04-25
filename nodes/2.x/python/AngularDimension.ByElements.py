@@ -38,18 +38,3 @@ def CreateAngularDimension(view, items, arc, dimtype):
 TransactionManager.Instance.EnsureInTransaction(doc)
 OUT = [CreateAngularDimension(view, x, y, dimtype) for x, y in zip(items, arcs)]
 TransactionManager.Instance.TransactionTaskDone()
-
-"""
-TransactionManager.Instance.EnsureInTransaction(doc)
-curvearray = CurveArray()
-for curve in curves:
-	curvearray.Append(curve.ToRevitType())
-doccreation = doc.Create
-separatorarray = doccreation.NewRoomBoundaryLines(sketchplane, curvearray, view)
-TransactionManager.Instance.TransactionTaskDone()
-
-elementlist = list()
-for item in separatorarray:
-	elementlist.append(item)
-OUT = elementlist
-"""
