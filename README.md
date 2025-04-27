@@ -1,7 +1,7 @@
 ![Maintained](https://img.shields.io/badge/Maintained-yes-brightgreen.svg) 
 [![Current version](https://img.shields.io/github/v/release/andydandy74/ClockworkForDynamo?label=Current%20version&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/releases)
-![2.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F2.x?type=file&label=2.x%20node%20count&color=brightgreen) 
 ![3.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F3.x?type=file&label=3.x%20node%20count&color=brightgreen) 
+![2.x node count](https://img.shields.io/github/directory-file-count/andydandy74/ClockworkForDynamo/nodes%2F2.x?type=file&label=2.x%20node%20count&color=brightgreen) 
 [![Open issues](https://img.shields.io/github/issues-raw/andydandy74/ClockworkForDynamo?label=Open%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aopen+is%3Aissue)
 [![Closed issues](https://img.shields.io/github/issues-closed-raw/andydandy74/ClockworkForDynamo?label=Closed%20issues&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/issues?q=is%3Aissue+is%3Aclosed)
 [![Commits since last release](https://img.shields.io/github/commits-since/andydandy74/ClockworkForDynamo/latest?label=Commits%20since%20last%20release&color=brightgreen)](https://github.com/andydandy74/ClockworkForDynamo/commits/master/)
@@ -16,18 +16,17 @@
 # Installation
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. Make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo. 
 
-As of **Revit 2023** you will also need to install the package **"DynamoIronPython2.7"** (also from the package manager):
-- Revit **2023/24**: Install version **2.5** of that package
-- Revit **2025**: Install version **3.2** of that package
+- Clockwork for Dynamo **2.x**: As of **Revit 2023** you will also need to install the package **"DynamoIronPython2.7"** (also from the package manager):
+   - Revit **2023/24**: Install version **2.5** of that package
+   - Revit **2025**: Install version **3.2** of that package
+- Clockwork for Dynamo **3.x**: Runs on CPython - **no extra package needed**
 
 # Versions
 The different versions are available as separate packages on the Dynamo package manager.
 
-**There is a 3.x package in development but until then the 2.x package should also run in Revit 2025.**
-
 Package name | Supported | Last version | Revit versions | Change log | Docs | Repository | Deprecated nodes | Samples
 -- | -- | -- | -- | -- | -- | -- | -- | --
-Clockwork for Dynamo **3.x** | :white_check_mark: | not yet released | 2022+ | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/3.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/3.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/3.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-3x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/3.x)
+Clockwork for Dynamo **3.x** | :white_check_mark: | 3.3.0 | 2022+ | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/3.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/3.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/3.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-3x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/3.x)
 Clockwork for Dynamo **2.x** | :white_check_mark: | 2.12.3 | 2017-25 | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/2.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/2.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/2.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-2x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/2.x)
 Clockwork for Dynamo **1.x** | :x: | 1.34.0 | 2015-19 | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/1.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/1.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-1x) | [Samples](https://github.com/andydandy74/ClockworkForDynamo/tree/master/package_samples/1.x)
 Clockwork for Dynamo **0.9.x** | :x: | 0.90.8 | 2015-17 | [Changes](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.9.x-Version-History) | [Docs](https://github.com/andydandy74/ClockworkForDynamo/wiki/0.9.x-Node-Documentation) | [Repo](https://github.com/andydandy74/ClockworkForDynamo/tree/master/nodes/0.9.x) | [Deprecation](https://github.com/andydandy74/ClockworkForDynamo/wiki/Deprecated-Nodes-&-Packages#clockwork-for-dynamo-09x)
