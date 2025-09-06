@@ -24,7 +24,8 @@ def GetFilterRuleString(efilter, doc):
     if "And" in efilterstr: sep = " AND "
     elif "Or" in efilterstr: sep = " OR "
     else: sep = ""
-    filters = efilter.GetFilters()
+    if hasattr(efilter, "GetFilters"): filters = efilter.GetFilters()
+    else: filters = [efilter]
     for filter in filters:
         if hasattr(filter, "GetRules"):
             for rule in filter.GetRules():
@@ -67,4 +68,4 @@ def GetFilterRuleString(efilter, doc):
     return sep.join(rulestrings)
 
 if isinstance(IN[0], list): OUT = [GetFilterRuleString(x.GetElementFilter(), x.Document) for x in items]
-else: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)    
+else: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)
