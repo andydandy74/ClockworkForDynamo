@@ -18,6 +18,9 @@ def GetName(item):
     elif utype == "Revit.Application.Document": 
         if unwrapped.FilePath: return System.IO.Path.GetFileName(unwrapped.FilePath)
         else: return None
+    elif unwrapped.GetType().ToString() == "Autodesk.Revit.DB.Document": 
+        if unwrapped.PathName: return System.IO.Path.GetFileName(unwrapped.PathName)
+        else: return None
     elif utype == ("Autodesk.Revit.DB.ForgeTypeId"): 
         try: return LabelUtils.GetLabelForSpec(unwrapped)
         except: 
