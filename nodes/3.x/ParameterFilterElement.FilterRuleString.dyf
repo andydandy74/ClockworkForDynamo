@@ -17,8 +17,9 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n    try: \r\n        if version > 2024: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)\r\n        else: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n    except: pass\r\n        \r\ndef GetFilterRuleString(efilter, doc):\r\n    rulestrings = []\r\n    # Filters without rules will arrive as nulls:\r\n    if not efilter: return '<<<No rules defined>>>'\r\n    efilterstr = efilter.ToString()        \r\n    if \"And\" in efilterstr: sep = \" AND \"\r\n    elif \"Or\" in efilterstr: sep = \" OR \"\r\n    else: sep = \"\"\r\n    if hasattr(efilter, \"GetFilters\"): filters = efilter.GetFilters()\r\n    else: filters = [efilter]\r\n    for filter in filters:\r\n        if hasattr(filter, \"GetRules\"):\r\n            for rule in filter.GetRules():\r\n                useRule = True\r\n                # inverted rules\r\n                ruleInverted = \"\"\r\n                if hasattr(rule, \"GetInnerRule\"): \r\n                    rule = rule.GetInnerRule()\r\n                    ruleInverted = \"Not\"\r\n                # rule parameters\r\n                paramId = rule.GetRuleParameter()\r\n                thisparam = doc.GetElement(paramId)\r\n                if thisparam: thisparam = thisparam.Name\r\n                elif paramId != ElementId.InvalidElementId: \r\n                    if version > 2024: thisparam = bips[paramId.Value]\r\n                    else: thisparam = bips[paramId.IntegerValue]\r\n                # discard the rule if the parameter name cannot be resolved\r\n                else: useRule = False\r\n                # rule evaluators\r\n                if hasattr(rule, \"GetEvaluator\"):\r\n                    thiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n                    thiseval = thiseval.replace(\"Numeric\",\"\")\r\n                    thiseval = thiseval.replace(\"String\",\"\")\r\n                    thiseval = thiseval + ruleInverted\r\n                    if thiseval == \"Equals\": thiseval = \"==\"\r\n                    elif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n                    elif thiseval == \"Greater\": thiseval = \">\"\r\n                    elif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n                    elif thiseval == \"Less\": thiseval = \"<\"\r\n                    elif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n                elif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n                else: thiseval = \"\"\r\n                # rule values\r\n                if hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n                elif hasattr(rule, \"RuleValue\"): thisval = str(rule.RuleValue)\r\n                else: thisval = \"\"\r\n                if useRule: rulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n        else: rulestrings.append(\"(\" + GetFilterRuleString(filter, doc)+ \")\")\r\n    rulestrings.sort()\r\n    return sep.join(rulestrings)\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleString(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)\r\n",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n    try: \r\n        if version > 2024: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)\r\n        else: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n    except: pass\r\n        \r\ndef GetFilterRuleString(efilter, doc):\r\n    rulestrings = []\r\n    # Filters without rules will arrive as nulls:\r\n    if not efilter: return '<<<No rules defined>>>'\r\n    efilterstr = efilter.ToString()        \r\n    if \"And\" in efilterstr: sep = \" AND \"\r\n    elif \"Or\" in efilterstr: sep = \" OR \"\r\n    else: sep = \"\"\r\n    if hasattr(efilter, \"GetFilters\"): filters = efilter.GetFilters()\r\n    else: filters = [efilter]\r\n    for filter in filters:\r\n        if hasattr(filter, \"GetRules\"):\r\n            for rule in filter.GetRules():\r\n                useRule = True\r\n                # inverted rules\r\n                ruleInverted = \"\"\r\n                if hasattr(rule, \"GetInnerRule\"): \r\n                    rule = rule.GetInnerRule()\r\n                    ruleInverted = \"Not\"\r\n                # rule parameters\r\n                paramId = rule.GetRuleParameter()\r\n                thisparam = doc.GetElement(paramId)\r\n                if thisparam: thisparam = thisparam.Name\r\n                elif paramId != ElementId.InvalidElementId: \r\n                    if version > 2024: thisparam = bips[paramId.Value]\r\n                    else: thisparam = bips[paramId.IntegerValue]\r\n                # discard the rule if the parameter name cannot be resolved\r\n                else: useRule = False\r\n                # rule evaluators\r\n                if hasattr(rule, \"GetEvaluator\"):\r\n                    thiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n                    thiseval = thiseval.replace(\"Numeric\",\"\")\r\n                    thiseval = thiseval.replace(\"String\",\"\")\r\n                    thiseval = thiseval + ruleInverted\r\n                    if thiseval == \"Equals\": thiseval = \"==\"\r\n                    elif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n                    elif thiseval == \"Greater\": thiseval = \">\"\r\n                    elif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n                    elif thiseval == \"Less\": thiseval = \"<\"\r\n                    elif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n                # rules without comparators\r\n                elif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n                elif rule.GetType().Name == \"HasValueFilterRule\": thiseval = \"HasValue\"\r\n                elif rule.GetType().Name == \"HasNoValueFilterRule\": thiseval = \"HasNoValue\"\r\n                else: thiseval = \"\"\r\n                # rule values\r\n                if hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n                elif hasattr(rule, \"RuleValue\"): thisval = str(rule.RuleValue)\r\n                else: thisval = \"\"\r\n                if useRule: rulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n        else: rulestrings.append(\"(\" + GetFilterRuleString(filter, doc)+ \")\")\r\n    rulestrings.sort()\r\n    return sep.join(rulestrings)\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleString(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)\r\n",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "452c5f22012d48239833da816a48d186",
       "NodeType": "PythonScriptNode",
@@ -201,7 +202,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.3.0.6316",
+      "Version": "2.19.3.6394",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -237,7 +238,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": -156.77681872011988,
-        "Y": -86.29659609731844
+        "Y": -86.296596097318442
       },
       {
         "Id": "4ac7848f69254375b85ae5c0f3491cc6",
@@ -246,7 +247,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 820.0231812798801,
+        "X": 820.02318127988008,
         "Y": -12.296596097318442
       },
       {
@@ -257,12 +258,12 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": -156.77681872011988,
-        "Y": 61.70340390268156
+        "Y": 61.703403902681558
       }
     ],
     "Annotations": [],
-    "X": 187.1132250778901,
-    "Y": 314.27622788203286,
-    "Zoom": 0.9374322966860011
+    "X": -511.86332216026466,
+    "Y": 113.58694858194349,
+    "Zoom": 1.4596225598868591
   }
 }

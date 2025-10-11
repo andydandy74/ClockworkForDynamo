@@ -56,7 +56,10 @@ def GetFilterRuleString(efilter, doc):
                     elif thiseval == "GreaterOrEqual": thiseval = ">="
                     elif thiseval == "Less": thiseval = "<"
                     elif thiseval == "LessOrEqual": thiseval = "<="
+                # rules without comparators
                 elif hasattr(rule, "ParameterName"): thiseval = "Exists"
+                elif rule.GetType().Name == "HasValueFilterRule": thiseval = "HasValue"
+                elif rule.GetType().Name == "HasNoValueFilterRule": thiseval = "HasNoValue"
                 else: thiseval = ""
                 # rule values
                 if hasattr(rule, "RuleString"): thisval = rule.RuleString
