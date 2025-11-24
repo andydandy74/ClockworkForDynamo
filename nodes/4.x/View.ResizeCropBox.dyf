@@ -1,0 +1,339 @@
+{
+  "Uuid": "64a4fe31-b2f1-452a-8b9d-69dd81bc588d",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Views.Actions",
+  "Description": "Resizes the bounding box of a given Revit element by the specified amount in X, Y and Z direction. May need to be used in conjunction with a Transaction node.",
+  "Name": "View.ResizeCropBox",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Autodesk.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "Autodesk.DesignScript.Geometry.Point": {
+        "Key": "Autodesk.DesignScript.Geometry.Point",
+        "Value": "ProtoGeometry.dll"
+      },
+      "View": {
+        "Key": "Revit.Elements.Views.View",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "amt",
+        "TypeName": "double",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "edaf9b72508f4e35a8cdacefe7bc2c1e",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "04690c1cf6e547bf83ab5c3206ee976e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "view",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "585a7471478d4484973fb2689064144b",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "81676e4ed58e48c487c0d243f3ced1e3",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "view",
+      "Id": "73bac2d8b3194f94b962745484a0821c",
+      "Inputs": [
+        {
+          "Id": "5ae7dfaf1de94834959683c6d99e8b61",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nviews = UnwrapElement(IN[0])\r\nmargins = IN[1]\r\n\r\ndef ResizeCropbox(view, marginD):\r\n\ttry:\r\n\t\tmargin = marginD.ToXyz()\r\n\t\tnewbox = BoundingBoxXYZ()\r\n\t\tnewbox.Max = view.CropBox.Max.Add(margin)\r\n\t\tnewbox.Min = view.CropBox.Min.Subtract(margin)\r\n\t\tview.CropBox = newbox\r\n\t\treturn True\r\n\texcept: return False\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[1], list): OUT = [ResizeCropbox(x, y) for x, y in zip(views, margins)]\r\n\telse: OUT = [ResizeCropbox(x, margins) for x in views]\r\nelse:\r\n\tif isinstance(IN[0], list): OUT = ResizeCropbox(views, margins[0])\r\n\telse: OUT = ResizeCropbox(views, margins)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "80cb025487a94a668f1fe17003055bb6",
+      "Inputs": [
+        {
+          "Id": "0c02a469e5a746c798fb0393b6da9aa2",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "87c24fa274cd49cfb52ff70c55a4732a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "51415c4ac9c74747b5f8576c4171ed9e",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double",
+      "Id": "d5d7f931579644a09a2e7d39ba109288",
+      "Inputs": [
+        {
+          "Id": "a5af06cba55446fc82bf2ade027fbae8",
+          "Name": "x",
+          "Description": "X coordinate\n\ndouble\nVorgabewert : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "54f28eeccb4148a489bb7acfceff5979",
+          "Name": "y",
+          "Description": "Y coordinate\n\ndouble\nVorgabewert : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fbeca4cd61d24cdba54179798e1ae978",
+          "Name": "z",
+          "Description": "Z coordinate\n\ndouble\nVorgabewert : 0",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e5749df5faf746528476c31cd0180cc5",
+          "Name": "Point",
+          "Description": "Point created by coordinates",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Legt einen Punkt nach Angabe dreier kartesischer Koordinaten fest.\n\nPoint.ByCoordinates (x: double = 0, y: double = 0, z: double = 0): Point"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "dcbdf1405e07482eb71b0852d6b64404",
+      "Inputs": [
+        {
+          "Id": "17bb4e82d8a641e29db948304703d542",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "04690c1cf6e547bf83ab5c3206ee976e",
+      "End": "a5af06cba55446fc82bf2ade027fbae8",
+      "Id": "73112ec2c0eb4fc0975ea7deb243ccf6"
+    },
+    {
+      "Start": "04690c1cf6e547bf83ab5c3206ee976e",
+      "End": "54f28eeccb4148a489bb7acfceff5979",
+      "Id": "a1b5b8664c164090b72b220802c6e672"
+    },
+    {
+      "Start": "04690c1cf6e547bf83ab5c3206ee976e",
+      "End": "fbeca4cd61d24cdba54179798e1ae978",
+      "Id": "d7d276ebc2c74ba28138724de48e7463"
+    },
+    {
+      "Start": "81676e4ed58e48c487c0d243f3ced1e3",
+      "End": "0c02a469e5a746c798fb0393b6da9aa2",
+      "Id": "bc049778ed524b4eabea668216a7603e"
+    },
+    {
+      "Start": "81676e4ed58e48c487c0d243f3ced1e3",
+      "End": "5ae7dfaf1de94834959683c6d99e8b61",
+      "Id": "9d524ce2a6ed457ca5caf2ad16ef86bc"
+    },
+    {
+      "Start": "51415c4ac9c74747b5f8576c4171ed9e",
+      "End": "17bb4e82d8a641e29db948304703d542",
+      "Id": "38c0a4b5b518403c931d1ebcf29ee2d7"
+    },
+    {
+      "Start": "e5749df5faf746528476c31cd0180cc5",
+      "End": "87c24fa274cd49cfb52ff70c55a4732a",
+      "Id": "3267434c7865414a85c786d624ed51d5"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "edaf9b72508f4e35a8cdacefe7bc2c1e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 341.36270484406811,
+        "Y": 208.60970552104698
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "585a7471478d4484973fb2689064144b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 633.362704844068,
+        "Y": 98.609705521046976
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "73bac2d8b3194f94b962745484a0821c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1134.162704844068,
+        "Y": 64.609705521046976
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "80cb025487a94a668f1fe17003055bb6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 909.362704844068,
+        "Y": 148.60970552104698
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Point.ByCoordinates",
+        "Id": "d5d7f931579644a09a2e7d39ba109288",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 633.362704844068,
+        "Y": 182.60970552104698
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "dcbdf1405e07482eb71b0852d6b64404",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1134.162704844068,
+        "Y": 148.60970552104698
+      }
+    ],
+    "Annotations": [],
+    "X": -41.675633689386132,
+    "Y": 218.992497291854,
+    "Zoom": 0.69633839166103062
+  }
+}

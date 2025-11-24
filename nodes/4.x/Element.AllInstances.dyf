@@ -1,0 +1,263 @@
+{
+  "Uuid": "10c454dc-4094-4466-846e-16746ea0b2f3",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Retrieves all instances of a given element",
+  "Name": "Element.AllInstances",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetAllInstances(item):\r\n    collector = FilteredElementCollector(item.Document)\r\n    if version > 2024: catID = item.Category.Id.Value\r\n    else: catID = item.Category.Id.IntegerValue\r\n    bic = System.Enum.ToObject(BuiltInCategory, catID)\r\n    collector.OfCategory(bic)\r\n    # This is a workaround\r\n    # because I was too lazy to learn\r\n    # how to implement LINQ in Python\r\n    if version > 2024: return [x for x in collector.ToElements() if x.GetTypeId().Value == item.GetTypeId().Value]\r\n    else: return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == item.GetTypeId().IntegerValue]\r\n\r\nelements = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = [GetAllInstances(x) for x in elements]\r\nelse: OUT = GetAllInstances(elements)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "e6677cac8a4644e895b1a356863cfe53",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "7d1d8ca0d9834423b4836337b77b1828",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0e457757c86a40108df9a6f72060f35b",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "7ada5a87a58f464dbea2a5e8fd2c0297",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "e4c88eec724c4052aef84d9cf22cefd9",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "dc02572800074da792f1128d18cb852e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "elements",
+      "Id": "896e74bcdec74abe949cc48718aad496",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "cab067386690418db85c81b7526bd366",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "Id": "616243f9532b49f2a51f556733292e2f",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c9df889f677f40cf9acb9eb8944f2711",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "fb74d5a69cd0405696c3005fa39dc57a",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "31368e4aefc0419aa3e5e15348e85146",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ea28b6762b614670acf161d6d8e9a834",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "82b7012b2db241539943534f757d40c8",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7ada5a87a58f464dbea2a5e8fd2c0297",
+      "End": "cab067386690418db85c81b7526bd366",
+      "Id": "dbeaa41cf32547289bc9fda3fa4488fa",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "dc02572800074da792f1128d18cb852e",
+      "End": "7d1d8ca0d9834423b4836337b77b1828",
+      "Id": "75820afa8797451f98915da231061e0e",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "fb74d5a69cd0405696c3005fa39dc57a",
+      "End": "0e457757c86a40108df9a6f72060f35b",
+      "Id": "77597ca3b06648fd9989a012585f0687",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "616243f9532b49f2a51f556733292e2f"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "e6677cac8a4644e895b1a356863cfe53",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 473.1057156834915,
+        "Y": 112.88053809763795
+      },
+      {
+        "Id": "e4c88eec724c4052aef84d9cf22cefd9",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 138.70571568349152,
+        "Y": 38.88053809763795
+      },
+      {
+        "Id": "896e74bcdec74abe949cc48718aad496",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 747.5057156834914,
+        "Y": 112.88053809763795
+      },
+      {
+        "Id": "616243f9532b49f2a51f556733292e2f",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 138.70571568349152,
+        "Y": 186.88053809763798
+      }
+    ],
+    "Annotations": [],
+    "X": -63.80000000000007,
+    "Y": 236.79999999999995,
+    "Zoom": 1.0
+  }
+}

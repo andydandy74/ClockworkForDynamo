@@ -1,0 +1,263 @@
+{
+  "Uuid": "23a94b80-4bd0-436f-a1b1-f77654b4428c",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets an element's level",
+  "Name": "Element.Level",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "87f38510c9e94c958119d85d995c924f",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "61ab4402a62147668abdb064b7a94cb9",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "level",
+      "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "6fa62d29a8e64d2d9ea23156b2ce6efd",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetLevel(item):\r\n    val = None\r\n    if item:\r\n        # some elements have an empty Category property\r\n        try: \r\n            if version > 2024: catID = item.Category.Id.Value\r\n            else: catID = item.Category.Id.IntegerValue\r\n        except: catID = None\r\n        # check all the different types of level properties...\r\n        if hasattr(item, \"LevelId\"): \r\n            val = item.Document.GetElement(item.LevelId)\r\n            if val: return val\r\n        if hasattr(item, \"Level\"):\r\n            val = item.Level\r\n            if val: return val\r\n        if hasattr(item, \"GenLevel\"):\r\n            val = item.GenLevel\r\n            if val: return val\r\n        if (item.GetType().ToString() in (\"Autodesk.Revit.DB.Architecture.StairsRun\", \"Autodesk.Revit.DB.Architecture.StairsLanding\")):\r\n            item = item.GetStairs()\r\n        if (item.GetType().ToString() == \"Autodesk.Revit.DB.Architecture.Stairs\" or catID == int(BuiltInCategory.OST_Ramps)):\r\n            try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.STAIRS_BASE_LEVEL_PARAM).AsElementId())\r\n            except: pass\r\n        if (item.GetType().ToString() == \"Autodesk.Revit.DB.ExtrusionRoof\"):\r\n            try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.ROOF_CONSTRAINT_LEVEL_PARAM).AsElementId())\r\n            except: pass\r\n        if not val:\r\n            try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM).AsElementId())\r\n            except: \r\n                try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_SCHEDULE_ONLY_LEVEL_PARAM).AsElementId())\r\n                except: \r\n                    try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.SCHEDULE_LEVEL_PARAM).AsElementId())\r\n                    except: return None\r\n        else: return None\r\n    else: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = [GetLevel(x) for x in items]\r\nelse: OUT = GetLevel(items)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "d9ae8178d1ff4cd095b3f733ccb20bc8",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "35ca943f8aec4b1e87eda548766846d3",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "aaa67707b9ba4a46a20a0ff59c0d492f",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "922effbe2cda4b53b290bc7414e34859",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "Id": "8f432fa85f3b40e38d02b2fb4fd10ad6",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "392ed4a717d54193b7c024b4ffd2b4a0",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "64980317b1c64652b952f54eae9c0b00",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "818f8ef590674fbe8c2f2f888a76b7d8",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5bc4449389734e4c9f86a3d0eebb9aa2",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a913c9ff868b42f7ba43431bc7e3a5dd",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "61ab4402a62147668abdb064b7a94cb9",
+      "End": "35ca943f8aec4b1e87eda548766846d3",
+      "Id": "89269ce4af6740769b7cdb9f139109f8",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "922effbe2cda4b53b290bc7414e34859",
+      "End": "6fa62d29a8e64d2d9ea23156b2ce6efd",
+      "Id": "ac572566d6e64ac280aae29c8a6e3f89",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "64980317b1c64652b952f54eae9c0b00",
+      "End": "aaa67707b9ba4a46a20a0ff59c0d492f",
+      "Id": "97a152f19ff14a1885fdf3db12aeab7f",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Clockwork for Dynamo 2.x",
+      "Version": "2.12.2",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "8f432fa85f3b40e38d02b2fb4fd10ad6"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "87f38510c9e94c958119d85d995c924f",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 52.74907962080255,
+        "Y": 161.08614746393158
+      },
+      {
+        "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 661.5490796208026,
+        "Y": 235.0861474639316
+      },
+      {
+        "Id": "d9ae8178d1ff4cd095b3f733ccb20bc8",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 387.1490796208025,
+        "Y": 235.0861474639316
+      },
+      {
+        "Id": "8f432fa85f3b40e38d02b2fb4fd10ad6",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 52.74907962080255,
+        "Y": 309.08614746393164
+      }
+    ],
+    "Annotations": [],
+    "X": 311.8714277589486,
+    "Y": 175.4034133207839,
+    "Zoom": 0.8131456821730988
+  }
+}

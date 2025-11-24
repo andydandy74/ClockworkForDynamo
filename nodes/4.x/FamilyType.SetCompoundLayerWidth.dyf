@@ -1,0 +1,308 @@
+{
+  "Uuid": "87aadcb7-060d-4c8d-9d34-b2833bf9be21",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Actions",
+  "Description": "Sets the width of a specified compound layer of a given family type (only applies to family types that have a compound structure, e.g. walls, floors etc.).",
+  "Name": "FamilyType.SetCompoundLayerWidth",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Material": {
+        "Key": "Revit.Elements.Material",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "familyType",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "39f0db56b83b45219452fce2d5a9a999",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "b0466962bd0a40b1a66893310094107e",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "layerIndex",
+        "TypeName": "int",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "2261d2f9744348ba89c5e201afe01e60",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "9b9037ed6993409aa5f47e29bcfe12c1",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "width",
+        "TypeName": "double",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "d1e25a3898cb476bba92bf66a14276e1",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c74e941ed50e4f7eabcdf0428b477464",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "familyType",
+      "Id": "0fea45250ae24c88b88b699d131e7f7c",
+      "Inputs": [
+        {
+          "Id": "82bb72703eca4bf9bf6500fd32de2fbe",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "success",
+      "Id": "81c10a1a62ca4f699413d8b9bc8e4351",
+      "Inputs": [
+        {
+          "Id": "22d31a39e4d946999d8bb0819cffb2f5",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DisplayUnitToInternalUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertToInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef SetCompoundLayerWidth(famtype, index, width):\r\n\ttry:\r\n\t\tcs = famtype.GetCompoundStructure()\r\n\t\tcs.SetLayerWidth(index, DisplayUnitToInternalUnit(width, unittype))\r\n\t\tfamtype.SetCompoundStructure(cs)\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfamtypes = UnwrapElement(IN[0])\r\nindices = IN[1]\r\nwidths = IN[2]\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,z) for x,y,z in zip(famtypes, indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,y) for x,y in zip(famtypes, widths)]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,widths) for x,y in zip(famtypes, indices)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,widths) for x in famtypes]\r\nelse:\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,y) for x,y in zip(indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(famtypes,indices,x) for x in widths]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,widths) for x in indices]\r\n\t\telse: OUT = SetCompoundLayerWidth(famtypes,indices,widths)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "3e7f8c28575f44b388a40646f9c22474",
+      "Inputs": [
+        {
+          "Id": "3c55959cb6b64dd6a331c60e2c2f546f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c9365d07732a4cf8a1687bdbb5ac05f4",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1eee87dc1b7f45fc862ab0a210f8e4d3",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "6e16b58f7ad54af99c8c330b8db1bfef",
+          "Name": "OUT",
+          "Description": "Ergebnis des Python-Skripts",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "b0466962bd0a40b1a66893310094107e",
+      "End": "3c55959cb6b64dd6a331c60e2c2f546f",
+      "Id": "6e104fe86eb840948947b4a3569c4f7c"
+    },
+    {
+      "Start": "b0466962bd0a40b1a66893310094107e",
+      "End": "82bb72703eca4bf9bf6500fd32de2fbe",
+      "Id": "d77f08fd29564ce5a29f6a68125297d6"
+    },
+    {
+      "Start": "9b9037ed6993409aa5f47e29bcfe12c1",
+      "End": "c9365d07732a4cf8a1687bdbb5ac05f4",
+      "Id": "db99e62227ec44b0bdd3f9091bb4f345"
+    },
+    {
+      "Start": "c74e941ed50e4f7eabcdf0428b477464",
+      "End": "1eee87dc1b7f45fc862ab0a210f8e4d3",
+      "Id": "3a7666b0f1e34ee8bd60f56c46e4591a"
+    },
+    {
+      "Start": "6e16b58f7ad54af99c8c330b8db1bfef",
+      "End": "22d31a39e4d946999d8bb0819cffb2f5",
+      "Id": "1bf92c29b82c49f4919f8e67fb15f311"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "39f0db56b83b45219452fce2d5a9a999",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 790.0133385193742,
+        "Y": -307.08994307635209
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "2261d2f9744348ba89c5e201afe01e60",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 790.0133385193742,
+        "Y": -224.08994307635209
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "d1e25a3898cb476bba92bf66a14276e1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 790.0133385193742,
+        "Y": -140.08994307635209
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "0fea45250ae24c88b88b699d131e7f7c",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1340.4133385193743,
+        "Y": -288.08994307635209
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "81c10a1a62ca4f699413d8b9bc8e4351",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1340.4133385193743,
+        "Y": -204.08994307635209
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "3e7f8c28575f44b388a40646f9c22474",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1115.6133385193743,
+        "Y": -204.08994307635209
+      }
+    ],
+    "Annotations": [],
+    "X": -727.31612907172189,
+    "Y": 465.939628112019,
+    "Zoom": 0.83822339756855557
+  }
+}

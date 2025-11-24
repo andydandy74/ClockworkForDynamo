@@ -1,0 +1,167 @@
+{
+  "Uuid": "73663744-6035-41f3-b386-e6f91e0b36fe",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Gets an element's host. Unlike the OOTB node FamilyInstance.GetHost it not only works for family instances but also for elements like wall sweeps, foundations, railings, builing pads, toposolid subdivisions and toposurface subregions.",
+  "Name": "Element.Host+",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetHost(item):\r\n\t# standard\r\n\tif hasattr(item, \"Host\"): return item.Host\r\n\t# Wall sweeps\r\n\telif hasattr(item, \"GetHostIds\"): return [item.Document.GetElement(x) for x in item.GetHostIds()]\r\n\t# Wall foundations\r\n\telif hasattr(item, \"WallId\"): return item.Document.GetElement(item.WallId)\r\n\t# railings, building pads\r\n\telif hasattr(item, \"HostId\"): return item.Document.GetElement(item.HostId)\r\n\t# topo subregions\r\n\telif hasattr(item, \"AsSiteSubRegion\"): return item.Document.GetElement(item.AsSiteSubRegion().HostId)\t\r\n\t# topo solids\r\n\telif hasattr(item, \"HostTopoId\"): return item.Document.GetElement(item.HostTopoId)\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetHost(x) for x in items]\r\nelse: OUT = GetHost(items)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "fb5310e215e64829a0fe2a0d3031b367",
+      "Inputs": [
+        {
+          "Id": "9bed7900d4c94229996eafb314171fe7",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "ba19bc2f855e4bac9535ea9a822d41c0",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Führt ein eingebettetes Python-Skript aus."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "NodeType": "InputNode",
+      "Parameter": {
+        "Name": "element",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "87f38510c9e94c958119d85d995c924f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f12b7b7cbd4f414f9a33688a1371bf50",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "NodeType": "OutputNode",
+      "ElementResolver": null,
+      "Symbol": "host",
+      "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+      "Inputs": [
+        {
+          "Id": "a3c482bb9fd14ec99fb9affe29e9864a",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "ba19bc2f855e4bac9535ea9a822d41c0",
+      "End": "a3c482bb9fd14ec99fb9affe29e9864a",
+      "Id": "3b26248ece7c4603b1be282cb31102b7"
+    },
+    {
+      "Start": "f12b7b7cbd4f414f9a33688a1371bf50",
+      "End": "9bed7900d4c94229996eafb314171fe7",
+      "Id": "1eca12066e3a48528c7e4aba6af8cbda"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.12.1.8246",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Hintergrundvorschau",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Python Script",
+        "Id": "fb5310e215e64829a0fe2a0d3031b367",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 334.118717039716,
+        "Y": 117.37326080268177
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Input",
+        "Id": "87f38510c9e94c958119d85d995c924f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -26.157954434702106,
+        "Y": 116.30982455901254
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Output",
+        "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 558.118717039716,
+        "Y": 118.436697046351
+      }
+    ],
+    "Annotations": [],
+    "X": 218.504254333145,
+    "Y": 215.871150113066,
+    "Zoom": 0.752278291023545
+  }
+}

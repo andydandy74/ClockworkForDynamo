@@ -1,0 +1,497 @@
+{
+  "Uuid": "8051cdeb-d98d-48d0-9f88-99c83b70303a",
+  "IsCustomNode": true,
+  "Category": "Clockwork.Revit.Elements.Query",
+  "Description": "Returns all room bounding faces and their materials",
+  "Name": "Room.Finishes",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Math": {
+        "Key": "DSCore.Math",
+        "Value": "DSCoreNodes.dll"
+      }
+    }
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "Id": "18abd14639e44dbdafa14f759404231a",
+      "NodeType": "CodeBlockNode",
+      "Inputs": [
+        {
+          "Id": "5e6cbea7476e4b3f823893704327c13f",
+          "Name": "seq",
+          "Description": "seq",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d3ff3b380bfa49e495d8c7e2ed7fd095",
+          "Name": "",
+          "Description": "Value of expression at line 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "ca991bb8feb94f5eb76966556f813c88",
+          "Name": "",
+          "Description": "Value of expression at line 2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "9d609a1dcd504c42b7530714b5d33276",
+          "Name": "",
+          "Description": "Value of expression at line 3",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7b9561ae8b47484e95da93a00b3b0929",
+          "Name": "",
+          "Description": "Value of expression at line 4",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "135eac1861f44b34aff98cd5f29217e5",
+          "Name": "",
+          "Description": "Value of expression at line 5",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Allows for DesignScript code to be authored directly",
+      "Code": "seq[0];\nseq[1];\nseq[2];\nseq[3];\nseq[4];"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n    formatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n    dispunits = formatoptions.GetUnitTypeId()\r\n    try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n    except: return None\r\n\r\ndef RoomFinishes(item):\r\n    doc = item.Document\r\n    calculator = SpatialElementGeometryCalculator(doc)\r\n    options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n    # get boundary location from area computation settings\r\n    boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n    options.SpatialElementBoundaryLocation = boundloc\r\n    mlist = []\r\n    tlist = []\r\n    elist = []\r\n    alist = []\r\n    flist = []\r\n    try:\r\n        results = calculator.CalculateSpatialElementGeometry(item)\r\n        for face in results.GetGeometry().Faces:\r\n            for bface in results.GetBoundaryFaceInfo(face):\r\n                beface = bface.GetBoundingElementFace()\r\n                if beface:\r\n                    if version > 2024: befaceMatId = beface.MaterialElementId.Value\r\n                    else: befaceMatId = beface.MaterialElementId.IntegerValue\r\n                tlist.append(System.Enum.GetName(SubfaceType, bface.SubfaceType))\r\n                eId = bface.SpatialBoundaryElement.HostElementId\r\n                if eId == ElementId.InvalidElementId:\r\n                    liId = bface.SpatialBoundaryElement.LinkInstanceId\r\n                    if liId == ElementId.InvalidElementId: \r\n                        elist.append(None)\r\n                        mlist.append(None)\r\n                    else:\r\n                        leId = bface.SpatialBoundaryElement.LinkedElementId\r\n                        if leId == ElementId.InvalidElementId: \r\n                            elist.append(None)\r\n                            mlist.append(None)\r\n                        else: \r\n                            elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))\r\n                            if beface:\r\n                                if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)\r\n                                else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))\r\n                            else: mlist.append(None)\r\n                else: \r\n                    elist.append(doc.GetElement(eId))\r\n                    if beface:\r\n                        if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)\r\n                        else: mlist.append(doc.GetElement(beface.MaterialElementId))\r\n                    else: mlist.append(None)\r\n                alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))\r\n                flist.append(bface.GetBoundingElementFace())\r\n        return tlist, mlist, alist, flist, elist\r\n    except: return [],[],[],[],[]\r\n\r\nif isinstance(IN[0], list): \r\n    results = [RoomFinishes(x) for x in items]\r\n    OUT = list(zip(*results))\r\nelse: OUT = RoomFinishes(items)",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "34ca07f47e0c44b2b2f89e6f6b807e32",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "45ac767389e7449b8943f7a0d6ed5845",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "dd97ef1c04e846f98f1a7ef4519a031e",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
+      "Parameter": {
+        "Name": "room",
+        "TypeName": "var",
+        "TypeRank": -1,
+        "DefaultValue": null,
+        "Description": ""
+      },
+      "Id": "8f049392c9ac4c51a7857e2af3f01dd4",
+      "NodeType": "InputNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "4670ddcc858f4c1aa8f66ade6f8cdc2a",
+          "Name": "",
+          "Description": "Symbol",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "finishMaterials",
+      "Id": "89066f81334844c492de5952f1a0394b",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "a95f90082b9b4d32b35bcc5529a4de4b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "areas",
+      "Id": "1c352004b7f2429fa3f1bf4a2e67c1d9",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "e27f6e1d07e54b138218109fde962e6b",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "faceTypes",
+      "Id": "391a1fff6c904d879181b95a185d53ce",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "c9b057c23c564935ac44a0b27534e173",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "revitFaces",
+      "Id": "40f059761d5f4c35be6d0af2667e485a",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "5389b718abee422fac9e3d832faab999",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
+      "ElementResolver": null,
+      "Symbol": "elements",
+      "Id": "22e4bd1ebd684d1da32d5922ab6ff551",
+      "NodeType": "OutputNode",
+      "Inputs": [
+        {
+          "Id": "7259ca55f04f4c369a5e4eb78c98457e",
+          "Name": "",
+          "Description": "",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [],
+      "Replication": "Disabled",
+      "Description": "A function output, use with custom nodes"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
+      "FunctionType": "Graph",
+      "Id": "6932e7d52a6d4ad39732fbbdf9789b86",
+      "NodeType": "FunctionNode",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "c5d884038f8348ef805d5665aee2590a",
+          "Name": "Name",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "089ddc4ebd194c2ab7cd5c2109a7071c",
+          "Name": "Version",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c0fb4d1bf44b4f928240e2b3bad5b4d6",
+          "Name": "Build",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "5d0160d34c1d408db37684abc216434b",
+          "Name": "Language",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "32f80d529039415d8cd79b3e6b40e792",
+          "Name": "fullVersion",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retrieves the name, version and build of the current Revit application."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "d3ff3b380bfa49e495d8c7e2ed7fd095",
+      "End": "c9b057c23c564935ac44a0b27534e173",
+      "Id": "47aaeb4319994fa7a820782cbe73af53",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "ca991bb8feb94f5eb76966556f813c88",
+      "End": "a95f90082b9b4d32b35bcc5529a4de4b",
+      "Id": "bc157f99598f4990a2648cf902db7a2a",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "9d609a1dcd504c42b7530714b5d33276",
+      "End": "e27f6e1d07e54b138218109fde962e6b",
+      "Id": "21c1052a208647f9b3a2cf52dc27a9da",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "7b9561ae8b47484e95da93a00b3b0929",
+      "End": "5389b718abee422fac9e3d832faab999",
+      "Id": "4637d7ec96314ae19da46fa17d6e2ecb",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "135eac1861f44b34aff98cd5f29217e5",
+      "End": "7259ca55f04f4c369a5e4eb78c98457e",
+      "Id": "3ea50ef8beb74d8c95aab447b73ec020",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "dd97ef1c04e846f98f1a7ef4519a031e",
+      "End": "5e6cbea7476e4b3f823893704327c13f",
+      "Id": "201b027304fa44aaa0248f328b9d6505",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "4670ddcc858f4c1aa8f66ade6f8cdc2a",
+      "End": "34ca07f47e0c44b2b2f89e6f6b807e32",
+      "Id": "8073f4514dca49a29e77a52c80673fa0",
+      "IsHidden": "False"
+    },
+    {
+      "Start": "089ddc4ebd194c2ab7cd5c2109a7071c",
+      "End": "45ac767389e7449b8943f7a0d6ed5845",
+      "Id": "af0b702179824283a11b7bf2d36776de",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [
+    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "Application.Version.dyf",
+      "ReferenceType": "DYFFile",
+      "Nodes": [
+        "6932e7d52a6d4ad39732fbbdf9789b86"
+      ]
+    }
+  ],
+  "Author": "None provided",
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": false,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.4.1.7055",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "18abd14639e44dbdafa14f759404231a",
+        "Name": "Code Block",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 804.2810987139206,
+        "Y": 252.53385786880614
+      },
+      {
+        "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 529.8810987139207,
+        "Y": 252.53385786880614
+      },
+      {
+        "Id": "8f049392c9ac4c51a7857e2af3f01dd4",
+        "Name": "Input",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 212.28109871392064,
+        "Y": 178.53385786880614
+      },
+      {
+        "Id": "89066f81334844c492de5952f1a0394b",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1086.6810987139206,
+        "Y": 138.39635786880615
+      },
+      {
+        "Id": "1c352004b7f2429fa3f1bf4a2e67c1d9",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1086.6810987139206,
+        "Y": 285.39635786880615
+      },
+      {
+        "Id": "391a1fff6c904d879181b95a185d53ce",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1086.6810987139206,
+        "Y": -8.603642131193851
+      },
+      {
+        "Id": "40f059761d5f4c35be6d0af2667e485a",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1086.6810987139206,
+        "Y": 432.39635786880615
+      },
+      {
+        "Id": "22e4bd1ebd684d1da32d5922ab6ff551",
+        "Name": "Output",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 1086.6810987139206,
+        "Y": 579.3963578688061
+      },
+      {
+        "Id": "6932e7d52a6d4ad39732fbbdf9789b86",
+        "Name": "Application.Version",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 212.28109871392064,
+        "Y": 326.53385786880614
+      }
+    ],
+    "Annotations": [],
+    "X": -217.51712884596805,
+    "Y": 115.44255977074232,
+    "Zoom": 0.9945393041040522
+  }
+}
