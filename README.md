@@ -16,10 +16,11 @@
 # Installation
 Installation is simple - just use Dynamo's built-in package manager and search for ```Clockwork```. Make sure you have the correct version of Clockwork installed that corresponds to your installed version of Dynamo. 
 
-- Clockwork for Dynamo **2.x**: As of **Revit 2023** you will also need to install the package **"DynamoIronPython2.7"** (also from the package manager):
+- Clockwork for Dynamo **2.x**: Rund on IronPython. As of **Revit 2023** you will also need to install the package **"DynamoIronPython2.7"** (also from the package manager):
    - Revit **2023/24**: Install version **2.5** of that package
    - Revit **2025**: Install version **3.2** of that package
 - Clockwork for Dynamo **3.x**: Runs on CPython - **no extra package needed**
+- Clockwork for Dynamo **4.x** (not yet released): Will run on PythonNet. In **Revit 2025/26** you will also need to install the package **"PythonNet3 Engine"** (v1.1.1, also from the package manager).
 
 # Versions
 The different versions are available as separate packages on the Dynamo package manager.
