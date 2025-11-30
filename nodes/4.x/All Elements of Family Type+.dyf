@@ -117,7 +117,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef InstancesOfFamilyType(ft, doc):\r\n    collector = FilteredElementCollector(doc)\r\n    try:\r\n        if version > 2024: ftCat = ft.Category.Id.Value\r\n        else: ftCat = ft.Category.Id.IntegerValue\r\n        bic = System.Enum.ToObject(BuiltInCategory, ftCat)\r\n        collector.OfCategory(bic)\r\n        if version > 2024: return [x for x in collector.ToElements() if x.GetTypeId().Value == ft.Id.Value]\r\n        else: return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == ft.Id.IntegerValue]\r\n    except: return []\r\n\r\nfamtypes = UnwrapElement(IN[0])\r\ninputdoc = UnwrapElement(IN[2])\r\nversion = IN[3]\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [InstancesOfFamilyType(x, doc) for x in famtypes]\r\nelse: OUT = InstancesOfFamilyType(famtypes, doc)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "cd510746fdcd4cc3a2e1f69a6c8efa03",
       "NodeType": "PythonScriptNode",
@@ -268,6 +268,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "cd510746fdcd4cc3a2e1f69a6c8efa03"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.12.2",
       "ReferenceType": "Package",
@@ -283,7 +291,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

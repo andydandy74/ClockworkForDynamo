@@ -12,11 +12,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef GetCatFromInput(var):\t\r\n\tif var:\r\n\t\tif isinstance(var, str): \r\n\t\t\ttry: return Category.GetCategory(doc, eval(\"BuiltInCategory.\" + var))\r\n\t\t\texcept: return None\r\n\t\telif isinstance(var, int): return Category.GetCategory(doc, var)\r\n\t\telse:\r\n\t\t\tcattype = var.GetType().ToString()\r\n\t\t\tif cattype == \"Autodesk.Revit.DB.Category\": return var\r\n\t\t\telif cattype == \"Autodesk.Revit.DB.BuiltInCategory\": return Category.GetCategory(doc, var)\r\n\t\t\telse: return None\r\n\telse: return None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ncats = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetCatFromInput(x) for x in cats]\r\nelse: OUT = GetCatFromInput(cats)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "f6f1249cad3f4e4ab05b14e7eeaecc45",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "964688c6f593481fbf634378a144478b",
@@ -40,11 +40,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "category",
         "TypeName": "var",
@@ -53,6 +52,7 @@
         "Description": ""
       },
       "Id": "0c0219c89cdd45e4aaa5d77d1b0c844c",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -66,14 +66,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "RevitCategory",
       "Id": "b5314fc9a6ae417ea10044e38d60a14a",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "c03d44eb08bd47b5b6ec48bd9d46e565",
@@ -87,23 +87,34 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "925027689c2b485aa7f4baa432584a61",
       "End": "c03d44eb08bd47b5b6ec48bd9d46e565",
-      "Id": "44069a481fd94bb08203c3b5faa9d8d7"
+      "Id": "44069a481fd94bb08203c3b5faa9d8d7",
+      "IsHidden": "False"
     },
     {
       "Start": "fe4e9bd13a9041e7a1d30901323ead81",
       "End": "964688c6f593481fbf634378a144478b",
-      "Id": "9e6b84bbcffe408faaff3d70ecab5b83"
+      "Id": "9e6b84bbcffe408faaff3d70ecab5b83",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "f6f1249cad3f4e4ab05b14e7eeaecc45"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -111,12 +122,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": false,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -127,34 +138,35 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "f6f1249cad3f4e4ab05b14e7eeaecc45",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 214.5,
         "Y": 0.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "0c0219c89cdd45e4aaa5d77d1b0c844c",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": -64.5,
         "Y": -17.0
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "b5314fc9a6ae417ea10044e38d60a14a",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 438.5,
         "Y": 0.0
       }
@@ -162,6 +174,6 @@
     "Annotations": [],
     "X": 194.67350406657195,
     "Y": 174.13884400013092,
-    "Zoom": 0.74769281712332525
+    "Zoom": 0.7476928171233252
   }
 }

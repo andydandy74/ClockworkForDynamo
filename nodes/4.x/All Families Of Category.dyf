@@ -121,7 +121,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[0])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\ncats = IN[2]\r\nversion = IN[3]\r\n\r\ncollector = FilteredElementCollector(doc).OfClass(Family)\r\nitems = collector.ToElements()\r\n\r\ndef ReturnIfCategory(items, cat):\r\n    if cat: \r\n        if version > 2024: return [x for x in items if x.FamilyCategory.Id.Value == cat.Id.Value]\r\n        else: return [x for x in items if x.FamilyCategory.Id.IntegerValue == cat.Id.IntegerValue]\r\n    else: return []\r\n\r\nif isinstance(cats, list): OUT = [ReturnIfCategory(items, x) for x in cats]\r\nelse: OUT = ReturnIfCategory(items, cats)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "0def22adc334436da3a8ce4c3b255188",
       "NodeType": "PythonScriptNode",
@@ -310,6 +310,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "0def22adc334436da3a8ce4c3b255188"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.6.0",
       "ReferenceType": "Package",
@@ -333,7 +341,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
