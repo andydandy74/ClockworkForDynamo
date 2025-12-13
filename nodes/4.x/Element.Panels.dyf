@@ -60,7 +60,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCurtainPanels(host):\r\n    if hasattr(host, \"CurtainGrid\"):\r\n        return GetCurtainPanelsByGrid(host.CurtainGrid, host)\r\n    elif hasattr(host, \"CurtainGrids\"):\r\n        return [GetCurtainPanelsByGrid(x, host) for x in host.CurtainGrids]\r\n    else: return []\r\n\r\ndef GetCurtainPanelsByGrid(grid, host):\r\n    if grid:\r\n        if organizeInRows:\r\n            uGrids = [ElementId.InvalidElementId]\r\n            [uGrids.append(x) for x in grid.GetUGridLineIds()]\r\n            vGrids = [ElementId.InvalidElementId]\r\n            [vGrids.append(x) for x in grid.GetVGridLineIds()]\r\n            panels = []\r\n            for u in uGrids:\r\n                row = []\r\n                for v in vGrids:\r\n                    panel = grid.GetPanel(u,v)\r\n                    if hasattr(panel, \"FindHostPanel\"):\r\n                        hostpanelid = panel.FindHostPanel()\r\n                        if hostpanelid != ElementId.InvalidElementId: panel = host.Document.GetElement(hostpanelid)\r\n                    row.append(panel)\r\n                panels.append(row)\r\n            return panels\r\n        else:\r\n            panellist = [host.Document.GetElement(x) for x in grid.GetPanelIds()]\r\n            for panel in panellist:\r\n                if hasattr(panel, \"FindHostPanel\"):\r\n                    hostpanelid = panel.FindHostPanel()\r\n                    if hostpanelid != ElementId.InvalidElementId:\r\n                        panellist[panellist.index(panel)] = host.Document.GetElement(hostpanelid)\r\n            return [x.ToDSType(True) for x in panellist]\r\n    else: return list()\r\n\r\nitems = UnwrapElement(IN[0])\r\norganizeInRows = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = [GetCurtainPanels(x) for x in items]\r\nelse: OUT = GetCurtainPanels(items)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "628c73c0897a40a699145fafa11df794",
       "NodeType": "PythonScriptNode",
@@ -146,7 +146,16 @@
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "628c73c0897a40a699145fafa11df794"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -154,7 +163,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
