@@ -60,7 +60,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetLevel(item):\r\n    val = None\r\n    if item:\r\n        # some elements have an empty Category property\r\n        try: \r\n            if version > 2024: catID = item.Category.Id.Value\r\n            else: catID = item.Category.Id.IntegerValue\r\n        except: catID = None\r\n        # check all the different types of level properties...\r\n        if hasattr(item, \"LevelId\"): \r\n            val = item.Document.GetElement(item.LevelId)\r\n            if val: return val\r\n        if hasattr(item, \"Level\"):\r\n            val = item.Level\r\n            if val: return val\r\n        if hasattr(item, \"GenLevel\"):\r\n            val = item.GenLevel\r\n            if val: return val\r\n        if (item.GetType().ToString() in (\"Autodesk.Revit.DB.Architecture.StairsRun\", \"Autodesk.Revit.DB.Architecture.StairsLanding\")):\r\n            item = item.GetStairs()\r\n        if (item.GetType().ToString() == \"Autodesk.Revit.DB.Architecture.Stairs\" or catID == int(BuiltInCategory.OST_Ramps)):\r\n            try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.STAIRS_BASE_LEVEL_PARAM).AsElementId())\r\n            except: pass\r\n        if (item.GetType().ToString() == \"Autodesk.Revit.DB.ExtrusionRoof\"):\r\n            try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.ROOF_CONSTRAINT_LEVEL_PARAM).AsElementId())\r\n            except: pass\r\n        if not val:\r\n            try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_REFERENCE_LEVEL_PARAM).AsElementId())\r\n            except: \r\n                try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.INSTANCE_SCHEDULE_ONLY_LEVEL_PARAM).AsElementId())\r\n                except: \r\n                    try: return item.Document.GetElement(item.get_Parameter(BuiltInParameter.SCHEDULE_LEVEL_PARAM).AsElementId())\r\n                    except: return None\r\n        else: return None\r\n    else: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): OUT = [GetLevel(x) for x in items]\r\nelse: OUT = GetLevel(items)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "d9ae8178d1ff4cd095b3f733ccb20bc8",
       "NodeType": "PythonScriptNode",
@@ -181,6 +181,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "d9ae8178d1ff4cd095b3f733ccb20bc8"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.12.2",
       "ReferenceType": "Package",
@@ -196,7 +204,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
@@ -242,7 +250,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 387.1490796208025,
-        "Y": 235.0861474639316
+        "Y": 234.1023139178172
       },
       {
         "Id": "8f432fa85f3b40e38d02b2fb4fd10ad6",

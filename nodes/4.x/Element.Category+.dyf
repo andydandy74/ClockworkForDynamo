@@ -65,7 +65,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n    if not item: return None, None\r\n    objtype = None\r\n    if hasattr(item, \"GetType\"): objtype = item.GetType().ToString()\r\n    returnID = None\r\n    returnIDs = None\r\n    returnCat = None\r\n    returnBic = None\r\n    if objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n    elif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n    elif objtype == \"Revit.Application.Document\":\r\n        if item.IsFamilyDocument: \r\n            clr.AddReference(\"RevitServices\")\r\n            import RevitServices\r\n            from RevitServices.Persistence import DocumentManager\r\n            returnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Category\": \r\n        if item.Parent: returnID = item.Parent.Id\r\n    elif hasattr(item, \"Category\"): \r\n        if item.Category: returnID = item.Category.Id\r\n    if returnID:\r\n        if version > 2024: returnIDval = returnID.Value\r\n        else: returnIDval = returnID.IntegerValue\r\n        returnBic = System.Enum.GetName(BuiltInCategory, returnIDval)\r\n        try: returnCat =  Revit.Elements.Category.ById(returnIDval)\r\n        except: pass\r\n    elif returnIDs:\r\n        returnCat = []\r\n        returnBic = []\r\n        for returnID in returnIDs:\r\n            if version > 2024: returnIDval = returnID.Value\r\n            else: returnIDval = returnID.IntegerValue\r\n            returnBic.append(System.Enum.GetName(BuiltInCategory, returnIDval))\r\n            try: returnCat.append(Revit.Elements.Category.ById(returnIDval))\r\n            except: returnCat.append(None)\r\n        returnCat.sort()\r\n    return returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): \r\n    if len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n    else: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
       "NodeType": "PythonScriptNode",
@@ -285,6 +285,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "b4b979ee8b544c808efd2356bf9eec69"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.12.2",
       "ReferenceType": "Package",
@@ -300,7 +308,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

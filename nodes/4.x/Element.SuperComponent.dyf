@@ -12,7 +12,6 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "element",
         "TypeName": "var",
@@ -21,6 +20,7 @@
         "Description": ""
       },
       "Id": "89c41088f7794eadb1a226ecfb16eda2",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -34,14 +34,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "superComponent",
       "Id": "74748e7a8c4b4d0f85959a63a6c890c9",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "eba34bc878154c94ae69fed933e4f48c",
@@ -55,15 +55,15 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetSuperComponent(item):\r\n\t# nested families\r\n\tif hasattr(item, \"SuperComponent\"): return item.SuperComponent\r\n\t# beam systems\r\n\tif hasattr(item, \"BeamBelongsTo\"): return BeamSystem.BeamBelongsTo(item)\r\n\t# handrails\r\n\tif hasattr(item, \"HostRailingId\"): return item.Document.GetElement(item.HostRailingId)\r\n\t# stair components\r\n\telif hasattr(item, \"GetStairs\"): return item.GetStairs()\r\n\t# toposurface subregions\r\n\telif hasattr(item, \"IsSiteSubRegion\"):\r\n\t\tif item.IsSiteSubRegion:\r\n\t\t\treturn item.Document.GetElement(item.AsSiteSubRegion().HostId)\r\n\t\telse: return None\r\n\t# toposolid subregions\r\n\telif hasattr(item, \"HostTopoId\"):\r\n\t\tif item.HostTopoId == ElementId.InvalidElementId: return None\r\n\t\telse: return item.Document.GetElement(item.HostTopoId)\r\n\t# grid segments\r\n\telif item.GetType().ToString() == 'Autodesk.Revit.DB.Grid': \r\n\t\tsc = MultiSegmentGrid.GetMultiSegementGridId(item)\r\n\t\tif sc: return item.Document.GetElement(sc)\r\n\t\telse: return None\r\n\telse: return None\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): OUT = [GetSuperComponent(x) for x in items]\r\nelse: OUT = GetSuperComponent(items)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "e3c35b2105004cd2bc7b62c5c797f69e",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "20efcd92ef3b4b94a9cc18391ed4c404",
@@ -87,23 +87,34 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
       "Start": "03bb17d6d3554b35a953c0e088473bce",
       "End": "20efcd92ef3b4b94a9cc18391ed4c404",
-      "Id": "084de9084e454d6e81101143f8030052"
+      "Id": "084de9084e454d6e81101143f8030052",
+      "IsHidden": "False"
     },
     {
       "Start": "d19d71059e3448a7b683e12507845426",
       "End": "eba34bc878154c94ae69fed933e4f48c",
-      "Id": "1e6d0f7f58034152a20f73158ebc9c36"
+      "Id": "1e6d0f7f58034152a20f73158ebc9c36",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "e3c35b2105004cd2bc7b62c5c797f69e"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -111,12 +122,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -127,34 +138,35 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "89c41088f7794eadb1a226ecfb16eda2",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 236.445228300119,
         "Y": -15.640799377513
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "74748e7a8c4b4d0f85959a63a6c890c9",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 705.445228300119,
         "Y": -15.640799377513
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "e3c35b2105004cd2bc7b62c5c797f69e",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 481.445228300119,
         "Y": -15.640799377513005
       }
