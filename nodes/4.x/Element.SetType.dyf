@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\nfrom System.Collections.Generic import List\r\n\r\ndef SetElementType(item,itemtype):\r\n    if hasattr(item, \"ChangeTypeId\"):\r\n        try:\r\n            itemcoll = List[ElementId]()\r\n            itemcoll.Add(item.Id)\r\n            Element.ChangeTypeId(item.Document, itemcoll, itemtype.Id)\r\n            return True\r\n        except: return False\r\n    else: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\ntypes = UnwrapElement(IN[1])\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n    if isinstance(IN[1], list): OUT = [SetElementType(x,y) for x,y in zip(items,types)]\r\n    else: OUT = [SetElementType(x,types) for x in items]\r\nelse:\r\n    if isinstance(IN[1], list): OUT = SetElementType(items,types[0])\r\n    else: OUT = SetElementType(items,types)\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "730b48f2a302427b83e2e72f095aa8d4",
       "NodeType": "PythonScriptNode",
@@ -178,7 +178,16 @@
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "730b48f2a302427b83e2e72f095aa8d4"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -186,7 +195,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
