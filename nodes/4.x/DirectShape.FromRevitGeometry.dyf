@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "# This script is based on code from the node\r\n# DirectShape.ByGeometry from package SpringNodes.\r\n# Thanks Dimitar for doing all the hard work for me... ;-)\r\n\r\nimport clr\r\nfrom System.Collections.Generic import *\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\ngeometry = UnwrapElement(IN[0])\r\ncat = UnwrapElement(IN[1])\r\nnames = IN[2]\r\ncounter = 0\r\nelementlist = list()\r\n\r\ndsLib = DirectShapeLibrary.GetDirectShapeLibrary(doc)\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nfor geom in geometry:\r\n        # delete old DS type if the name already exists\r\n        if dsLib.ContainsType(names[counter]):\r\n                old_type = dsLib.FindDefinitionType(names[counter])\r\n                try: doc.Delete(old_type)\r\n                except: pass\r\n        try:\r\n                # create new DS type\r\n                newDStype = DirectShapeType.Create(doc, names[counter], cat.Id)\r\n                geomList = List[GeometryObject]([x for x in geom])\r\n                newDStype.SetShape(geomList)\r\n                dsLib.AddDefinitionType(names[counter], newDStype.Id)\r\n                # create new DS instance\r\n                newDS =  DirectShape.CreateElementInstance(doc, newDStype.Id, cat.Id, names[counter], Transform.Identity)\r\n                newDS.SetTypeId(newDStype.Id)\r\n                elementlist.append(newDS)\r\n        except: elementlist.append(None)\r\n        counter += 1\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\nOUT = elementlist",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "58a0f303784745ad8c362a1e6b6c9507",
       "NodeType": "PythonScriptNode",
@@ -192,7 +192,16 @@
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "58a0f303784745ad8c362a1e6b6c9507"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -200,7 +209,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
