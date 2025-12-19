@@ -12,11 +12,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef MakeInstanceParam(doc, param):\r\n\tsuccess = False\r\n\tif doc.IsFamilyDocument and hasattr(param, \"Formula\"):\r\n\t\ttry:\r\n\t\t\tdoc.FamilyManager.MakeInstance(param)\r\n\t\t\tsuccess = True\r\n\t\texcept: pass\r\n\treturn param, success\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[MakeInstanceParam(doc, x) for x in IN[0]]))\r\nelse: OUT = MakeInstanceParam(doc, IN[0])\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "ea44736271cc4d8d83019d95be77567b",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "3a07a24ac6f74e2bab412699174ae49d",
@@ -40,11 +40,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "familyParameter",
         "TypeName": "var",
@@ -53,6 +52,7 @@
         "Description": ""
       },
       "Id": "3a993130b24d436895ce3bb984f2e31e",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -66,14 +66,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "familyParameter",
       "Id": "9462a89848a64bb98f86df8d5a9c778f",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "181df9692ae04edbbc7808072099ab89",
@@ -87,18 +87,17 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Id": "12644e1d84a34251a99c5bc1f4ce384c",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "3775a0179ec4455cb9003a9b3061fd95",
           "Name": "list",
-          "Description": "Liste, deren erstes Element abgerufen werden soll\n\nvar[]..[]",
+          "Description": "List to get the first item from.\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -109,26 +108,26 @@
         {
           "Id": "5477d6983918473badb1f60d21381cd6",
           "Name": "item",
-          "Description": "Das erste Element in der Liste",
+          "Description": "First item in the list.",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.FirstItem@var[]..[]",
       "Replication": "Auto",
-      "Description": "Gibt das erste Element in einer Liste zurück.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
+      "Description": "Returns the first item in a list.\n\nList.FirstItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
-      "NodeType": "FunctionNode",
-      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Id": "434a1074643e44d68839e06de04c087c",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "9a60505b9c88414db4732cb3ba9f27f9",
           "Name": "list",
-          "Description": "Liste, deren letztes Element abgerufen werden soll\n\nvar[]..[]",
+          "Description": "List to get the last item of\n\nvar[]..[]",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -139,22 +138,23 @@
         {
           "Id": "e1231e69533445b788250f42f31a6222",
           "Name": "item",
-          "Description": "Das letzte Element in der Liste",
+          "Description": "Last item in the list",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
         }
       ],
+      "FunctionSignature": "DSCore.List.LastItem@var[]..[]",
       "Replication": "Auto",
-      "Description": "Ruft das letzte Element in einer Liste ab.\n\nList.LastItem (list: var[]..[]): var[]..[]"
+      "Description": "Retrieves the last item in a list.\n\nList.LastItem (list: var[]..[]): var[]..[]"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "success",
       "Id": "1ed4928740f349058167672428f4afdc",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "9abf4e81c60940558c59d847df6764db",
@@ -168,38 +168,52 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "0dd4943dca1047df8e3ba2a158fafb17",
       "End": "3775a0179ec4455cb9003a9b3061fd95",
-      "Id": "13604df91bc74975be7505e3a378b067"
+      "Id": "13604df91bc74975be7505e3a378b067",
+      "IsHidden": "False"
     },
     {
       "Start": "0dd4943dca1047df8e3ba2a158fafb17",
       "End": "9a60505b9c88414db4732cb3ba9f27f9",
-      "Id": "f93a2a64ac34439da8e502c7c202acb7"
+      "Id": "f93a2a64ac34439da8e502c7c202acb7",
+      "IsHidden": "False"
     },
     {
       "Start": "65b56b7db8b5447694cf4fc3e235b3b3",
       "End": "3a07a24ac6f74e2bab412699174ae49d",
-      "Id": "67c161514617441787685498e5f3b721"
+      "Id": "67c161514617441787685498e5f3b721",
+      "IsHidden": "False"
     },
     {
       "Start": "5477d6983918473badb1f60d21381cd6",
       "End": "181df9692ae04edbbc7808072099ab89",
-      "Id": "02fa07091bd9430d928629bf3f0002b7"
+      "Id": "02fa07091bd9430d928629bf3f0002b7",
+      "IsHidden": "False"
     },
     {
       "Start": "e1231e69533445b788250f42f31a6222",
       "End": "9abf4e81c60940558c59d847df6764db",
-      "Id": "9285ea991cce4ddf8497aed03d97560a"
+      "Id": "9285ea991cce4ddf8497aed03d97560a",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "ea44736271cc4d8d83019d95be77567b"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -207,12 +221,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -223,64 +237,65 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "ea44736271cc4d8d83019d95be77567b",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 386.0,
         "Y": 282.5
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "3a993130b24d436895ce3bb984f2e31e",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 132.0,
         "Y": 282.5
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "9462a89848a64bb98f86df8d5a9c778f",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 873.0,
         "Y": 240.5
       },
       {
-        "ShowGeometry": true,
-        "Name": "List.FirstItem",
         "Id": "12644e1d84a34251a99c5bc1f4ce384c",
+        "Name": "List.FirstItem",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 610.0,
         "Y": 228.5
       },
       {
-        "ShowGeometry": true,
-        "Name": "List.LastItem",
         "Id": "434a1074643e44d68839e06de04c087c",
+        "Name": "List.LastItem",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 610.0,
         "Y": 336.5
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "1ed4928740f349058167672428f4afdc",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 873.0,
         "Y": 324.5
       }
