@@ -17,7 +17,6 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "familyType",
         "TypeName": "var",
@@ -26,6 +25,7 @@
         "Description": ""
       },
       "Id": "39f0db56b83b45219452fce2d5a9a999",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -39,11 +39,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "layerIndex",
         "TypeName": "int",
@@ -52,6 +51,7 @@
         "Description": ""
       },
       "Id": "2261d2f9744348ba89c5e201afe01e60",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -65,11 +65,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "width",
         "TypeName": "double",
@@ -78,6 +77,7 @@
         "Description": ""
       },
       "Id": "d1e25a3898cb476bba92bf66a14276e1",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -91,14 +91,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "familyType",
       "Id": "0fea45250ae24c88b88b699d131e7f7c",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "82bb72703eca4bf9bf6500fd32de2fbe",
@@ -112,14 +112,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "success",
       "Id": "81c10a1a62ca4f699413d8b9bc8e4351",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "22d31a39e4d946999d8bb0819cffb2f5",
@@ -133,15 +133,15 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DisplayUnitToInternalUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertToInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef SetCompoundLayerWidth(famtype, index, width):\r\n\ttry:\r\n\t\tcs = famtype.GetCompoundStructure()\r\n\t\tcs.SetLayerWidth(index, DisplayUnitToInternalUnit(width, unittype))\r\n\t\tfamtype.SetCompoundStructure(cs)\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfamtypes = UnwrapElement(IN[0])\r\nindices = IN[1]\r\nwidths = IN[2]\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list):\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,z) for x,y,z in zip(famtypes, indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,y) for x,y in zip(famtypes, widths)]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(x,y,widths) for x,y in zip(famtypes, indices)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(x,indices,widths) for x in famtypes]\r\nelse:\r\n\tif isinstance(IN[2], list):\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,y) for x,y in zip(indices, widths)]\r\n\t\telse: OUT = [SetCompoundLayerWidth(famtypes,indices,x) for x in widths]\r\n\telse:\r\n\t\tif isinstance(IN[1], list): OUT = [SetCompoundLayerWidth(famtypes,x,widths) for x in indices]\r\n\t\telse: OUT = SetCompoundLayerWidth(famtypes,indices,widths)\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "3e7f8c28575f44b388a40646f9c22474",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "3c55959cb6b64dd6a331c60e2c2f546f",
@@ -183,38 +183,52 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
       "Start": "b0466962bd0a40b1a66893310094107e",
       "End": "3c55959cb6b64dd6a331c60e2c2f546f",
-      "Id": "6e104fe86eb840948947b4a3569c4f7c"
+      "Id": "6e104fe86eb840948947b4a3569c4f7c",
+      "IsHidden": "False"
     },
     {
       "Start": "b0466962bd0a40b1a66893310094107e",
       "End": "82bb72703eca4bf9bf6500fd32de2fbe",
-      "Id": "d77f08fd29564ce5a29f6a68125297d6"
+      "Id": "d77f08fd29564ce5a29f6a68125297d6",
+      "IsHidden": "False"
     },
     {
       "Start": "9b9037ed6993409aa5f47e29bcfe12c1",
       "End": "c9365d07732a4cf8a1687bdbb5ac05f4",
-      "Id": "db99e62227ec44b0bdd3f9091bb4f345"
+      "Id": "db99e62227ec44b0bdd3f9091bb4f345",
+      "IsHidden": "False"
     },
     {
       "Start": "c74e941ed50e4f7eabcdf0428b477464",
       "End": "1eee87dc1b7f45fc862ab0a210f8e4d3",
-      "Id": "3a7666b0f1e34ee8bd60f56c46e4591a"
+      "Id": "3a7666b0f1e34ee8bd60f56c46e4591a",
+      "IsHidden": "False"
     },
     {
       "Start": "6e16b58f7ad54af99c8c330b8db1bfef",
       "End": "22d31a39e4d946999d8bb0819cffb2f5",
-      "Id": "1bf92c29b82c49f4919f8e67fb15f311"
+      "Id": "1bf92c29b82c49f4919f8e67fb15f311",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "3e7f8c28575f44b388a40646f9c22474"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -222,12 +236,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -238,71 +252,72 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "39f0db56b83b45219452fce2d5a9a999",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 790.0133385193742,
-        "Y": -307.08994307635209
+        "Y": -307.0899430763521
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "2261d2f9744348ba89c5e201afe01e60",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 790.0133385193742,
         "Y": -224.08994307635209
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "d1e25a3898cb476bba92bf66a14276e1",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 790.0133385193742,
         "Y": -140.08994307635209
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "0fea45250ae24c88b88b699d131e7f7c",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1340.4133385193743,
-        "Y": -288.08994307635209
+        "Y": -288.0899430763521
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "81c10a1a62ca4f699413d8b9bc8e4351",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1340.4133385193743,
         "Y": -204.08994307635209
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "3e7f8c28575f44b388a40646f9c22474",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1115.6133385193743,
         "Y": -204.08994307635209
       }
     ],
     "Annotations": [],
-    "X": -727.31612907172189,
+    "X": -727.3161290717219,
     "Y": 465.939628112019,
-    "Zoom": 0.83822339756855557
+    "Zoom": 0.8382233975685556
   }
 }

@@ -17,9 +17,8 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
-      "NodeType": "CodeBlockNode",
-      "Code": "// Layers\nseq[0];\n// Materials\nseq[1];\n// Functions\nseq[2];\n// Widths\nseq[3];\n// Is core layer\nseq[4];\n// Wraps\nseq[5];\n// Is variable\nseq[6];\n// Is structural deck\nseq[7];",
       "Id": "be8331e5c6564642912a6ef8607d2a09",
+      "NodeType": "CodeBlockNode",
       "Inputs": [
         {
           "Id": "9b764145ec8a441188c448d6d479ee51",
@@ -34,8 +33,8 @@
       "Outputs": [
         {
           "Id": "21ab777623674fbd9cf1d108104c31ea",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 2",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 0)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -43,8 +42,8 @@
         },
         {
           "Id": "a3c3cd5b70834dfd847c01347759ac7a",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 4",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 1)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -52,8 +51,8 @@
         },
         {
           "Id": "dbaa12d237c1457db0d8a205fac3df6b",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 6",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 2)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -61,8 +60,8 @@
         },
         {
           "Id": "615d735f7fce453bad2d3f9694c9a698",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 8",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 3)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -70,8 +69,8 @@
         },
         {
           "Id": "024fdac6f8674fe3bd7c58f25f9efd08",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 10",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 4)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -79,8 +78,8 @@
         },
         {
           "Id": "6817f65d86d2436e85a32d5b1aa48804",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 12",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 5)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -88,8 +87,8 @@
         },
         {
           "Id": "6df18c18a54d432bbc435b46dc305f1c",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 14",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 6)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -97,8 +96,8 @@
         },
         {
           "Id": "c776ca93f47a407ca7cea111ad3cfdb3",
-          "Name": "",
-          "Description": "Wert des Ausdrucks in Zeile 16",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 7)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -106,15 +105,16 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ermöglicht die direkte Erstellung von DesignScript-Code."
+      "Description": "Allows for DesignScript code to be authored directly",
+      "Code": "// Layers\nseq[0];\n// Materials\nseq[1];\n// Functions\nseq[2];\n// Widths\nseq[3];\n// Is core layer\nseq[4];\n// Wraps\nseq[5];\n// Is variable\nseq[6];\n// Is structural deck\nseq[7];"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nunittype = ForgeTypeId('autodesk.spec.aec:length-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\r\ndef GetCompoundStructureLayers(item):\r\n\tlayers = []\r\n\tlayermat = []\r\n\tlayerfunc = []\r\n\tlayerwidth = []\r\n\tlayercore = []\r\n\tlayerwraps = []\r\n\tlayervar = []\r\n\tlayerdeck = []\t\r\n\tif hasattr(item, \"GetCompoundStructure\"):\r\n\t\tcompstruc = item.GetCompoundStructure()\r\n\t\tif compstruc:\r\n\t\t\tvertcomp = compstruc.IsVerticallyCompound\r\n\t\t\tvarlayer = compstruc.VariableLayerIndex\r\n\t\t\tnum = compstruc.LayerCount\r\n\t\t\tcounter = 0\r\n\t\t\twhile counter < num:\r\n\t\t\t\tlayers.append(compstruc.GetLayers()[counter])\r\n\t\t\t\tlayermat.append(item.Document.GetElement(compstruc.GetMaterialId(counter)))\r\n\t\t\t\tlayerfunc.append(System.Enum.GetName(MaterialFunctionAssignment, compstruc.GetLayerFunction(counter)))\r\n\t\t\t\tlayerwidth.append(InternalUnitToDisplayUnit(compstruc.GetLayerWidth(counter), unittype))\r\n\t\t\t\tlayercore.append(compstruc.IsCoreLayer(counter))\r\n\t\t\t\tif compstruc.IsCoreLayer(counter): layerwraps.append(False)\r\n\t\t\t\telse: layerwraps.append(compstruc.ParticipatesInWrapping(counter))\r\n\t\t\t\tif varlayer == counter: layervar.append(True)\r\n\t\t\t\telse: layervar.append(False)\r\n\t\t\t\tlayerdeck.append(compstruc.IsStructuralDeck(counter))\r\n\t\t\t\tcounter += 1\r\n\treturn layers, layermat, layerfunc, layerwidth, layercore, layerwraps, layervar, layerdeck\r\n\r\nif isinstance(IN[0], list): OUT = map(list, zip(*[GetCompoundStructureLayers(x) for x in items]))\r\nelse: OUT = GetCompoundStructureLayers(items)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "1bbec7ddd2a840ba842237424bcc784a",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "2728d134fba54fb8b02cbd605a71562e",
@@ -138,11 +138,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "elementType",
         "TypeName": "var",
@@ -151,6 +150,7 @@
         "Description": ""
       },
       "Id": "fdb636febc7743049719d3da8fb3bd1d",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -164,14 +164,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "materials",
       "Id": "98f8b78f5ba341b0ba1f7aab4ea87d28",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "b5e932a21dbd424fa9606ddbb1583c09",
@@ -185,14 +185,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "functions",
       "Id": "11658d42dceb41e6bc7b42e990c1ea3e",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "d6b45df4f7164da0a1101b72487184cc",
@@ -206,14 +206,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "widths",
       "Id": "2c196c902a2d45c498dbd1759f71051f",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "98829b6049944632a96507b93b2a53b5",
@@ -227,14 +227,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "isCore",
       "Id": "dce4dfdb8031402e839d8ad56bab3d15",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "85fa7bb24b0c49218821a37ae2c1a649",
@@ -248,14 +248,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "wraps",
       "Id": "a9bf6fa8583e4848a463770d4e87a9a6",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "6589df8f63f54119bc64bf4900149711",
@@ -269,14 +269,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "isVariable",
       "Id": "77595a15bb754cb79a9d057327560fd7",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "4ec6353ab9564e84a67258ed802c290b",
@@ -290,14 +290,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "isStructuralDeck",
       "Id": "d5b59d0e25e14045b83a5466061635fb",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "ab76a6a0876d4f6ea9552768e9298e5f",
@@ -311,14 +311,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "layers",
       "Id": "39b4f9375bc44fe79f9ee19406184158",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "33fe8228552c41b797e05a895fedbe61",
@@ -332,63 +332,82 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "21ab777623674fbd9cf1d108104c31ea",
       "End": "33fe8228552c41b797e05a895fedbe61",
-      "Id": "457833c67e7c4604a588f3d91ecf1513"
+      "Id": "457833c67e7c4604a588f3d91ecf1513",
+      "IsHidden": "False"
     },
     {
       "Start": "a3c3cd5b70834dfd847c01347759ac7a",
       "End": "b5e932a21dbd424fa9606ddbb1583c09",
-      "Id": "fd5162506e8e4429a99d366d214c1bb6"
+      "Id": "fd5162506e8e4429a99d366d214c1bb6",
+      "IsHidden": "False"
     },
     {
       "Start": "dbaa12d237c1457db0d8a205fac3df6b",
       "End": "d6b45df4f7164da0a1101b72487184cc",
-      "Id": "1e2b7985628e413cb5aa85a1c76512de"
+      "Id": "1e2b7985628e413cb5aa85a1c76512de",
+      "IsHidden": "False"
     },
     {
       "Start": "615d735f7fce453bad2d3f9694c9a698",
       "End": "98829b6049944632a96507b93b2a53b5",
-      "Id": "be33d41af46945ed86ca4aef170480ba"
+      "Id": "be33d41af46945ed86ca4aef170480ba",
+      "IsHidden": "False"
     },
     {
       "Start": "024fdac6f8674fe3bd7c58f25f9efd08",
       "End": "85fa7bb24b0c49218821a37ae2c1a649",
-      "Id": "7713230d496b4d3899195ff919e07b03"
+      "Id": "7713230d496b4d3899195ff919e07b03",
+      "IsHidden": "False"
     },
     {
       "Start": "6817f65d86d2436e85a32d5b1aa48804",
       "End": "6589df8f63f54119bc64bf4900149711",
-      "Id": "ce1f8a285c354d1c808e03ebcf3eb6fb"
+      "Id": "ce1f8a285c354d1c808e03ebcf3eb6fb",
+      "IsHidden": "False"
     },
     {
       "Start": "6df18c18a54d432bbc435b46dc305f1c",
       "End": "4ec6353ab9564e84a67258ed802c290b",
-      "Id": "7ec8298b3c52470db56c059a6d26b0aa"
+      "Id": "7ec8298b3c52470db56c059a6d26b0aa",
+      "IsHidden": "False"
     },
     {
       "Start": "c776ca93f47a407ca7cea111ad3cfdb3",
       "End": "ab76a6a0876d4f6ea9552768e9298e5f",
-      "Id": "46bea73f62154c27a4d881a1208e0097"
+      "Id": "46bea73f62154c27a4d881a1208e0097",
+      "IsHidden": "False"
     },
     {
       "Start": "fd108c72373e4f61a02f371a6140d59a",
       "End": "9b764145ec8a441188c448d6d479ee51",
-      "Id": "88458a19b2bf402b87d9a8e0f9c9c643"
+      "Id": "88458a19b2bf402b87d9a8e0f9c9c643",
+      "IsHidden": "False"
     },
     {
       "Start": "8fe83d542ce94fb1bb0368ff0c4737c1",
       "End": "2728d134fba54fb8b02cbd605a71562e",
-      "Id": "0dd37a566f4f44ee8f2f37a0ca833333"
+      "Id": "0dd37a566f4f44ee8f2f37a0ca833333",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "1bbec7ddd2a840ba842237424bcc784a"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -396,12 +415,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -412,114 +431,115 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Code Block",
         "Id": "be8331e5c6564642912a6ef8607d2a09",
+        "Name": "Code Block",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 839.22182359999056,
-        "Y": -6.3908338649413281
+        "ShowGeometry": true,
+        "X": 839.2218235999906,
+        "Y": -6.390833864941328
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "1bbec7ddd2a840ba842237424bcc784a",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 615.125215262595,
         "Y": -9.19738387306549
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "fdb636febc7743049719d3da8fb3bd1d",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 280.82182359999047,
         "Y": -52.604167198274666
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "98f8b78f5ba341b0ba1f7aab4ea87d28",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
-        "Y": -78.017500531607965
+        "Y": -78.01750053160796
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "11658d42dceb41e6bc7b42e990c1ea3e",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
-        "Y": 4.9824994683920352
+        "Y": 4.982499468392035
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "2c196c902a2d45c498dbd1759f71051f",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
-        "Y": 87.982499468392035
+        "Y": 87.98249946839204
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "dce4dfdb8031402e839d8ad56bab3d15",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
         "Y": 171.98249946839204
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "a9bf6fa8583e4848a463770d4e87a9a6",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
         "Y": 254.98249946839204
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "77595a15bb754cb79a9d057327560fd7",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
         "Y": 337.982499468392
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "d5b59d0e25e14045b83a5466061635fb",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
         "Y": 420.982499468392
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "39b4f9375bc44fe79f9ee19406184158",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 1198.4218235999906,
         "Y": -161.01750053160796
       }
