@@ -21,11 +21,11 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef SetGPFormula(gp,formula):\r\n\ttry: \r\n\t\tgp.SetFormula(formula)\r\n\t\treturn True\r\n\texcept: return False\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nformulas = IN[1]\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[0], list): \r\n\tif isinstance(IN[1], list): OUT = [SetGPFormula(x,y) for x,y in zip(items,formulas)]\r\n\telse: OUT = [SetGPFormula(x,formulas) for x in items]\r\nelse:\r\n\tif isinstance(IN[1], list): OUT = SetGPFormula(items,formulas[0])\r\n\telse: OUT = SetGPFormula(items,formulas)\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "5590f873257443d790a8068f729a0732",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "a62ab5a4710d427e9400bd9d5feb0874",
@@ -58,11 +58,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "globalParam",
         "TypeName": "Revit.Elements.GlobalParameter",
@@ -71,6 +70,7 @@
         "Description": ""
       },
       "Id": "8561a2b68dad42da91f0bfad40c453c4",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -84,11 +84,10 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "formula",
         "TypeName": "string",
@@ -97,6 +96,7 @@
         "Description": ""
       },
       "Id": "0a8f61370f124921ba800f48c08c2e41",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -110,14 +110,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "globalParam",
       "Id": "58521fdf9f544d138334466bf5740308",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "8fa522a6fb9341c5b2758e2d67e077dd",
@@ -131,14 +131,14 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "success",
       "Id": "8c1a34e90b0749b897b21f09ee1099bb",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "c91f7721e1374a47a37ebbbe9cdc1021",
@@ -152,33 +152,46 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     }
   ],
   "Connectors": [
     {
       "Start": "ed8d51f1ec4d41fd8a95a77af86bf267",
       "End": "c91f7721e1374a47a37ebbbe9cdc1021",
-      "Id": "fdd8473d968b4f5f97b7b6af4a6b77e5"
+      "Id": "fdd8473d968b4f5f97b7b6af4a6b77e5",
+      "IsHidden": "False"
     },
     {
       "Start": "e61a395d0ad54125937b01a3eddf787c",
       "End": "a62ab5a4710d427e9400bd9d5feb0874",
-      "Id": "fc4c4ab1a78d4af89667a6ab3ed9c486"
+      "Id": "fc4c4ab1a78d4af89667a6ab3ed9c486",
+      "IsHidden": "False"
     },
     {
       "Start": "e61a395d0ad54125937b01a3eddf787c",
       "End": "8fa522a6fb9341c5b2758e2d67e077dd",
-      "Id": "10506b65398f47d1a74a23d28d16dc43"
+      "Id": "10506b65398f47d1a74a23d28d16dc43",
+      "IsHidden": "False"
     },
     {
       "Start": "a79a02b8e2274d009c5cb60be7c57894",
       "End": "a764265205964e05b1d35be5446436fe",
-      "Id": "2bee55d25b724b2ba639a4f4d6e3355d"
+      "Id": "2bee55d25b724b2ba639a4f4d6e3355d",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "5590f873257443d790a8068f729a0732"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -186,12 +199,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -202,56 +215,57 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "GlobalParameter.SetFormula",
         "Id": "5590f873257443d790a8068f729a0732",
+        "Name": "GlobalParameter.SetFormula",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 234.49999999999983,
-        "Y": 65.399999999999977
+        "Y": 65.39999999999998
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "8561a2b68dad42da91f0bfad40c453c4",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": -321.50000000000017,
         "Y": 15.399999999999984
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "0a8f61370f124921ba800f48c08c2e41",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": -321.50000000000017,
-        "Y": 99.399999999999977
+        "Y": 99.39999999999998
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "58521fdf9f544d138334466bf5740308",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 582.49999999999977,
+        "ShowGeometry": true,
+        "X": 582.4999999999998,
         "Y": -18.600000000000023
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "8c1a34e90b0749b897b21f09ee1099bb",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 582.49999999999977,
-        "Y": 65.399999999999977
+        "ShowGeometry": true,
+        "X": 582.4999999999998,
+        "Y": 65.39999999999998
       }
     ],
     "Annotations": [],
