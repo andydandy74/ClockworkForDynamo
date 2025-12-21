@@ -33,8 +33,8 @@
       "Outputs": [
         {
           "Id": "d3ff3b380bfa49e495d8c7e2ed7fd095",
-          "Name": "",
-          "Description": "Value of expression at line 1",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 0)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -42,8 +42,8 @@
         },
         {
           "Id": "ca991bb8feb94f5eb76966556f813c88",
-          "Name": "",
-          "Description": "Value of expression at line 2",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 1)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -51,8 +51,8 @@
         },
         {
           "Id": "9d609a1dcd504c42b7530714b5d33276",
-          "Name": "",
-          "Description": "Value of expression at line 3",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 2)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -60,8 +60,8 @@
         },
         {
           "Id": "7b9561ae8b47484e95da93a00b3b0929",
-          "Name": "",
-          "Description": "Value of expression at line 4",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 3)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -69,8 +69,8 @@
         },
         {
           "Id": "135eac1861f44b34aff98cd5f29217e5",
-          "Name": "",
-          "Description": "Value of expression at line 5",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 4)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -84,7 +84,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\nimport System\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.GeometryConversion)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n    formatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n    dispunits = formatoptions.GetUnitTypeId()\r\n    try: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n    except: return None\r\n\r\ndef RoomFinishes(item):\r\n    doc = item.Document\r\n    calculator = SpatialElementGeometryCalculator(doc)\r\n    options = Autodesk.Revit.DB.SpatialElementBoundaryOptions()\r\n    # get boundary location from area computation settings\r\n    boundloc = Autodesk.Revit.DB.AreaVolumeSettings.GetAreaVolumeSettings(doc).GetSpatialElementBoundaryLocation(SpatialElementType.Room)\r\n    options.SpatialElementBoundaryLocation = boundloc\r\n    mlist = []\r\n    tlist = []\r\n    elist = []\r\n    alist = []\r\n    flist = []\r\n    try:\r\n        results = calculator.CalculateSpatialElementGeometry(item)\r\n        for face in results.GetGeometry().Faces:\r\n            for bface in results.GetBoundaryFaceInfo(face):\r\n                beface = bface.GetBoundingElementFace()\r\n                if beface:\r\n                    if version > 2024: befaceMatId = beface.MaterialElementId.Value\r\n                    else: befaceMatId = beface.MaterialElementId.IntegerValue\r\n                tlist.append(System.Enum.GetName(SubfaceType, bface.SubfaceType))\r\n                eId = bface.SpatialBoundaryElement.HostElementId\r\n                if eId == ElementId.InvalidElementId:\r\n                    liId = bface.SpatialBoundaryElement.LinkInstanceId\r\n                    if liId == ElementId.InvalidElementId: \r\n                        elist.append(None)\r\n                        mlist.append(None)\r\n                    else:\r\n                        leId = bface.SpatialBoundaryElement.LinkedElementId\r\n                        if leId == ElementId.InvalidElementId: \r\n                            elist.append(None)\r\n                            mlist.append(None)\r\n                        else: \r\n                            elist.append(doc.GetElement(liId).GetLinkDocument().GetElement(leId))\r\n                            if beface:\r\n                                if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)\r\n                                else: mlist.append(doc.GetElement(liId).GetLinkDocument().GetElement(beface.MaterialElementId))\r\n                            else: mlist.append(None)\r\n                else: \r\n                    elist.append(doc.GetElement(eId))\r\n                    if beface:\r\n                        if beface.MaterialElementId == ElementId.InvalidElementId: mlist.append(None)\r\n                        else: mlist.append(doc.GetElement(beface.MaterialElementId))\r\n                    else: mlist.append(None)\r\n                alist.append(InternalUnitToDisplayUnit(bface.GetSubface().Area, unittype))\r\n                flist.append(bface.GetBoundingElementFace())\r\n        return tlist, mlist, alist, flist, elist\r\n    except: return [],[],[],[],[]\r\n\r\nif isinstance(IN[0], list): \r\n    results = [RoomFinishes(x) for x in items]\r\n    OUT = list(zip(*results))\r\nelse: OUT = RoomFinishes(items)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "14ba5c3aaa764262b51a0cd91093fc9f",
       "NodeType": "PythonScriptNode",
@@ -366,8 +366,17 @@
   ],
   "NodeLibraryDependencies": [
     {
-      "Name": "Application.Version.dyf",
-      "ReferenceType": "DYFFile",
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "14ba5c3aaa764262b51a0cd91093fc9f"
+      ]
+    },
+    {
+      "Name": "Clockwork for Dynamo 3.x",
+      "Version": "3.3.0",
+      "ReferenceType": "Package",
       "Nodes": [
         "6932e7d52a6d4ad39732fbbdf9789b86"
       ]
@@ -380,7 +389,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

@@ -17,7 +17,6 @@
   "Nodes": [
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "element",
         "TypeName": "var",
@@ -26,6 +25,7 @@
         "Description": ""
       },
       "Id": "87f38510c9e94c958119d85d995c924f",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -39,14 +39,14 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "area",
       "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "a89fc71b3fd848febc6af9ae71697e90",
@@ -60,15 +60,15 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nspatialElements = UnwrapElement(IN[0])\r\nunittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')\r\n\r\ndef InternalUnitToDisplayUnit(val, unittype):\r\n\tformatoptions = doc.GetUnits().GetFormatOptions(unittype)\r\n\tdispunits = formatoptions.GetUnitTypeId()\r\n\ttry: return UnitUtils.ConvertFromInternalUnits(val,dispunits)\r\n\texcept: return None\r\n\t\r\ndef GetArea(spatialElement):\r\n\tif hasattr(spatialElement, \"Area\"): return InternalUnitToDisplayUnit(spatialElement.Area, unittype)\r\n\telse: return None\r\n\r\nif isinstance(IN[0], list): OUT = [GetArea(x) for x in spatialElements]\r\nelse: OUT = GetArea(spatialElements)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "a23f1c62848c446994852db3824883ab",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "4647ccc5b6894e9182f6823aa4c9bca0",
@@ -92,23 +92,34 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     }
   ],
   "Connectors": [
     {
       "Start": "8ae52758efe24c4c9bcf5fdb569b3793",
       "End": "4647ccc5b6894e9182f6823aa4c9bca0",
-      "Id": "a3b954f8c3b6449f84f51d6093bd943a"
+      "Id": "a3b954f8c3b6449f84f51d6093bd943a",
+      "IsHidden": "False"
     },
     {
       "Start": "5e9977d0f667458f889512b91175a699",
       "End": "a89fc71b3fd848febc6af9ae71697e90",
-      "Id": "345959d3007d4db98f2deec583297945"
+      "Id": "345959d3007d4db98f2deec583297945",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [],
-  "NodeLibraryDependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "a23f1c62848c446994852db3824883ab"
+      ]
+    }
+  ],
   "Author": "None provided",
   "Bindings": [],
   "View": {
@@ -116,12 +127,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -132,35 +143,36 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "87f38510c9e94c958119d85d995c924f",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 312.08010205918174,
         "Y": 31.056263344522115
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "8f1bdb124403406c90d67cefe95d4b2d",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 836.8801020591817,
         "Y": 31.056263344522108
       },
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "a23f1c62848c446994852db3824883ab",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
-        "X": 612.08010205918174,
+        "ShowGeometry": true,
+        "X": 612.0801020591817,
         "Y": 31.056263344522108
       }
     ],
