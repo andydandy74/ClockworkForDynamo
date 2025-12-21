@@ -12,6 +12,9 @@ clr.AddReference("RevitServices")
 import RevitServices
 from RevitServices.Persistence import DocumentManager
 
+clr.AddReference("System")
+from System import Int32
+
 inputdoc = UnwrapElement(IN[1])
 if inputdoc == None:
     doc = DocumentManager.Instance.CurrentDBDocument
@@ -20,7 +23,6 @@ elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.RevitLinkInstance":
 elif inputdoc.GetType().ToString() == "Autodesk.Revit.DB.Document":
     doc = inputdoc
 else: doc = None
-version = IN[2]
 
 names = []
 cats = []
@@ -52,14 +54,13 @@ while iterator.MoveNext():
     thesecats = []
     builtincats = []
     for cat in iterator.Current.Categories:
-        if version > 2024: catID = cat.Id.Value
-        else: catID = cat.Id.IntegerValue
+        catID = cat.Id.Value
         try: thesecats.append(Revit.Elements.Category.ById(catID))
         except:
             # Return null if category is not supported by Dynamo
             # This way the user knows there are unsupported categories assigned
             thesecats.append(None)
-        builtincats.append(System.Enum.GetName(BuiltInCategory, catID))
+        builtincats.append(System.Enum.GetName(Autodesk.Revit.DB.BuiltInCategory, Int32(catID)))
     cats.append(thesecats)
     bics.append(builtincats)
 OUT = (names,cats,vag, pgs, pts, isvis, elems, guids, isinst, bics)

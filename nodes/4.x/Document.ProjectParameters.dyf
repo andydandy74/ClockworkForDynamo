@@ -128,7 +128,7 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n    doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse: doc = None\r\nversion = IN[2]\r\n\r\nnames = []\r\ncats = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\nbics = []\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n    vag.append(iterator.Key.VariesAcrossGroups)\r\n    names.append(iterator.Key.Name)\r\n    pts.append(iterator.Key.GetDataType())\r\n    pgs.append(iterator.Key.GetGroupTypeId())\r\n    isvis.append(iterator.Key.Visible)\r\n    elem = doc.GetElement(iterator.Key.Id)\r\n    elems.append(elem)\r\n    if elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n        guids.append(elem.GuidValue)\r\n    else: guids.append(None)\r\n    if iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n        isinst.append(True)\r\n    else:\r\n        isinst.append(False)\r\n    thesecats = []\r\n    builtincats = []\r\n    for cat in iterator.Current.Categories:\r\n        if version > 2024: catID = cat.Id.Value\r\n        else: catID = cat.Id.IntegerValue\r\n        try: thesecats.append(Revit.Elements.Category.ById(catID))\r\n        except:\r\n            # Return null if category is not supported by Dynamo\r\n            # This way the user knows there are unsupported categories assigned\r\n            thesecats.append(None)\r\n        builtincats.append(System.Enum.GetName(BuiltInCategory, catID))\r\n    cats.append(thesecats)\r\n    bics.append(builtincats)\r\nOUT = (names,cats,vag, pgs, pts, isvis, elems, guids, isinst, bics)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nclr.AddReference(\"System\")\r\nfrom System import Int32\r\n\r\ninputdoc = UnwrapElement(IN[1])\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n    doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse: doc = None\r\n\r\nnames = []\r\ncats = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\nbics = []\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n    vag.append(iterator.Key.VariesAcrossGroups)\r\n    names.append(iterator.Key.Name)\r\n    pts.append(iterator.Key.GetDataType())\r\n    pgs.append(iterator.Key.GetGroupTypeId())\r\n    isvis.append(iterator.Key.Visible)\r\n    elem = doc.GetElement(iterator.Key.Id)\r\n    elems.append(elem)\r\n    if elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n        guids.append(elem.GuidValue)\r\n    else: guids.append(None)\r\n    if iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n        isinst.append(True)\r\n    else:\r\n        isinst.append(False)\r\n    thesecats = []\r\n    builtincats = []\r\n    for cat in iterator.Current.Categories:\r\n        catID = cat.Id.Value\r\n        try: thesecats.append(Revit.Elements.Category.ById(catID))\r\n        except:\r\n            # Return null if category is not supported by Dynamo\r\n            # This way the user knows there are unsupported categories assigned\r\n            thesecats.append(None)\r\n        builtincats.append(System.Enum.GetName(Autodesk.Revit.DB.BuiltInCategory, Int32(catID)))\r\n    cats.append(thesecats)\r\n    bics.append(builtincats)\r\nOUT = (names,cats,vag, pgs, pts, isvis, elems, guids, isinst, bics)",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "146117d840fa492a9a4c4c722866e3a0",
@@ -147,15 +147,6 @@
           "Id": "3d1dba29e91d4d5c95d3b7ae1235802e",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "dcac27ed5f0b40d0af407618e0d4afe4",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -437,63 +428,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "b990ff27907640ba90b928609a668eb9",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "773b94fdd538450dbb9d70f992b14751",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "0977a81d7d5a499db1fb69600ef0b387",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "292d6096a37c4ce2a729bae80dc30839",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "a6d08be2eaa14cc386932533f6919755",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "bc2a859ec4ba4bb4b56b3943b85107dc",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -574,17 +508,9 @@
       "End": "3d1dba29e91d4d5c95d3b7ae1235802e",
       "Id": "11096803ac524df79f22647ff7dd1049",
       "IsHidden": "False"
-    },
-    {
-      "Start": "0977a81d7d5a499db1fb69600ef0b387",
-      "End": "dcac27ed5f0b40d0af407618e0d4afe4",
-      "Id": "732aa60d39c04bf1bf31fd2851f1bfaa",
-      "IsHidden": "False"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [
     {
       "Name": "PythonNet3 Engine",
@@ -592,14 +518,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "146117d840fa492a9a4c4c722866e3a0"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "b990ff27907640ba90b928609a668eb9"
       ]
     }
   ],
@@ -767,16 +685,6 @@
         "ShowGeometry": true,
         "X": 749.8403221272031,
         "Y": 513.4522798918777
-      },
-      {
-        "Id": "b990ff27907640ba90b928609a668eb9",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": -46.768217430786194,
-        "Y": 390.90777556074613
       }
     ],
     "Annotations": [],
