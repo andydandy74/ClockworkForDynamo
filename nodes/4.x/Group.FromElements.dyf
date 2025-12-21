@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nfrom System.Collections.Generic import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef MakeNewGroup(items, name):\r\n    ids = []\r\n    rejects = []\r\n    for item in items:\r\n        if item.Document.GetElement(item.GroupId): rejects.append(item)\r\n        else:\r\n            try: ids.append(item.Id)\r\n            except: rejects.append(item)\r\n    itemsNew = List[ElementId](ids)\r\n    try:\r\n        group = doc.Create.NewGroup(itemsNew)\r\n        group.GroupType.Name = name\r\n    except: \r\n        group = None\r\n        rejects = items\r\n    return group, rejects\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nitems = UnwrapElement(IN[0])\r\nnames = IN[1]\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(IN[1], list):\r\n    if isinstance(IN[0], list): OUT = list(zip(*[MakeNewGroup(x, y) for x, y in zip (items, names)]))\r\n    else: OUT = MakeNewGroup(items, names[0])\r\nelse: OUT = MakeNewGroup(items, names)\r\nTransactionManager.Instance.TransactionTaskDone()",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "9726f83b6b534928999b4f25bd7e3471",
       "NodeType": "PythonScriptNode",
@@ -69,8 +69,8 @@
       "Outputs": [
         {
           "Id": "7df4a6d918894b30848db2ce029090ec",
-          "Name": "",
-          "Description": "Value of expression at line 1",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 0)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -78,8 +78,8 @@
         },
         {
           "Id": "67b558c46e7d419d8b4125d9118a0e3a",
-          "Name": "",
-          "Description": "Value of expression at line 2",
+          "Name": "function",
+          "Description": "DesignScript.Builtin.Get.ValueAtIndex(seq, 1)",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -300,6 +300,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "9726f83b6b534928999b4f25bd7e3471"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.6.0",
       "ReferenceType": "Package",
@@ -315,7 +323,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.3.0.6316",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },

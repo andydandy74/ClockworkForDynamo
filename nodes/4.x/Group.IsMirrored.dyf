@@ -13,7 +13,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\nversion = IN[2]\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nif version > 2024: refGroupType = refgroup.GroupType.Id.Value\r\nelse: refGroupType = refgroup.GroupType.Id.IntegerValue\r\nfor member in refGroupMembers:\r\n    elem = refgroup.Document.GetElement(member)\r\n    if elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n        state = elem.Mirrored\r\n        membernum = counter\r\n        if version > 2024: famtype = elem.GetTypeId().Value\r\n        else: famtype = elem.GetTypeId().IntegerValue\r\n        break\r\n    counter += 1\r\n    \r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n    bools = []\r\n    # Compare Mirrored state with corresponding members of other group instances\r\n    for group in groups:\r\n        # Get number of group members\r\n        theseMembers = group.GetMemberIds()\r\n        theseMembersNum = len(theseMembers)\r\n        # get IDs for comparison\r\n        if version > 2024: \r\n            gtid = group.GroupType.Id.Value\r\n            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().Value\r\n        else: \r\n            gtid = group.GroupType.Id.IntegerValue\r\n            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue\r\n        # Set a flag if any group instance has more members than the reference group instance\r\n        # (only if both are of the same group type)\r\n        if theseMembersNum > numMembers and refGroupType == gtid:\r\n            refGroupIntact = False\r\n            break\r\n        # Return null if group is of another group type\r\n        elif refGroupType != gtid: bools.append(None)\r\n        # Return null for group instances with excluded members\r\n        elif theseMembersNum < numMembers: bools.append(None)\r\n        # Return null if family instance to compare if of a diffent type\r\n        elif ftypeid != famtype: bools.append(None)\r\n        # Otherwise compare Mirrored state\r\n        else: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n            \r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n    \r\nOUT = bools",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "8ea9b94c81574310a87ff9d3e02a3649",
       "NodeType": "PythonScriptNode",
@@ -222,6 +222,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "8ea9b94c81574310a87ff9d3e02a3649"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.12.2",
       "ReferenceType": "Package",
@@ -237,7 +245,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
