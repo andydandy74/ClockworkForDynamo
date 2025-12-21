@@ -18,8 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n    try: \r\n        if version > 2024: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)\r\n        else: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n    except: pass\r\n        \r\ndef GetFilterRuleString(efilter, doc):\r\n    rulestrings = []\r\n    # Filters without rules will arrive as nulls:\r\n    if not efilter: return '<<<No rules defined>>>'\r\n    efilterstr = efilter.ToString()        \r\n    if \"And\" in efilterstr: sep = \" AND \"\r\n    elif \"Or\" in efilterstr: sep = \" OR \"\r\n    else: sep = \"\"\r\n    if hasattr(efilter, \"GetFilters\"): filters = efilter.GetFilters()\r\n    else: filters = [efilter]\r\n    for filter in filters:\r\n        if hasattr(filter, \"GetRules\"):\r\n            for rule in filter.GetRules():\r\n                useRule = True\r\n                # inverted rules\r\n                ruleInverted = \"\"\r\n                if hasattr(rule, \"GetInnerRule\"): \r\n                    rule = rule.GetInnerRule()\r\n                    ruleInverted = \"Not\"\r\n                # rule parameters\r\n                paramId = rule.GetRuleParameter()\r\n                thisparam = doc.GetElement(paramId)\r\n                if thisparam: thisparam = thisparam.Name\r\n                elif paramId != ElementId.InvalidElementId: \r\n                    if version > 2024: thisparam = bips[paramId.Value]\r\n                    else: thisparam = bips[paramId.IntegerValue]\r\n                # discard the rule if the parameter name cannot be resolved\r\n                else: useRule = False\r\n                # rule evaluators\r\n                if hasattr(rule, \"GetEvaluator\"):\r\n                    thiseval = rule.GetEvaluator().ToString().replace(\"Autodesk.Revit.DB.Filter\",\"\")\r\n                    thiseval = thiseval.replace(\"Numeric\",\"\")\r\n                    thiseval = thiseval.replace(\"String\",\"\")\r\n                    thiseval = thiseval + ruleInverted\r\n                    if thiseval == \"Equals\": thiseval = \"==\"\r\n                    elif thiseval == \"EqualsNot\": thiseval = \"!=\"\r\n                    elif thiseval == \"Greater\": thiseval = \">\"\r\n                    elif thiseval == \"GreaterOrEqual\": thiseval = \">=\"\r\n                    elif thiseval == \"Less\": thiseval = \"<\"\r\n                    elif thiseval == \"LessOrEqual\": thiseval = \"<=\"\r\n                # rules without comparators\r\n                elif hasattr(rule, \"ParameterName\"): thiseval = \"Exists\"\r\n                elif rule.GetType().Name == \"HasValueFilterRule\": thiseval = \"HasValue\"\r\n                elif rule.GetType().Name == \"HasNoValueFilterRule\": thiseval = \"HasNoValue\"\r\n                else: thiseval = \"\"\r\n                # rule values\r\n                if hasattr(rule, \"RuleString\"): thisval = rule.RuleString\r\n                elif hasattr(rule, \"RuleValue\"): thisval = str(rule.RuleValue)\r\n                else: thisval = \"\"\r\n                if useRule: rulestrings.append((thisparam + \" \" + thiseval + \" \" + thisval).strip())\r\n        else: rulestrings.append(\"(\" + GetFilterRuleString(filter, doc)+ \")\")\r\n    rulestrings.sort()\r\n    return sep.join(rulestrings)\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleString(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleString(items.GetElementFilter(), items.Document)\r\n",
-      "Engine": "CPython3",
-      "EngineName": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "452c5f22012d48239833da816a48d186",
       "NodeType": "PythonScriptNode",
@@ -55,7 +54,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Führt ein eingebettetes Python-Skript aus."
+      "Description": "Runs an embedded Python script."
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
@@ -81,7 +80,7 @@
         }
       ],
       "Replication": "Disabled",
-      "Description": "Ein Funktionsparameter zur Verwendung mit benutzerdefinierten Blöcken.\r\n\r\nSie können den Typ und den Vorgabewert für den Parameter angeben, z. B.\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
+      "Description": "A function parameter, use with custom nodes.\r\n\r\nYou can specify the type and default value for parameter. E.g.,\r\n\r\ninput : var[]..[]\r\nvalue : bool = false"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
@@ -102,7 +101,7 @@
       ],
       "Outputs": [],
       "Replication": "Disabled",
-      "Description": "Eine Funktionsausgabe zur Verwendung mit benutzerdefinierten Blöcken"
+      "Description": "A function output, use with custom nodes"
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
@@ -115,7 +114,7 @@
         {
           "Id": "7d0cf341405848f6aed22d4119f7b309",
           "Name": "Name",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -124,7 +123,7 @@
         {
           "Id": "de7e9244553b426b8f30770ea6d82857",
           "Name": "Version",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -133,7 +132,7 @@
         {
           "Id": "d19575d4bf9d49219d7d10f9307277bb",
           "Name": "Build",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -142,7 +141,7 @@
         {
           "Id": "33cafd7c3af9421088ef1131819c2ba0",
           "Name": "Language",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -151,7 +150,7 @@
         {
           "Id": "4fd72e0417e649e6b0fffd4ce9010bbd",
           "Name": "fullVersion",
-          "Description": "Rückgabewert",
+          "Description": "return value",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -187,6 +186,14 @@
   ],
   "NodeLibraryDependencies": [
     {
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "452c5f22012d48239833da816a48d186"
+      ]
+    },
+    {
       "Name": "Clockwork for Dynamo 2.x",
       "Version": "2.12.2",
       "ReferenceType": "Package",
@@ -202,12 +209,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.19.3.6394",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "_Hintergrundvorschau",
+      "Name": "_Background Preview",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -228,7 +235,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 545.6231812798801,
-        "Y": -13.363339800874641
+        "Y": -13.363339800874627
       },
       {
         "Id": "5edee556dbc949579a88b4d8b527efb8",
@@ -238,7 +245,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": -156.77681872011988,
-        "Y": -86.296596097318442
+        "Y": -86.29659609731844
       },
       {
         "Id": "4ac7848f69254375b85ae5c0f3491cc6",
@@ -247,7 +254,7 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 820.02318127988008,
+        "X": 820.0231812798801,
         "Y": -12.296596097318442
       },
       {
@@ -258,12 +265,12 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": -156.77681872011988,
-        "Y": 61.703403902681558
+        "Y": 61.70340390268156
       }
     ],
     "Annotations": [],
     "X": -511.86332216026466,
     "Y": 113.58694858194349,
-    "Zoom": 1.4596225598868591
+    "Zoom": 1.459622559886859
   }
 }

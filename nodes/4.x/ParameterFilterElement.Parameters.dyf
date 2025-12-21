@@ -18,7 +18,7 @@
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
       "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n    try: \r\n        if version > 2024: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)\r\n        else: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n    except: pass\r\n        \r\ndef GetFilterRuleParams(efilter, doc):\r\n    params = []\r\n    if efilter:\r\n        for filter in efilter.GetFilters():\r\n            if hasattr(filter, \"GetRules\"):\r\n                for rule in filter.GetRules():\r\n                    paramId = rule.GetRuleParameter()\r\n                    thisparam = doc.GetElement(paramId)\r\n                    if thisparam: thisparam = thisparam.Name\r\n                    elif paramId != ElementId.InvalidElementId: \r\n                        if version > 2024: thisparam = bips[paramId.Value]\r\n                        else: thisparam = bips[paramId.IntegerValue]\r\n                    params.append(thisparam.strip())\r\n            else: params.append(GetFilterRuleParams(filter, doc))\r\n    return params\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleParams(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleParams(items.GetElementFilter(), items.Document)",
-      "Engine": "CPython3",
+      "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "5503dea3d84a4f88b56e21229d7eb948",
       "NodeType": "PythonScriptNode",
@@ -186,8 +186,17 @@
   ],
   "NodeLibraryDependencies": [
     {
-      "Name": "Application.Version.dyf",
-      "ReferenceType": "DYFFile",
+      "Name": "PythonNet3 Engine",
+      "Version": "1.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "5503dea3d84a4f88b56e21229d7eb948"
+      ]
+    },
+    {
+      "Name": "Clockwork for Dynamo 3.x",
+      "Version": "3.3.0",
+      "ReferenceType": "Package",
       "Nodes": [
         "05bfccb8bf7947f7add5ffff30b2a8bc"
       ]
@@ -200,7 +209,7 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "3.4.1.7055",
+      "Version": "3.6.1.9895",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
