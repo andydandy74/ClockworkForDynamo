@@ -17,7 +17,7 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n    try: \r\n        if version > 2024: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)\r\n        else: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)\r\n    except: pass\r\n        \r\ndef GetFilterRuleParams(efilter, doc):\r\n    params = []\r\n    if efilter:\r\n        for filter in efilter.GetFilters():\r\n            if hasattr(filter, \"GetRules\"):\r\n                for rule in filter.GetRules():\r\n                    paramId = rule.GetRuleParameter()\r\n                    thisparam = doc.GetElement(paramId)\r\n                    if thisparam: thisparam = thisparam.Name\r\n                    elif paramId != ElementId.InvalidElementId: \r\n                        if version > 2024: thisparam = bips[paramId.Value]\r\n                        else: thisparam = bips[paramId.IntegerValue]\r\n                    params.append(thisparam.strip())\r\n            else: params.append(GetFilterRuleParams(filter, doc))\r\n    return params\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleParams(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleParams(items.GetElementFilter(), items.Document)",
+      "Code": "import clr\r\nimport System\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nitems = UnwrapElement(IN[0])\r\nbips = {}\r\nfor bip in [eval(\"BuiltInParameter.\"+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:\r\n    try: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)\r\n    except: pass\r\n        \r\ndef GetFilterRuleParams(efilter, doc):\r\n    params = []\r\n    if efilter:\r\n        for filter in efilter.GetFilters():\r\n            if hasattr(filter, \"GetRules\"):\r\n                for rule in filter.GetRules():\r\n                    paramId = rule.GetRuleParameter()\r\n                    thisparam = doc.GetElement(paramId)\r\n                    if thisparam: thisparam = thisparam.Name\r\n                    elif paramId != ElementId.InvalidElementId: thisparam = bips[paramId.Value]\r\n                    params.append(thisparam.strip())\r\n            else: params.append(GetFilterRuleParams(filter, doc))\r\n    return params\r\n\r\nif isinstance(IN[0], list): OUT = [GetFilterRuleParams(x.GetElementFilter(), x.Document) for x in items]\r\nelse: OUT = GetFilterRuleParams(items.GetElementFilter(), items.Document)",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "5503dea3d84a4f88b56e21229d7eb948",
@@ -27,15 +27,6 @@
           "Id": "45e0a7208d794fb69104cb8a72a91bb3",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "7f65895cc79149c7b799f3631ac920ca",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -102,63 +93,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "05bfccb8bf7947f7add5ffff30b2a8bc",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "ebf55c4ddac74cd39e30562fef79aa23",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "0e45e34020e54f3a87d977abe0775b46",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "2c18d19df8304c69b5de737b18934f6f",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e1884ef67be6447dba1cb900cad24323",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "19ee8fe923ee4711b5f7287669b1ff9f",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -173,17 +107,9 @@
       "End": "45e0a7208d794fb69104cb8a72a91bb3",
       "Id": "0e5d74bb08cf448d901673c5f940743f",
       "IsHidden": "False"
-    },
-    {
-      "Start": "0e45e34020e54f3a87d977abe0775b46",
-      "End": "7f65895cc79149c7b799f3631ac920ca",
-      "Id": "cfa89467039a433b821da99f6527d7b9",
-      "IsHidden": "False"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [
     {
       "Name": "PythonNet3 Engine",
@@ -191,14 +117,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "5503dea3d84a4f88b56e21229d7eb948"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 3.x",
-      "Version": "3.3.0",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "05bfccb8bf7947f7add5ffff30b2a8bc"
       ]
     }
   ],
@@ -235,7 +153,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 600.2074227637577,
-        "Y": 1.4504362577231689
+        "Y": -35.54956374227683
       },
       {
         "Id": "a829d700be294051958f0892bb2d7aae",
@@ -245,7 +163,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": -102.1925772362423,
-        "Y": -72.54956374227683
+        "Y": -35.54956374227683
       },
       {
         "Id": "c78bb9f7da4c4817893ca43c6c2d455c",
@@ -255,22 +173,12 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 874.6074227637577,
-        "Y": 1.4504362577231689
-      },
-      {
-        "Id": "05bfccb8bf7947f7add5ffff30b2a8bc",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": -102.1925772362423,
-        "Y": 75.45043625772317
+        "Y": -35.54956374227683
       }
     ],
     "Annotations": [],
-    "X": 93.40787228328064,
-    "Y": 353.376991018911,
-    "Zoom": 0.8982229402261714
+    "X": -1433.5752722385644,
+    "Y": 324.21210958452286,
+    "Zoom": 2.4218461964946125
   }
 }

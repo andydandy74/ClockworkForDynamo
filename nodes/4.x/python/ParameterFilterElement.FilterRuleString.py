@@ -8,12 +8,9 @@ import Revit
 clr.ImportExtensions(Revit.Elements)
 
 items = UnwrapElement(IN[0])
-version = IN[1]
 bips = {}
 for bip in [eval("BuiltInParameter."+x) for x in dir(BuiltInParameter) if not any(y.islower() for y in x)]:
-    try: 
-        if version > 2024: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)
-        else: bips[ElementId(bip).IntegerValue] = LabelUtils.GetLabelFor(bip)
+    try: bips[ElementId(bip).Value] = LabelUtils.GetLabelFor(bip)
     except: pass
         
 def GetFilterRuleString(efilter, doc):
@@ -39,9 +36,7 @@ def GetFilterRuleString(efilter, doc):
                 paramId = rule.GetRuleParameter()
                 thisparam = doc.GetElement(paramId)
                 if thisparam: thisparam = thisparam.Name
-                elif paramId != ElementId.InvalidElementId: 
-                    if version > 2024: thisparam = bips[paramId.Value]
-                    else: thisparam = bips[paramId.IntegerValue]
+                elif paramId != ElementId.InvalidElementId: thisparam = bips[paramId.Value]
                 # discard the rule if the parameter name cannot be resolved
                 else: useRule = False
                 # rule evaluators
