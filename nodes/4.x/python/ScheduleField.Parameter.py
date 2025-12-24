@@ -7,8 +7,7 @@ def GetScheduleFieldParam(schedulefield):
     if hasattr(schedulefield, "ParameterId"): 
         pId = schedulefield.ParameterId
         if pId != ElementId.InvalidElementId: 
-            if version > 2024: pIdVal = pId.Value
-            else: pIdVal = pId.IntegerValue
+            pIdVal = pId.Value
             # BuiltInParameters
             if pIdVal < 0: 
                 try: return System.Enum.GetName(BuiltInParameter, pIdVal)
@@ -19,7 +18,6 @@ def GetScheduleFieldParam(schedulefield):
     else: return None
 
 schedulefields = UnwrapElement(IN[0])
-version = IN[1]
 
 if isinstance(IN[0], list): OUT = [GetScheduleFieldParam(x) for x in schedulefields]
 else: OUT = GetScheduleFieldParam(schedulefields)
