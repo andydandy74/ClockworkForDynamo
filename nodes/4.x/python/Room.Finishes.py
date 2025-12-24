@@ -14,7 +14,6 @@ from RevitServices.Persistence import DocumentManager
 doc = DocumentManager.Instance.CurrentDBDocument
 
 items = UnwrapElement(IN[0])
-version = IN[1]
 unittype = ForgeTypeId('autodesk.spec.aec:area-2.0.0')
 
 def InternalUnitToDisplayUnit(val, unittype):
@@ -40,9 +39,7 @@ def RoomFinishes(item):
         for face in results.GetGeometry().Faces:
             for bface in results.GetBoundaryFaceInfo(face):
                 beface = bface.GetBoundingElementFace()
-                if beface:
-                    if version > 2024: befaceMatId = beface.MaterialElementId.Value
-                    else: befaceMatId = beface.MaterialElementId.IntegerValue
+                if beface: befaceMatId = beface.MaterialElementId.Value
                 tlist.append(System.Enum.GetName(SubfaceType, bface.SubfaceType))
                 eId = bface.SpatialBoundaryElement.HostElementId
                 if eId == ElementId.InvalidElementId:
