@@ -20,10 +20,8 @@ guids = []
 isinst = []
 
 if not isinstance(IN[0], list): search_cats = [search_cats]
-version = IN[3]
 for search_cat in search_cats:
-    if version > 2024: search_ids.append(search_cat.Id.Value)
-    else: search_ids.append(search_cat.Id.IntegerValue)
+    search_ids.append(search_cat.Id.Value)
     names.append(list())
     vag.append(list())
     pgs.append(list())
@@ -47,8 +45,7 @@ iterator = doc.ParameterBindings.ForwardIterator()
 while iterator.MoveNext():
     for cat in iterator.Current.Categories:
         i = 0
-        if version > 2024: catID = cat.Id.Value
-        else: catID = cat.Id.IntegerValue
+        catID = cat.Id.Value
         for search_id in search_ids:
             if catID == search_id:
                 names[i].append(iterator.Key.Name)

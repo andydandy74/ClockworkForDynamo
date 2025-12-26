@@ -17,7 +17,7 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nsearch_cats = UnwrapElement(IN[0])\r\nsearch_ids = []\r\nnames = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\n\r\nif not isinstance(IN[0], list): search_cats = [search_cats]\r\nversion = IN[3]\r\nfor search_cat in search_cats:\r\n    if version > 2024: search_ids.append(search_cat.Id.Value)\r\n    else: search_ids.append(search_cat.Id.IntegerValue)\r\n    names.append(list())\r\n    vag.append(list())\r\n    pgs.append(list())\r\n    pts.append(list())\r\n    uts.append(list())\r\n    isvis.append(list())\r\n    elems.append(list())\r\n    guids.append(list())\r\n    isinst.append(list())\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n    doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse: doc = None\r\n\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n    for cat in iterator.Current.Categories:\r\n        i = 0\r\n        if version > 2024: catID = cat.Id.Value\r\n        else: catID = cat.Id.IntegerValue\r\n        for search_id in search_ids:\r\n            if catID == search_id:\r\n                names[i].append(iterator.Key.Name)\r\n                vag[i].append(iterator.Key.VariesAcrossGroups)\r\n                pts[i].append(iterator.Key.GetDataType())\r\n                pgs[i].append(iterator.Key.GetGroupTypeId())\r\n                isvis[i].append(iterator.Key.Visible)\r\n                elem = doc.GetElement(iterator.Key.Id)\r\n                elems[i].append(elem)\r\n                if elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n                    guids[i].append(elem.GuidValue)\r\n                else: guids[i].append(None)\r\n                if iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n                    isinst[i].append(True)\r\n                else: isinst[i].append(False)\r\n            i += 1\r\nif isinstance(IN[0], list): OUT = (names, vag, pgs, pts, isvis, elems, guids, isinst)\r\nelse: OUT = (names[0], vag[0], pgs[0], pts[0], isvis[0], elems[0], guids[0], isinst[0])",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\nimport Autodesk\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\nsearch_cats = UnwrapElement(IN[0])\r\nsearch_ids = []\r\nnames = []\r\nvag = []\r\npgs = []\r\npts = []\r\nuts = []\r\nisvis = []\r\nelems = []\r\nguids = []\r\nisinst = []\r\n\r\nif not isinstance(IN[0], list): search_cats = [search_cats]\r\nfor search_cat in search_cats:\r\n    search_ids.append(search_cat.Id.Value)\r\n    names.append(list())\r\n    vag.append(list())\r\n    pgs.append(list())\r\n    pts.append(list())\r\n    uts.append(list())\r\n    isvis.append(list())\r\n    elems.append(list())\r\n    guids.append(list())\r\n    isinst.append(list())\r\n\r\ninputdoc = UnwrapElement(IN[2])\r\nif inputdoc == None:\r\n    doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\":\r\n    doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\":\r\n    doc = inputdoc\r\nelse: doc = None\r\n\r\niterator = doc.ParameterBindings.ForwardIterator()\r\nwhile iterator.MoveNext():\r\n    for cat in iterator.Current.Categories:\r\n        i = 0\r\n        catID = cat.Id.Value\r\n        for search_id in search_ids:\r\n            if catID == search_id:\r\n                names[i].append(iterator.Key.Name)\r\n                vag[i].append(iterator.Key.VariesAcrossGroups)\r\n                pts[i].append(iterator.Key.GetDataType())\r\n                pgs[i].append(iterator.Key.GetGroupTypeId())\r\n                isvis[i].append(iterator.Key.Visible)\r\n                elem = doc.GetElement(iterator.Key.Id)\r\n                elems[i].append(elem)\r\n                if elem.GetType().ToString() == 'Autodesk.Revit.DB.SharedParameterElement':\r\n                    guids[i].append(elem.GuidValue)\r\n                else: guids[i].append(None)\r\n                if iterator.Current.GetType().ToString() == 'Autodesk.Revit.DB.InstanceBinding':\r\n                    isinst[i].append(True)\r\n                else: isinst[i].append(False)\r\n            i += 1\r\nif isinstance(IN[0], list): OUT = (names, vag, pgs, pts, isvis, elems, guids, isinst)\r\nelse: OUT = (names[0], vag[0], pgs[0], pts[0], isvis[0], elems[0], guids[0], isinst[0])",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "1668f7c6d9374c59bd7d635fb9213ec8",
@@ -45,15 +45,6 @@
           "Id": "be3322ef9be1411681a87ca479740897",
           "Name": "IN[2]",
           "Description": "Input #2",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "21dcdaca576b4c1aaba233e8443c178f",
-          "Name": "IN[3]",
-          "Description": "Input #3",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -452,63 +443,6 @@
       ],
       "Replication": "Auto",
       "Description": "Returns a category from a category, a Dynamo-wrapped category, a BuiltInCategory or a string representing a BuiltInCategory."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "2fab223371e1410d82d5ae85ad3cd697",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "27dbb62ea50d4755902bcd3c7e057612",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "16a5de0f6c6a4a8c9be1b26a72fe10db",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4cffaef255b344e0b4efdb3adb34516e",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "e95986ab4f134271b413f92ca8fb1ee0",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b7533902878e46859a48f3f8248d2da8",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -589,17 +523,10 @@
       "End": "424f5c04eff543069f644c62d4d9da41",
       "Id": "5dfc9a7650384eb0867d69bf754c10f2",
       "IsHidden": "False"
-    },
-    {
-      "Start": "16a5de0f6c6a4a8c9be1b26a72fe10db",
-      "End": "21dcdaca576b4c1aaba233e8443c178f",
-      "Id": "02e1e9ff0f534d10856c88d345b17564",
-      "IsHidden": "False"
     }
   ],
   "Dependencies": [
-    "3fe585a9-94df-4dce-99e1-306888ccb457",
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
+    "3fe585a9-94df-4dce-99e1-306888ccb457"
   ],
   "NodeLibraryDependencies": [
     {
@@ -616,14 +543,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "dd864fc635894be6b10f6c4c26f21f55"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "2fab223371e1410d82d5ae85ad3cd697"
       ]
     }
   ],
@@ -791,16 +710,6 @@
         "ShowGeometry": true,
         "X": -62.51611551070391,
         "Y": 376.0820375865479
-      },
-      {
-        "Id": "2fab223371e1410d82d5ae85ad3cd697",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": 179.76636568010053,
-        "Y": 740.3143786394638
       }
     ],
     "Annotations": [],
