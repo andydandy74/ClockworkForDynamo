@@ -17,7 +17,7 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetAllInstancesInView(item, view):\r\n    collector = FilteredElementCollector(item.Document)\r\n    if version > 2024: catID = item.Category.Id.Value\r\n    else: catID = item.Category.Id.IntegerValue\r\n    bic = System.Enum.ToObject(BuiltInCategory, catID)\r\n    viewfilter = ElementOwnerViewFilter(view.Id)\r\n    collector.WherePasses(viewfilter).OfCategory(bic)\r\n    # This is a workaround\r\n    # because I was too lazy to learn\r\n    # how to implement LINQ in Python\r\n    if version > 2024: return [x for x in collector.ToElements() if x.GetTypeId().Value == item.GetTypeId().Value]\r\n    else: return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == item.GetTypeId().IntegerValue]\r\n\r\nelements = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\nversion = IN[2]\r\n\r\nif isinstance(IN[0], list): OUT = [GetAllInstancesInView(x, view) for x in elements]\r\nelse: OUT = GetAllInstancesInView(elements, view)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\ndef GetAllInstancesInView(item, view):\r\n    collector = FilteredElementCollector(item.Document)\r\n    catID = item.Category.Id.Value\r\n    bic = System.Enum.ToObject(BuiltInCategory, catID)\r\n    viewfilter = ElementOwnerViewFilter(view.Id)\r\n    collector.WherePasses(viewfilter).OfCategory(bic)\r\n    return [x for x in collector.ToElements() if x.GetTypeId().Value == item.GetTypeId().Value]\r\n\r\nelements = UnwrapElement(IN[0])\r\nview = UnwrapElement(IN[1])\r\n\r\nif isinstance(IN[0], list): OUT = [GetAllInstancesInView(x, view) for x in elements]\r\nelse: OUT = GetAllInstancesInView(elements, view)",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "7156f135091e4092a8f394df42ecdfd5",
@@ -36,15 +36,6 @@
           "Id": "e528460f34f944c895e04c9ab410facf",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "601afd9839ce4135b83bc991f8e7111b",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -137,63 +128,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "ec5661995b224802959e6e9523991e19",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "0311c3eb6bd341fe8112dc7c8a01cedc",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "5b5cb972275546e98b8c14c8d240b154",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "5d12c551a2a24afdbf06370e19cd4e06",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "c6a83de032314b28a88da5021d570c54",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "a173970af12548e082e128f73e1fc42c",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -214,17 +148,9 @@
       "End": "e528460f34f944c895e04c9ab410facf",
       "Id": "bb1a4513a5d84dc7bf33a37273a00cb4",
       "IsHidden": "False"
-    },
-    {
-      "Start": "5b5cb972275546e98b8c14c8d240b154",
-      "End": "601afd9839ce4135b83bc991f8e7111b",
-      "Id": "2090d01157aa4d92bbb0e2ae69f7d85a",
-      "IsHidden": "False"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [
     {
       "Name": "PythonNet3 Engine",
@@ -232,14 +158,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "7156f135091e4092a8f394df42ecdfd5"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "ec5661995b224802959e6e9523991e19"
       ]
     }
   ],
@@ -276,7 +194,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 488.023128476258,
-        "Y": 62.86092581517855
+        "Y": -2.2390741848214475
       },
       {
         "Id": "ad10938a72d4498da515e890750e5278",
@@ -286,7 +204,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 153.62312847625805,
-        "Y": -62.13907418482145
+        "Y": -58.23907418482145
       },
       {
         "Id": "0457744cdef54e2a84e91c86fb9fb5c8",
@@ -296,7 +214,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 153.62312847625805,
-        "Y": 85.86092581517855
+        "Y": 87.76092581517855
       },
       {
         "Id": "a3b204ee06684be8952baa5c5c4f0897",
@@ -306,17 +224,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 762.423128476258,
-        "Y": 62.86092581517855
-      },
-      {
-        "Id": "ec5661995b224802959e6e9523991e19",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": 153.62312847625805,
-        "Y": 232.86092581517855
+        "Y": -2.2390741848214475
       }
     ],
     "Annotations": [],
