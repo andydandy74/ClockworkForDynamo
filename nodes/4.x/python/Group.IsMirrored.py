@@ -8,22 +8,19 @@ clr.ImportExtensions(Revit.Elements)
 
 refgroup = UnwrapElement(IN[0])
 groups = UnwrapElement(IN[1])
-version = IN[2]
 
 # Get Mirrored state of first family instance in reference group instance
 refGroupMembers = refgroup.GetMemberIds()
 numMembers = len(refGroupMembers)
 counter = 0
 membernum = None
-if version > 2024: refGroupType = refgroup.GroupType.Id.Value
-else: refGroupType = refgroup.GroupType.Id.IntegerValue
+refGroupType = refgroup.GroupType.Id.Value
 for member in refGroupMembers:
     elem = refgroup.Document.GetElement(member)
     if elem.GetType().ToString() == "Autodesk.Revit.DB.FamilyInstance":
         state = elem.Mirrored
         membernum = counter
-        if version > 2024: famtype = elem.GetTypeId().Value
-        else: famtype = elem.GetTypeId().IntegerValue
+        famtype = elem.GetTypeId().Value
         break
     counter += 1
     
@@ -40,12 +37,8 @@ else:
         theseMembers = group.GetMemberIds()
         theseMembersNum = len(theseMembers)
         # get IDs for comparison
-        if version > 2024: 
-            gtid = group.GroupType.Id.Value
-            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().Value
-        else: 
-            gtid = group.GroupType.Id.IntegerValue
-            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue
+        gtid = group.GroupType.Id.Value
+        ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().Value
         # Set a flag if any group instance has more members than the reference group instance
         # (only if both are of the same group type)
         if theseMembersNum > numMembers and refGroupType == gtid:

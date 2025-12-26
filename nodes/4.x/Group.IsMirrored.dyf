@@ -12,7 +12,7 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\nversion = IN[2]\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nif version > 2024: refGroupType = refgroup.GroupType.Id.Value\r\nelse: refGroupType = refgroup.GroupType.Id.IntegerValue\r\nfor member in refGroupMembers:\r\n    elem = refgroup.Document.GetElement(member)\r\n    if elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n        state = elem.Mirrored\r\n        membernum = counter\r\n        if version > 2024: famtype = elem.GetTypeId().Value\r\n        else: famtype = elem.GetTypeId().IntegerValue\r\n        break\r\n    counter += 1\r\n    \r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n    bools = []\r\n    # Compare Mirrored state with corresponding members of other group instances\r\n    for group in groups:\r\n        # Get number of group members\r\n        theseMembers = group.GetMemberIds()\r\n        theseMembersNum = len(theseMembers)\r\n        # get IDs for comparison\r\n        if version > 2024: \r\n            gtid = group.GroupType.Id.Value\r\n            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().Value\r\n        else: \r\n            gtid = group.GroupType.Id.IntegerValue\r\n            ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().IntegerValue\r\n        # Set a flag if any group instance has more members than the reference group instance\r\n        # (only if both are of the same group type)\r\n        if theseMembersNum > numMembers and refGroupType == gtid:\r\n            refGroupIntact = False\r\n            break\r\n        # Return null if group is of another group type\r\n        elif refGroupType != gtid: bools.append(None)\r\n        # Return null for group instances with excluded members\r\n        elif theseMembersNum < numMembers: bools.append(None)\r\n        # Return null if family instance to compare if of a diffent type\r\n        elif ftypeid != famtype: bools.append(None)\r\n        # Otherwise compare Mirrored state\r\n        else: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n            \r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n    \r\nOUT = bools",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nrefgroup = UnwrapElement(IN[0])\r\ngroups = UnwrapElement(IN[1])\r\n\r\n# Get Mirrored state of first family instance in reference group instance\r\nrefGroupMembers = refgroup.GetMemberIds()\r\nnumMembers = len(refGroupMembers)\r\ncounter = 0\r\nmembernum = None\r\nrefGroupType = refgroup.GroupType.Id.Value\r\nfor member in refGroupMembers:\r\n    elem = refgroup.Document.GetElement(member)\r\n    if elem.GetType().ToString() == \"Autodesk.Revit.DB.FamilyInstance\":\r\n        state = elem.Mirrored\r\n        membernum = counter\r\n        famtype = elem.GetTypeId().Value\r\n        break\r\n    counter += 1\r\n    \r\n# Default values for flags\r\nrefGroupIntact = True\r\nnoFamInsts = False\r\n# Set a flag if the reference group contains no family instances\r\nif membernum == None: noFamInsts = True\r\nelse:\r\n    bools = []\r\n    # Compare Mirrored state with corresponding members of other group instances\r\n    for group in groups:\r\n        # Get number of group members\r\n        theseMembers = group.GetMemberIds()\r\n        theseMembersNum = len(theseMembers)\r\n        # get IDs for comparison\r\n        gtid = group.GroupType.Id.Value\r\n        ftypeid = group.Document.GetElement(theseMembers[membernum]).GetTypeId().Value\r\n        # Set a flag if any group instance has more members than the reference group instance\r\n        # (only if both are of the same group type)\r\n        if theseMembersNum > numMembers and refGroupType == gtid:\r\n            refGroupIntact = False\r\n            break\r\n        # Return null if group is of another group type\r\n        elif refGroupType != gtid: bools.append(None)\r\n        # Return null for group instances with excluded members\r\n        elif theseMembersNum < numMembers: bools.append(None)\r\n        # Return null if family instance to compare if of a diffent type\r\n        elif ftypeid != famtype: bools.append(None)\r\n        # Otherwise compare Mirrored state\r\n        else: bools.append(group.Document.GetElement(theseMembers[membernum]).Mirrored != state)\r\n            \r\n# Return null for all groups if the first group has excluded members\r\n# or if it does not contain any fanily instances\r\nif not refGroupIntact or noFamInsts: bools = [None] * len(groups)\r\n    \r\nOUT = bools",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "8ea9b94c81574310a87ff9d3e02a3649",
@@ -31,15 +31,6 @@
           "Id": "f2538c8d09f347e08caa760dd67b6149",
           "Name": "IN[1]",
           "Description": "Input #1",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d376a02a29554108abe51d3c1329e236",
-          "Name": "IN[2]",
-          "Description": "Input #2",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -132,63 +123,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "958c95470e2a43ad9df238d724969d16",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "b220ab33143944dab33bb5c9d3ed0634",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4caa31b015e1413494b2066ac1bd149b",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "4dc6e15dcaa143248db2733c32d954a9",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "00f4f4ef59334f4da653f6d20351f8c4",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "91224a75016f4724a6db852b7439dee4",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -209,17 +143,9 @@
       "End": "f2538c8d09f347e08caa760dd67b6149",
       "Id": "5db8c33eb1924480b087d849ba63498e",
       "IsHidden": "False"
-    },
-    {
-      "Start": "4caa31b015e1413494b2066ac1bd149b",
-      "End": "d376a02a29554108abe51d3c1329e236",
-      "Id": "8ee49959d0e942af881364098e72aa86",
-      "IsHidden": "False"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [
     {
       "Name": "PythonNet3 Engine",
@@ -227,14 +153,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "8ea9b94c81574310a87ff9d3e02a3649"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "958c95470e2a43ad9df238d724969d16"
       ]
     }
   ],
@@ -271,7 +189,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 361.08468337958686,
-        "Y": 107.53055286677358
+        "Y": 42.43055286677358
       },
       {
         "Id": "3f0ac3ecd63f4f40971bcfcaf7ebba5e",
@@ -281,7 +199,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 10.684683379586886,
-        "Y": -17.469447133226424
+        "Y": -13.569447133226419
       },
       {
         "Id": "eb6d1c779dac4bd28a9e9f35500bf40c",
@@ -291,7 +209,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 10.684683379586886,
-        "Y": 130.53055286677358
+        "Y": 132.43055286677358
       },
       {
         "Id": "a8c846c2b30c46cba1887d3198bfd6fb",
@@ -301,17 +219,7 @@
         "Excluded": false,
         "ShowGeometry": true,
         "X": 635.4846833795868,
-        "Y": 107.53055286677358
-      },
-      {
-        "Id": "958c95470e2a43ad9df238d724969d16",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": 10.684683379586886,
-        "Y": 277.5305528667736
+        "Y": 42.43055286677358
       }
     ],
     "Annotations": [],
