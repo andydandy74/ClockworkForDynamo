@@ -36,7 +36,6 @@ inc_invis = IN[2]
 view = UnwrapElement(IN[3])
 inserts = UnwrapElement(IN[4])
 remove_inserts = IN[5]
-version = IN[6]
 revitlist = list()
 dynlist = list()
 catlist = list()
@@ -67,8 +66,7 @@ for item in items:
             try:
                 graphstyle = doc.GetElement(geo.GraphicsStyleId)
                 if graphstyle != None:
-                    if version > 2024: cats.append(Revit.Elements.Category.ById(graphstyle.GraphicsStyleCategory.Id.Value))
-                    else: cats.append(Revit.Elements.Category.ById(graphstyle.GraphicsStyleCategory.Id.IntegerValue))
+                    cats.append(Revit.Elements.Category.ById(graphstyle.GraphicsStyleCategory.Id.Value))
                 else: cats.append(None)
             except: cats.append(None)
         dynlist.append(dyn_geos)
