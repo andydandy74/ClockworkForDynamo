@@ -64,7 +64,7 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\ndef GetCategory(item):\r\n    if not item: return None, None\r\n    objtype = None\r\n    if hasattr(item, \"GetType\"): objtype = item.GetType().ToString()\r\n    returnID = None\r\n    returnIDs = None\r\n    returnCat = None\r\n    returnBic = None\r\n    if objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n    elif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n    elif objtype == \"Revit.Application.Document\":\r\n        if item.IsFamilyDocument: \r\n            clr.AddReference(\"RevitServices\")\r\n            import RevitServices\r\n            from RevitServices.Persistence import DocumentManager\r\n            returnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Category\": \r\n        if item.Parent: returnID = item.Parent.Id\r\n    elif hasattr(item, \"Category\"): \r\n        if item.Category: returnID = item.Category.Id\r\n    if returnID:\r\n        if version > 2024: returnIDval = returnID.Value\r\n        else: returnIDval = returnID.IntegerValue\r\n        returnBic = System.Enum.GetName(BuiltInCategory, returnIDval)\r\n        try: returnCat =  Revit.Elements.Category.ById(returnIDval)\r\n        except: pass\r\n    elif returnIDs:\r\n        returnCat = []\r\n        returnBic = []\r\n        for returnID in returnIDs:\r\n            if version > 2024: returnIDval = returnID.Value\r\n            else: returnIDval = returnID.IntegerValue\r\n            returnBic.append(System.Enum.GetName(BuiltInCategory, returnIDval))\r\n            try: returnCat.append(Revit.Elements.Category.ById(returnIDval))\r\n            except: returnCat.append(None)\r\n        returnCat.sort()\r\n    return returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\nversion = IN[1]\r\n\r\nif isinstance(IN[0], list): \r\n    if len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n    else: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitNodes\")\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nimport System\r\nfrom System import Int32\r\n\r\ndef GetCategory(item):\r\n    if not item: return None, None\r\n    objtype = None\r\n    if hasattr(item, \"GetType\"): objtype = item.GetType().ToString()\r\n    returnID = None\r\n    returnIDs = None\r\n    returnCat = None\r\n    returnBic = None\r\n    if objtype == \"Autodesk.Revit.DB.ParameterFilterElement\": returnIDs = item.GetCategories()\r\n    elif objtype == \"Autodesk.Revit.DB.ViewSchedule\": returnID = item.Definition.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Family\": returnID = item.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.ColorFillScheme\": returnID = item.CategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.GraphicsStyle\":  returnID = item.GraphicsStyleCategory.Id\r\n    elif objtype == \"Revit.Application.Document\":\r\n        if item.IsFamilyDocument: \r\n            clr.AddReference(\"RevitServices\")\r\n            import RevitServices\r\n            from RevitServices.Persistence import DocumentManager\r\n            returnID = DocumentManager.Instance.CurrentDBDocument.OwnerFamily.FamilyCategoryId\r\n    elif objtype == \"Autodesk.Revit.DB.Category\": \r\n        if item.Parent: returnID = item.Parent.Id\r\n    elif hasattr(item, \"Category\"): \r\n        if item.Category: returnID = item.Category.Id\r\n    if returnID:\r\n        returnIDval = returnID.Value\r\n        returnBic = System.Enum.GetName(BuiltInCategory, Int32(returnIDval))\r\n        try: returnCat =  Revit.Elements.Category.ById(returnIDval)\r\n        except: pass\r\n    elif returnIDs:\r\n        returnCat = []\r\n        returnBic = []\r\n        for returnID in returnIDs:\r\n            returnIDval = returnID.Value\r\n            returnBic.append(System.Enum.GetName(BuiltInCategory, Int32(returnIDval)))\r\n            try: returnCat.append(Revit.Elements.Category.ById(returnIDval))\r\n            except: returnCat.append(None)\r\n        returnCat.sort()\r\n    return returnCat, returnBic\r\n\r\nitems = UnwrapElement(IN[0])\r\n\r\nif isinstance(IN[0], list): \r\n    if len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))\r\n    else: OUT = [[],[]]\r\nelse: OUT = GetCategory(items)",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "b4b979ee8b544c808efd2356bf9eec69",
@@ -74,15 +74,6 @@
           "Id": "594e8fdda69b4a96b94209ae703c2bfd",
           "Name": "IN[0]",
           "Description": "Input #0",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "7e5daade273643b98272ada18097c9d8",
-          "Name": "IN[1]",
-          "Description": "Input #1",
           "UsingDefaultValue": false,
           "Level": 2,
           "UseLevels": false,
@@ -183,63 +174,6 @@
       "Outputs": [],
       "Replication": "Disabled",
       "Description": "A function output, use with custom nodes"
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "abada29cab074b468a0b8b6ebb3bd2e2",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "4951dd426f4a4186960451539d985930",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "f735726472194b1685f0ae90f8a796d4",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "234cfa0ba10c4a2b93c20b69a6b93731",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "d588cf39925c483a806be12373a6ad1c",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "48565df0a68f43919f6b694f77496c15",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -272,17 +206,9 @@
       "End": "d7ecdd8a1f8946ea9208a3cc9a0127e5",
       "Id": "769973f896894f2db63fb27de5d290c7",
       "IsHidden": "False"
-    },
-    {
-      "Start": "f735726472194b1685f0ae90f8a796d4",
-      "End": "7e5daade273643b98272ada18097c9d8",
-      "Id": "8798a22bf15a436a86f18204e851171d",
-      "IsHidden": "False"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [
     {
       "Name": "PythonNet3 Engine",
@@ -290,14 +216,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "b4b979ee8b544c808efd2356bf9eec69"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "abada29cab074b468a0b8b6ebb3bd2e2"
       ]
     }
   ],
@@ -333,8 +251,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 86.52892165571404,
-        "Y": 127.08264336001923
+        "X": 86.12892165571418,
+        "Y": 201.08264336001923
       },
       {
         "Id": "4f6ba5ebe7f3472fbca472ef40b1087d",
@@ -343,8 +261,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 971.328921655714,
-        "Y": 127.08264336001926
+        "X": 971.7289216557141,
+        "Y": 128.08264336001926
       },
       {
         "Id": "b4b979ee8b544c808efd2356bf9eec69",
@@ -353,8 +271,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 420.928921655714,
-        "Y": 201.08264336001923
+        "X": 420.52892165571416,
+        "Y": 201.0826433600193
       },
       {
         "Id": "5cbbb185d77a4c84a31c692f0fcaf9e2",
@@ -363,8 +281,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 695.328921655714,
-        "Y": 127.08264336001925
+        "X": 694.9289216557141,
+        "Y": 128.0826433600193
       },
       {
         "Id": "d66964871d4240ccb2b7d68c0ac1f156",
@@ -373,8 +291,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 695.328921655714,
-        "Y": 275.08264336001923
+        "X": 694.9289216557141,
+        "Y": 274.08264336001923
       },
       {
         "Id": "7c1dd5750b754dd9b6687157478a53de",
@@ -383,18 +301,8 @@
         "IsSetAsOutput": false,
         "Excluded": false,
         "ShowGeometry": true,
-        "X": 971.328921655714,
-        "Y": 275.08264336001923
-      },
-      {
-        "Id": "abada29cab074b468a0b8b6ebb3bd2e2",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": 86.52892165571404,
-        "Y": 275.08264336001923
+        "X": 971.7289216557141,
+        "Y": 274.08264336001923
       }
     ],
     "Annotations": [],

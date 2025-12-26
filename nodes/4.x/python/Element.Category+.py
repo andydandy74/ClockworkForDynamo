@@ -1,4 +1,3 @@
-import System
 import clr
 clr.AddReference('RevitAPI')
 from Autodesk.Revit.DB import *
@@ -6,6 +5,9 @@ from Autodesk.Revit.DB import *
 clr.AddReference("RevitNodes")
 import Revit
 clr.ImportExtensions(Revit.Elements)
+
+import System
+from System import Int32
 
 def GetCategory(item):
     if not item: return None, None
@@ -31,25 +33,22 @@ def GetCategory(item):
     elif hasattr(item, "Category"): 
         if item.Category: returnID = item.Category.Id
     if returnID:
-        if version > 2024: returnIDval = returnID.Value
-        else: returnIDval = returnID.IntegerValue
-        returnBic = System.Enum.GetName(BuiltInCategory, returnIDval)
+        returnIDval = returnID.Value
+        returnBic = System.Enum.GetName(BuiltInCategory, Int32(returnIDval))
         try: returnCat =  Revit.Elements.Category.ById(returnIDval)
         except: pass
     elif returnIDs:
         returnCat = []
         returnBic = []
         for returnID in returnIDs:
-            if version > 2024: returnIDval = returnID.Value
-            else: returnIDval = returnID.IntegerValue
-            returnBic.append(System.Enum.GetName(BuiltInCategory, returnIDval))
+            returnIDval = returnID.Value
+            returnBic.append(System.Enum.GetName(BuiltInCategory, Int32(returnIDval)))
             try: returnCat.append(Revit.Elements.Category.ById(returnIDval))
             except: returnCat.append(None)
         returnCat.sort()
     return returnCat, returnBic
 
 items = UnwrapElement(IN[0])
-version = IN[1]
 
 if isinstance(IN[0], list): 
     if len(IN[0]) > 0: OUT = map(list, zip(*[GetCategory(x) for x in items]))
