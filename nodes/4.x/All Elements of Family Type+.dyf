@@ -116,7 +116,7 @@
     },
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef InstancesOfFamilyType(ft, doc):\r\n    collector = FilteredElementCollector(doc)\r\n    try:\r\n        if version > 2024: ftCat = ft.Category.Id.Value\r\n        else: ftCat = ft.Category.Id.IntegerValue\r\n        bic = System.Enum.ToObject(BuiltInCategory, ftCat)\r\n        collector.OfCategory(bic)\r\n        if version > 2024: return [x for x in collector.ToElements() if x.GetTypeId().Value == ft.Id.Value]\r\n        else: return [x for x in collector.ToElements() if x.GetTypeId().IntegerValue == ft.Id.IntegerValue]\r\n    except: return []\r\n\r\nfamtypes = UnwrapElement(IN[0])\r\ninputdoc = UnwrapElement(IN[2])\r\nversion = IN[3]\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [InstancesOfFamilyType(x, doc) for x in famtypes]\r\nelse: OUT = InstancesOfFamilyType(famtypes, doc)",
+      "Code": "import System\r\nimport clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference(\"RevitServices\")\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\n\r\ndef InstancesOfFamilyType(ft, doc):\r\n    collector = FilteredElementCollector(doc)\r\n    try:\r\n        ftCat = ft.Category.Id.Value\r\n        bic = System.Enum.ToObject(BuiltInCategory, ftCat)\r\n        collector.OfCategory(bic)\r\n        return [x for x in collector.ToElements() if x.GetTypeId().Value == ft.Id.Value]\r\n    except: return []\r\n\r\nfamtypes = UnwrapElement(IN[0])\r\ninputdoc = UnwrapElement(IN[2])\r\nif not inputdoc: doc = DocumentManager.Instance.CurrentDBDocument\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.RevitLinkInstance\": doc = inputdoc.GetLinkDocument()\r\nelif inputdoc.GetType().ToString() == \"Autodesk.Revit.DB.Document\": doc = inputdoc\r\nelse: doc = DocumentManager.Instance.CurrentDBDocument\r\n\r\nif isinstance(IN[0], list): OUT = [InstancesOfFamilyType(x, doc) for x in famtypes]\r\nelse: OUT = InstancesOfFamilyType(famtypes, doc)",
       "Engine": "PythonNet3",
       "VariableInputPorts": true,
       "Id": "cd510746fdcd4cc3a2e1f69a6c8efa03",
@@ -148,15 +148,6 @@
           "Level": 2,
           "UseLevels": false,
           "KeepListStructure": false
-        },
-        {
-          "Id": "c6a34fc4ddbb47bfba9e24c48dcf8e8c",
-          "Name": "IN[3]",
-          "Description": "Input #3",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
         }
       ],
       "Outputs": [
@@ -172,63 +163,6 @@
       ],
       "Replication": "Disabled",
       "Description": "Runs an embedded Python script."
-    },
-    {
-      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
-      "FunctionSignature": "3df0961d-9d46-464f-9175-0a74eeb61bc1",
-      "FunctionType": "Graph",
-      "Id": "c85fd50bc2e940168c0826eb1bfdd389",
-      "NodeType": "FunctionNode",
-      "Inputs": [],
-      "Outputs": [
-        {
-          "Id": "94047b0a4bfa4b35abefd69ec7a1830c",
-          "Name": "Name",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "213b27479e8540c0ada7564afe808521",
-          "Name": "Version",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "8a7c5e2e23794c1b8cf9d4e6f69d8ef9",
-          "Name": "Build",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "2bf192f529744fc8b3fe2a6a970a0bb0",
-          "Name": "Language",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        },
-        {
-          "Id": "b3a0ee419f4d4610b98a925ecd6b052c",
-          "Name": "fullVersion",
-          "Description": "return value",
-          "UsingDefaultValue": false,
-          "Level": 2,
-          "UseLevels": false,
-          "KeepListStructure": false
-        }
-      ],
-      "Replication": "Auto",
-      "Description": "Retrieves the name, version and build of the current Revit application."
     }
   ],
   "Connectors": [
@@ -255,17 +189,9 @@
       "End": "e983e400619e44cba314d140532b363e",
       "Id": "d7c7fc7254c14d77ab0454b0706336ad",
       "IsHidden": "False"
-    },
-    {
-      "Start": "213b27479e8540c0ada7564afe808521",
-      "End": "c6a34fc4ddbb47bfba9e24c48dcf8e8c",
-      "Id": "d8cf7ba45715410c962db71dbc3781cb",
-      "IsHidden": "False"
     }
   ],
-  "Dependencies": [
-    "3df0961d-9d46-464f-9175-0a74eeb61bc1"
-  ],
+  "Dependencies": [],
   "NodeLibraryDependencies": [
     {
       "Name": "PythonNet3 Engine",
@@ -273,14 +199,6 @@
       "ReferenceType": "Package",
       "Nodes": [
         "cd510746fdcd4cc3a2e1f69a6c8efa03"
-      ]
-    },
-    {
-      "Name": "Clockwork for Dynamo 2.x",
-      "Version": "2.12.2",
-      "ReferenceType": "Package",
-      "Nodes": [
-        "c85fd50bc2e940168c0826eb1bfdd389"
       ]
     }
   ],
@@ -358,21 +276,11 @@
         "ShowGeometry": true,
         "X": 593.1485530152981,
         "Y": 154.59496029085363
-      },
-      {
-        "Id": "c85fd50bc2e940168c0826eb1bfdd389",
-        "Name": "Application.Version",
-        "IsSetAsInput": false,
-        "IsSetAsOutput": false,
-        "Excluded": false,
-        "ShowGeometry": true,
-        "X": 15.548553015298069,
-        "Y": 425.59496029085363
       }
     ],
     "Annotations": [],
-    "X": 147.63567537714817,
-    "Y": 156.7240015946773,
-    "Zoom": 0.4719131254595891
+    "X": -119.51803920132215,
+    "Y": 143.28846828442602,
+    "Zoom": 0.8476185719982269
   }
 }
