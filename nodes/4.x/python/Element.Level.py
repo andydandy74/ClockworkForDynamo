@@ -10,9 +10,7 @@ def GetLevel(item):
     val = None
     if item:
         # some elements have an empty Category property
-        try: 
-            if version > 2024: catID = item.Category.Id.Value
-            else: catID = item.Category.Id.IntegerValue
+        try: catID = item.Category.Id.Value
         except: catID = None
         # check all the different types of level properties...
         if hasattr(item, "LevelId"): 
@@ -43,7 +41,6 @@ def GetLevel(item):
     else: return None
 
 items = UnwrapElement(IN[0])
-version = IN[1]
 
 if isinstance(IN[0], list): OUT = [GetLevel(x) for x in items]
 else: OUT = GetLevel(items)
