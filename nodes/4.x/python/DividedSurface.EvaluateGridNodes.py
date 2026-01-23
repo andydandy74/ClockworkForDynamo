@@ -9,34 +9,28 @@ clr.ImportExtensions(Revit.GeometryConversion)
 
 ds = UnwrapElement(IN[0])
 overhanging = IN[1]
-uvlist = list()
-uvnormals = list()
-uvxyzs = list()
+uvlist = []
+uvnormals = []
+uvxyzs = []
 
 face = ds.Host.GetGeometryObjectFromReference(ds.HostReference)
-gn = GridNode()
-if overhanging == True:
-	i = 0
-	j = 1
-else:
-	i = 1
-	j = 3
-u = i
-while (u < (ds.NumberOfUGridlines-i)):
-	gn.UIndex = u
-	v = i
-	vlist = list()
-	vnormals = list()
-	vxyzs = list()
-	while (v < (ds.NumberOfVGridlines-i)):
-		gn.VIndex = v
-		uv = ds.GetGridNodeUV(gn)
-		vlist.append(uv)
-		vnormals.append(face.ComputeNormal(uv).ToVector())
-		vxyzs.append(face.Evaluate(uv).ToPoint())
-		v += 1
-	uvlist.append(vlist)
-	uvnormals.append(vnormals)
-	uvxyzs.append(vxyzs)
-	u += 1
-OUT = (uvnormals,uvxyzs,face.ToProtoType(),uvlist)
+               
+if overhanging: i = 0     
+else: i = 1
+     
+for u in range(i, ds.NumberOfUGridlines - i): 
+    vlist = []
+    vnormals = []
+    vxyzs = []
+    for v in range(i, ds.NumberOfVGridlines - i):
+        # Construct GridNode with (u, v) directly
+        gn = GridNode(u, v)
+        uv = ds.GetGridNodeUV(gn)
+        vlist.append(uv)
+        vnormals.append(face.ComputeNormal(uv).ToVector())
+        vxyzs.append(face.Evaluate(uv).ToPoint())
+    uvlist.append(vlist)
+    uvnormals.append(vnormals)
+    uvxyzs.append(vxyzs)
+
+OUT = (uvnormals, uvxyzs, face.ToProtoType(), uvlist)
