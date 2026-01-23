@@ -12,11 +12,12 @@
   "Nodes": [
     {
       "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
-      "NodeType": "PythonScriptNode",
-      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DuplicateFamType(famtype, name):\r\n\ttry:\r\n\t\treturn famtype.Duplicate(name)\r\n\texcept:\r\n\t\ttry:\r\n\t\t\tt1 = famtype.GetType().ToString()\r\n\t\t\tif t1 in func_enum: return func_enum[t1](name)\r\n\t\t\telse: return None\r\n\t\texcept:\r\n\t\t\treturn None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfamtypes = IN[0]\r\nnewnames = IN[1]\r\nfunc_enum = {'Revit.Elements.WallType' : Revit.Elements.WallType.ByName,\r\n\t\t\t 'Revit.Elements.FloorType' : Revit.Elements.FloorType.ByName,\r\n\t\t\t 'Revit.Elements.FamilyType' : Revit.Elements.FamilyType.ByName}\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(famtypes, list): OUT = [DuplicateFamType(x, y) for x, y in zip(famtypes, newnames)]\r\nelse: OUT = DuplicateFamType(famtypes, newnames)\r\nTransactionManager.Instance.TransactionTaskDone()",
+      "Code": "import clr\r\nclr.AddReference('RevitAPI')\r\nfrom Autodesk.Revit.DB import *\r\n\r\nclr.AddReference('RevitNodes')\r\nimport Revit\r\nclr.ImportExtensions(Revit.Elements)\r\n\r\nclr.AddReference('RevitServices')\r\nimport RevitServices\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\n\r\ndef DuplicateFamType(famtype, name):\r\n\ttry:\r\n\t\treturn famtype.Duplicate(name)\r\n\texcept:\r\n\t\ttry:\r\n\t\t\tt1 = famtype.GetType().ToString()\r\n\t\t\tif t1 in func_enum: return func_enum[t1](name)\r\n\t\t\telse: return None\r\n\t\texcept:\r\n\t\t\treturn None\r\n\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\nfamtypes = IN[0]\r\nnewnames = IN[1]\r\nfunc_enum = {'Revit.Elements.WallType' : Revit.Elements.WallType.ByName,\r\n\t\t\t 'Revit.Elements.FloorType' : Revit.Elements.FloorType.ByName,\r\n\t\t\t 'Revit.Elements.FamilyType' : Revit.Elements.FamilyType.ByName}\r\n\r\nTransactionManager.Instance.EnsureInTransaction(doc)\r\nif isinstance(famtypes, list): OUT = UnwrapElement([DuplicateFamType(x, y) for x, y in zip(famtypes, newnames)])\r\nelse: OUT = UnwrapElement(DuplicateFamType(famtypes, newnames))\r\nTransactionManager.Instance.TransactionTaskDone()",
       "Engine": "CPython3",
+      "EngineName": "CPython3",
       "VariableInputPorts": true,
       "Id": "23bb617290174de5bec401f37588c27d",
+      "NodeType": "PythonScriptNode",
       "Inputs": [
         {
           "Id": "822e03a83b394e9380ed8d0402c9f215",
@@ -53,7 +54,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "elementType",
         "TypeName": "var",
@@ -62,6 +62,7 @@
         "Description": ""
       },
       "Id": "5a870eae04f84d598e8472a253e98024",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -79,10 +80,10 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Output, DynamoCore",
-      "NodeType": "OutputNode",
       "ElementResolver": null,
       "Symbol": "duplicate",
       "Id": "d35b3219421f4f6dbf1a92ba7ceb0d39",
+      "NodeType": "OutputNode",
       "Inputs": [
         {
           "Id": "f292f7c26045444385a1bff3d51b3945",
@@ -100,7 +101,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "name",
         "TypeName": "string",
@@ -109,6 +109,7 @@
         "Description": ""
       },
       "Id": "b3ab0d574f3a4c15af19850c14d226bb",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -128,8 +129,8 @@
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
       "FunctionSignature": "9e586fb6-2570-4445-8556-aa20d337fb98",
       "FunctionType": "Graph",
-      "NodeType": "FunctionNode",
       "Id": "be0cdb809a6b4e019b35f5957eb9a364",
+      "NodeType": "FunctionNode",
       "Inputs": [
         {
           "Id": "3fdc320459224b73b88347b082e6c017",
@@ -166,7 +167,6 @@
     },
     {
       "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Symbol, DynamoCore",
-      "NodeType": "InputNode",
       "Parameter": {
         "Name": "replacementForIllegalChars",
         "TypeName": "string",
@@ -175,6 +175,7 @@
         "Description": ""
       },
       "Id": "01b344478ac94b6dad4551bd7fd7f6ed",
+      "NodeType": "InputNode",
       "Inputs": [],
       "Outputs": [
         {
@@ -195,27 +196,32 @@
     {
       "Start": "5696c724d79d40dc821380a1522a4db2",
       "End": "f292f7c26045444385a1bff3d51b3945",
-      "Id": "4b0c76e4593546e1aa27713e3afd0cab"
+      "Id": "4b0c76e4593546e1aa27713e3afd0cab",
+      "IsHidden": "False"
     },
     {
       "Start": "d7060d1ea66448af8710ccbba86914b4",
       "End": "822e03a83b394e9380ed8d0402c9f215",
-      "Id": "1739ae3d159a4c5bbbb451cb8bfaf211"
+      "Id": "1739ae3d159a4c5bbbb451cb8bfaf211",
+      "IsHidden": "False"
     },
     {
       "Start": "c727de5323f24c25a5b242d59470edf5",
       "End": "3fdc320459224b73b88347b082e6c017",
-      "Id": "908d29587d4f4325b02e3e448224ffda"
+      "Id": "908d29587d4f4325b02e3e448224ffda",
+      "IsHidden": "False"
     },
     {
       "Start": "fce4b894141f499a9bd966dd06fe92b6",
       "End": "f951469b591043939911cee037fc98b7",
-      "Id": "abcbceec8fb04833977ebe4e09e31d54"
+      "Id": "abcbceec8fb04833977ebe4e09e31d54",
+      "IsHidden": "False"
     },
     {
       "Start": "5dd40cab31984e08aff04f17ead1ad91",
       "End": "ad290daf30f5432a97614a98b3f2e954",
-      "Id": "cb62cf3beb3948238420e97aa2442388"
+      "Id": "cb62cf3beb3948238420e97aa2442388",
+      "IsHidden": "False"
     }
   ],
   "Dependencies": [
@@ -238,12 +244,12 @@
       "ScaleFactor": 1.0,
       "HasRunWithoutCrash": false,
       "IsVisibleInDynamoLibrary": true,
-      "Version": "2.12.1.8246",
+      "Version": "2.19.3.6394",
       "RunType": "Manual",
       "RunPeriod": "1000"
     },
     "Camera": {
-      "Name": "Hintergrundvorschau",
+      "Name": "_Hintergrundvorschau",
       "EyeX": -17.0,
       "EyeY": 24.0,
       "EyeZ": 50.0,
@@ -254,64 +260,65 @@
       "UpY": 1.0,
       "UpZ": 0.0
     },
+    "ConnectorPins": [],
     "NodeViews": [
       {
-        "ShowGeometry": true,
-        "Name": "Python Script",
         "Id": "23bb617290174de5bec401f37588c27d",
+        "Name": "Python Script",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 572.1684786549315,
         "Y": 202.37883513789558
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "5a870eae04f84d598e8472a253e98024",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 230.56847865493148,
         "Y": 176.10954988689988
       },
       {
-        "ShowGeometry": true,
-        "Name": "Output",
         "Id": "d35b3219421f4f6dbf1a92ba7ceb0d39",
+        "Name": "Output",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 796.96847865493146,
         "Y": 205.10954988689986
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "b3ab0d574f3a4c15af19850c14d226bb",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": -251.8315213450685,
         "Y": 231.10954988689991
       },
       {
-        "ShowGeometry": true,
-        "Name": "String.ReplaceIllegalRevitCharacters",
         "Id": "be0cdb809a6b4e019b35f5957eb9a364",
+        "Name": "String.ReplaceIllegalRevitCharacters",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": 230.56847865493148,
         "Y": 260.10954988689991
       },
       {
-        "ShowGeometry": true,
-        "Name": "Input",
         "Id": "01b344478ac94b6dad4551bd7fd7f6ed",
+        "Name": "Input",
         "IsSetAsInput": false,
         "IsSetAsOutput": false,
         "Excluded": false,
+        "ShowGeometry": true,
         "X": -251.8315213450685,
         "Y": 315.10954988689991
       }

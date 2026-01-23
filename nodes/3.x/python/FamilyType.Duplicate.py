@@ -30,6 +30,6 @@ func_enum = {'Revit.Elements.WallType' : Revit.Elements.WallType.ByName,
 			 'Revit.Elements.FamilyType' : Revit.Elements.FamilyType.ByName}
 
 TransactionManager.Instance.EnsureInTransaction(doc)
-if isinstance(famtypes, list): OUT = [DuplicateFamType(x, y) for x, y in zip(famtypes, newnames)]
-else: OUT = DuplicateFamType(famtypes, newnames)
+if isinstance(famtypes, list): OUT = UnwrapElement([DuplicateFamType(x, y) for x, y in zip(famtypes, newnames)])
+else: OUT = UnwrapElement(DuplicateFamType(famtypes, newnames))
 TransactionManager.Instance.TransactionTaskDone()
