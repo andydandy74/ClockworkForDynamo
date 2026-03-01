@@ -21,7 +21,7 @@ def GetCategory(item):
     elif objtype == "Autodesk.Revit.DB.ViewSchedule": returnID = item.Definition.CategoryId
     elif objtype == "Autodesk.Revit.DB.Family": returnID = item.FamilyCategoryId
     elif objtype == "Autodesk.Revit.DB.ColorFillScheme": returnID = item.CategoryId
-    elif objtype == "Autodesk.Revit.DB.GraphicsStyle":  returnID = item.GraphicsStyleCategory.Id
+    elif objtype == "Autodesk.Revit.DB.GraphicsStyle": returnID = item.GraphicsStyleCategory.Id
     elif objtype == "Revit.Application.Document":
         if item.IsFamilyDocument: 
             clr.AddReference("RevitServices")
@@ -45,7 +45,6 @@ def GetCategory(item):
             returnBic.append(System.Enum.GetName(BuiltInCategory, Int32(returnIDval)))
             try: returnCat.append(Revit.Elements.Category.ById(returnIDval))
             except: returnCat.append(None)
-        returnCat.sort()
     return returnCat, returnBic
 
 items = UnwrapElement(IN[0])

@@ -45,7 +45,6 @@ def GetCategory(item):
             returnBic.append(System.Enum.GetName(BuiltInCategory, returnIDval))
             try: returnCat.append(Revit.Elements.Category.ById(returnIDval))
             except: returnCat.append(None)
-        returnCat.sort()
     return returnCat, returnBic
 
 items = UnwrapElement(IN[0])
